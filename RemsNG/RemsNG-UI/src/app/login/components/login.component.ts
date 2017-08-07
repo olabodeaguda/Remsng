@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {LoginModel} from '../../shared/models/login.model';
 
 @Component({
     selector: 'login',
@@ -6,5 +7,14 @@ import {Component} from '@angular/core';
 })
 
 export class LoginComponent {
+    loginModel: LoginModel;
+
+    constructor() {
+        this.loginModel = new LoginModel();
+    }
+
+    signIn() {
+        alert('ok');
+    }
 
 }
