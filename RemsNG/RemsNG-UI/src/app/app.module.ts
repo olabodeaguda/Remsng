@@ -2,6 +2,8 @@
 import { NgModule } from '@angular/core';
 import { AlertModule } from 'ngx-bootstrap';
 import { AppComponent } from './app.component';
+import {LoginModule} from './login/login.module';
+import {DashBoardModule} from './Dashboard/dashboard.module';
 
 @NgModule({
   declarations: [
@@ -9,7 +11,7 @@ import { AppComponent } from './app.component';
   ],
   imports: [
       BrowserModule,
-      AlertModule.forRoot()
+      LoginModule
   ],
   providers: [],
   bootstrap: [AppComponent]
