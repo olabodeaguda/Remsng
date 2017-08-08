@@ -1,4 +1,4 @@
-export class LoginModel {
-    public username: string;
-    public pwd: string;
+export interface LoginModel {
+    username: string;
+    pwd: string;
 }

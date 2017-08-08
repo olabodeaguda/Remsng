@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {LoginModel} from '../../shared/models/login.model';
+import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 
 @Component({
     selector: 'login',
@@ -8,13 +9,21 @@ import {LoginModel} from '../../shared/models/login.model';
 
 export class LoginComponent {
     loginModel: LoginModel;
-
+    signInForm: FormGroup;
     constructor() {
-        this.loginModel = new LoginModel();
+        this.loginModel = {
+            username: '',
+             pwd: ''
+        };
+        this.signInForm = new FormGroup({
+            username: new FormControl('', Validators.required),
+            pwd: new FormControl('', Validators.required)
+        });
     }
 
     signIn() {
-        alert('ok');
+       this.loginModel = this.signInForm.value as LoginModel;
+        alert(this.loginModel.username + '/' + this.loginModel.pwd);
+        // naviagete to dashboard
     }
-
 }

@@ -2,28 +2,26 @@ import { NgModule } from '@angular/core';
 import { FormsModule} from '@angular/forms';
 import { BrowserModule} from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
-import {DashboardComponent} from './components/dashboard.component';
-import {SharedModule} from '.././shared/shared.module';
+import {HeaderComponent} from './components/header.component';
 
 const appRoutes: Routes = [
-     { path: 'dashboard', component: DashboardComponent }
+   // { path: 'dashboard', component: HeaderComponent }
  ];
 
 @NgModule({
     imports: [
       BrowserModule,
-      SharedModule,
       RouterModule.forChild(appRoutes)
     ],
     declarations: [
-        DashboardComponent
+        HeaderComponent
     ],
     providers: [ ],
     exports: [
-        DashboardComponent
+        HeaderComponent
     ]
   })
 
-export class DashBoardModule {
+export class SharedModule {
 
 }
