@@ -3,6 +3,7 @@ import { FormsModule} from '@angular/forms';
 import { BrowserModule} from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
 import {HeaderComponent} from './components/header.component';
+import {SideBarComponent} from './components/sideBar.component';
 
 const appRoutes: Routes = [
    // { path: 'dashboard', component: HeaderComponent }
@@ -14,11 +15,11 @@ const appRoutes: Routes = [
       RouterModule.forChild(appRoutes)
     ],
     declarations: [
-        HeaderComponent
+        HeaderComponent, SideBarComponent
     ],
     providers: [ ],
     exports: [
-        HeaderComponent
+        HeaderComponent, SideBarComponent
     ]
   })
 
