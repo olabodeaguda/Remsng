@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using RemsNG.Services;
+using RemsNG.Utilities;
 using System.IO;
 
 namespace RemsNG
@@ -24,7 +26,8 @@ namespace RemsNG
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
+
+            ServicesCollection.Initialize(services);
             services.AddMvc();
         }
 
@@ -33,6 +36,7 @@ namespace RemsNG
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+            loggerFactory.AddFile("Logs/remsng-logs-{Date}.txt");
 
             app.Use(async (context, next) =>
             {
@@ -46,6 +50,8 @@ namespace RemsNG
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
+            JWTSettings.Initialize(app, Configuration);
+            
 
             app.UseMvc();
         }
