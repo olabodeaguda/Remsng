@@ -4,6 +4,7 @@ import { BrowserModule} from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
 import {HeaderComponent} from './components/header.component';
 import {SideBarComponent} from './components/sideBar.component';
+import {FooterComponent} from './components/footer.component';
 
 const appRoutes: Routes = [
    // { path: 'dashboard', component: HeaderComponent }
@@ -15,11 +16,11 @@ const appRoutes: Routes = [
       RouterModule.forChild(appRoutes)
     ],
     declarations: [
-        HeaderComponent, SideBarComponent
+        HeaderComponent, SideBarComponent, FooterComponent
     ],
     providers: [ ],
     exports: [
-        HeaderComponent, SideBarComponent
+        HeaderComponent, SideBarComponent, FooterComponent
     ]
   })
 

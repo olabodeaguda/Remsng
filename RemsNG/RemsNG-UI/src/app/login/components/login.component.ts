@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {LoginModel} from '../../shared/models/login.model';
 import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
+import {Router} from '@angular/router';
 
 @Component({
     selector: 'login',
@@ -10,7 +11,7 @@ import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms'
 export class LoginComponent {
     loginModel: LoginModel;
     signInForm: FormGroup;
-    constructor() {
+    constructor(private router: Router) {
         this.loginModel = {
             username: '',
              pwd: ''
@@ -23,7 +24,7 @@ export class LoginComponent {
 
     signIn() {
        this.loginModel = this.signInForm.value as LoginModel;
-        alert(this.loginModel.username + '/' + this.loginModel.pwd);
         // naviagete to dashboard
+        this.router.navigateByUrl('/dashboard');
     }
 }
