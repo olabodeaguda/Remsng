@@ -1,0 +1,19 @@
+2017-09-09T00:02:59.0902314+01:00  [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-09-09T00:02:59.4868714+01:00  [INF] Executed DbCommand ("33"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE') SELECT 1 ELSE SELECT 0" (0723d8ff)
+2017-09-09T00:02:59.6200648+01:00  [INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[addressId], [x].[datecreated], [x].[domainCode], [x].[domainName]
+FROM [tbl_domain] AS [x]
+WHERE LOWER([x].[domainCode]) = N'mos-admin'" (0723d8ff)
+2017-09-09T00:02:59.6929343+01:00  [INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[createdBy], [x].[dateCreated], [x].[email], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lockedOutEndDateUTC], [x].[lockedoutenabled], [x].[passwordHash], [x].[securityStamp], [x].[userStatus], [x].[username]
+FROM [tbl_users] AS [x]
+WHERE LOWER([x].[username]) = N'mos-admin'" (0723d8ff)
+2017-09-09T00:02:59.7845534+01:00  [INF] Executed DbCommand ("36"ms) [Parameters=["@__mosUser_id_0='?', @__mosDomain_id_1='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[domainId], [x].[userId]
+FROM [tbl_userdomain] AS [x]
+WHERE ([x].[userId] = @__mosUser_id_0) AND ([x].[domainId] = @__mosDomain_id_1)" (0723d8ff)
+2017-09-09T00:05:13.0469085+01:00  [INF] Executed DbCommand ("86"ms) [Parameters=["@p0='?', @p1='?'"], CommandType='Text', CommandTimeout='30']"
+""SET NOCOUNT ON;
+INSERT INTO [tbl_userdomain] ([domainId], [userId])
+VALUES (@p0, @p1);" (0723d8ff)
