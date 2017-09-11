@@ -11,8 +11,6 @@
     <None Remove="RemsNG-UI\**" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="NewFolder\" />
-    <Folder Include="Services\Interfaces\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
   <ItemGroup>
