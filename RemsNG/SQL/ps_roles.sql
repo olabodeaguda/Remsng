@@ -123,6 +123,24 @@ GO
 	end
 	select @msg as msg,@success as success;
 end
+GO
+IF EXISTS(SELECT *
+          FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_getUserRoleByUsername') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_getUserRoleByUsername
+  GO
+  CREATE PROCEDURE sp_getUserRoleByUsername(
+  @username varchar(100)
+  )
+  AS
+  BEGIN
+		select tbl_role.* from tbl_role
+		inner join tbl_userRole on tbl_userRole.roleid = tbl_role.id
+		inner join tbl_users on tbl_users.id = tbl_userRole.userid
+		where tbl_users.username = @username
+  END
+
+GO
 
 
 

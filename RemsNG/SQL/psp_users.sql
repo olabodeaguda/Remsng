@@ -16,7 +16,10 @@ CREATE TABLE tbl_users
 	createdBy varchar(100) not null,
 	dateCreated datetime default getDate(),
 	lastmodifiedby varchar(100),
-	lastModifiedDate datetime
+	lastModifiedDate datetime,
+	lastname varchar(100),
+	surname varchar(100),
+	firstname varchar(100)
 )
 GO
 
@@ -33,7 +36,10 @@ GO
 		@securityStamp varchar(250),
 		@username varchar(100),
 		@userstatus varchar(50),
-		@createdBy varchar(100)
+		@createdBy varchar(100),
+	@lastname varchar(100),
+	@surname varchar(100),
+	@firstname varchar(100)
 	)
 	as
 	BEGIN
@@ -46,8 +52,8 @@ GO
 			END
 		ELSE
 			BEGIN
-				INSERT INTO tbl_users(id,email,passwordHash,securityStamp,username,userstatus,createdBy) 
-				values(@id,@email,@passwordHash,@securityStamp,@username,@userstatus,@createdBy);
+				INSERT INTO tbl_users(id,email,passwordHash,securityStamp,username,userstatus,createdBy,lastname,surname,firstname) 
+				values(@id,@email,@passwordHash,@securityStamp,@username,@userstatus,@createdBy,@lastname,@surname,@firstname);
 				IF @@RowCount > 0
 				BEGIN
 					SET @success = 1;
@@ -72,7 +78,10 @@ GO
 		@securityStamp varchar(250),
 		@username varchar(100),
 		@userstatus varchar(50),
-		@createdBy varchar(100)
+		@createdBy varchar(100),
+	@lastname varchar(100),
+	@surname varchar(100),
+	@firstname varchar(100)
 	)
 	as
 	BEGIN
@@ -85,7 +94,7 @@ GO
 			END
 		ELSE
 			BEGIN
-				update tbl_users set email=@email, passwordHash=@passwordHash,
+				update tbl_users set lastname=@lastname,surname=@surname,firstname=@firstname, email=@email, passwordHash=@passwordHash,
 				securityStamp=@securityStamp, username=@username, userstatus=@userstatus, lastmodifiedby=@createdBy,
 				lastModifiedDate = GETDATE() where id=@id;
 				IF @@RowCount > 0

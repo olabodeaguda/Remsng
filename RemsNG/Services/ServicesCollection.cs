@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using RemsNG.Models;
 using RemsNG.ORM;
+using RemsNG.Services.Interfaces;
 using RemsNG.Utilities;
 using System;
 using System.Collections.Generic;
@@ -36,8 +37,17 @@ namespace RemsNG.Services
                 options.TokenValidationParameters = tokenValidationParameters();
                 options.Events = GetJwtEvt();
             });
-         //   string d = Configuration.GetSection("ConnectionStrings:DefaultConnection").Value;
+
+            services.Configure<JwtIssuerOptions>(options =>
+            {
+                options.Issuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
+                options.Audience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)];
+                options.SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtAppSettingOptions[nameof(JwtIssuerOptions.secret)])), SecurityAlgorithms.HmacSha256);
+                options.logOutTIme = jwtAppSettingOptions[nameof(JwtIssuerOptions.logOutTIme)];
+            });
+
             services.AddDbContext<RemsDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddTransient<IUserService, UserService>();
 
         }
 
@@ -76,19 +86,19 @@ namespace RemsNG.Services
                     if (context.Exception.GetType() == typeof(SecurityTokenValidationException))
                     {
                         response.description = "invalid token";
-                        response.code = MSgCode_Enum.INVALID_TOKEN;
+                        response.code = MsgCode_Enum.INVALID_TOKEN;
                         //  throw new Exception(MsgCodes.INVALID_TOKEN);
                     }
                     else if (context.Exception.GetType() == typeof(SecurityTokenInvalidIssuerException))
                     {
                         response.description = "INVALID ISSUER";
-                        response.code = MSgCode_Enum.INVALID_ISSUER;
+                        response.code = MsgCode_Enum.INVALID_ISSUER;
                         //   throw new Exception(MsgCodes.INVALID_ISSUER);
                     }
                     else if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
                     {
                         response.description = "TOKEN EXPIRED";
-                        response.code = MSgCode_Enum.TOKEN_EXPIRED;
+                        response.code = MsgCode_Enum.TOKEN_EXPIRED;
                         // throw new Exception(MsgCodes.TOKEN_EXPIRED);
                     }
 

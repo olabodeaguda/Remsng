@@ -8,7 +8,7 @@ namespace RemsNG.Dao
 {
     public class AbstractDao
     {
-        public readonly RemsDbContext db;
+        protected readonly RemsDbContext db;
         public AbstractDao(RemsDbContext _db)
         {
             this.db = _db;

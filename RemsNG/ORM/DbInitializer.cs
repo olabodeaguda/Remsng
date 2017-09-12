@@ -41,7 +41,10 @@ namespace RemsNG.ORM
                     lockedOutEndDateUTC = null,
                     username = "mos-admin",
                     userStatus = "ACTIVE",
-                    passwordHash = EncryptDecryptUtils.Encrypt("@mistletle102016"),
+                    firstname = "Olabode",
+                    lastname = "H",
+                    surname = "Aguda",
+                    passwordHash = EncryptDecryptUtils.ToHexString("@mistletle102016"),
                     securityStamp = EncryptDecryptUtils.EncryptSecurityStampModel(new SecurityStampModel()
                     {
                         question = "Whose intellectual property?",

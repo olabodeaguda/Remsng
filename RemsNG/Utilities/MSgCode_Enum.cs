@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Utilities
 {
-    public class MSgCode_Enum
+    public class MsgCode_Enum
     {
         public static readonly String SUCCESS = "00";
         public static readonly String FAIL = "01";
@@ -21,5 +21,6 @@ namespace RemsNG.Utilities
         public static string VERIFY_EMAIL = "12";
         public static string RESEND_VERIFICATION = "13";
         public static string NO_DOMAIN_ACCESS = "14";
+        public static string INVALID_PARAMETER_PASSED = "15";
     }
 }

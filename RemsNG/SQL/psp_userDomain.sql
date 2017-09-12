@@ -56,4 +56,21 @@ IF EXISTS(SELECT *
 	select newID() as id, @msg as msg, @success as success;
   END
   GO
-
+  
+  IF EXISTS(SELECT *
+          FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_getUserDomainByUsername') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_getUserDomainByUsername
+  GO
+  CREATE PROCEDURE sp_getUserDomainByUsername(
+  @username varchar(100)
+  )
+  AS
+  BEGIN
+		select tbl_domain.* from tbl_domain
+		inner join tbl_userdomain on tbl_userdomain.domainid = tbl_domain.id
+		inner join tbl_users on tbl_users.id = tbl_userdomain.userid
+		where tbl_users.username = @username
+  END
+  GO
+  
