@@ -22,4 +22,21 @@ IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'CHANGE_STATUS
 INSERT INTO tbl_permission(id,permissionName) values(newid(),'CHANGE_STATUS');
 GO
 
+IF EXISTS(SELECT *
+          FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_getRolePermission') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_getRolePermission
+GO
+CREATE PROCEDURE sp_getRolePermission
+(
+	@roleId uniqueidentifier
+)
+AS
+BEGIN
+	select tbl_permission.* from tbl_permission 
+	inner join tbl_rolePermission  on tbl_rolePermission.permissionId = tbl_permission.id
+	where tbl_rolePermission.roleId = @roleId
+
+END
+GO
 

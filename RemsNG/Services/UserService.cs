@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using RemsNG.Utilities;
+using Newtonsoft.Json;
 
 namespace RemsNG.Services
 {
@@ -30,25 +31,24 @@ namespace RemsNG.Services
             jwtOptions = _jwtOptions.Value;
         }
 
-        public async Task<string> GetToken(User user)
+        public async Task<string> GetToken(User user,Guid domainId,bool byDomain)
         {
-            Role role = await roleDao.GetUserRoleByUsername(user.username);
-            List<Domain> domain = await domainDao.GetUserDomainByUsername(user.username);
+            if (!byDomain)
+            {
+                List<Domain> domain = await domainDao.GetUserDomainByUsername(user.username);
+                if (domain.Count > 0)
+                {
+                    domainId = domain.FirstOrDefault().id;
+                }
+            }
+            
+            Role role = await roleDao.GetUserRoleByUsernameByDomainId(user.username,domainId);
+            if (role != null)
+            {
+                //get permissions
+            }
             int logTime = int.TryParse(jwtOptions.logOutTIme, out logTime) ? logTime : 30;
 
-
-            //var jwt = new JwtSecurityToken(
-            //    issuer: jwtOptions.Issuer,
-            //    audience: jwtOptions.Audience,
-            //    claims: new Claim[]
-            //            {
-            //                new Claim(ClaimTypes.Name, $"{user.surname} {user.firstname} {user.lastname}"),
-            //                new Claim(ClaimTypes.Role, role != null? role.roleName:string.Empty),
-            //                new Claim("Domain",(domain.Count > 0?domain[0].domainCode:""))
-            //            },
-            //    notBefore: DateTime.UtcNow,
-            //    expires: DateTime.UtcNow.AddMinutes(logTime),
-            //    signingCredentials: jwtOptions.SigningCredentials);
             var tokenHandler = new JwtSecurityTokenHandler();
             var jwt = new SecurityTokenDescriptor
             {
@@ -57,9 +57,8 @@ namespace RemsNG.Services
                 Subject = new ClaimsIdentity(new Claim[]
                         {
                             new Claim(ClaimTypes.Name, $"{user.surname} {user.firstname} {user.lastname}"),
-//                            new Claim(ClaimTypes.Role, role != null? role.roleName:string.Empty),
-new Claim(ClaimTypes.Role, "author"),
-                            new Claim("Domain",(domain.Count > 0?domain[0].domainCode:"")),
+                            new Claim(ClaimTypes.Role, role != null? role.roleName:string.Empty),
+                            new Claim("Domain",JsonConvert.SerializeObject(domainId)),
                             new Claim("identity",EncryptDecryptUtils.ToHexString(user.id.ToString()))
                         }),
                 Expires = DateTime.UtcNow.AddMinutes(logTime),

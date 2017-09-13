@@ -16,6 +16,7 @@ namespace RemsNG.ORM
         public DbSet<Domain> Domains { get; set; }
         public DbSet<UserDomain> UserDomains { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

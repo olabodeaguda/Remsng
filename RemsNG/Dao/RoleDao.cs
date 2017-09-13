@@ -13,7 +13,7 @@ namespace RemsNG.Dao
         {
         }
 
-        public async Task<Role> GetUserRoleByUsername(string username)
+        public async Task<Role> GetUserRoleByUsernameByDomainId(string username, Guid domainId)
         {
             return await db.Roles.FromSql("sp_getUserRoleByUsername @p0", username).FirstOrDefaultAsync();
         }

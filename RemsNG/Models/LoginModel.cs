@@ -9,5 +9,6 @@ namespace RemsNG.Models
     {
         public string username { get; set; }
         public string pwd { get; set; }
+        public Guid domainId { get; set; }
     }
 }

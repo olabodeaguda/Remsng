@@ -26,13 +26,6 @@ namespace RemsNG.Controllers
             userService = _userService;
             logger = loggerFactory.CreateLogger<UserController>();
         }
-        // GET: api/values
-        [Authorize(Roles="author")]
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
 
         [AllowAnonymous]
         [HttpPost]
@@ -64,7 +57,7 @@ namespace RemsNG.Controllers
             }
 
             //generate jwt
-            string token = await userService.GetToken(user);
+            string token = await userService.GetToken(user, ln.domainId, ln.domainId == Guid.Empty ? false : true);
 
             Response response = new Response()
             {
