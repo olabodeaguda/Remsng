@@ -15,6 +15,7 @@ namespace RemsNG.ORM
         public DbSet<User> Users { get; set; }
         public DbSet<Domain> Domains { get; set; }
         public DbSet<UserDomain> UserDomains { get; set; }
+        public DbSet<Role> Roles { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -22,7 +23,7 @@ namespace RemsNG.ORM
             modelBuilder.Entity<User>().ToTable("tbl_users");
             modelBuilder.Entity<Domain>().ToTable("tbl_domain");
             modelBuilder.Entity<UserDomain>().ToTable("tbl_userdomain").HasKey(x => new { x.domainId, x.userId });
-
+            modelBuilder.Entity<Role>().ToTable("tbl_role");
         }
     }
 }

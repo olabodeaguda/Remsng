@@ -22,5 +22,7 @@ namespace RemsNG.Utilities
         public static string RESEND_VERIFICATION = "13";
         public static string NO_DOMAIN_ACCESS = "14";
         public static string INVALID_PARAMETER_PASSED = "15";
+
+        public static string INACTIVE_USER { get; internal set; }
     }
 }

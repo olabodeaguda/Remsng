@@ -27,6 +27,7 @@ namespace RemsNG.Controllers
             logger = loggerFactory.CreateLogger<UserController>();
         }
         // GET: api/values
+        [Authorize(Roles="author")]
         [HttpGet]
         public IEnumerable<string> Get()
         {
@@ -56,11 +57,29 @@ namespace RemsNG.Controllers
                 logger.LogError($"{ln.username} password is incorrect", new object[] { ln.username });
                 return new HttpMessageResult("Password is incorrect", 401);
             }
+
+            if (user.userStatus != UserStatus.ACTIVE.ToString())
+            {
+                return BadRequest(new Response() { code = MsgCode_Enum.INACTIVE_USER, data = "Username is not active" });
+            }
+
             //generate jwt
             string token = await userService.GetToken(user);
 
-            //encrypted password
-            return Ok();
+            Response response = new Response()
+            {
+                code = MsgCode_Enum.SUCCESS,
+                data = new
+                {
+                    tk = token,
+                    firstname = user.firstname,
+                    surname = user.lastname,
+                    lastname = user.lastname,
+                    userStatus = user.userStatus
+                }
+            };
+
+            return Ok(response);
         }
     }
 }

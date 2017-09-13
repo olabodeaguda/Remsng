@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +12,7 @@ using RemsNG.Services.Interfaces;
 using RemsNG.Utilities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,21 +32,28 @@ namespace RemsNG.Services
         public static void Initialize(IServiceCollection services, IConfigurationRoot config)
         {
             Configuration = config;
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                //options.Audience = "http://localhost:5001/";
-                //options.Authority = "http://localhost:5000/";
-                options.TokenValidationParameters = tokenValidationParameters();
-                options.Events = GetJwtEvt();
-            });
-
             services.Configure<JwtIssuerOptions>(options =>
             {
                 options.Issuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
                 options.Audience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)];
                 options.SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtAppSettingOptions[nameof(JwtIssuerOptions.secret)])), SecurityAlgorithms.HmacSha256);
                 options.logOutTIme = jwtAppSettingOptions[nameof(JwtIssuerOptions.logOutTIme)];
+            });
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(
+            options =>
+            {
+                options.Audience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)];
+                options.TokenValidationParameters = tokenValidationParameters();
+                options.IncludeErrorDetails = true;
+            });
+
+            services.AddAuthorization(auth =>
+            {
+                auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+                        .RequireAuthenticatedUser()
+                        .Build());
             });
 
             services.AddDbContext<RemsDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -73,42 +83,6 @@ namespace RemsNG.Services
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.Zero,
                 AuthenticationType = JwtBearerDefaults.AuthenticationScheme
-            };
-        }
-        public static JwtBearerEvents GetJwtEvt()
-        {
-            return new JwtBearerEvents
-            {
-                OnAuthenticationFailed = context =>
-                {
-                    Response response = new Response();
-
-                    if (context.Exception.GetType() == typeof(SecurityTokenValidationException))
-                    {
-                        response.description = "invalid token";
-                        response.code = MsgCode_Enum.INVALID_TOKEN;
-                        //  throw new Exception(MsgCodes.INVALID_TOKEN);
-                    }
-                    else if (context.Exception.GetType() == typeof(SecurityTokenInvalidIssuerException))
-                    {
-                        response.description = "INVALID ISSUER";
-                        response.code = MsgCode_Enum.INVALID_ISSUER;
-                        //   throw new Exception(MsgCodes.INVALID_ISSUER);
-                    }
-                    else if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                    {
-                        response.description = "TOKEN EXPIRED";
-                        response.code = MsgCode_Enum.TOKEN_EXPIRED;
-                        // throw new Exception(MsgCodes.TOKEN_EXPIRED);
-                    }
-
-                    context.Response.StatusCode = 401;
-                    string val = JsonConvert.SerializeObject(response);
-                    //context.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(val), 0, val.Length);
-                    // context.HandleResponse();
-
-                    return Task.FromResult<object>(val);
-                }
             };
         }
     }

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,6 +41,19 @@ namespace RemsNG
             loggerFactory.AddDebug();
             loggerFactory.AddFile("Logs/remsng-logs-{Date}.txt");
             DbInitializer.Initialize(dbContext);
+            app.Use(async (context, next) =>
+            {
+                if (!context.User.Identity.IsAuthenticated)
+                {
+                    var result = await context.AuthenticateAsync(JwtBearerDefaults.AuthenticationScheme);
+                    if (result?.Principal != null)
+                    {
+                        context.User = result.Principal;
+                    }
+                }
+
+                await next.Invoke();
+            });
 
             app.Use(async (context, next) =>
             {
@@ -50,11 +65,12 @@ namespace RemsNG
                     await next();
                 }
             });
+            
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
-            
 
+            app.UseMiddleware(typeof(ErrorHandlingMiddleware));
             app.UseMvc();
         }
     }
