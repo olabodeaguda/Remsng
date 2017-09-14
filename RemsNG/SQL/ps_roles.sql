@@ -139,8 +139,8 @@ IF EXISTS(SELECT *
 		inner join tbl_users on tbl_users.id = tbl_userRole.userid
 		where tbl_users.username = @username
   END
-
 GO
+
 
 
 

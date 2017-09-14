@@ -58,7 +58,7 @@ namespace RemsNG.Services
 
             services.AddDbContext<RemsDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddTransient<IUserService, UserService>();
-
+            services.AddTransient<IDomainService, DomainService>();
         }
 
         public static IConfigurationSection jwtAppSettingOptions

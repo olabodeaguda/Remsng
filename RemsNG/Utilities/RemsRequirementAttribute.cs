@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Utilities
 {
-    public class RemsAuthorizationFilter : TypeFilterAttribute
+    public class RemsRequirementAttribute : TypeFilterAttribute
     {
-        public RemsAuthorizationFilter(string claimValue) : base(typeof(ClaimRequirementFilter))
+        public RemsRequirementAttribute(string claimValue) : base(typeof(RemsRequirementFilter))
         {
             Arguments = new object[] { new Claim(ClaimTypes.Role, claimValue) };
         }

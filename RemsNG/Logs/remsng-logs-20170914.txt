@@ -1,0 +1,241 @@
+2017-09-14T06:50:14.2524686+01:00  [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-09-14T06:50:15.2437488+01:00  [INF] Executed DbCommand ("53"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE') SELECT 1 ELSE SELECT 0" (0723d8ff)
+2017-09-14T06:50:15.3995297+01:00  [INF] Executed DbCommand ("4"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[addressId], [x].[datecreated], [x].[domainCode], [x].[domainName]
+FROM [tbl_domain] AS [x]
+WHERE LOWER([x].[domainCode]) = N'mos-admin'" (0723d8ff)
+2017-09-14T06:50:15.4717791+01:00  [INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[createdBy], [x].[dateCreated], [x].[email], [x].[firstname], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lastname], [x].[lockedOutEndDateUTC], [x].[lockedoutenabled], [x].[passwordHash], [x].[securityStamp], [x].[surname], [x].[userStatus], [x].[username]
+FROM [tbl_users] AS [x]
+WHERE LOWER([x].[username]) = N'mos-admin'" (0723d8ff)
+2017-09-14T06:50:15.5451484+01:00  [INF] Executed DbCommand ("24"ms) [Parameters=["@__mosUser_id_0='?', @__mosDomain_id_1='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[domainId], [x].[userId]
+FROM [tbl_userdomain] AS [x]
+WHERE ([x].[userId] = @__mosUser_id_0) AND ([x].[domainId] = @__mosDomain_id_1)" (0723d8ff)
+2017-09-14T06:50:16.5764484+01:00 0HL7R6HSPRGRU:00000001 [INF] Request starting HTTP/1.1 GET http://localhost:54313/index.html   (ca22a1cb)
+2017-09-14T06:50:16.8504916+01:00 0HL7R6HSPRGRU:00000001 [INF] The file "/index.html" was not modified (f1f8d725)
+2017-09-14T06:50:16.9126302+01:00 0HL7R6HSPRGRU:00000001 [INF] Request finished in 397.7983ms 304 text/html (791a596a)
+2017-09-14T06:50:16.9615807+01:00 0HL7R6HSPRGRU:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/inline.bundle.js   (ca22a1cb)
+2017-09-14T06:50:17.0179146+01:00 0HL7R6HSPRGRV:00000001 [INF] Request starting HTTP/1.1 GET http://localhost:54313/polyfills.bundle.js   (ca22a1cb)
+2017-09-14T06:50:17.1319438+01:00 0HL7R6HSPRGS3:00000001 [INF] Request starting HTTP/1.1 GET http://localhost:54313/main.bundle.js   (ca22a1cb)
+2017-09-14T06:50:17.1367718+01:00 0HL7R6HSPRGRV:00000001 [INF] The file "/polyfills.bundle.js" was not modified (f1f8d725)
+2017-09-14T06:50:17.1665659+01:00 0HL7R6HSPRGS3:00000001 [INF] The file "/main.bundle.js" was not modified (f1f8d725)
+2017-09-14T06:50:17.2559206+01:00 0HL7R6HSPRGS0:00000001 [INF] Request starting HTTP/1.1 GET http://localhost:54313/scripts.bundle.js   (ca22a1cb)
+2017-09-14T06:50:17.2648032+01:00 0HL7R6HSPRGRU:00000002 [INF] The file "/inline.bundle.js" was not modified (f1f8d725)
+2017-09-14T06:50:17.2951871+01:00 0HL7R6HSPRGS1:00000001 [INF] Request starting HTTP/1.1 GET http://localhost:54313/styles.bundle.js   (ca22a1cb)
+2017-09-14T06:50:17.3247148+01:00 0HL7R6HSPRGS3:00000001 [INF] Request finished in 63.7954ms 304 application/javascript (791a596a)
+2017-09-14T06:50:17.3622370+01:00 0HL7R6HSPRGS2:00000001 [INF] Request starting HTTP/1.1 GET http://localhost:54313/vendor.bundle.js   (ca22a1cb)
+2017-09-14T06:50:17.4593709+01:00 0HL7R6HSPRGRV:00000001 [INF] Request finished in 167.7995ms 304 application/javascript (791a596a)
+2017-09-14T06:50:17.4932210+01:00 0HL7R6HSPRGRU:00000002 [INF] Request finished in 360.6499ms 304 application/javascript (791a596a)
+2017-09-14T06:50:17.5502376+01:00 0HL7R6HSPRGS2:00000001 [INF] The file "/vendor.bundle.js" was not modified (f1f8d725)
+2017-09-14T06:50:17.6297407+01:00 0HL7R6HSPRGS2:00000001 [INF] Request finished in 449.6356ms 304 application/javascript (791a596a)
+2017-09-14T06:50:17.6584906+01:00 0HL7R6HSPRGS1:00000001 [INF] The file "/styles.bundle.js" was not modified (f1f8d725)
+2017-09-14T06:50:17.6891474+01:00 0HL7R6HSPRGS1:00000001 [INF] Request finished in 559.9248ms 304 application/javascript (791a596a)
+2017-09-14T06:50:17.6932351+01:00 0HL7R6HSPRGS0:00000001 [INF] The file "/scripts.bundle.js" was not modified (f1f8d725)
+2017-09-14T06:50:17.7301043+01:00 0HL7R6HSPRGS0:00000001 [INF] Request finished in 669.3179ms 304 application/javascript (791a596a)
+2017-09-14T06:50:18.8896988+01:00 0HL7R6HSPRGRV:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/glyphicons-halflings-regular.fa2772327f55d8198301.woff   (ca22a1cb)
+2017-09-14T06:50:18.9226967+01:00 0HL7R6HSPRGRV:00000002 [INF] The file "/glyphicons-halflings-regular.fa2772327f55d8198301.woff" was not modified (f1f8d725)
+2017-09-14T06:50:18.9398259+01:00 0HL7R6HSPRGRV:00000002 [INF] Request finished in 57.9856ms 304 application/font-woff (791a596a)
+2017-09-14T06:50:28.2126633+01:00 0HL7R6HSPRGS3:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/user   (ca22a1cb)
+2017-09-14T06:50:28.4274499+01:00 0HL7R6HSPRGS3:00000002 [INF] Failed to validate the token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkFndWRhIE9sYWJvZGUgSCIsInJvbGUiOiIiLCJEb21haW4iOiJcIjAxZTI5NWI0LWExODQtNGExNy05ZDkwLTE5NTMwNmUzYWI2MlwiIiwiaWRlbnRpdHkiOiI2MTAwNjQwMDM4MDAzNDAwMzkwMDYxMDAzMDAwMzYwMDJEMDAzNTAwMzMwMDMwMDAzOTAwMkQwMDM0MDAzNTAwNjIwMDMyMDAyRDAwNjEwMDYxMDAzNjAwMzIwMDJEMDAzNjAwMzQwMDMxMDA2MjAwMzYwMDM3MDA2MzAwMzcwMDYyMDAzNDAwNjYwMDM4MDAiLCJuYmYiOjE1MDUzMTY5NTAsImV4cCI6MTUwNTMxNzU1MCwiaWF0IjoxNTA1MzE2OTUwLCJpc3MiOiJyZW1zbmciLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAifQ.VSPLUByeBtQUuMYZbfYb4eJfsgwZSm0yLR3zVjVq_WU". (f3081a27)
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '09/13/2017 15:45:50'
+Current time: '09/14/2017 05:50:28'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, JwtSecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateTokenPayload(JwtSecurityToken jwt, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateToken(String token, TokenValidationParameters validationParameters, SecurityToken& validatedToken)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.<HandleAuthenticateAsync>d__6.MoveNext()
+2017-09-14T06:50:28.4584793+01:00 0HL7R6HSPRGS3:00000002 [INF] "Bearer" was not authenticated. Failure message: "IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '09/13/2017 15:45:50'
+Current time: '09/14/2017 05:50:28'." (48071232)
+2017-09-14T06:52:47.3919848+01:00 0HL7R6HSPRGS3:00000002 [INF] Authorization failed for the request at filter '"RemsNG.Utilities.RemsRequirementFilter"'. (8b6446cb)
+2017-09-14T06:52:47.4276637+01:00 0HL7R6HSPRGS3:00000002 [INF] Executing ForbidResult with authentication schemes ([]). (3f5cd4fd)
+2017-09-14T06:52:47.4612803+01:00 0HL7R6HSPRGS3:00000002 [INF] AuthenticationScheme: "Bearer" was forbidden. (212684b8)
+2017-09-14T06:52:47.4983067+01:00 0HL7R6HSPRGS3:00000002 [INF] Executed action "RemsNG.Controllers.UserController.get (RemsNG)" in 138682.7496ms (afa2e885)
+2017-09-14T06:52:47.5103616+01:00 0HL7R6HSPRGS3:00000002 [INF] Request finished in 139316.4183ms 0  (791a596a)
+2017-09-14T06:52:59.9322264+01:00 0HL7R6HSPRGS4:00000001 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/user   (ca22a1cb)
+2017-09-14T06:52:59.9735780+01:00 0HL7R6HSPRGS4:00000001 [INF] Failed to validate the token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkFndWRhIE9sYWJvZGUgSCIsInJvbGUiOiIiLCJEb21haW4iOiJcIjAxZTI5NWI0LWExODQtNGExNy05ZDkwLTE5NTMwNmUzYWI2MlwiIiwiaWRlbnRpdHkiOiI2MTAwNjQwMDM4MDAzNDAwMzkwMDYxMDAzMDAwMzYwMDJEMDAzNTAwMzMwMDMwMDAzOTAwMkQwMDM0MDAzNTAwNjIwMDMyMDAyRDAwNjEwMDYxMDAzNjAwMzIwMDJEMDAzNjAwMzQwMDMxMDA2MjAwMzYwMDM3MDA2MzAwMzcwMDYyMDAzNDAwNjYwMDM4MDAiLCJuYmYiOjE1MDUzMTY5NTAsImV4cCI6MTUwNTMxNzU1MCwiaWF0IjoxNTA1MzE2OTUwLCJpc3MiOiJyZW1zbmciLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAifQ.VSPLUByeBtQUuMYZbfYb4eJfsgwZSm0yLR3zVjVq_WU". (f3081a27)
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '09/13/2017 15:45:50'
+Current time: '09/14/2017 05:52:59'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, JwtSecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateTokenPayload(JwtSecurityToken jwt, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateToken(String token, TokenValidationParameters validationParameters, SecurityToken& validatedToken)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.<HandleAuthenticateAsync>d__6.MoveNext()
+2017-09-14T06:53:00.0063358+01:00 0HL7R6HSPRGS4:00000001 [INF] "Bearer" was not authenticated. Failure message: "IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '09/13/2017 15:45:50'
+Current time: '09/14/2017 05:52:59'." (48071232)
+2017-09-14T06:53:02.7456330+01:00 0HL7R6HSPRGS4:00000001 [INF] Authorization failed for the request at filter '"RemsNG.Utilities.RemsRequirementFilter"'. (8b6446cb)
+2017-09-14T06:53:02.7750320+01:00 0HL7R6HSPRGS4:00000001 [INF] Executing ForbidResult with authentication schemes ([]). (3f5cd4fd)
+2017-09-14T06:53:02.8091432+01:00 0HL7R6HSPRGS4:00000001 [INF] AuthenticationScheme: "Bearer" was forbidden. (212684b8)
+2017-09-14T06:53:02.8387338+01:00 0HL7R6HSPRGS4:00000001 [INF] Executed action "RemsNG.Controllers.UserController.get (RemsNG)" in 2801.9438ms (afa2e885)
+2017-09-14T06:53:02.8546283+01:00 0HL7R6HSPRGS4:00000001 [INF] Request finished in 2941.0409ms 403  (791a596a)
+2017-09-14T06:53:39.3144685+01:00 0HL7R6HSPRGS4:00000002 [INF] Request starting HTTP/1.1 POST http://localhost:54313/api/user application/json 0 (ca22a1cb)
+2017-09-14T06:53:39.3978518+01:00 0HL7R6HSPRGS4:00000002 [INF] Executing action method "RemsNG.Controllers.UserController.Post (RemsNG)" with arguments (["eyJ1c2VybmFtZSI6Im1vcy1hZG1pbiIsInB3ZCI6IkBtaXN0bGV0bGUxMDIwMTYifQ=="]) - ModelState is Valid (ba7f4ac2)
+2017-09-14T06:53:39.4599651+01:00 0HL7R6HSPRGS4:00000002 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-09-14T06:53:39.6065466+01:00 0HL7R6HSPRGS4:00000002 [INF] Executed DbCommand ("22"ms) [Parameters=["@__Trim_0='?' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[createdBy], [x].[dateCreated], [x].[email], [x].[firstname], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lastname], [x].[lockedOutEndDateUTC], [x].[lockedoutenabled], [x].[passwordHash], [x].[securityStamp], [x].[surname], [x].[userStatus], [x].[username]
+FROM [tbl_users] AS [x]
+WHERE [x].[username] = @__Trim_0" (0723d8ff)
+2017-09-14T06:53:39.6631354+01:00 0HL7R6HSPRGS4:00000002 [INF] Executed DbCommand ("7"ms) [Parameters=["@p0='?' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""sp_getUserDomainByUsername @p0" (0723d8ff)
+2017-09-14T06:53:39.6863701+01:00 0HL7R6HSPRGS4:00000002 [WRN] Query: '"(from Role <generated>_2 in DbSet<Role> select [<generated>_2]).FirstOrDefault()"' uses First/FirstOrDefault operation without OrderBy and filter which may lead to unpredictable results. (e99f2322)
+2017-09-14T06:53:39.7200942+01:00 0HL7R6HSPRGS4:00000002 [WRN] The LINQ expression '"FirstOrDefault()"' could not be translated and will be evaluated locally. (011792c6)
+2017-09-14T06:53:39.7598884+01:00 0HL7R6HSPRGS4:00000002 [INF] Executed DbCommand ("4"ms) [Parameters=["@p0='?' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""sp_getUserRoleByUsername @p0" (0723d8ff)
+2017-09-14T06:53:39.8098737+01:00 0HL7R6HSPRGS4:00000002 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-09-14T06:53:39.8668792+01:00 0HL7R6HSPRGS4:00000002 [INF] Executed action "RemsNG.Controllers.UserController.Post (RemsNG)" in 497.7688ms (afa2e885)
+2017-09-14T06:53:39.8810604+01:00 0HL7R6HSPRGS4:00000002 [INF] Request finished in 587.9311ms 200 application/json; charset=utf-8 (791a596a)
+2017-09-14T06:53:57.9235038+01:00 0HL7R6HSPRGS4:00000003 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/user   (ca22a1cb)
+2017-09-14T06:53:57.9569608+01:00 0HL7R6HSPRGS4:00000003 [INF] Successfully validated the token. (60169667)
+2017-09-14T06:53:57.9696633+01:00 0HL7R6HSPRGS4:00000003 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-09-14T06:54:09.0488461+01:00 0HL7R6HSPRGS4:00000003 [INF] Authorization failed for the request at filter '"RemsNG.Utilities.RemsRequirementFilter"'. (8b6446cb)
+2017-09-14T06:54:09.0804984+01:00 0HL7R6HSPRGS4:00000003 [INF] Executing ForbidResult with authentication schemes ([]). (3f5cd4fd)
+2017-09-14T06:54:09.1442456+01:00 0HL7R6HSPRGS4:00000003 [INF] AuthenticationScheme: "Bearer" was forbidden. (212684b8)
+2017-09-14T06:54:09.1608900+01:00 0HL7R6HSPRGS4:00000003 [INF] Executed action "RemsNG.Controllers.UserController.get (RemsNG)" in 11173.7072ms (afa2e885)
+2017-09-14T06:54:09.1923499+01:00 0HL7R6HSPRGS4:00000003 [INF] Request finished in 11254.1956ms 403  (791a596a)
+2017-09-14T06:55:39.2028744+01:00  [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-09-14T06:55:39.6649898+01:00  [INF] Executed DbCommand ("35"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE') SELECT 1 ELSE SELECT 0" (0723d8ff)
+2017-09-14T06:55:39.8008070+01:00  [INF] Executed DbCommand ("2"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[addressId], [x].[datecreated], [x].[domainCode], [x].[domainName]
+FROM [tbl_domain] AS [x]
+WHERE LOWER([x].[domainCode]) = N'mos-admin'" (0723d8ff)
+2017-09-14T06:55:39.8778903+01:00  [INF] Executed DbCommand ("2"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[createdBy], [x].[dateCreated], [x].[email], [x].[firstname], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lastname], [x].[lockedOutEndDateUTC], [x].[lockedoutenabled], [x].[passwordHash], [x].[securityStamp], [x].[surname], [x].[userStatus], [x].[username]
+FROM [tbl_users] AS [x]
+WHERE LOWER([x].[username]) = N'mos-admin'" (0723d8ff)
+2017-09-14T06:55:39.9562426+01:00  [INF] Executed DbCommand ("24"ms) [Parameters=["@__mosUser_id_0='?', @__mosDomain_id_1='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[domainId], [x].[userId]
+FROM [tbl_userdomain] AS [x]
+WHERE ([x].[userId] = @__mosUser_id_0) AND ([x].[domainId] = @__mosDomain_id_1)" (0723d8ff)
+2017-09-14T06:55:51.4818212+01:00 0HL7R6KTCOIET:00000001 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/user   (ca22a1cb)
+2017-09-14T06:55:51.7138353+01:00 0HL7R6KTCOIET:00000001 [INF] Successfully validated the token. (60169667)
+2017-09-14T06:55:51.7439509+01:00 0HL7R6KTCOIET:00000001 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-09-14T07:00:50.2968763+01:00  [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-09-14T07:00:50.7564107+01:00  [INF] Executed DbCommand ("35"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE') SELECT 1 ELSE SELECT 0" (0723d8ff)
+2017-09-14T07:00:50.8850659+01:00  [INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[addressId], [x].[datecreated], [x].[domainCode], [x].[domainName]
+FROM [tbl_domain] AS [x]
+WHERE LOWER([x].[domainCode]) = N'mos-admin'" (0723d8ff)
+2017-09-14T07:00:50.9504341+01:00  [INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[createdBy], [x].[dateCreated], [x].[email], [x].[firstname], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lastname], [x].[lockedOutEndDateUTC], [x].[lockedoutenabled], [x].[passwordHash], [x].[securityStamp], [x].[surname], [x].[userStatus], [x].[username]
+FROM [tbl_users] AS [x]
+WHERE LOWER([x].[username]) = N'mos-admin'" (0723d8ff)
+2017-09-14T07:00:51.0211016+01:00  [INF] Executed DbCommand ("25"ms) [Parameters=["@__mosUser_id_0='?', @__mosDomain_id_1='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[domainId], [x].[userId]
+FROM [tbl_userdomain] AS [x]
+WHERE ([x].[userId] = @__mosUser_id_0) AND ([x].[domainId] = @__mosDomain_id_1)" (0723d8ff)
+2017-09-14T07:00:58.5015640+01:00 0HL7R6NQ4LI8H:00000001 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/user   (ca22a1cb)
+2017-09-14T07:00:58.7011782+01:00 0HL7R6NQ4LI8H:00000001 [INF] Successfully validated the token. (60169667)
+2017-09-14T07:00:58.7161294+01:00 0HL7R6NQ4LI8H:00000001 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-09-14T07:04:32.8321773+01:00  [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-09-14T07:04:33.3075920+01:00  [INF] Executed DbCommand ("30"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE') SELECT 1 ELSE SELECT 0" (0723d8ff)
+2017-09-14T07:04:33.4415982+01:00  [INF] Executed DbCommand ("3"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[addressId], [x].[datecreated], [x].[domainCode], [x].[domainName]
+FROM [tbl_domain] AS [x]
+WHERE LOWER([x].[domainCode]) = N'mos-admin'" (0723d8ff)
+2017-09-14T07:04:33.5269045+01:00  [INF] Executed DbCommand ("2"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[createdBy], [x].[dateCreated], [x].[email], [x].[firstname], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lastname], [x].[lockedOutEndDateUTC], [x].[lockedoutenabled], [x].[passwordHash], [x].[securityStamp], [x].[surname], [x].[userStatus], [x].[username]
+FROM [tbl_users] AS [x]
+WHERE LOWER([x].[username]) = N'mos-admin'" (0723d8ff)
+2017-09-14T07:04:33.6253891+01:00  [INF] Executed DbCommand ("39"ms) [Parameters=["@__mosUser_id_0='?', @__mosDomain_id_1='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[domainId], [x].[userId]
+FROM [tbl_userdomain] AS [x]
+WHERE ([x].[userId] = @__mosUser_id_0) AND ([x].[domainId] = @__mosDomain_id_1)" (0723d8ff)
+2017-09-14T07:05:03.0926284+01:00 0HL7R6PSE76QD:00000001 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/user   (ca22a1cb)
+2017-09-14T07:05:03.3709078+01:00 0HL7R6PSE76QD:00000001 [INF] Failed to validate the token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkFndWRhIE9sYWJvZGUgSCIsInJvbGUiOiJhdXRob3IiLCJEb21haW4iOiJcIjAxZTI5NWI0LWExODQtNGExNy05ZDkwLTE5NTMwNmUzYWI2MlwiIiwiaWRlbnRpdHkiOiI2MTAwNjQwMDM4MDAzNDAwMzkwMDYxMDAzMDAwMzYwMDJEMDAzNTAwMzMwMDMwMDAzOTAwMkQwMDM0MDAzNTAwNjIwMDMyMDAyRDAwNjEwMDYxMDAzNjAwMzIwMDJEMDAzNjAwMzQwMDMxMDA2MjAwMzYwMDM3MDA2MzAwMzcwMDYyMDAzNDAwNjYwMDM4MDAiLCJuYmYiOjE1MDUzNjg0MTksImV4cCI6MTUwNTM2OTAxOSwiaWF0IjoxNTA1MzY4NDE5LCJpc3MiOiJyZW1zbmciLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAifQ.oD2kTcPIIX6F5Fz4vrfI0Au8EGib0q6jqXNATdiqJI4". (f3081a27)
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '09/14/2017 06:03:39'
+Current time: '09/14/2017 06:05:03'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, JwtSecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateTokenPayload(JwtSecurityToken jwt, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateToken(String token, TokenValidationParameters validationParameters, SecurityToken& validatedToken)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.<HandleAuthenticateAsync>d__6.MoveNext()
+2017-09-14T07:05:03.4014806+01:00 0HL7R6PSE76QD:00000001 [INF] "Bearer" was not authenticated. Failure message: "IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '09/14/2017 06:03:39'
+Current time: '09/14/2017 06:05:03'." (48071232)
+2017-09-14T07:05:49.1420870+01:00 0HL7R6PSE76QD:00000001 [INF] Authorization failed for the request at filter '"RemsNG.Utilities.RemsRequirementFilter"'. (8b6446cb)
+2017-09-14T07:05:49.1821143+01:00 0HL7R6PSE76QD:00000001 [INF] Executing ForbidResult with authentication schemes ([]). (3f5cd4fd)
+2017-09-14T07:05:49.2248585+01:00 0HL7R6PSE76QD:00000001 [INF] AuthenticationScheme: "Bearer" was forbidden. (212684b8)
+2017-09-14T07:05:49.2388863+01:00 0HL7R6PSE76QD:00000001 [INF] Executed action "RemsNG.Controllers.UserController.get (RemsNG)" in 45600.2337ms (afa2e885)
+2017-09-14T07:05:49.2723963+01:00 0HL7R6PSE76QD:00000001 [INF] Request finished in 46230.2023ms 403  (791a596a)
+2017-09-14T07:06:13.1106808+01:00 0HL7R6PSE76QD:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/user   (ca22a1cb)
+2017-09-14T07:06:13.1543185+01:00 0HL7R6PSE76QD:00000002 [INF] Failed to validate the token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkFndWRhIE9sYWJvZGUgSCIsInJvbGUiOiJhdXRob3IiLCJEb21haW4iOiJcIjAxZTI5NWI0LWExODQtNGExNy05ZDkwLTE5NTMwNmUzYWI2MlwiIiwiaWRlbnRpdHkiOiI2MTAwNjQwMDM4MDAzNDAwMzkwMDYxMDAzMDAwMzYwMDJEMDAzNTAwMzMwMDMwMDAzOTAwMkQwMDM0MDAzNTAwNjIwMDMyMDAyRDAwNjEwMDYxMDAzNjAwMzIwMDJEMDAzNjAwMzQwMDMxMDA2MjAwMzYwMDM3MDA2MzAwMzcwMDYyMDAzNDAwNjYwMDM4MDAiLCJuYmYiOjE1MDUzNjg0MTksImV4cCI6MTUwNTM2OTAxOSwiaWF0IjoxNTA1MzY4NDE5LCJpc3MiOiJyZW1zbmciLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAifQ.oD2kTcPIIX6F5Fz4vrfI0Au8EGib0q6jqXNATdiqJI4". (f3081a27)
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '09/14/2017 06:03:39'
+Current time: '09/14/2017 06:06:13'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, JwtSecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateTokenPayload(JwtSecurityToken jwt, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateToken(String token, TokenValidationParameters validationParameters, SecurityToken& validatedToken)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.<HandleAuthenticateAsync>d__6.MoveNext()
+2017-09-14T07:06:13.1858401+01:00 0HL7R6PSE76QD:00000002 [INF] "Bearer" was not authenticated. Failure message: "IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '09/14/2017 06:03:39'
+Current time: '09/14/2017 06:06:13'." (48071232)
+2017-09-14T07:06:21.4263607+01:00 0HL7R6PSE76QD:00000002 [INF] Authorization failed for the request at filter '"RemsNG.Utilities.RemsRequirementFilter"'. (8b6446cb)
+2017-09-14T07:06:21.4577275+01:00 0HL7R6PSE76QD:00000002 [INF] Executing ForbidResult with authentication schemes ([]). (3f5cd4fd)
+2017-09-14T07:06:21.4705927+01:00 0HL7R6PSE76QD:00000002 [INF] AuthenticationScheme: "Bearer" was forbidden. (212684b8)
+2017-09-14T07:06:21.5268899+01:00 0HL7R6PSE76QD:00000002 [INF] Executed action "RemsNG.Controllers.UserController.get (RemsNG)" in 8283.4598ms (afa2e885)
+2017-09-14T07:06:21.5445064+01:00 0HL7R6PSE76QD:00000002 [INF] Request finished in 8454.6715ms 403  (791a596a)
+2017-09-14T07:06:32.2013290+01:00 0HL7R6PSE76QD:00000003 [INF] Request starting HTTP/1.1 POST http://localhost:54313/api/user application/json 0 (ca22a1cb)
+2017-09-14T07:06:32.2805484+01:00 0HL7R6PSE76QD:00000003 [INF] Executing action method "RemsNG.Controllers.UserController.Post (RemsNG)" with arguments (["eyJ1c2VybmFtZSI6Im1vcy1hZG1pbiIsInB3ZCI6IkBtaXN0bGV0bGUxMDIwMTYifQ=="]) - ModelState is Valid (ba7f4ac2)
+2017-09-14T07:06:32.3532865+01:00 0HL7R6PSE76QD:00000003 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-09-14T07:06:32.4276107+01:00 0HL7R6PSE76QD:00000003 [INF] Executed DbCommand ("15"ms) [Parameters=["@__Trim_0='?' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[createdBy], [x].[dateCreated], [x].[email], [x].[firstname], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lastname], [x].[lockedOutEndDateUTC], [x].[lockedoutenabled], [x].[passwordHash], [x].[securityStamp], [x].[surname], [x].[userStatus], [x].[username]
+FROM [tbl_users] AS [x]
+WHERE [x].[username] = @__Trim_0" (0723d8ff)
+2017-09-14T07:06:32.4819843+01:00 0HL7R6PSE76QD:00000003 [INF] Executed DbCommand ("2"ms) [Parameters=["@p0='?' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""sp_getUserDomainByUsername @p0" (0723d8ff)
+2017-09-14T07:06:32.5184521+01:00 0HL7R6PSE76QD:00000003 [WRN] Query: '"(from Role <generated>_2 in DbSet<Role> select [<generated>_2]).FirstOrDefault()"' uses First/FirstOrDefault operation without OrderBy and filter which may lead to unpredictable results. (e99f2322)
+2017-09-14T07:06:32.5520774+01:00 0HL7R6PSE76QD:00000003 [WRN] The LINQ expression '"FirstOrDefault()"' could not be translated and will be evaluated locally. (011792c6)
+2017-09-14T07:06:32.5904542+01:00 0HL7R6PSE76QD:00000003 [INF] Executed DbCommand ("4"ms) [Parameters=["@p0='?' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""sp_getUserRoleByUsername @p0" (0723d8ff)
+2017-09-14T07:06:32.6207281+01:00 0HL7R6PSE76QD:00000003 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-09-14T07:06:32.6732939+01:00 0HL7R6PSE76QD:00000003 [INF] Executed action "RemsNG.Controllers.UserController.Post (RemsNG)" in 417.0517ms (afa2e885)
+2017-09-14T07:06:32.7057981+01:00 0HL7R6PSE76QD:00000003 [INF] Request finished in 503.4423ms 200 application/json; charset=utf-8 (791a596a)
+2017-09-14T07:06:50.6941888+01:00 0HL7R6PSE76QD:00000004 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/user   (ca22a1cb)
+2017-09-14T07:06:50.7264523+01:00 0HL7R6PSE76QD:00000004 [INF] Successfully validated the token. (60169667)
+2017-09-14T07:06:50.7596079+01:00 0HL7R6PSE76QD:00000004 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-09-14T07:07:34.8371417+01:00 0HL7R6PSE76QD:00000004 [INF] Executing action method "RemsNG.Controllers.UserController.get (RemsNG)" with arguments (null) - ModelState is Valid (ba7f4ac2)
+2017-09-14T07:07:34.8498390+01:00 0HL7R6PSE76QD:00000004 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-09-14T07:07:34.8847328+01:00 0HL7R6PSE76QD:00000004 [INF] Executed action "RemsNG.Controllers.UserController.get (RemsNG)" in 44092.5662ms (afa2e885)
+2017-09-14T07:07:34.8970212+01:00 0HL7R6PSE76QD:00000004 [INF] Request finished in 44222.7818ms 200 application/json; charset=utf-8 (791a596a)
+2017-09-14T07:12:38.2313201+01:00  [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-09-14T07:12:38.7461323+01:00  [INF] Executed DbCommand ("37"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE') SELECT 1 ELSE SELECT 0" (0723d8ff)
+2017-09-14T07:12:38.8815680+01:00  [INF] Executed DbCommand ("2"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[addressId], [x].[datecreated], [x].[domainCode], [x].[domainName]
+FROM [tbl_domain] AS [x]
+WHERE LOWER([x].[domainCode]) = N'mos-admin'" (0723d8ff)
+2017-09-14T07:12:38.9434418+01:00  [INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[createdBy], [x].[dateCreated], [x].[email], [x].[firstname], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lastname], [x].[lockedOutEndDateUTC], [x].[lockedoutenabled], [x].[passwordHash], [x].[securityStamp], [x].[surname], [x].[userStatus], [x].[username]
+FROM [tbl_users] AS [x]
+WHERE LOWER([x].[username]) = N'mos-admin'" (0723d8ff)
+2017-09-14T07:12:39.0211716+01:00  [INF] Executed DbCommand ("26"ms) [Parameters=["@__mosUser_id_0='?', @__mosDomain_id_1='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[domainId], [x].[userId]
+FROM [tbl_userdomain] AS [x]
+WHERE ([x].[userId] = @__mosUser_id_0) AND ([x].[domainId] = @__mosDomain_id_1)" (0723d8ff)
+2017-09-14T07:29:38.9171650+01:00 0HL7R6UD4E4OQ:00000001 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/user/validateusername/olabode   (ca22a1cb)
+2017-09-14T07:29:39.1255327+01:00 0HL7R6UD4E4OQ:00000001 [INF] Failed to validate the token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkFndWRhIE9sYWJvZGUgSCIsInJvbGUiOiJBdXRob3IiLCJEb21haW4iOiJcIjAxZTI5NWI0LWExODQtNGExNy05ZDkwLTE5NTMwNmUzYWI2MlwiIiwiaWRlbnRpdHkiOiI2MTAwNjQwMDM4MDAzNDAwMzkwMDYxMDAzMDAwMzYwMDJEMDAzNTAwMzMwMDMwMDAzOTAwMkQwMDM0MDAzNTAwNjIwMDMyMDAyRDAwNjEwMDYxMDAzNjAwMzIwMDJEMDAzNjAwMzQwMDMxMDA2MjAwMzYwMDM3MDA2MzAwMzcwMDYyMDAzNDAwNjYwMDM4MDAiLCJuYmYiOjE1MDUzNjkxOTIsImV4cCI6MTUwNTM2OTc5MiwiaWF0IjoxNTA1MzY5MTkyLCJpc3MiOiJyZW1zbmciLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAifQ.JDTlkZG48st3Dvr0XDRc70w-HMk-JxVsbJ53M1HqdJw". (f3081a27)
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '09/14/2017 06:16:32'
+Current time: '09/14/2017 06:29:39'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, JwtSecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateTokenPayload(JwtSecurityToken jwt, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateToken(String token, TokenValidationParameters validationParameters, SecurityToken& validatedToken)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.<HandleAuthenticateAsync>d__6.MoveNext()
+2017-09-14T07:29:39.1560975+01:00 0HL7R6UD4E4OQ:00000001 [INF] "Bearer" was not authenticated. Failure message: "IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '09/14/2017 06:16:32'
+Current time: '09/14/2017 06:29:39'." (48071232)
+2017-09-14T07:29:39.4257298+01:00 0HL7R6UD4E4OQ:00000001 [INF] Executing action method "RemsNG.Controllers.UserController.ValidateUsername (RemsNG)" with arguments (["olabode"]) - ModelState is Valid (ba7f4ac2)
+2017-09-14T07:29:45.2329722+01:00 0HL7R6UD4E4OQ:00000001 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-09-14T07:29:45.2921016+01:00 0HL7R6UD4E4OQ:00000001 [INF] Executed action "RemsNG.Controllers.UserController.ValidateUsername (RemsNG)" in 5920.7193ms (afa2e885)
+2017-09-14T07:29:45.3303701+01:00 0HL7R6UD4E4OQ:00000001 [INF] Request finished in 6433.4784ms 200 application/json; charset=utf-8 (791a596a)

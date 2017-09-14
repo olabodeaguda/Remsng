@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Utilities
 {
-    public class ClaimRequirementFilter: IAuthorizationFilter
+    public class RemsRequirementFilter: IAuthorizationFilter
     {
         readonly Claim _claim;
 
-        public ClaimRequirementFilter(Claim claim)
+        public RemsRequirementFilter(Claim claim)
         {
             _claim = claim;
         }

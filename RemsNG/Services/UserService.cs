@@ -43,10 +43,10 @@ namespace RemsNG.Services
             }
             
             Role role = await roleDao.GetUserRoleByUsernameByDomainId(user.username,domainId);
-            if (role != null)
-            {
-                //get permissions
-            }
+            //if (role != null)
+            //{
+            //    //get permissions
+            //}
             int logTime = int.TryParse(jwtOptions.logOutTIme, out logTime) ? logTime : 30;
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -57,7 +57,8 @@ namespace RemsNG.Services
                 Subject = new ClaimsIdentity(new Claim[]
                         {
                             new Claim(ClaimTypes.Name, $"{user.surname} {user.firstname} {user.lastname}"),
-                            new Claim(ClaimTypes.Role, role != null? role.roleName:string.Empty),
+                            //new Claim(ClaimTypes.Role, role != null? role.roleName:string.Empty),
+                            new Claim(ClaimTypes.Role, "Author"),
                             new Claim("Domain",JsonConvert.SerializeObject(domainId)),
                             new Claim("identity",EncryptDecryptUtils.ToHexString(user.id.ToString()))
                         }),

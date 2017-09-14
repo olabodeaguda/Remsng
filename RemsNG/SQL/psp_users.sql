@@ -253,6 +253,5 @@ IF EXISTS(SELECT *
 
 	select @msg as msg,@success as success;
   END
-
   GO
 

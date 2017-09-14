@@ -21,9 +21,12 @@ namespace RemsNG.Controllers
     {
         private readonly ILogger logger;
         private readonly IUserService userService;
-        public UserController(IUserService _userService, ILoggerFactory loggerFactory)
+        private readonly IDomainService domainService;
+        public UserController(IUserService _userService,
+            ILoggerFactory loggerFactory, IDomainService _domainService)
         {
             userService = _userService;
+            domainService = _domainService;
             logger = loggerFactory.CreateLogger<UserController>();
         }
 
