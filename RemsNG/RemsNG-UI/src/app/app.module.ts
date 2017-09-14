@@ -9,6 +9,8 @@ import { DashboardComponent } from './Dashboard/components/dashboard.component';
 import { DashBoardModule } from './Dashboard/dashboard.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from './shared/shared.module';
+import { LaddaModule } from 'angular2-ladda';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 const appRoutes: Routes = [
     { path: '', component: LoginComponent }
@@ -23,6 +25,13 @@ const appRoutes: Routes = [
         LoginModule,
         DashBoardModule,
         FormsModule,
+        NgbModule,
+        LaddaModule.forRoot({
+            style: 'zoom-in',
+            spinnerSize: 25,
+            spinnerColor: 'green',
+            spinnerLines: 12
+        }),
         ReactiveFormsModule,
         SharedModule,
         RouterModule.forRoot(appRoutes, {useHash: true})

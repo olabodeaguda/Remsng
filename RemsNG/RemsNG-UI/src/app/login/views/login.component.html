@@ -2,32 +2,51 @@
 
   <div class="login-box">
     <div class="login-logo">
-      <a href="../../index2.html"><b>Rem</b>NG</a>
+      <!--<a href="javascript:;"><b>Rem</b>NG</a>-->
+      <a href="javascript:;"><b>00</b>00</a>
     </div>
     <!-- /.login-logo -->
     <div class="login-box-body">
       <p class="login-box-msg">Sign in</p>
 
-      <form class="form-horizontal" [formGroup]="signInForm" (ngSubmit)="signIn()">
-        <div class="form-group has-feedback">
-          <input type="email" class="form-control" placeholder="Email" formControlName='username'>
-          <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-        </div>
-        <div class="form-group has-feedback">
-          <input type="password" class="form-control" placeholder="Password"  formControlName='pwd'>
-          <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-        </div>
-        <div class="row">
-          <div class="col-xs-8">
-            <div class="checkbox icheck"></div>
+      <form>
+          <p *ngIf="loginModel.isError">
+              <ngb-alert [dismissible]="true">
+                <strong>Error!</strong> {{loginModel.errmsg}}
+              </ngb-alert>
+            </p>
+        <div class="form-group">
+          <div class="form-group has-feedback">
+            <input name="username" type="text" class="form-control" placeholder="username" [(ngModel)]="loginModel.username">
+            <span class="glyphicon glyphicon-user form-control-feedback"></span>
           </div>
-          <div class="col-xs-4">
-            <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
+          <div class="form-group has-feedback" *ngIf="!loginModel.isUsernameValid">
+            <button [ladda]="loginModel.isLoading" type="submit" class="btn btn-primary btn-block btn-flat" (click)="validateUsername()">Next</button>
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="loginModel.isUsernameValid">
+          <div class="form-group has-feedback">
+            <input type="password" class="form-control" placeholder="Password" >
+            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+          </div>
+          <div class="form-group has-feedback">
+              <select class="form-control">
+                  <option>Select Domain</option>
+                </select>  
+          </div>
+          <div class="form-group has-feedback">            
+            <input type="password" class="form-control" placeholder="Password" >
+              <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+            </div>
+          <div class="row">
+            <div class="col-xs-4">
+              <button [ladda]="loginModel.isLoading" type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
+            </div>
           </div>
         </div>
       </form>
       <a href="javascript:;">I forgot my password</a><br>
-      <a href="javascript:;" class="text-center">Register a new membership</a>
     </div>
   </div>
 

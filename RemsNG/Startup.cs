@@ -65,7 +65,6 @@ namespace RemsNG
                     await next();
                 }
             });
-            
 
             app.UseDefaultFiles();
             app.UseStaticFiles();

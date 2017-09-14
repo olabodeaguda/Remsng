@@ -1,30 +1,32 @@
-import {Component} from '@angular/core';
-import {LoginModel} from '../../shared/models/login.model';
+import { Component } from '@angular/core';
+import { LoginModel } from '../models/login.model';
 import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
-import {Router} from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
-    selector: 'login',
+    selector: 'app-login',
     templateUrl: '../views/login.component.html'
 })
 
 export class LoginComponent {
-    loginModel: LoginModel;
-    signInForm: FormGroup;
+    loginModel: LoginModel = new LoginModel();
+
     constructor(private router: Router) {
-        this.loginModel = {
-            username: '',
-             pwd: ''
-        };
-        this.signInForm = new FormGroup({
-            username: new FormControl('', Validators.required),
-            pwd: new FormControl('', Validators.required)
-        });
     }
 
     signIn() {
-       this.loginModel = this.signInForm.value as LoginModel;
-        // naviagete to dashboard
         this.router.navigateByUrl('/dashboard');
+    }
+
+    validateUsername() {
+        setTimeout(() => {
+            this.loginModel.isError = true;
+        }, 1000);
+
+        if (this.loginModel.username.trim().length < 1) {
+            // Toast service
+            return;
+        }
+        this.loginModel.isLoading = true;
     }
 }
