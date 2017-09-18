@@ -5,20 +5,26 @@ import { RouterModule, Routes } from '@angular/router';
 import {HeaderComponent} from './components/header.component';
 import {SideBarComponent} from './components/sideBar.component';
 import {FooterComponent} from './components/footer.component';
+import { DataService } from './services/data.service';
+import { HttpModule } from '@angular/http';
+import {ToasterModule, ToasterService} from 'angular2-toaster';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 const appRoutes: Routes = [
-   // { path: 'dashboard', component: HeaderComponent }
  ];
 
 @NgModule({
     imports: [
       BrowserModule,
+      ToasterModule,
+      HttpModule,
+      BrowserAnimationsModule,
       RouterModule.forChild(appRoutes)
     ],
     declarations: [
         HeaderComponent, SideBarComponent, FooterComponent
     ],
-    providers: [ ],
+    providers: [ToasterService],
     exports: [
         HeaderComponent, SideBarComponent, FooterComponent
     ]

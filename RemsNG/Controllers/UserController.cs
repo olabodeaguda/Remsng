@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace RemsNG.Controllers
 {
-    [Route("api/user")]
+    [Route("api/v1/user")]
     public class UserController : Controller
     {
         private readonly ILogger logger;
@@ -60,19 +60,12 @@ namespace RemsNG.Controllers
             }
 
             //generate jwt
-            string token = await userService.GetToken(user, ln.domainId, ln.domainId == Guid.Empty ? false : true);
+            object token = await userService.GetToken(user, ln.domainId, ln.domainId == Guid.Empty ? false : true);
 
             Response response = new Response()
             {
                 code = MsgCode_Enum.SUCCESS,
-                data = new
-                {
-                    tk = token,
-                    firstname = user.firstname,
-                    surname = user.lastname,
-                    lastname = user.lastname,
-                    userStatus = user.userStatus
-                }
+                data = token
             };
 
             return Ok(response);

@@ -1,7 +1,6 @@
 ﻿import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AlertModule } from 'ngx-bootstrap';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/components/login.component';
 import { LoginModule } from './login/login.module';
@@ -10,7 +9,13 @@ import { DashBoardModule } from './Dashboard/dashboard.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from './shared/shared.module';
 import { LaddaModule } from 'angular2-ladda';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {ToasterModule, ToasterService} from 'angular2-toaster';
+import { AppSettings } from './shared/models/app.settings';
+import { DataService } from './shared/services/data.service';
+import { StorageService } from './shared/services/storage.service';
+import { DomainModule } from './domain/domain.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 
 const appRoutes: Routes = [
     { path: '', component: LoginComponent }
@@ -25,7 +30,9 @@ const appRoutes: Routes = [
         LoginModule,
         DashBoardModule,
         FormsModule,
-        NgbModule,
+        DomainModule,
+        ToasterModule,
+        BrowserAnimationsModule,
         LaddaModule.forRoot({
             style: 'zoom-in',
             spinnerSize: 25,
@@ -36,7 +43,7 @@ const appRoutes: Routes = [
         SharedModule,
         RouterModule.forRoot(appRoutes, {useHash: true})
     ],
-    providers: [],
+    providers: [ToasterService, AppSettings, DataService, StorageService],
     bootstrap: [AppComponent],
     exports: []
 })

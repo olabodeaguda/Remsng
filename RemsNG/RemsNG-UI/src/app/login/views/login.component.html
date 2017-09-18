@@ -3,21 +3,23 @@
   <div class="login-box">
     <div class="login-logo">
       <!--<a href="javascript:;"><b>Rem</b>NG</a>-->
-      <a href="javascript:;"><b>00</b>00</a>
+      <a href="javascript:;">
+        <b>00</b>00</a>
     </div>
     <!-- /.login-logo -->
     <div class="login-box-body">
       <p class="login-box-msg">Sign in</p>
 
       <form>
-          <p *ngIf="loginModel.isError">
-              <ngb-alert [dismissible]="true">
+        <!--<ngb-alert [dismissible]="true">
                 <strong>Error!</strong> {{loginModel.errmsg}}
-              </ngb-alert>
-            </p>
+              </ngb-alert>-->
+        <div *ngIf="loginModel.isError" [ngClass]="loginModel.errorClass">
+          {{loginModel.errmsg}}
+        </div>
         <div class="form-group">
           <div class="form-group has-feedback">
-            <input name="username" type="text" class="form-control" placeholder="username" [(ngModel)]="loginModel.username">
+            <input autofocus name="username" type="text" class="form-control" placeholder="username" [(ngModel)]="loginModel.username">
             <span class="glyphicon glyphicon-user form-control-feedback"></span>
           </div>
           <div class="form-group has-feedback" *ngIf="!loginModel.isUsernameValid">
@@ -27,26 +29,24 @@
 
         <div class="form-group" *ngIf="loginModel.isUsernameValid">
           <div class="form-group has-feedback">
-            <input type="password" class="form-control" placeholder="Password" >
+            <input type="password" name='password' class="form-control" placeholder="Password" [(ngModel)]="loginModel.pwd">
             <span class="glyphicon glyphicon-lock form-control-feedback"></span>
           </div>
-          <div class="form-group has-feedback">
-              <select class="form-control">
-                  <option>Select Domain</option>
-                </select>  
+          <div class="form-group has-feedback" *ngIf="loginModel.domainIds?.length > 0">
+            <select name="domainSelect" class="form-control" [(ngModel)]="loginModel.domainId">
+              <option selected="selected">Select Domain</option>
+              <option *ngFor="let data of loginModel.domainIds;" [ngValue]="data.id">{{data.domainName}}</option>
+            </select>
           </div>
-          <div class="form-group has-feedback">            
-            <input type="password" class="form-control" placeholder="Password" >
-              <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-            </div>
           <div class="row">
             <div class="col-xs-4">
-              <button [ladda]="loginModel.isLoading" type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
+              <button [ladda]="loginModel.isLoading" type="submit" (click)="signIn()" class="btn btn-primary btn-block btn-flat">Sign In</button>
             </div>
           </div>
         </div>
       </form>
-      <a href="javascript:;">I forgot my password</a><br>
+      <a href="javascript:;">I forgot my password</a>
+      <br>
     </div>
   </div>
 

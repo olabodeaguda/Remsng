@@ -9,10 +9,10 @@ CREATE TABLE tbl_domain
 	domainName varchar(250) NOT NULL,
 	domainCode varchar(20) NOT NULL UNIQUE,
 	datecreated datetime NOT NULL default getdate(),
-	addressId uniqueidentifier
+	addressId uniqueidentifier,
+	domainStatus varchar(100) NOT NULL
 )
 GO
-
 
 IF NOT EXISTS(SELECT *
               FROM sys.objects
@@ -73,4 +73,5 @@ IF EXISTS(SELECT *
 		where tbl_users.username = @username
   END
   GO
+  
   

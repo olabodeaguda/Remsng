@@ -5,6 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import {LoginComponent} from './components/login.component';
 import { LaddaModule } from 'angular2-ladda';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { LoginService } from '../shared/services/login.service';
 
 const appRoutes: Routes = [
     { path: 'login', component: LoginComponent }
@@ -22,7 +23,7 @@ const appRoutes: Routes = [
     declarations: [
         LoginComponent
     ],
-    providers: [ ],
+    providers: [ LoginService],
     exports: [
         LoginComponent
     ]

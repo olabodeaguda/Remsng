@@ -10,5 +10,8 @@ namespace RemsNG.ORM
         public Guid id { get; set; }
         public string addressnumber { get; set; }
         public Guid streetId { get; set; }
+
+
+        public Domain Domains { get; set; }
     }
 }

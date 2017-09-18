@@ -4,6 +4,9 @@
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <!--<PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>-->
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE;RELEASE;NETCOREAPP2_0</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="RemsNG-UI\**" />
     <Content Remove="RemsNG-UI\**" />

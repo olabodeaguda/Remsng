@@ -8,30 +8,43 @@ using RemsNG.Utilities;
 using RemsNG.ORM;
 using RemsNG.Services.Interfaces;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace RemsNG.Controllers
 {
-    [Route("api/domain")]
+    [Route("api/v1/domain")]
     public class DomainController : Controller
     {
         private readonly ILogger logger;
         private readonly IDomainService domainService;
-        public DomainController(IDomainService _domainService, ILoggerFactory loggerFactory)
+        private readonly IUserService userService;
+        public DomainController(IUserService _userService, IDomainService _domainService, ILoggerFactory loggerFactory)
         {
+            this.userService = _userService;
             domainService = _domainService;
             logger = loggerFactory.CreateLogger<UserController>();
         }
+
         [Route("domainByusername/{username}")]
         public async Task<IActionResult> ValidateUsername(string username)
         {
             if (string.IsNullOrEmpty(username))
             {
+                return BadRequest(new Response
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "username is required!!!."
+                });
+            }
+            User us = await this.userService.GetUserByUsername(username);
+            if (us == null)
+            {
                 return NotFound(new Response
                 {
                     code = MsgCode_Enum.FAIL,
-                    data = $"{username} does't exist"
+                    description = $"{username} does't exist"
                 });
             }
 
@@ -39,9 +52,184 @@ namespace RemsNG.Controllers
 
             return Ok(new Response
             {
-                code = MsgCode_Enum.FAIL,
+                code = MsgCode_Enum.SUCCESS,
                 data = domains
             });
         }
+
+        [Route("all")]
+        [RemsRequirementAttribute("GET_DOMAIN")]
+        public async Task<object> get([FromHeader] string pageSize, [FromHeader] string pageNum)
+        {
+            var hasClaim = User.Claims.Any(x => x.Type == ClaimTypes.NameIdentifier && x.Value.ToLower() == "mos-admin");
+            if (hasClaim)
+            {
+                pageSize = string.IsNullOrEmpty(pageSize) ? "1" : pageSize;
+                pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
+                return await domainService.Paginated(new PageModel() { PageNum = int.Parse(pageNum), PageSize = int.Parse(pageSize) });
+            }
+            else
+            {
+                var domainId = User.Claims.FirstOrDefault(x => x.Type == "Domain");
+                if (domainId != null)
+                {
+                    Guid dId = Guid.Empty;
+                    bool v = Guid.TryParse(domainId.Value, out dId);
+                    if (v)
+                    {
+                        Domain d = await domainService.ByDomainId(dId);
+                        return new[] { d };
+                    }
+                }
+            }
+            return new object[] { };
+        }
+
+        [Route("create")]
+        [RemsRequirementAttribute("CREATE_DOMAIN")]
+        public async Task<IActionResult> Post([FromBody] Domain domain)
+        {
+            if (string.IsNullOrEmpty(domain.domainCode))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "LGA Code is required!!!"
+                });
+            }
+            else if (string.IsNullOrEmpty(domain.domainName))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "LGA name is required!!!"
+                });
+            }
+
+            Domain ifExist = await domainService.ByDomainCode(domain.domainCode);
+            if (ifExist != null)
+            {
+                return new HttpMessageResult(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = $"{domain.domainCode} already exist"
+                }, 409);
+            }
+
+            domain.id = Guid.NewGuid();
+            domain.domainStatus = UserStatus.ACTIVE.ToString();
+            domain.datecreated = DateTime.Now;
+            bool result = await domainService.Add(domain);
+            if (result)
+            {
+                return Created("api/v1/domain", new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    data = domain,
+                    description = $"{domain.domainName} have been added successfully"
+                });
+            }
+            else
+            {
+                return new HttpMessageResult(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    data = domain,
+                    description = $"{domain.domainName} creation was not successfull. Please try again or contact administrator"
+                }, 409);
+            }
+        }
+
+        //edit
+        [Route("update")]
+        [HttpPost]
+        public async Task<IActionResult> Update([FromBody] Domain domain)
+        {
+            if (string.IsNullOrEmpty(domain.domainCode))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "LGA Code is required!!!"
+                });
+            }
+            else if (string.IsNullOrEmpty(domain.domainName))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "LGA name is required!!!"
+                });
+            }
+            else if (domain.id == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Invalid domain selected"
+                });
+            }
+
+            bool result = await domainService.UpdateDomain(domain);
+            if (result)
+            {
+                return Ok(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = "Update was successful"
+                });
+            }
+            else
+            {
+                return BadRequest(new Response()
+                {
+                     code = MsgCode_Enum.FAIL,
+                     description = "Update failed"
+                });
+            }
+        }
+
+        //approval
+
+        [Route("changestatus")]
+        [HttpPost]
+        public async Task<IActionResult> ChangeStatus([FromBody] Domain domain)
+        {
+            if (string.IsNullOrEmpty(domain.domainStatus))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Domain Status is required!!!"
+                });
+            }
+            else if (domain.id == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Invalid domain selected"
+                });
+            }
+
+            bool result = await domainService.ChangeDomain(domain.id, domain.domainStatus);
+            if (result)
+            {
+                return Ok(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = "Update was successful"
+                });
+            }
+            else
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Update failed"
+                });
+            }
+        }
+
     }
 }

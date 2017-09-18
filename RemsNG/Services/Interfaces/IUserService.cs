@@ -9,6 +9,6 @@ namespace RemsNG.Services.Interfaces
     public interface IUserService
     {
         Task<User> GetUserByUsername(string username);
-        Task<string> GetToken(User user, Guid domainId, bool byDomain);
+        Task<object> GetToken(User user, Guid domainId, bool byDomain);
     }
 }

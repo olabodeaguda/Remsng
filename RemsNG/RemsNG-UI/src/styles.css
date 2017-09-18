@@ -3,4 +3,300 @@
     background: #3c8dbc;
 }
 
+/* Absolute Center Spinner */
+.loading {
+    position: fixed;
+    z-index: 999;
+    height: 2em;
+    width: 2em;
+    overflow: show;
+    margin: auto;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+  }
+  
+  /* Transparent Overlay */
+  .loading:before {
+    content: '';
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.3);
+  }
+  
+  /* :not(:required) hides these rules from IE9 and below */
+  .loading:not(:required) {
+    /* hide "loading..." text */
+    font: 0/0 a;
+    color: transparent;
+    text-shadow: none;
+    background-color: transparent;
+    border: 0;
+  }
+  
+  .loading:not(:required):after {
+    content: '';
+    display: block;
+    font-size: 10px;
+    width: 1em;
+    height: 1em;
+    margin-top: -0.5em;
+    -webkit-animation: spinner 1500ms infinite linear;
+    -moz-animation: spinner 1500ms infinite linear;
+    -ms-animation: spinner 1500ms infinite linear;
+    -o-animation: spinner 1500ms infinite linear;
+    animation: spinner 1500ms infinite linear;
+    border-radius: 0.5em;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.75) 1.5em 0 0 0, rgba(0, 0, 0, 0.75) 1.1em 1.1em 0 0, rgba(0, 0, 0, 0.75) 0 1.5em 0 0, rgba(0, 0, 0, 0.75) -1.1em 1.1em 0 0, rgba(0, 0, 0, 0.5) -1.5em 0 0 0, rgba(0, 0, 0, 0.5) -1.1em -1.1em 0 0, rgba(0, 0, 0, 0.75) 0 -1.5em 0 0, rgba(0, 0, 0, 0.75) 1.1em -1.1em 0 0;
+    box-shadow: rgba(0, 0, 0, 0.75) 1.5em 0 0 0, rgba(0, 0, 0, 0.75) 1.1em 1.1em 0 0, rgba(0, 0, 0, 0.75) 0 1.5em 0 0, rgba(0, 0, 0, 0.75) -1.1em 1.1em 0 0, rgba(0, 0, 0, 0.75) -1.5em 0 0 0, rgba(0, 0, 0, 0.75) -1.1em -1.1em 0 0, rgba(0, 0, 0, 0.75) 0 -1.5em 0 0, rgba(0, 0, 0, 0.75) 1.1em -1.1em 0 0;
+  }
+  
+  /* Animation */
+  
+  @-webkit-keyframes spinner {
+    0% {
+      -webkit-transform: rotate(0deg);
+      -moz-transform: rotate(0deg);
+      -ms-transform: rotate(0deg);
+      -o-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    100% {
+      -webkit-transform: rotate(360deg);
+      -moz-transform: rotate(360deg);
+      -ms-transform: rotate(360deg);
+      -o-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+  @-moz-keyframes spinner {
+    0% {
+      -webkit-transform: rotate(0deg);
+      -moz-transform: rotate(0deg);
+      -ms-transform: rotate(0deg);
+      -o-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    100% {
+      -webkit-transform: rotate(360deg);
+      -moz-transform: rotate(360deg);
+      -ms-transform: rotate(360deg);
+      -o-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+  @-o-keyframes spinner {
+    0% {
+      -webkit-transform: rotate(0deg);
+      -moz-transform: rotate(0deg);
+      -ms-transform: rotate(0deg);
+      -o-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    100% {
+      -webkit-transform: rotate(360deg);
+      -moz-transform: rotate(360deg);
+      -ms-transform: rotate(360deg);
+      -o-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes spinner {
+    0% {
+      -webkit-transform: rotate(0deg);
+      -moz-transform: rotate(0deg);
+      -ms-transform: rotate(0deg);
+      -o-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    100% {
+      -webkit-transform: rotate(360deg);
+      -moz-transform: rotate(360deg);
+      -ms-transform: rotate(360deg);
+      -o-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+
+
+.sidebar-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sidebar-menu > li {
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+.sidebar-menu > li > a {
+  padding: 12px 5px 12px 15px;
+  display: block;
+}
+.sidebar-menu > li > a > .fa,
+.sidebar-menu > li > a > .glyphicon,
+.sidebar-menu > li > a > .ion {
+  width: 20px;
+}
+.sidebar-menu > li .label,
+.sidebar-menu > li .badge {
+  margin-right: 5px;
+}
+.sidebar-menu > li .badge {
+  margin-top: 3px;
+}
+.sidebar-menu li.header {
+  padding: 10px 25px 10px 15px;
+  font-size: 12px;
+}
+.sidebar-menu li > a > .fa-angle-left,
+.sidebar-menu li > a > .pull-right-container > .fa-angle-left {
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin-right: 10px;
+  -webkit-transition: transform 0.5s ease;
+  -o-transition: transform 0.5s ease;
+  transition: transform 0.5s ease;
+}
+.sidebar-menu li > a > .fa-angle-left {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  margin-top: -8px;
+}
+.sidebar-menu .menu-open > a > .fa-angle-left,
+.sidebar-menu .menu-open > a > .pull-right-container > .fa-angle-left {
+  -webkit-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+}
+.sidebar-menu .active > .treeview-menu {
+  display: block;
+}
+/*
+ * Component: Sidebar Mini
+ */
+@media (min-width: 768px) {
+  .sidebar-mini.sidebar-collapse .content-wrapper,
+  .sidebar-mini.sidebar-collapse .right-side,
+  .sidebar-mini.sidebar-collapse .main-footer {
+    margin-left: 50px !important;
+    z-index: 840;
+  }
+  .sidebar-mini.sidebar-collapse .main-sidebar {
+    -webkit-transform: translate(0, 0);
+    -ms-transform: translate(0, 0);
+    -o-transform: translate(0, 0);
+    transform: translate(0, 0);
+    width: 50px !important;
+    z-index: 850;
+  }
+  .sidebar-mini.sidebar-collapse .sidebar-menu > li {
+    position: relative;
+  }
+  .sidebar-mini.sidebar-collapse .sidebar-menu > li > a {
+    margin-right: 0;
+  }
+  .sidebar-mini.sidebar-collapse .sidebar-menu > li > a > span {
+    border-top-right-radius: 4px;
+  }
+  .sidebar-mini.sidebar-collapse .sidebar-menu > li:not(.treeview) > a > span {
+    border-bottom-right-radius: 4px;
+  }
+  .sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-bottom-right-radius: 4px;
+  }
+  .sidebar-mini.sidebar-collapse .main-sidebar .user-panel > .info,
+  .sidebar-mini.sidebar-collapse .sidebar-form,
+  .sidebar-mini.sidebar-collapse .sidebar-menu > li > a > span,
+  .sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu,
+  .sidebar-mini.sidebar-collapse .sidebar-menu > li > a > .pull-right,
+  .sidebar-mini.sidebar-collapse .sidebar-menu li.header {
+    display: none !important;
+    -webkit-transform: translateZ(0);
+  }
+  .sidebar-mini.sidebar-collapse .main-header .logo {
+    width: 50px;
+  }
+  .sidebar-mini.sidebar-collapse .main-header .logo > .logo-mini {
+    display: block;
+    margin-left: -15px;
+    margin-right: -15px;
+    font-size: 18px;
+  }
+  .sidebar-mini.sidebar-collapse .main-header .logo > .logo-lg {
+    display: none;
+  }
+  .sidebar-mini.sidebar-collapse .main-header .navbar {
+    margin-left: 50px;
+  }
+}
+.sidebar-mini:not(.sidebar-mini-expand-feature).sidebar-collapse .sidebar-menu > li:hover > a > span:not(.pull-right),
+.sidebar-mini:not(.sidebar-mini-expand-feature).sidebar-collapse .sidebar-menu > li:hover > .treeview-menu {
+  display: block !important;
+  position: absolute;
+  width: 180px;
+  left: 50px;
+}
+.sidebar-mini:not(.sidebar-mini-expand-feature).sidebar-collapse .sidebar-menu > li:hover > a > span {
+  top: 0;
+  margin-left: -3px;
+  padding: 12px 5px 12px 20px;
+  background-color: inherit;
+}
+.sidebar-mini:not(.sidebar-mini-expand-feature).sidebar-collapse .sidebar-menu > li:hover > a > .pull-right-container {
+  position: relative !important;
+  float: right;
+  width: auto !important;
+  left: 180px !important;
+  top: -22px !important;
+  z-index: 900;
+}
+.sidebar-mini:not(.sidebar-mini-expand-feature).sidebar-collapse .sidebar-menu > li:hover > a > .pull-right-container > .label:not(:first-of-type) {
+  display: none;
+}
+.sidebar-mini:not(.sidebar-mini-expand-feature).sidebar-collapse .sidebar-menu > li:hover > .treeview-menu {
+  top: 44px;
+  margin-left: 0;
+}
+.sidebar-expanded-on-hover .main-footer,
+.sidebar-expanded-on-hover .content-wrapper {
+  margin-left: 50px;
+}
+.sidebar-expanded-on-hover .main-sidebar {
+  box-shadow: 3px 0 8px rgba(0, 0, 0, 0.125);
+}
+.sidebar-menu,
+.main-sidebar .user-panel,
+.sidebar-menu > li.header {
+  white-space: nowrap;
+  overflow: hidden;
+}
+.sidebar-menu:hover {
+  overflow: visible;
+}
+.sidebar-form,
+.sidebar-menu > li.header {
+  overflow: hidden;
+  text-overflow: clip;
+}
+.sidebar-menu li > a {
+  position: relative;
+}
+.sidebar-menu li > a > .pull-right-container {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  margin-top: -7px;
+}
+
 

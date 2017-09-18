@@ -1,0 +1,356 @@
+import { Component, OnInit, ViewEncapsulation, Input, ViewChild, ElementRef } from '@angular/core';
+import { DomainModel } from '../models/domain.model';
+import { DomainService } from '../services/domain.service';
+import { PageModel } from '../../shared/models/page.model';
+import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
+import { NgbModal, ModalDismissReasons, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { AppSettings } from '../../shared/models/app.settings';
+import { ResponseModel } from '../../shared/models/response.model';
+declare var jQuery: any;
+
+@Component({
+    selector: 'app-domain',
+    templateUrl: '../views/domain.component.html'
+})
+
+export class DomainComponent implements OnInit {
+    domainLst = [];
+    pageModel: PageModel;
+    isLoading: boolean = false;
+    domainModel: DomainModel;
+    @ViewChild('addModal') addModal: ElementRef;
+    constructor(private domainService: DomainService,
+        private appSettings: AppSettings) {
+        this.pageModel = new PageModel();
+        this.domainModel = new DomainModel();
+    }
+
+    ngOnInit() {
+        this.getDomain();
+    }
+
+    open() {
+        this.domainModel.eventType = this.appSettings.addMode;
+        jQuery(this.addModal.nativeElement).modal('show');
+    }
+
+    addDomain() {
+        this.domainModel.isLoading = true;
+        if (this.domainModel.domainCode.trim().length < 1) {
+            this.alertMsg(this.appSettings.warning, 'Domain Code is required!!!');
+            return;
+        } else if (this.domainModel.domainName.trim().length < 1) {
+            this.alertMsg(this.appSettings.warning, 'Domain Name is required!!!');
+            return;
+        }
+
+        if (this.domainModel.eventType === this.appSettings.addMode) {
+            this.domainService.add(this.domainModel).subscribe(response => {
+                this.domainModel.isLoading = false;
+                const resp = Object.assign(new ResponseModel(), response.json());
+                if (resp.code === '00') {
+                    this.domainModel = new DomainModel();
+                    jQuery(this.addModal.nativeElement).modal('hide');
+                    this.getDomain();
+                } else {
+                    this.alertMsg(this.appSettings.danger, resp.description || 'An error occur, please try again or contact administrator');
+                }
+            }, error => {
+                this.domainModel.isLoading = false;
+                this.alertMsg(this.appSettings.danger, error || 'An error occur, please try again or contact administrator');
+            });
+        } else {
+            this.domainService.edit(this.domainModel).subscribe(response => {
+                this.domainModel.isLoading = false;
+                const resp = Object.assign(new ResponseModel(), response.json());
+                if (resp.code === '00') {
+                    this.domainModel = new DomainModel();
+                    jQuery(this.addModal.nativeElement).modal('hide');
+                    this.getDomain();
+                } else {
+                    this.alertMsg(this.appSettings.danger, resp.description || 'An error occur, please try again or contact administrator');
+                }
+            }, error => {
+                this.domainModel.isLoading = false;
+                this.alertMsg(this.appSettings.danger, error || 'An error occur, please try again or contact administrator');
+            });
+        }
+    }
+
+    alertMsg(ngclass: string, msg: string) {
+        this.domainModel.errClass.push(ngclass);
+        this.domainModel.msg = msg;
+        this.domainModel.isErrMsg = true;
+        setTimeout(() => {
+            this.domainModel.errClass.pop();
+            this.domainModel.msg = '';
+            this.domainModel.isErrMsg = false;
+        }, 3000);
+    }
+
+    private getDismissReason(reason: any): string {
+        if (reason === ModalDismissReasons.ESC) {
+            return 'by pressing ESC';
+        } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+            return 'by clicking on a backdrop';
+        } else {
+            return `with: ${reason}`;
+        }
+    }
+
+    getDomain() {
+        this.isLoading = true;
+        this.domainService.all(this.pageModel).subscribe(response => {
+            this.isLoading = false;
+            const result = response.json();
+            const resultScheme = { data: [], totalPageCount: 0 };
+            const responseD = Object.assign(resultScheme, result);
+            if (responseD.data.length > 0) {
+                this.domainLst = responseD.data;
+                this.pageModel.totalPageCount = responseD.totalPageCount;
+            } else {
+                this.pageModel.pageNum = this.pageModel.pageNum > 1 ? this.pageModel.pageNum -= 1 : this.pageModel.pageNum;
+            }
+        },
+            error => {
+                this.isLoading = false;
+            });
+    }
+
+    next() {
+        if (this.pageModel.pageNum > 1 && this.domainLst.length < 1) {
+            return;
+        }
+        this.pageModel.pageNum += 1;
+        this.getDomain();
+    }
+
+    previous() {
+        this.pageModel.pageNum -= 1;
+        if (this.pageModel.pageNum < 1) {
+            this.pageModel.pageNum = 1;
+        }
+        this.getDomain();
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

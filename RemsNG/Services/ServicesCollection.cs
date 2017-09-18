@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,6 +34,11 @@ namespace RemsNG.Services
         public static void Initialize(IServiceCollection services, IConfigurationRoot config)
         {
             Configuration = config;
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin",
+                    builder => builder.WithOrigins("http://localhost:4200"));
+            });
             services.Configure<JwtIssuerOptions>(options =>
             {
                 options.Issuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
@@ -55,6 +62,19 @@ namespace RemsNG.Services
                         .RequireAuthenticatedUser()
                         .Build());
             });
+            var corsUrls = new List<string>() { "http://localhost:4200" };
+
+            services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
+            {
+                builder
+                  .AllowAnyMethod() //<--this allows preflight headers required for POST
+                  .AllowAnyHeader() //<--accepts headers 
+                  .AllowCredentials() //<--lets your app send auth credentials
+                  .WithOrigins(corsUrls.ToArray()); //<--this is the important line
+            }));
+
+            services.Configure<MvcOptions>(
+                options => { options.Filters.Add(new CorsAuthorizationFilterFactory("CorsPolicy")); });
 
             services.AddDbContext<RemsDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddTransient<IUserService, UserService>();

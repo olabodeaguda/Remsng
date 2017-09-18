@@ -25,10 +25,14 @@
         "../assets/dist/css/AdminLTE.min.css",
         "../assets/dist/css/skins/_all-skins.min.css",
         "../node_modules/ladda/dist/ladda.min.css",
+        "../node_modules/angular2-toaster/toaster.css",
         "styles.css"
       ],
       "scripts": [             
+        "../node_modules/jquery/dist/jquery.js",
         "../assets/bower_components/bootstrap/dist/js/bootstrap.min.js",
+        "../assets/bower_components/jquery-slimscroll/jquery.slimscroll.min.js",
+        "../assets/bower_components/fastclick/lib/fastclick.js",
         "../assets/dist/js/adminlte.min.js"
       ],
       "environmentSource": "environments/environment.ts",

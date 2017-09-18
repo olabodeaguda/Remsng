@@ -31,6 +31,7 @@ namespace RemsNG
         {
 
             ServicesCollection.Initialize(services,Configuration);
+
             services.AddMvc();
         }
 
@@ -41,6 +42,9 @@ namespace RemsNG
             loggerFactory.AddDebug();
             loggerFactory.AddFile("Logs/remsng-logs-{Date}.txt");
             DbInitializer.Initialize(dbContext);
+            //app.UseCors(builder => builder.WithOrigins("http://localhost:4200")
+            //.AllowAnyHeader());
+            app.UseCors("CorsPolicy");
             app.Use(async (context, next) =>
             {
                 if (!context.User.Identity.IsAuthenticated)
@@ -66,10 +70,9 @@ namespace RemsNG
                 }
             });
 
+            app.UseMiddleware(typeof(ErrorHandlingMiddleware));
             app.UseDefaultFiles();
             app.UseStaticFiles();
-
-            app.UseMiddleware(typeof(ErrorHandlingMiddleware));
             app.UseMvc();
         }
     }

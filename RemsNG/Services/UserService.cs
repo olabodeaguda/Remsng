@@ -31,22 +31,30 @@ namespace RemsNG.Services
             jwtOptions = _jwtOptions.Value;
         }
 
-        public async Task<string> GetToken(User user,Guid domainId,bool byDomain)
+        public async Task<object> GetToken(User user,Guid domainId,bool byDomain)
         {
+            string domainName = string.Empty;
             if (!byDomain)
             {
                 List<Domain> domain = await domainDao.GetUserDomainByUsername(user.username);
                 if (domain.Count > 0)
                 {
-                    domainId = domain.FirstOrDefault().id;
+                    var selectedDomain = domain.FirstOrDefault();
+                    domainId = selectedDomain.id;
+                    domainName = selectedDomain.domainName;
+                }
+            }
+            else
+            {
+                Domain domain = await domainDao.byDomainId(domainId);
+                if (domain != null)
+                {
+                    domainName = domain.domainName;
                 }
             }
             
             Role role = await roleDao.GetUserRoleByUsernameByDomainId(user.username,domainId);
-            //if (role != null)
-            //{
-            //    //get permissions
-            //}
+           
             int logTime = int.TryParse(jwtOptions.logOutTIme, out logTime) ? logTime : 30;
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -56,9 +64,9 @@ namespace RemsNG.Services
                 Audience = jwtOptions.Audience,
                 Subject = new ClaimsIdentity(new Claim[]
                         {
+                            new Claim(ClaimTypes.NameIdentifier, user.username),
                             new Claim(ClaimTypes.Name, $"{user.surname} {user.firstname} {user.lastname}"),
-                            //new Claim(ClaimTypes.Role, role != null? role.roleName:string.Empty),
-                            new Claim(ClaimTypes.Role, "Author"),
+                            new Claim(ClaimTypes.Role, role != null? role.roleName:string.Empty),
                             new Claim("Domain",JsonConvert.SerializeObject(domainId)),
                             new Claim("identity",EncryptDecryptUtils.ToHexString(user.id.ToString()))
                         }),
@@ -70,7 +78,14 @@ namespace RemsNG.Services
             };
 
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(tokenHandler.CreateToken(jwt));
-            return encodedJwt;
+            return new
+            {
+                tk = encodedJwt,
+                username = user.username,
+                fullname = $"{user.surname} {user.firstname} {user.lastname}",
+                userStatus = user.userStatus,
+                domainName = domainName
+            } ;
         }
 
         public async Task<User> GetUserByUsername(string username)

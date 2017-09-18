@@ -11,6 +11,8 @@ namespace RemsNG.ORM
         public string domainName { get; set; }
         public string domainCode { get; set; }
         public DateTime datecreated { get; set; }
+        public string domainStatus { get; set; }
         public Guid addressId { get; set; }
+        public virtual ICollection<Address> Addresses { get; set; }
     }
 }

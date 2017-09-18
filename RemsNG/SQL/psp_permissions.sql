@@ -21,6 +21,12 @@ GO
 IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'CHANGE_STATUS')
 INSERT INTO tbl_permission(id,permissionName) values(newid(),'CHANGE_STATUS');
 GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'CREATE_DOMAIN')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'CREATE_DOMAIN');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'GET_DOMAIN')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'GET_DOMAIN');
+GO
 
 IF EXISTS(SELECT *
           FROM sys.objects

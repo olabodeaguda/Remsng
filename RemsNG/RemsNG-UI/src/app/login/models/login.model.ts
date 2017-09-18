@@ -4,9 +4,10 @@ export class LoginModel {
     username: string = '';
     pwd: string = '';
     isUsernameValid: boolean = false;
-    domainIds: [''];
+    domainIds: object[];
     domainId: string = '';
     isLoading: boolean = false;
     isError: boolean = false;
     errmsg: string = '';
+    errorClass: string[] = [];
 }
