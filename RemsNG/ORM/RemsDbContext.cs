@@ -18,7 +18,7 @@ namespace RemsNG.ORM
         public DbSet<Role> Roles { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<Address> Addresses { get; set; }
-
+        public DbSet<Lcda> lcdas { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -27,8 +27,8 @@ namespace RemsNG.ORM
             modelBuilder.Entity<Domain>().ToTable("tbl_domain");
             modelBuilder.Entity<UserDomain>().ToTable("tbl_userdomain").HasKey(x => new { x.domainId, x.userId });
             modelBuilder.Entity<Role>().ToTable("tbl_role");
-            modelBuilder.Entity<Address>().ToTable("tb_address");
-
+            modelBuilder.Entity<Address>().ToTable("tbl_address");
+            modelBuilder.Entity<Lcda>().ToTable("tbl_lcda");
         }
     }
 }

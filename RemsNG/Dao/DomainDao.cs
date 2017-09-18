@@ -25,11 +25,11 @@ namespace RemsNG.Dao
                 return new
                 {
                     data = results,
-                    totalPageCount = totalCount % pageModel.PageSize + Math.Truncate((double)totalCount / pageModel.PageSize)
+                    totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
                 };
             });
         }
-
+        
         public async Task<bool> Add(Domain domain)
         {
             db.Domains.Add(domain);

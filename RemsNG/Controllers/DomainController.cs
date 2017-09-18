@@ -53,10 +53,10 @@ namespace RemsNG.Controllers
             return Ok(new Response
             {
                 code = MsgCode_Enum.SUCCESS,
-                data = domains
+                data = domains.Where(x => x.domainStatus == UserStatus.ACTIVE.ToString())
             });
         }
-
+        
         [Route("all")]
         [RemsRequirementAttribute("GET_DOMAIN")]
         public async Task<object> get([FromHeader] string pageSize, [FromHeader] string pageNum)
@@ -209,6 +209,14 @@ namespace RemsNG.Controllers
                 {
                     code = MsgCode_Enum.WRONG_CREDENTIALS,
                     description = "Invalid domain selected"
+                });
+            }
+            else if(CommonList.StatusLst.FirstOrDefault(x=>x == domain.domainStatus) == null)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Invalid domain status"
                 });
             }
 

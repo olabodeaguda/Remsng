@@ -19,12 +19,12 @@
       "testTsconfig": "tsconfig.spec.json",
       "prefix": "app",
       "styles": [
+        "../node_modules/ladda/dist/ladda.min.css",
         "../assets/bower_components/bootstrap/dist/css/bootstrap.min.css",
         "../assets/bower_components/font-awesome/css/font-awesome.min.css",
         "../assets/bower_components/Ionicons/css/ionicons.min.css",
         "../assets/dist/css/AdminLTE.min.css",
         "../assets/dist/css/skins/_all-skins.min.css",
-        "../node_modules/ladda/dist/ladda.min.css",
         "../node_modules/angular2-toaster/toaster.css",
         "styles.css"
       ],
@@ -33,7 +33,7 @@
         "../assets/bower_components/bootstrap/dist/js/bootstrap.min.js",
         "../assets/bower_components/jquery-slimscroll/jquery.slimscroll.min.js",
         "../assets/bower_components/fastclick/lib/fastclick.js",
-        "../assets/dist/js/adminlte.min.js"
+        "../assets/dist/js/adminlte.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {

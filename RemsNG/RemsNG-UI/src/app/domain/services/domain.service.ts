@@ -25,9 +25,16 @@ export class DomainService {
     }
 
     edit(domainModel: DomainModel) {
-        return this.dataService.post('domain/edit', {
+        return this.dataService.post('domain/update', {
             domainName: domainModel.domainName,
             domainCode: domainModel.domainCode,
+            id: domainModel.id
+        }).catch(error => this.dataService.handleError(error));
+    }
+
+    changeStatus(domainModel: DomainModel) {
+        return this.dataService.post('domain/changestatus', {
+            domainStatus: domainModel.domainStatus,
             id: domainModel.id
         }).catch(error => this.dataService.handleError(error));
     }

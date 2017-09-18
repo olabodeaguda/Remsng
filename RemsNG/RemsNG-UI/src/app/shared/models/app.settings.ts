@@ -14,4 +14,7 @@ export class AppSettings {
     // eventType
     public editMode: string = 'EDIT';
     public addMode: string = 'ADD';
+    public changeStatusMode: string = 'CHANGE_STATUS';
+
+    public domainStatus: string[] = ['ACTIVE', 'NOT_ACTIVE'];
 }

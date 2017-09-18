@@ -19,6 +19,7 @@ export class DomainComponent implements OnInit {
     isLoading: boolean = false;
     domainModel: DomainModel;
     @ViewChild('addModal') addModal: ElementRef;
+    @ViewChild('changestatus') changestatusModal: ElementRef;
     constructor(private domainService: DomainService,
         private appSettings: AppSettings) {
         this.pageModel = new PageModel();
@@ -29,9 +30,18 @@ export class DomainComponent implements OnInit {
         this.getDomain();
     }
 
-    open() {
-        this.domainModel.eventType = this.appSettings.addMode;
-        jQuery(this.addModal.nativeElement).modal('show');
+    open(eventType: string, data: any) {
+        if (eventType === this.appSettings.editMode) {
+            this.domainModel = data;
+            jQuery(this.addModal.nativeElement).modal('show');
+        } else if (eventType === this.appSettings.addMode) {
+            this.domainModel = new DomainModel();
+            jQuery(this.addModal.nativeElement).modal('show');
+        } else if (eventType === this.appSettings.changeStatusMode) {
+            this.domainModel = data;
+            jQuery(this.changestatusModal.nativeElement).modal('show');
+        }
+        this.domainModel.eventType = eventType;
     }
 
     addDomain() {
@@ -43,6 +53,7 @@ export class DomainComponent implements OnInit {
             this.alertMsg(this.appSettings.warning, 'Domain Name is required!!!');
             return;
         }
+        console.log(this.domainModel);
 
         if (this.domainModel.eventType === this.appSettings.addMode) {
             this.domainService.add(this.domainModel).subscribe(response => {
@@ -59,7 +70,7 @@ export class DomainComponent implements OnInit {
                 this.domainModel.isLoading = false;
                 this.alertMsg(this.appSettings.danger, error || 'An error occur, please try again or contact administrator');
             });
-        } else {
+        } else if (this.domainModel.eventType === this.appSettings.editMode) {
             this.domainService.edit(this.domainModel).subscribe(response => {
                 this.domainModel.isLoading = false;
                 const resp = Object.assign(new ResponseModel(), response.json());
@@ -74,11 +85,27 @@ export class DomainComponent implements OnInit {
                 this.domainModel.isLoading = false;
                 this.alertMsg(this.appSettings.danger, error || 'An error occur, please try again or contact administrator');
             });
+        } else if (this.domainModel.eventType === this.appSettings.changeStatusMode) {
+            this.domainModel.domainStatus = this.domainModel.domainStatus === 'ACTIVE' ? 'NOT_ACTIVE' : 'ACTIVE';
+            this.domainService.changeStatus(this.domainModel).subscribe(response => {
+                this.domainModel.isLoading = false;
+                const resp = Object.assign(new ResponseModel(), response.json());
+                if (resp.code === '00') {
+                    this.domainModel = new DomainModel();
+                    jQuery(this.changestatusModal.nativeElement).modal('hide');
+                    this.getDomain();
+                } else {
+                    this.alertMsg(this.appSettings.danger, resp.description || 'An error occur, please try again or contact administrator');
+                }
+            }, error => {
+                this.domainModel.isLoading = false;
+                this.alertMsg(this.appSettings.danger, error || 'An error occur, please try again or contact administrator');
+            });
         }
     }
 
     alertMsg(ngclass: string, msg: string) {
-        this.domainModel.errClass.push(ngclass);
+        this.domainModel.errClass = new Array(ngclass);
         this.domainModel.msg = msg;
         this.domainModel.isErrMsg = true;
         setTimeout(() => {
@@ -86,16 +113,6 @@ export class DomainComponent implements OnInit {
             this.domainModel.msg = '';
             this.domainModel.isErrMsg = false;
         }, 3000);
-    }
-
-    private getDismissReason(reason: any): string {
-        if (reason === ModalDismissReasons.ESC) {
-            return 'by pressing ESC';
-        } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
-            return 'by clicking on a backdrop';
-        } else {
-            return `with: ${reason}`;
-        }
     }
 
     getDomain() {

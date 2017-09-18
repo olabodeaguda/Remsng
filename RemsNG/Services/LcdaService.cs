@@ -1,0 +1,46 @@
+﻿using RemsNG.Services.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using RemsNG.Models;
+using RemsNG.ORM;
+using RemsNG.Dao;
+
+namespace RemsNG.Services
+{
+    public class LcdaService : AbstractDao
+    {
+        private readonly LcdaDao lcdaDao;
+
+        public LcdaService(RemsDbContext _db) : base(_db)
+        {
+            lcdaDao = new LcdaDao(_db);
+        }
+
+        public async Task<List<Lcda>> ActiveLCDAByDomainId(Guid domainId)
+        {
+            return await lcdaDao.ActiveLCDAByDomainId(domainId);
+        }
+
+        public async Task<bool> Add(Lcda lcda)
+        {
+            return await lcdaDao.Add(lcda);
+        }
+
+        public async Task<object> AllPaginated(PageModel pageModel)
+        {
+            return await lcdaDao.All(pageModel);
+        }
+
+        public async Task<bool> Changetatus(Guid id, string lcdastatus)
+        {
+            return await lcdaDao.Changetatus(id, lcdastatus);
+        }
+
+        public  async Task<bool> Update(Lcda lcda)
+        {
+            return await lcdaDao.Update(lcda);
+        }
+    }
+}

@@ -14,7 +14,8 @@ CREATE TABLE tbl_lcda
 	createdBy varchar(100) not null,
 	dateCreated datetime default getDate(),
 	lastmodifiedby varchar(100),
-	lastModifiedDate datetime
+	lastModifiedDate datetime,
+	lcdaStatus varchar(50) not null default 'NOT_ACTIVE'
 )
 GO
 

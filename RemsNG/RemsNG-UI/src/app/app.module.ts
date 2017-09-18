@@ -15,6 +15,7 @@ import { DataService } from './shared/services/data.service';
 import { StorageService } from './shared/services/storage.service';
 import { DomainModule } from './domain/domain.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { LCDAModule } from './lcda/lcda.module';
 
 
 const appRoutes: Routes = [
@@ -31,7 +32,7 @@ const appRoutes: Routes = [
         DashBoardModule,
         FormsModule,
         DomainModule,
-        ToasterModule,
+        ToasterModule, LCDAModule,
         BrowserAnimationsModule,
         LaddaModule.forRoot({
             style: 'zoom-in',
