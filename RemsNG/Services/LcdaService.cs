@@ -38,6 +38,11 @@ namespace RemsNG.Services
             return await lcdaDao.Changetatus(id, lcdastatus);
         }
 
+        public Task<Lcda> Get(Guid id)
+        {
+            return lcdaDao.Get(id);
+        }
+
         public  async Task<bool> Update(Lcda lcda)
         {
             return await lcdaDao.Update(lcda);

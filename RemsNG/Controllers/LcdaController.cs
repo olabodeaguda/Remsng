@@ -52,7 +52,7 @@ namespace RemsNG.Controllers
         }
 
         [Route("create")]
-        [RemsRequirementAttribute("GET_AddLCDA")]
+        [RemsRequirementAttribute("ADD_LCDA")]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Lcda lcda)
         {
@@ -81,11 +81,10 @@ namespace RemsNG.Controllers
                 });
             }
 
-
             lcda.id = Guid.NewGuid();
             lcda.dateCreated = DateTime.Now;
             lcda.createdBy = User.Identity.Name;
-            lcda.lcdaStatus = UserStatus.ACTIVE.ToString();
+            lcda.lcdaStatus = UserStatus.NOT_ACTIVE.ToString();
             //User.Identity.
             bool result = await lcdaService.Add(lcda);
             if (result)
@@ -106,16 +105,71 @@ namespace RemsNG.Controllers
             }
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        [Route("update")]
+        [RemsRequirementAttribute("EDIT_LCDA")]
+        [HttpPost]
+        public async Task<IActionResult> EditLGA([FromBody] Lcda lcda)
         {
-        }
+            if (string.IsNullOrEmpty(lcda.lcdaCode))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "LCGA Code is required!!!"
+                });
+            }
+            else if (string.IsNullOrEmpty(lcda.lcdaName))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "LCGA name is required!!!"
+                });
+            }
+            else if (lcda.domainId == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Domain Code is required!!!"
+                });
+            }
+            else if (lcda.id == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = " is required!!!"
+                });
+            }
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            var oldlcda = await this.lcdaService.Get(lcda.id);
+            if (oldlcda == null)
+            {
+                return NotFound(new Response()
+                {
+                    code = MsgCode_Enum.NOTFOUND,
+                    description = "Data does not exist"
+                });
+            }
+
+            bool result = await this.lcdaService.Update(oldlcda);
+            if (result)
+            {
+                return Ok(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = lcda.lcdaName+" has been updated successfully"
+                });
+            }
+            else
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = lcda.lcdaName + " has been updated successfully"
+                });
+            }
         }
     }
 }

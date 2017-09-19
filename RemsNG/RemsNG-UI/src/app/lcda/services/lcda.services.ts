@@ -24,4 +24,13 @@ export class LcdaService {
            lcdaCode: lcdaModel.lcdaCode
        }).catch(error => this.dataService.handleError(error));
     }
+
+    editLCDA(lcdaModel: LcdaModel): Observable<Response> {
+        return this.dataService.post('lcda/update', {
+            domainId: lcdaModel.domainId,
+            lcdaName: lcdaModel.lcdaName,
+            lcdaCode: lcdaModel.lcdaCode,
+            id: lcdaModel.id
+        }).catch(error => this.dataService.handleError(error));
+     }
 }

@@ -13,6 +13,7 @@ namespace RemsNG.Services.Interfaces
         Task<List<Lcda>> ActiveLCDAByDomainId(Guid domainId);
         Task<bool> Add(Lcda lcda);
         Task<bool> Update(Lcda lcda);
+        Task<Lcda> Get(Guid id);
         Task<bool> Changetatus(Guid id, string lcdastatus);
     }
 }

@@ -16,6 +16,11 @@ namespace RemsNG.Dao
         {
         }
 
+        public async Task<Lcda> Get(Guid id)
+        {
+            return await db.lcdas.FirstOrDefaultAsync(x => x.id == id);
+        }
+
         public async Task<object> All(PageModel pageModel)
         {
             return await Task.Run(() =>

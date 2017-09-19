@@ -100,6 +100,22 @@ export class LcdaComponent implements OnInit {
                     jQuery(this.changestatusModal.nativeElement).modal('hide');
                 }
             });
+        } else if (this.lcdaModel.eventType === this.appSettings.editMode) {
+            this.lcdaService.editLCDA(this.lcdaModel).subscribe(response => {
+                const result = Object.assign(new ResponseModel(), response.json());
+                if (result.code === '00') {
+                    this.toasterService.pop('success', 'Success', result.description);
+                    jQuery(this.addModal.nativeElement).modal('hide');
+                    this.getLcda();
+                }
+            }, error => {
+                this.toasterService.pop('error', 'Error', error);
+                if (this.lcdaModel.eventType === this.appSettings.addMode || this.lcdaModel.eventType === this.appSettings.editMode) {
+                    jQuery(this.addModal.nativeElement).modal('hide');
+                } else if (this.lcdaModel.eventType === this.appSettings.changeStatusMode) {
+                    jQuery(this.changestatusModal.nativeElement).modal('hide');
+                }
+            });
         }
     }
 
