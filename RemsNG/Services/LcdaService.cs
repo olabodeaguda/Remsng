@@ -9,11 +9,11 @@ using RemsNG.Dao;
 
 namespace RemsNG.Services
 {
-    public class LcdaService : AbstractDao
+    public class LcdaService : ILcdaService
     {
         private readonly LcdaDao lcdaDao;
 
-        public LcdaService(RemsDbContext _db) : base(_db)
+        public LcdaService(RemsDbContext _db)
         {
             lcdaDao = new LcdaDao(_db);
         }

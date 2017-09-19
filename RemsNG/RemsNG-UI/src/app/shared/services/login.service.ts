@@ -12,6 +12,7 @@ export class LoginService {
     GetUserDomain(username: string): Observable<Response> {
         return this.dataService.get('domain/domainByusername/' + username).catch(err => this.dataService.handleError(err));
     }
+
     SignIn(loginModel: LoginModel): Observable<Response> {
         this.dataService.addToHeader('value', btoa(JSON.stringify(loginModel)));
         return this.dataService.post('user', {}).catch(err => this.dataService.handleError(err));

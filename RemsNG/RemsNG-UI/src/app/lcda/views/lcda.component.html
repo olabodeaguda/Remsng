@@ -95,7 +95,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr *ngFor="let data of domainLst; let i=index">
+                                        <tr *ngFor="let data of lcdaLst; let i=index">
                                             <td>
                                                 <a>
                                                     <i class="fa fa-edit" (click)="open('EDIT',data)"></i>
@@ -108,14 +108,14 @@
                                             <td>{{data.domainCode}}</td>
                                             <td>{{data.domainStatus}}</td>
                                         </tr>
-                                        <tr *ngIf="domainLst.length < 1">
+                                        <tr *ngIf="lcdaLst.length < 1">
                                             <td style="width:100%" colspan="5">No record !!!</td>
                                         </tr>
                                     </tbody>
                                     <tfoot>
                                         <tr>
                                             <td colspan="5">
-                                                <nav *ngIf="domainLst.length > 0">
+                                                <nav *ngIf="lcdaLst.length > 0">
                                                     <ul class="pagination">
                                                         <li>
                                                             <a aria-label="Previous" (click)="previous()">
@@ -140,8 +140,7 @@
                         </div>
                     </div>
                 </div>
-            </section>
-    
+            </section>    
         </div>
     
         <ft></ft>

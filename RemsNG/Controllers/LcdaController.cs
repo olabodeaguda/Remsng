@@ -13,7 +13,7 @@ using RemsNG.ORM;
 
 namespace RemsNG.Controllers
 {
-    [Route("api/lcda")]
+    [Route("api/v1/lcda")]
     public class LcdaController : Controller
     {
         private ILcdaService lcdaService;

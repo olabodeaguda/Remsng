@@ -12,7 +12,7 @@ export class LcdaService {
     getLcda(pageModel: PageModel): Observable<Response> {
         this.dataService.addToHeader('pageSize', pageModel.pageSize.toString());
         this.dataService.addToHeader('pageNum', pageModel.pageNum.toString());
-       return this.dataService.get('domain/all').catch(
+       return this.dataService.get('lcda/all').catch(
             error => this.dataService.handleError(error));
     }
 }

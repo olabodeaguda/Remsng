@@ -304,3 +304,25 @@
   padding: 6px 12px;
 }
 
+.panel-default>.panel-heading {
+  color: #333;
+  background-color:#222d32; 
+  border-color: #FFF;
+  border: 1px solid transparent;
+}
+
+.panel {
+  background-color: #222d32;
+  border: 1px solid transparent;
+  border-radius: 0px;
+  box-shadow: 0 1px 1px rgba(0,0,0,.05);
+}
+
+.changeText :hover {
+  background-color: #ffffff;
+  color: #222d32;
+}
+
+.changeText >td >span > a:hover {
+  color: #222d32;
+}

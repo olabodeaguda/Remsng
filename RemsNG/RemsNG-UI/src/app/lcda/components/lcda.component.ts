@@ -10,6 +10,7 @@ import { LcdaService } from '../services/lcda.services';
 
 export class LcdaComponent implements OnInit {
 
+    lcdaLst = [];
     pageModel: PageModel;
     lcdaModel: LcdaModel;
     isLoading: boolean = false;
@@ -25,6 +26,13 @@ export class LcdaComponent implements OnInit {
 
     getLcda() {
         this.isLoading = true;
+
+        this.lcdaService.getLcda(this.pageModel).subscribe(response => {
+            this.isLoading = false;
+
+        }, error => {
+
+        });
 
 
     }
