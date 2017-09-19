@@ -11,9 +11,15 @@ export class StorageService {
         this.appsettings = new AppSettings();
     }
     remove() {
-        localStorage.removeItem(this.appsettings.tk);
+        const val = localStorage.getItem(this.appsettings.tk);
+        if (val === null) {
+
+        } else {
+            localStorage.removeItem(this.appsettings.tk);
+        }
         const usermodel: UserModel = new UserModel();
         usermodel.fullname = 'Anonymous';
+        this.usermodelEmit.emit(usermodel);
         this.router.navigateByUrl('/login');
     }
     Save(usermodel: UserModel) {

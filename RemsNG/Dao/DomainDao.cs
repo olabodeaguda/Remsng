@@ -16,6 +16,11 @@ namespace RemsNG.Dao
         {
         }
 
+        public async Task<List<Domain>> ActiveDomains()
+        {
+            return await db.Domains.Where(x => x.domainStatus == UserStatus.ACTIVE.ToString()).OrderBy(x => x.domainName).ToListAsync();
+        }
+
         public async Task<object> Paginated(Models.PageModel pageModel)
         {
             return await Task.Run(() =>

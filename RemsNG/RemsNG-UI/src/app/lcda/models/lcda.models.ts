@@ -4,4 +4,9 @@ export class LcdaModel {
     lcdaCode: string = '';
     domainId: string = '';
     domainName: string = '';
+    isErrMsg: boolean = false;
+    errMsg: string = '';
+    eventType: string = '';
+    errClass: string[] = [];
+    isLoading: boolean = false;
 }

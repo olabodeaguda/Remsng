@@ -17,6 +17,11 @@ export class DomainService {
             error => this.dataService.handleError(error));
     }
 
+    activeDomains(): Observable<Response> {
+       return this.dataService.get('domain/activeDomain').catch(
+            error => this.dataService.handleError(error));
+    }
+
     add(domainModel: DomainModel) {
         return this.dataService.post('domain/create', {
             domainName: domainModel.domainName,

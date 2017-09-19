@@ -12,6 +12,9 @@ export class HeaderComponent {
     userModel: UserModel;
     constructor(private storageService: StorageService) {
         this.userModel = storageService.get();
+        if (this.userModel == null) {
+            this.storageService.remove();
+        }
         storageService.usermodelEmit.subscribe((x) => {
             this.userModel = x;
         });

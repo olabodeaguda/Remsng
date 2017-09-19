@@ -34,7 +34,6 @@
           </div>
           <div class="form-group has-feedback" *ngIf="loginModel.domainIds?.length > 0">
             <select name="domainSelect" class="form-control" [(ngModel)]="loginModel.domainId">
-              <option selected="selected">Select Domain</option>
               <option *ngFor="let data of loginModel.domainIds;" [ngValue]="data.id">{{data.domainName}}</option>
             </select>
           </div>

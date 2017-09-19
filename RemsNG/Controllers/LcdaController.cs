@@ -81,7 +81,11 @@ namespace RemsNG.Controllers
                 });
             }
 
+
             lcda.id = Guid.NewGuid();
+            lcda.dateCreated = DateTime.Now;
+            lcda.createdBy = User.Identity.Name;
+            lcda.lcdaStatus = UserStatus.ACTIVE.ToString();
             //User.Identity.
             bool result = await lcdaService.Add(lcda);
             if (result)

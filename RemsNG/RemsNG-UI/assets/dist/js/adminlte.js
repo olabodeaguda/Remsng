@@ -722,7 +722,7 @@ throw new Error('AdminLTE requires jQuery')
     }
   }
 
-  BoxWidget.prototype.expand = function () {
+  BoxWidget.prototype.okexpand = function () {
     var expandedEvent = $.Event(Event.expanded)
     var collapseIcon  = this.options.collapseIcon
     var expandIcon    = this.options.expandIcon

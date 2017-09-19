@@ -1,19 +1,19 @@
-<!--<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" #changestatus>
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" #changestatus>
         <div class="modal-dialog modal-sm" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Approve Domain</h4>
+                    <h4 class="modal-title">Approve LCDA</h4>
                 </div>
                 <div class="modal-body clearfix">
-                    <div [ngClass]="domainModel.errClass" *ngIf="domainModel.isErrMsg">
-                        {{domainModel.msg}}
+                    <div [ngClass]="lcdaModel.errClass" *ngIf="lcdaModel.isErrMsg">
+                        {{lcdaModel.msg}}
                     </div>
                     <div class="box-body">
-                        You are about to<b> {{domainModel.domainStatus === 'ACTIVE'?'deactivate':'approve'}} {{domainModel.domainName}}</b>. Are you sure?
+                        You are about to<b> {{lcdaModel.lcdaStatus === 'ACTIVE'?'deactivate':'approve'}}</b> {{lcdaModel.lcdaName}}. Are you sure?
                     </div>
                     <div class="box-footer">
-                            <button [ladda]="domainModel.isLoading" type="submit" class="btn btn-success" (click)="addDomain()">Submit</button>
+                            <button [ladda]="lcdaModel.isLoading" type="submit" class="btn btn-success" (click)="addDomain()">Submit</button>
                             <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -26,7 +26,7 @@
             <div class="modal-content " style="width:500px;">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Add Domain</h4>
+                    <h4 class="modal-title">Add LCDA</h4>
                 </div>
                 <form role="form">
                     <div class="modal-body clearfix ">
@@ -34,35 +34,41 @@
                             <div class="box-header with-border">
                                 <h3 class="box-title">Fill in the details</h3>
                             </div>
-                            <div [ngClass]="domainModel.errClass" *ngIf="domainModel.isErrMsg">
-                                {{domainModel.msg}}
+                            <div [ngClass]="lcdaModel.errClass" *ngIf="lcdaModel.isErrMsg">
+                                {{lcdaModel.errMsg}}
                             </div>
                             <div class="box-body">
                                 <div class="form-group">
-                                    <label for="domainName">Domain Name</label>
-                                    <input name="domainname" [(ngModel)]="domainModel.domainName" type="text" class="form-control" id="domainName" placeholder="Enter Domain Name">
+                                    <label for="lcdaName">LCDA Name</label>
+                                    <input name="lcdaName" [(ngModel)]="lcdaModel.lcdaName" type="text" class="form-control" 
+                                    id="lcdaName" placeholder="Enter LCDA Name">
                                 </div>
                                 <div class="form-group">
-                                    <label for="domainCode">Domain Code</label>
-                                    <input name="domainCode" [(ngModel)]="domainModel.domainCode" type="text" class="form-control" id="domainCode" placeholder="Enter Domain Code">
+                                    <label for="lcdaCode">LCDA Code</label>
+                                    <input name="lcdaCode" [(ngModel)]="lcdaModel.lcdaCode" type="text" class="form-control" 
+                                    id="lcdaCode" placeholder="Enter LCDA Code">
+                                </div>
+                                <div class="form-group">
+                                    <label for="lcdaCode">Select Domain</label>
+                                    <select id="domainId" name="domainId" class="form-control" [(ngModel)]="lcdaModel.domainId">
+                                        <option *ngFor="let data of domainList;" [ngValue]="data.id">{{data.domainName}}</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="box-footer">
-                                <button [ladda]="domainModel.isLoading" type="submit" class="btn btn-primary" (click)="addDomain()">Submit</button>
+                                <button [ladda]="lcdaModel.isLoading" type="submit" class="btn btn-primary" 
+                                (click)="addLCDA()">Submit</button>
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
-    </div>-->
+    </div>
     
     <div class="wrapper hold-transition skin-blue fixed sidebar-mini">
-    
         <app-hd></app-hd>
-    
         <app-sbar></app-sbar>
-    
         <div class="content-wrapper">
             <section class="content-header">
                 <h1>
@@ -89,9 +95,9 @@
                                         <tr>
                                             <th style="width:120px;"></th>
                                             <th style="width:50px;"></th>
-                                            <th>Domain Name</th>
-                                            <th>Domain Code</th>
-                                            <th>Domain Status</th>
+                                            <th>LCDA Name</th>
+                                            <th>LCDA Code</th>
+                                            <th>LCDA Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -101,12 +107,12 @@
                                                     <i class="fa fa-edit" (click)="open('EDIT',data)"></i>
                                                 </a>
                                             
-                                                <a (click)="open('CHANGE_STATUS',data)">| {{data.domainStatus === 'ACTIVE'?'deactivate':'approve'}}</a>
+                                                <a (click)="open('CHANGE_STATUS',data)">| {{data.lcdaStatus === 'ACTIVE'?'deactivate':'approve'}}</a>
                                             </td>
                                             <td>{{(pageModel.pageSize*(pageModel.pageNum - 1))+(i+1)}}</td>
-                                            <td>{{data.domainName}}</td>
-                                            <td>{{data.domainCode}}</td>
-                                            <td>{{data.domainStatus}}</td>
+                                            <td>{{data.lcdaName}}</td>
+                                            <td>{{data.lcdaCode}}</td>
+                                            <td>{{data.lcdaStatus}}</td>
                                         </tr>
                                         <tr *ngIf="lcdaLst.length < 1">
                                             <td style="width:100%" colspan="5">No record !!!</td>

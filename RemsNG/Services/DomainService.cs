@@ -52,5 +52,10 @@ namespace RemsNG.Services
         {
             return domainDao.changeDomain(domainId, domainStatus);
         }
+
+        public async Task<List<Domain>> ActiveDomains()
+        {
+            return await domainDao.ActiveDomains();
+        }
     }
 }

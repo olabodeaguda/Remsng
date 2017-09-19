@@ -7,6 +7,7 @@ import { ResponseModel } from '../../shared/models/response.model';
 import { StorageService } from '../../shared/services/storage.service';
 import { UserModel } from '../../shared/models/user.model';
 import { AppSettings } from '../../shared/models/app.settings';
+import { DomainModel } from '../../domain/models/domain.model';
 
 @Component({
     selector: 'app-login',
@@ -18,17 +19,7 @@ export class LoginComponent {
 
     constructor(private router: Router, private loginService: LoginService,
         private storageService: StorageService, private appsettings: AppSettings) {
-            this.loadScript('../assets/dist/js/adminlte.min.js');
     }
-
-    public loadScript(url) {
-        console.log('preparing to load...');
-        const node = document.createElement('script');
-        node.src = url;
-        node.type = 'text/javascript';
-        document.getElementsByTagName('head')[0].appendChild(node);
-     }
-
 
     signIn() {
         this.loginModel.isLoading = true;
@@ -43,16 +34,20 @@ export class LoginComponent {
                 this.router.navigate(['/dashboard']);
             } else {
                 this.loginModel.isError = true;
+                this.loginModel.errorClass = new Array(this.appsettings.danger);
                 this.loginModel.errmsg = result.description;
                 setTimeout(() => {
+                    this.loginModel.errorClass.pop();
                     this.loginModel.isError = false;
                 }, 2000);
             }
         }, error => {
             this.loginModel.isLoading = false;
             this.loginModel.isError = true;
+            this.loginModel.errorClass = new Array(this.appsettings.danger);
             this.loginModel.errmsg = error;
             setTimeout(() => {
+                this.loginModel.errorClass.pop();
                 this.loginModel.isError = false;
             }, 2000);
         });
@@ -73,9 +68,14 @@ export class LoginComponent {
             .subscribe(
             response => {
                 const result = Object.assign(new ResponseModel(), response.json());
-                if (result.code === '00' && result.data.length > 0) {
+                if (result.code === '00') {
                     this.loginModel.isUsernameValid = true;
-                    this.loginModel.domainIds = result.data;
+                    if (result.data.length > 1) {
+                        this.loginModel.domainIds = result.data;
+                    }else {
+                        const dModel = <DomainModel>result.data[0];
+                        this.loginModel.domainId = dModel.id;
+                    }
                 } else {
                     this.loginModel.isError = true;
                     this.loginModel.errmsg = result.description;

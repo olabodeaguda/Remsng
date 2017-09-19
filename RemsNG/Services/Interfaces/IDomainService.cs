@@ -9,6 +9,7 @@ namespace RemsNG.Services.Interfaces
 {
     public interface IDomainService
     {
+        Task<List<Domain>> ActiveDomains();
         Task<object> Paginated(PageModel pageModel);
         Task<List<Domain>> GetDomainByUsername(string username);
         Task<bool> Add(Domain domain);

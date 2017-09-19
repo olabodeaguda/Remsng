@@ -56,7 +56,14 @@ namespace RemsNG.Controllers
                 data = domains.Where(x => x.domainStatus == UserStatus.ACTIVE.ToString())
             });
         }
-        
+
+        [Route("activeDomain")]
+        [RemsRequirementAttribute("GET_DOMAIN")]
+        public async Task<object> get()
+        {
+            return await this.domainService.ActiveDomains();
+        }
+
         [Route("all")]
         [RemsRequirementAttribute("GET_DOMAIN")]
         public async Task<object> get([FromHeader] string pageSize, [FromHeader] string pageNum)
@@ -183,8 +190,8 @@ namespace RemsNG.Controllers
             {
                 return BadRequest(new Response()
                 {
-                     code = MsgCode_Enum.FAIL,
-                     description = "Update failed"
+                    code = MsgCode_Enum.FAIL,
+                    description = "Update failed"
                 });
             }
         }
@@ -211,7 +218,7 @@ namespace RemsNG.Controllers
                     description = "Invalid domain selected"
                 });
             }
-            else if(CommonList.StatusLst.FirstOrDefault(x=>x == domain.domainStatus) == null)
+            else if (CommonList.StatusLst.FirstOrDefault(x => x == domain.domainStatus) == null)
             {
                 return BadRequest(new Response()
                 {
