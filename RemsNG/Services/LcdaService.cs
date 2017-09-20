@@ -33,6 +33,16 @@ namespace RemsNG.Services
             return await lcdaDao.All(pageModel);
         }
 
+        public async Task<Lcda> byLCDACode(string lcdaCode)
+        {
+            return await lcdaDao.byLcdaCode(lcdaCode);
+        }
+
+        public async Task<List<UserLcda>> byUsername(string username)
+        {
+            return await lcdaDao.getLcdaByUsername(username);
+        }
+
         public async Task<bool> Changetatus(Guid id, string lcdastatus)
         {
             return await lcdaDao.Changetatus(id, lcdastatus);
@@ -47,5 +57,7 @@ namespace RemsNG.Services
         {
             return await lcdaDao.Update(lcda);
         }
+
+
     }
 }

@@ -19,6 +19,8 @@ namespace RemsNG.ORM
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Lcda> lcdas { get; set; }
+        public DbSet<Ward> Wards { get; set; }
+        public DbSet<UserLcda> UserLcdas { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -26,9 +28,11 @@ namespace RemsNG.ORM
             modelBuilder.Entity<User>().ToTable("tbl_users");
             modelBuilder.Entity<Domain>().ToTable("tbl_domain");
             modelBuilder.Entity<UserDomain>().ToTable("tbl_userdomain").HasKey(x => new { x.domainId, x.userId });
+            modelBuilder.Entity<UserLcda>().ToTable("tbl_userlcda").HasKey(x => new { x.lgdaId, x.userId });
             modelBuilder.Entity<Role>().ToTable("tbl_role");
             modelBuilder.Entity<Address>().ToTable("tbl_address");
             modelBuilder.Entity<Lcda>().ToTable("tbl_lcda");
+            modelBuilder.Entity<Ward>().ToTable("tbl_ward");
         }
     }
 }

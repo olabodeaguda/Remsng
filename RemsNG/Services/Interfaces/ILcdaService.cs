@@ -15,5 +15,7 @@ namespace RemsNG.Services.Interfaces
         Task<bool> Update(Lcda lcda);
         Task<Lcda> Get(Guid id);
         Task<bool> Changetatus(Guid id, string lcdastatus);
+        Task<Lcda> byLCDACode(string lcdaCode);
+        Task<List<UserLcda>> byUsername(string username);
     }
 }

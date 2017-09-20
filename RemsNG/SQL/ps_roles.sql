@@ -6,7 +6,7 @@ CREATE TABLE tbl_role
 (
 	id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
 	roleName varchar(100) not null,
-	domainId uniqueidentifier not null foreign key references tbl_domain(id),
+	domainId uniqueidentifier not null foreign key references tbl_lcda(id),
 	roleStatus varchar(100) not null default 'ACTIVE'
 )
 GO
@@ -130,14 +130,14 @@ IF EXISTS(SELECT *
   DROP PROCEDURE sp_getUserRoleByUsername
   GO
   CREATE PROCEDURE sp_getUserRoleByUsername(
-  @username varchar(100)
+  @username varchar(100), @domainId uniqueidentifier
   )
   AS
   BEGIN
 		select tbl_role.* from tbl_role
 		inner join tbl_userRole on tbl_userRole.roleid = tbl_role.id
 		inner join tbl_users on tbl_users.id = tbl_userRole.userid
-		where tbl_users.username = @username
+		where tbl_users.username = @username and tbl_role.domainId = @domainId
   END
 GO
 

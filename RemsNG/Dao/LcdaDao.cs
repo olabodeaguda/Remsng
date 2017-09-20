@@ -92,5 +92,13 @@ namespace RemsNG.Dao
             }
             return false;
         }
+
+        public async Task<Lcda> byLcdaCode(string lcdaCode)
+        {
+            return await db.lcdas.FirstOrDefaultAsync(x => x.lcdaCode.ToLower() == lcdaCode.ToLower());
+        }
+
+        public async Task<List<UserLcda>> getLcdaByUsername(string username) =>
+            await db.UserLcdas.FromSql("sp_getUserLCDAByUsername @p0", new object[] { username }).ToListAsync();
     }
 }

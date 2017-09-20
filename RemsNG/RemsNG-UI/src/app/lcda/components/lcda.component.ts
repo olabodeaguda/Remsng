@@ -86,6 +86,7 @@ export class LcdaComponent implements OnInit {
         this.lcdaModel.isLoading = true;
         if (this.lcdaModel.eventType === this.appSettings.addMode) {
             this.lcdaService.addLCDA(this.lcdaModel).subscribe(response => {
+                this.lcdaModel.isLoading = false;
                 const result = Object.assign(new ResponseModel(), response.json());
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'Success', result.description);
@@ -93,6 +94,7 @@ export class LcdaComponent implements OnInit {
                     this.getLcda();
                 }
             }, error => {
+                this.lcdaModel.isLoading = false;
                 this.toasterService.pop('error', 'Error', error);
                 if (this.lcdaModel.eventType === this.appSettings.addMode || this.lcdaModel.eventType === this.appSettings.editMode) {
                     jQuery(this.addModal.nativeElement).modal('hide');
@@ -101,6 +103,7 @@ export class LcdaComponent implements OnInit {
                 }
             });
         } else if (this.lcdaModel.eventType === this.appSettings.editMode) {
+            this.lcdaModel.isLoading = false;
             this.lcdaService.editLCDA(this.lcdaModel).subscribe(response => {
                 const result = Object.assign(new ResponseModel(), response.json());
                 if (result.code === '00') {
@@ -109,9 +112,32 @@ export class LcdaComponent implements OnInit {
                     this.getLcda();
                 }
             }, error => {
+                this.lcdaModel.isLoading = false;
                 this.toasterService.pop('error', 'Error', error);
                 if (this.lcdaModel.eventType === this.appSettings.addMode || this.lcdaModel.eventType === this.appSettings.editMode) {
                     jQuery(this.addModal.nativeElement).modal('hide');
+                } else if (this.lcdaModel.eventType === this.appSettings.changeStatusMode) {
+                    jQuery(this.changestatusModal.nativeElement).modal('hide');
+                }
+            });
+        } else if (this.lcdaModel.eventType === this.appSettings.changeStatusMode) {
+            this.lcdaModel.lcdaStatus = this.lcdaModel.lcdaStatus === 'ACTIVE' ? 'NOT_ACTIVE' : 'ACTIVE';
+            this.lcdaService.changeStatusLCDA(this.lcdaModel).subscribe(response => {
+                this.lcdaModel.isLoading = false;
+                const result = Object.assign(new ResponseModel(), response.json());
+                if (result.code === '00') {
+                    this.toasterService.pop('success', 'Success', result.description);
+                    jQuery(this.changestatusModal.nativeElement).modal('hide');
+                    this.getLcda();
+                } else {
+                    this.toasterService.pop('error', 'Error', result.description);
+                    //jQuery(this.changestatusModal.nativeElement).modal('hide');
+                }
+            }, error => {
+                this.lcdaModel.isLoading = false;
+                this.toasterService.pop('error', 'Error', error);
+                if (this.lcdaModel.eventType === this.appSettings.addMode || this.lcdaModel.eventType === this.appSettings.editMode) {
+                    jQuery(this.changestatusModal.nativeElement).modal('hide');
                 } else if (this.lcdaModel.eventType === this.appSettings.changeStatusMode) {
                     jQuery(this.changestatusModal.nativeElement).modal('hide');
                 }

@@ -33,4 +33,11 @@ export class LcdaService {
             id: lcdaModel.id
         }).catch(error => this.dataService.handleError(error));
      }
+
+     changeStatusLCDA(lcdaModel: LcdaModel): Observable<Response> {
+        return this.dataService.post('lcda/changestatus', {
+            lcdaStatus: lcdaModel.lcdaStatus,
+            id: lcdaModel.id
+        }).catch(error => this.dataService.handleError(error));
+     }
 }

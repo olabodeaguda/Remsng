@@ -19,7 +19,7 @@ IF NOT EXISTS(SELECT *
               WHERE object_id = OBJECT_ID(N'tbl_userdomain') AND type IN (N'U'))
 CREATE TABLE tbl_userdomain
 (
-	userid uniqueidentifier NOT NULL foreign key references tbl_user(id) ,
+	userid uniqueidentifier NOT NULL foreign key references tbl_users(id) ,
 	domainid uniqueidentifier NOT NULL foreign key references tbl_domain(id)
 )
 GO

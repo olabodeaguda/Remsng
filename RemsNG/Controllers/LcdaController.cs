@@ -22,6 +22,38 @@ namespace RemsNG.Controllers
             this.lcdaService = _lcdaService;
         }
 
+
+        [Route("domainByusername/{username}")]
+        public async Task<IActionResult> LCDAByusername(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                return BadRequest(new Response
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "username is required!!!."
+                });
+            }
+            User us = await this..GetUserByUsername(username);
+            if (us == null)
+            {
+                return NotFound(new Response
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = $"{username} does't exist"
+                });
+            }
+
+            List<Domain> domains = await domainService.GetDomainByUsername(username);
+
+            return Ok(new Response
+            {
+                code = MsgCode_Enum.SUCCESS,
+                data = domains.Where(x => x.domainStatus == UserStatus.ACTIVE.ToString())
+            });
+        }
+
+
         [Route("all")]
         [RemsRequirementAttribute("GET_LCDA")]
         [HttpGet]
@@ -79,6 +111,15 @@ namespace RemsNG.Controllers
                     code = MsgCode_Enum.WRONG_CREDENTIALS,
                     description = "Domain Code is required!!!"
                 });
+            }
+            var oldlcda = await this.lcdaService.byLCDACode(lcda.lcdaCode);
+            if (oldlcda != null && oldlcda.domainId == lcda.domainId)
+            {
+                return new HttpMessageResult(new Response()
+                {
+                    code = MsgCode_Enum.DUPLICATE,
+                    description = $"{lcda.lcdaCode} already exist for the selected domain"
+                }, 409);
             }
 
             lcda.id = Guid.NewGuid();
@@ -153,13 +194,13 @@ namespace RemsNG.Controllers
                 });
             }
 
-            bool result = await this.lcdaService.Update(oldlcda);
+            bool result = await this.lcdaService.Update(lcda);
             if (result)
             {
                 return Ok(new Response()
                 {
                     code = MsgCode_Enum.SUCCESS,
-                    description = lcda.lcdaName+" has been updated successfully"
+                    description = lcda.lcdaName + " has been updated successfully"
                 });
             }
             else
@@ -171,5 +212,55 @@ namespace RemsNG.Controllers
                 });
             }
         }
+
+        [Route("changestatus")]
+        [RemsRequirementAttribute("CHANGE_LCDA_STATUS")]
+        [HttpPost]
+        public async Task<IActionResult> ChangeStatu([FromBody] Lcda lcda)
+        {
+            if (string.IsNullOrEmpty(lcda.lcdaStatus))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Status is required!!!"
+                });
+            }
+            else if (lcda.id == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Invalid lgda selected"
+                });
+            }
+            else if (CommonList.StatusLst.FirstOrDefault(x => x == lcda.lcdaStatus) == null)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Invalid status"
+                });
+            }
+
+            bool result = await lcdaService.Changetatus(lcda.id, lcda.lcdaStatus);
+            if (result)
+            {
+                return Ok(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = $"Lgda have been updated successfully"
+                });
+            }
+            else
+            {
+                return new HttpMessageResult(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = $"An error occur while processing {lcda.lcdaName}. Please try again or contact an administrator"
+                }, 409);
+            }
+        }
+
     }
 }

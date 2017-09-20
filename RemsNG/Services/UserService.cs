@@ -22,39 +22,36 @@ namespace RemsNG.Services
         private readonly LoginDao loginDao;
         private readonly DomainDao domainDao;
         private readonly RoleDao roleDao;
+        private readonly LcdaDao lcdaDao;
         public UserService(RemsDbContext _db,
             IOptions<JwtIssuerOptions> _jwtOptions)
         {
             loginDao = new LoginDao(_db);
             domainDao = new DomainDao(_db);
             roleDao = new RoleDao(_db);
+            lcdaDao = new LcdaDao(_db);
             jwtOptions = _jwtOptions.Value;
         }
 
-        public async Task<object> GetToken(User user,Guid domainId,bool byDomain)
+        public async Task<object> GetToken(User user, Guid lcdaId, bool byDomain)
         {
-            string domainName = string.Empty;
             if (!byDomain)
             {
-                List<Domain> domain = await domainDao.GetUserDomainByUsername(user.username);
-                if (domain.Count > 0)
+                List<UserLcda> uls = await lcdaDao.getLcdaByUsername(user.username);
+                if (uls.Count > 0)
                 {
-                    var selectedDomain = domain.FirstOrDefault();
-                    domainId = selectedDomain.id;
-                    domainName = selectedDomain.domainName;
+                    var selectedDomain = uls.FirstOrDefault();
+                    lcdaId = selectedDomain.lgdaId;
                 }
             }
             else
             {
-                Domain domain = await domainDao.byDomainId(domainId);
-                if (domain != null)
-                {
-                    domainName = domain.domainName;
-                }
+                Lcda lcda = await lcdaDao.Get(lcdaId);
+                lcdaId = lcda.id;
             }
-            
-            Role role = await roleDao.GetUserRoleByUsernameByDomainId(user.username,domainId);
-           
+
+            Role role = await roleDao.GetUserRoleByUsernameByDomainId(user.username, lcdaId);
+
             int logTime = int.TryParse(jwtOptions.logOutTIme, out logTime) ? logTime : 30;
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -67,7 +64,7 @@ namespace RemsNG.Services
                             new Claim(ClaimTypes.NameIdentifier, user.username),
                             new Claim(ClaimTypes.Name, $"{user.surname} {user.firstname} {user.lastname}"),
                             new Claim(ClaimTypes.Role, role != null? role.roleName:string.Empty),
-                            new Claim("Domain",JsonConvert.SerializeObject(domainId)),
+                            new Claim("Domain",JsonConvert.SerializeObject(lcdaId)),
                             new Claim("identity",EncryptDecryptUtils.ToHexString(user.id.ToString()))
                         }),
                 Expires = DateTime.UtcNow.AddMinutes(logTime),
@@ -85,7 +82,7 @@ namespace RemsNG.Services
                 fullname = $"{user.surname} {user.firstname} {user.lastname}",
                 userStatus = user.userStatus,
                 domainName = domainName
-            } ;
+            };
         }
 
         public async Task<User> GetUserByUsername(string username)
