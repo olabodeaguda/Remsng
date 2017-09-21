@@ -131,7 +131,6 @@ export class LcdaComponent implements OnInit {
                     this.getLcda();
                 } else {
                     this.toasterService.pop('error', 'Error', result.description);
-                    //jQuery(this.changestatusModal.nativeElement).modal('hide');
                 }
             }, error => {
                 this.lcdaModel.isLoading = false;
