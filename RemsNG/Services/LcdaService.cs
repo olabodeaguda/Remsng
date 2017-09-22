@@ -38,7 +38,7 @@ namespace RemsNG.Services
             return await lcdaDao.byLcdaCode(lcdaCode);
         }
 
-        public async Task<List<UserLcda>> byUsername(string username)
+        public async Task<List<Lcda>> byUsername(string username)
         {
             return await lcdaDao.getLcdaByUsername(username);
         }

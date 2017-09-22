@@ -57,9 +57,11 @@ export class LoginComponent {
         if (this.loginModel.username.trim().length < 1) {
             this.loginModel.isError = true;
             this.loginModel.errmsg = 'Username is required';
+            this.loginModel.errorClass.push(this.appsettings.danger);
             setTimeout(() => {
                 this.loginModel.isError = false;
                 this.loginModel.errmsg = '';
+                this.loginModel.errorClass.pop();
             }, 2000);
             return;
         }
@@ -67,6 +69,7 @@ export class LoginComponent {
         this.loginService.GetUserDomain(this.loginModel.username)
             .subscribe(
             response => {
+                this.loginModel.isLoading = false;
                 const result = Object.assign(new ResponseModel(), response.json());
                 if (result.code === '00') {
                     this.loginModel.isUsernameValid = true;

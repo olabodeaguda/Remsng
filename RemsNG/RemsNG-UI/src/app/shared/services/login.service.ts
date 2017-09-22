@@ -10,11 +10,22 @@ export class LoginService {
     }
 
     GetUserDomain(username: string): Observable<Response> {
-        return this.dataService.get('domain/domainByusername/' + username).catch(err => this.dataService.handleError(err));
+        return this.dataService.get('lcda/byusername/' + username).catch(err => this.dataService.handleError(err));
     }
 
     SignIn(loginModel: LoginModel): Observable<Response> {
-        this.dataService.addToHeader('value', btoa(JSON.stringify(loginModel)));
+        if (loginModel.domainId === '') {
+            this.dataService.addToHeader('value', btoa(JSON.stringify({
+                 username: loginModel.username,
+                 pwd: loginModel.pwd
+            })));
+        } else {
+            this.dataService.addToHeader('value', btoa(JSON.stringify({
+                username: loginModel.username,
+                pwd: loginModel.pwd,
+                domainId: loginModel.domainId
+           })));
+        }
         return this.dataService.post('user', {}).catch(err => this.dataService.handleError(err));
     }
 }

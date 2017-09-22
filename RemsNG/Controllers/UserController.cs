@@ -12,8 +12,6 @@ using RemsNG.ORM;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace RemsNG.Controllers
 {
     [Route("api/v1/user")]
@@ -60,7 +58,7 @@ namespace RemsNG.Controllers
             }
 
             //generate jwt
-            object token = await userService.GetToken(user, ln.domainId, ln.domainId == Guid.Empty ? false : true);
+            object token = await userService.GetToken(user, ln.domainId);
 
             Response response = new Response()
             {

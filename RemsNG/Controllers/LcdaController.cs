@@ -9,8 +9,6 @@ using System.Security.Claims;
 using RemsNG.Services.Interfaces;
 using RemsNG.ORM;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace RemsNG.Controllers
 {
     [Route("api/v1/lcda")]
@@ -22,8 +20,7 @@ namespace RemsNG.Controllers
             this.lcdaService = _lcdaService;
         }
 
-
-        [Route("domainByusername/{username}")]
+        [Route("byusername/{username}")]
         public async Task<IActionResult> LCDAByusername(string username)
         {
             if (string.IsNullOrEmpty(username))
@@ -34,8 +31,17 @@ namespace RemsNG.Controllers
                     description = "username is required!!!."
                 });
             }
-            User us = await this..GetUserByUsername(username);
-            if (us == null)
+            if (username.ToLower() == "mos-admin")
+            {
+                return Ok(new Response
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    data = { }
+                });
+            }
+
+            List<Lcda> us = await this.lcdaService.byUsername(username);
+            if (us.Count < 1)
             {
                 return NotFound(new Response
                 {
@@ -44,12 +50,10 @@ namespace RemsNG.Controllers
                 });
             }
 
-            List<Domain> domains = await domainService.GetDomainByUsername(username);
-
             return Ok(new Response
             {
                 code = MsgCode_Enum.SUCCESS,
-                data = domains.Where(x => x.domainStatus == UserStatus.ACTIVE.ToString())
+                data = us
             });
         }
 

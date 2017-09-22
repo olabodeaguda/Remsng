@@ -33,21 +33,27 @@ namespace RemsNG.Services
             jwtOptions = _jwtOptions.Value;
         }
 
-        public async Task<object> GetToken(User user, Guid lcdaId, bool byDomain)
+        public async Task<object> GetToken(User user, Guid lcdaId)
         {
-            if (!byDomain)
+            String domainName = "";
+
+            if (user.username.ToLower() != "mos-admin")
             {
-                List<UserLcda> uls = await lcdaDao.getLcdaByUsername(user.username);
+                List<Lcda> uls = await lcdaDao.getLcdaByUsername(user.username);
                 if (uls.Count > 0)
                 {
                     var selectedDomain = uls.FirstOrDefault();
-                    lcdaId = selectedDomain.lgdaId;
+                    lcdaId = selectedDomain.id;
+                    if (selectedDomain != null)
+                    {
+                        Lcda ld = await lcdaDao.Get(lcdaId);
+                        domainName = ld.lcdaName;
+                    }
                 }
             }
             else
             {
-                Lcda lcda = await lcdaDao.Get(lcdaId);
-                lcdaId = lcda.id;
+                domainName = "mos-admin";
             }
 
             Role role = await roleDao.GetUserRoleByUsernameByDomainId(user.username, lcdaId);

@@ -37,6 +37,7 @@ namespace RemsNG.Dao
         
         public async Task<bool> Add(Domain domain)
         {
+            domain.domainType = EncryptDecryptUtils.ToHexString("others");
             db.Domains.Add(domain);
             int count = await db.SaveChangesAsync();
             if (count > 0)

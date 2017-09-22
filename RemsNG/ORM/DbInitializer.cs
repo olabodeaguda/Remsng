@@ -22,7 +22,8 @@ namespace RemsNG.ORM
                     id = Guid.NewGuid(),
                     domainName = "MOS-ADMIN",
                     domainCode = "MOS-ADMIN",
-                    datecreated = DateTime.Now
+                    datecreated = DateTime.Now,
+                    domainType = EncryptDecryptUtils.ToHexString("mos-admin")
                 };
                 db.Domains.Add(domain);
                 mosDomain = domain;

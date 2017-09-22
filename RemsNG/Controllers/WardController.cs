@@ -16,10 +16,12 @@ namespace RemsNG.Controllers
     [Route("api/v1/ward")]
     public class WardController : Controller
     {
+        private readonly ILcdaService lcdaService;
         private readonly IWardService wardService;
-        public WardController(IWardService _wardservice)
+        public WardController(IWardService _wardservice, ILcdaService _lcdaService)
         {
             wardService = _wardservice;
+            lcdaService = _lcdaService;
         }
 
         [Route("all")]
@@ -43,7 +45,7 @@ namespace RemsNG.Controllers
                     bool v = Guid.TryParse(domainId.Value, out dId);
                     if (v)
                     {
-                        List<Ward> cd = await wardService.GetWardByLGDAId(Id);
+                        List<Ward> cd = await wardService.GetWardByLGDAId(dId);
                         return cd;
                     }
                 }
@@ -51,17 +53,53 @@ namespace RemsNG.Controllers
             return new object[] { };
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
         // POST api/values
         [HttpPost]
-        public void Post([FromBody]string value)
+        public async Task<IActionResult> Post([FromBody]Ward ward)
         {
+            if (ward.lcdaId == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Lgda is required!!"
+                });
+            }
+            else if (string.IsNullOrEmpty(ward.wardName))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Ward name is required!!"
+                });
+            }
+            Lcda lcda = await lcdaService.Get(ward.lcdaId);
+            if (lcda == null)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Wrong ward selected is required!!"
+                });
+            }
+
+            bool result = await wardService.Add(ward);
+            if (result)
+            {
+                return Ok(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = $"{ward.wardName} has been added successfully"
+                });
+            }
+            else
+            {
+                return new HttpMessageResult(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Addtion failed. Please try again or contact administrator"
+                }, 409);
+            }
         }
 
         // PUT api/values/5

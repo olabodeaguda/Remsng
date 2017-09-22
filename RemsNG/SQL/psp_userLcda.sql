@@ -20,7 +20,7 @@ IF EXISTS(SELECT *
   )
   AS
   BEGIN
-		select tbl_userlcda.* from tbl_lcda
+		select tbl_lcda.* from tbl_lcda
 		inner join tbl_userlcda on tbl_userlcda.lcdaid = tbl_lcda.id
 		inner join tbl_users on tbl_users.id = tbl_userlcda.userid
 		where tbl_users.username = @username

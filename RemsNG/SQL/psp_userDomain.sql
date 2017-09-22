@@ -10,7 +10,8 @@ CREATE TABLE tbl_domain
 	domainCode varchar(20) NOT NULL UNIQUE,
 	datecreated datetime NOT NULL default getdate(),
 	addressId uniqueidentifier,
-	domainStatus varchar(100) NOT NULL
+	domainStatus varchar(100) NOT NULL,
+	domainType varchar(100) NOT NULL default 'others'
 )
 GO
 
