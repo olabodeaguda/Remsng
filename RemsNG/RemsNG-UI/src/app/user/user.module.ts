@@ -2,12 +2,13 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { BrowserModule} from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
-import {LoginComponent} from './components/login.component';
 import { LaddaModule } from 'angular2-ladda';
-import { LoginService } from '../shared/services/login.service';
+import { SharedModule } from '../shared/shared.module';
+import { UserComponent } from './components/user.component';
+import { UserService } from './services/user.service';
 
 const appRoutes: Routes = [
-    { path: 'login', component: LoginComponent }
+    { path: 'users', component: UserComponent }
  ];
 
 @NgModule({
@@ -16,17 +17,18 @@ const appRoutes: Routes = [
       LaddaModule,
       FormsModule,
       ReactiveFormsModule,
+      SharedModule,
       RouterModule.forChild(appRoutes)
     ],
     declarations: [
-        LoginComponent
+        UserComponent
     ],
-    providers: [ LoginService],
+    providers: [ UserService],
     exports: [
-        LoginComponent
+        UserComponent
     ]
   })
 
-export class LoginModule {
+export class UserModule {
 
 }

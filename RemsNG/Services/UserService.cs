@@ -23,6 +23,7 @@ namespace RemsNG.Services
         private readonly DomainDao domainDao;
         private readonly RoleDao roleDao;
         private readonly LcdaDao lcdaDao;
+        private readonly UserDao userDao;
         public UserService(RemsDbContext _db,
             IOptions<JwtIssuerOptions> _jwtOptions)
         {
@@ -30,6 +31,7 @@ namespace RemsNG.Services
             domainDao = new DomainDao(_db);
             roleDao = new RoleDao(_db);
             lcdaDao = new LcdaDao(_db);
+            userDao = new UserDao(_db);
             jwtOptions = _jwtOptions.Value;
         }
 
@@ -93,7 +95,47 @@ namespace RemsNG.Services
 
         public async Task<User> GetUserByUsername(string username)
         {
-            return await loginDao.GetUser(username);
+            return await userDao.ByUserName(username);
+        }
+
+        public async Task<User> ByEmail(string email)
+        {
+            return await userDao.ByEmail(email);
+        }
+
+        public async Task<bool> Create(User user)
+        {
+            return await userDao.Create(user);
+        }
+
+        public Task<bool> AddAndAssignLGDA(User user, UserLcda userLcda)
+        {
+            return userDao.AddAndAssignLGDA(user, userLcda);
+        }
+
+        public async Task<object> Paginated(PageModel pageModel, Guid lcdaId)
+        {
+            return await userDao.Paginated(pageModel, lcdaId);
+        }
+
+        public async Task<object> Paginated(PageModel pageModel)
+        {
+            return await userDao.Paginated(pageModel);
+        }
+
+        public async Task<bool> Update(User user)
+        {
+            return await userDao.Update(user);
+        }
+
+        public async Task<User> Get(Guid id)
+        {
+            return await userDao.Get(id);
+        }
+
+        public async Task<bool> ChangePwd(Guid id, string newPwd)
+        {
+            return await userDao.ChangePwd(id, newPwd);
         }
     }
 }

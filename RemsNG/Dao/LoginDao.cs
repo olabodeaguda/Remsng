@@ -13,10 +13,10 @@ namespace RemsNG.Dao
         {
         }
 
-        public async Task<User> GetUser(string username)
-        {
-            return await db.Users.FirstOrDefaultAsync(x => x.username == username.Trim());
-        }
+        //public async Task<User> GetUser(string username)
+        //{
+        //    return await db.Users.FirstOrDefaultAsync(x => x.username == username.Trim());
+        //}
 
     }
 }

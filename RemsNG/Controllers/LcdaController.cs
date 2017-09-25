@@ -36,7 +36,7 @@ namespace RemsNG.Controllers
                 return Ok(new Response
                 {
                     code = MsgCode_Enum.SUCCESS,
-                    data = { }
+                    data = new object[0]
                 });
             }
 
@@ -57,6 +57,14 @@ namespace RemsNG.Controllers
             });
         }
 
+        [Route("total")]
+        [RemsRequirementAttribute("MOSADMIN")]
+        [HttpGet]
+        public async Task<object> All()
+        {
+            return await lcdaService.All();
+        }
+
 
         [Route("all")]
         [RemsRequirementAttribute("GET_LCDA")]
@@ -68,7 +76,7 @@ namespace RemsNG.Controllers
             {
                 pageSize = string.IsNullOrEmpty(pageSize) ? "1" : pageSize;
                 pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
-                return await lcdaService.AllPaginated(new PageModel() { PageNum = int.Parse(pageNum), PageSize = int.Parse(pageSize) });
+                return await lcdaService.All(new PageModel() { PageNum = int.Parse(pageNum), PageSize = int.Parse(pageSize) });
             }
             else
             {

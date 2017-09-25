@@ -1,0 +1,230 @@
+<!--<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" #changestatus>
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Approve LCDA</h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div [ngClass]="lcdaModel.errClass" *ngIf="lcdaModel.isErrMsg">
+                    {{lcdaModel.msg}}
+                </div>
+                <div class="box-body">
+                    You are about to<b> {{lcdaModel.lcdaStatus === 'ACTIVE'?'deactivate':'approve'}}</b> {{lcdaModel.lcdaName}}. Are you sure?
+                </div>
+                <div class="box-footer">
+                        <button [ladda]="lcdaModel.isLoading" type="submit" class="btn btn-success" (click)="addLCDA()">Submit</button>
+                        <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>-->
+
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" #changepwd>
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Change Password</h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div [ngClass]="profileModel.errClass" *ngIf="profileModel.isErrMsg">
+                    {{profileModel.errMsg}}
+                </div>
+                <div class="box-body">
+                    <div class="form-group">
+                        <label for="newPwd">New Password</label>
+                        <input name="newPwd" [(ngModel)]="changePwd.newPwd" type="password" class="form-control" id="newPwd" placeholder="Enter New password">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPwd">Confirm New Password</label>
+                        <input name="confirmPwd" [(ngModel)]="changePwd.confirmPwd" type="password" class="form-control" id="confirmPwd" placeholder="Enter Confirm password">
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <button [ladda]="profileModel.isLoading" type="submit" class="btn btn-success" (click)="addUser()">Submit</button>
+                    <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" role="dialog" id="addModal" #addModal>
+    <div class=" modal-dialog ">
+        <div class="modal-content " style="width:500px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Add User</h4>
+            </div>
+            <form role="form">
+                <div class="modal-body clearfix ">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Fill in the details</h3>
+                        </div>
+                        <div [ngClass]="profileModel.errClass" *ngIf="profileModel.isErrMsg">
+                            {{profileModel.errMsg}}
+                        </div>
+                        <div class="box-body">
+                            <div class="row">
+                                <div class="col-md--6">
+                                    <div class="form-group">
+                                        <label for="username">Username</label>
+                                        <input name="username" [(ngModel)]="profileModel.username" type="text" class="form-control" id="username" placeholder="Enter username">
+                                    </div>
+                                </div>
+                                <div class="col-md--6">
+                                    <div class="form-group">
+                                        <label for="email">Email</label>
+                                        <input name="email" [(ngModel)]="profileModel.email" type="email" class="form-control" id="email" placeholder="Enter email">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md--6">
+                                    <div class="form-group">
+                                        <label for="Surname">Surname</label>
+                                        <input name="Surname" [(ngModel)]="profileModel.surname" type="text" class="form-control" id="Surname" placeholder="Enter Surname">
+                                    </div>
+                                </div>
+                                <div class="col-md--6">
+                                    <div class="form-group">
+                                        <label for="firstname">First Name</label>
+                                        <input name="firstname" [(ngModel)]="profileModel.firstname" type="text" class="form-control" id="firstname" placeholder="Enter firstname">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md--6">
+                                    <div class="form-group">
+                                        <label for="lastname">Last Name</label>
+                                        <input name="lastname" [(ngModel)]="profileModel.lastname" type="text" class="form-control" id="lastname" placeholder="Enter lastname">
+                                    </div>
+                                </div>
+                                <div class="col-md--6">
+                                    <div class="form-group">
+                                        <label for="gender">Gender</label>
+                                        <select [(ngModel)]="profileModel.gender" name="gender" class="form-control">
+                                            <option value="Female">Female</option>
+                                            <option value="Male">Male</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-footer">
+                            <button [ladda]="profileModel.isLoading" type="submit" class="btn btn-primary" (click)="addUser()">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper hold-transition skin-blue fixed sidebar-mini">
+    <app-hd></app-hd>
+    <app-sbar></app-sbar>
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>
+                User Management
+                <small>Manage and register Users.</small>
+            </h1>
+        </section>
+
+        <section class="content" style="border-style:thin">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h3 class="box-title">User List</h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <p>
+                                <button class="btn btn-primary" (click)="open('ADD',null)">
+                                    <i class="fa fa-plus"></i> Add</button>
+                            </p>
+                            <table id="example2" class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="width:120px;"></th>
+                                        <th style="width:50px;"></th>
+                                        <th>Email</th>
+                                        <th>Username</th>
+                                        <th>Full Name</th>
+                                        <th>userStatus</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let data of userLst; let i=index">
+                                        <td>
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Action
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <a href="javascript:;" (click)="open('EDIT',data)">
+                                                            <i class="fa fa-edit"></i>Edit
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a (click)="open('CHANGE_STATUS',data)">
+                                                            <i class="fa fa-cog"></i> {{data.userStatus === 'ACTIVE'?'Deactivate':'Approve'}}</a>
+                                                    </li>
+                                                    <li>
+                                                        <a (click)="open('CHANGE_PWD', data)">
+                                                            <i class="fa fa-lock"></i> Change Password</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                        <td>{{(pageModel.pageSize*(pageModel.pageNum - 1))+(i+1)}}</td>
+                                        <td>{{data.email}}</td>
+                                        <td>{{data.username}}</td>
+                                        <td>{{data.surname}} {{data.firstname}} {{data.lastname}}</td>
+                                        <td>{{data.userStatus}}</td>
+                                    </tr>
+                                    <tr *ngIf="userLst.length < 1">
+                                        <td style="width:100%" colspan="6">No record !!!</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="5">
+                                            <nav *ngIf="userLst.length > 0">
+                                                <ul class="pagination">
+                                                    <li>
+                                                        <a aria-label="Previous" (click)="previous()">
+                                                            <span aria-hidden="true">Previous</span>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a aria-label="Next" (click)="next()">
+                                                            <span aria-hidden="true">Next </span>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}} </span>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <ft></ft>
+    <div class="loading" *ngIf="isLoading"></div>

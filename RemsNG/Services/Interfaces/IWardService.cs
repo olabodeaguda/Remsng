@@ -12,6 +12,7 @@ namespace RemsNG.Services.Interfaces
         Task<List<Ward>> ActiveWard();
         Task<bool> Add(Ward ward);
         Task<object> Paginated(Models.PageModel pageModel);
+        Task<object> Paginated(Models.PageModel pageModel, Guid lgdaId);
         Task<Ward> GetWard(Guid id);
         Task<List<Ward>> GetWardByLGDAId(Guid lgdaId);
         Task<bool> Update(Ward ward);

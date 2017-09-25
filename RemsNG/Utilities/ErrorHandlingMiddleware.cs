@@ -26,7 +26,6 @@ namespace RemsNG.Utilities
 
             try
             {
-
                 await next(context);
             }
             catch (Exception ex)
@@ -63,6 +62,12 @@ namespace RemsNG.Utilities
                 response.description = exception.Message;
                 response.code = MsgCode_Enum.NOTFOUND;
                 context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+            }
+            else if(exception.GetType() == typeof(AlreadyExistException))
+            {
+                response.description = exception.Message;
+                response.code = MsgCode_Enum.NOTFOUND;
+                context.Response.StatusCode = (int)HttpStatusCode.Conflict;
             }
             else
             {

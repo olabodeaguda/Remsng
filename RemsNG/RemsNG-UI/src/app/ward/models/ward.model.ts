@@ -3,4 +3,9 @@ export class WardModel {
     wardName: string = '';
     lcdaId: string = '';
     wardStatus: string = '';
+    eventType: string = '';
+    isErrMsg: boolean = false;
+    errMsg: string = '';
+    errClass: string[] = [];
+    isLoading: boolean = false;
 }

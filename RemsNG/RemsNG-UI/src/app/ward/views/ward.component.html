@@ -6,14 +6,14 @@
                 <h4 class="modal-title">Approve LCDA</h4>
             </div>
             <div class="modal-body clearfix">
-                <div [ngClass]="lcdaModel.errClass" *ngIf="lcdaModel.isErrMsg">
-                    {{lcdaModel.msg}}
+                <div [ngClass]="wardModel.errClass" *ngIf="wardModel.isErrMsg">
+                    {{wardModel.msg}}
                 </div>
                 <div class="box-body">
-                    You are about to<b> {{lcdaModel.lcdaStatus === 'ACTIVE'?'deactivate':'approve'}}</b> {{lcdaModel.lcdaName}}. Are you sure?
+                    You are about to<b> {{wardModel.lcdaStatus === 'ACTIVE'?'deactivate':'approve'}}</b> {{wardModel.lcdaName}}. Are you sure?
                 </div>
                 <div class="box-footer">
-                        <button [ladda]="lcdaModel.isLoading" type="submit" class="btn btn-success" (click)="addLCDA()">Submit</button>
+                        <button [ladda]="wardModel.isLoading" type="submit" class="btn btn-success" (click)="addLCDA()">Submit</button>
                         <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -34,25 +34,25 @@
                         <div class="box-header with-border">
                             <h3 class="box-title">Fill in the details</h3>
                         </div>
-                        <div [ngClass]="lcdaModel.errClass" *ngIf="lcdaModel.isErrMsg">
-                            {{lcdaModel.errMsg}}
+                        <div [ngClass]="wardModel.errClass" *ngIf="wardModel.isErrMsg">
+                            {{wardModel.errMsg}}
                         </div>
                         <div class="box-body">
                             <div class="form-group">
-                                <label for="lcdaName">LCDA Name</label>
-                                <input name="lcdaName" [(ngModel)]="lcdaModel.lcdaName" type="text" class="form-control" 
-                                id="lcdaName" placeholder="Enter LCDA Name">
+                                <label for="wardName">Ward Name</label>
+                                <input name="wardName" [(ngModel)]="wardModel.wardName" type="text" class="form-control" 
+                                id="wardName" placeholder="Enter Ward Name">
                             </div>
                             <div class="form-group">
-                                <label for="lcdaCode">Select LGDA</label>
-                                <select id="domainId" name="domainId" class="form-control" [(ngModel)]="lcdaModel.domainId">
-                                    <option *ngFor="let data of domainList;" [ngValue]="data.id">{{data.domainName}}</option>
+                                <label for="lcdaId">Select LGDA</label>
+                                <select id="lcdaId" name="lcdaId" class="form-control" [(ngModel)]="wardModel.lcdaId">
+                                    <option *ngFor="let data of lgdaLst;" [ngValue]="data.id">{{data.lcdaName}}</option>
                                 </select>
                             </div>
                         </div>
                         <div class="box-footer">
-                            <button [ladda]="lcdaModel.isLoading" type="submit" class="btn btn-primary" 
-                            (click)="addLCDA()">Submit</button>
+                            <button [ladda]="wardModel.isLoading" type="submit" class="btn btn-primary" 
+                            (click)="addWard()">Submit</button>
                         </div>
                     </div>
                 </div>

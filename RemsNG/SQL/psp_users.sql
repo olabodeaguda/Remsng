@@ -19,7 +19,8 @@ CREATE TABLE tbl_users
 	lastModifiedDate datetime,
 	lastname varchar(100),
 	surname varchar(100),
-	firstname varchar(100)
+	firstname varchar(100),
+	gender varchar(10)
 )
 GO
 

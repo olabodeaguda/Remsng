@@ -21,6 +21,11 @@ namespace RemsNG.Dao
             return await db.lcdas.FirstOrDefaultAsync(x => x.id == id);
         }
 
+        public async Task<object> All()
+        {
+            return await db.lcdas.ToListAsync();
+        }
+
         public async Task<object> All(PageModel pageModel)
         {
             return await Task.Run(() =>
@@ -100,5 +105,17 @@ namespace RemsNG.Dao
 
         public async Task<List<Lcda>> getLcdaByUsername(string username) =>
             await db.lcdas.FromSql("sp_getUserLCDAByUsername @p0", new object[] { username }).ToListAsync();
+
+        public async Task<bool> AssignUserToLgda(UserLcda userLcda)
+        {
+            db.UserLcdas.Add(userLcda);
+            int count = await db.SaveChangesAsync();
+            if (count > 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

@@ -28,9 +28,14 @@ namespace RemsNG.Services
             return await lcdaDao.Add(lcda);
         }
 
-        public async Task<object> AllPaginated(PageModel pageModel)
+        public async Task<object> All(PageModel pageModel)
         {
             return await lcdaDao.All(pageModel);
+        }
+
+        public async Task<object> All()
+        {
+            return await lcdaDao.All();
         }
 
         public async Task<Lcda> byLCDACode(string lcdaCode)
@@ -53,7 +58,7 @@ namespace RemsNG.Services
             return lcdaDao.Get(id);
         }
 
-        public  async Task<bool> Update(Lcda lcda)
+        public async Task<bool> Update(Lcda lcda)
         {
             return await lcdaDao.Update(lcda);
         }

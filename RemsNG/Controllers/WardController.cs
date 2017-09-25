@@ -24,17 +24,16 @@ namespace RemsNG.Controllers
             lcdaService = _lcdaService;
         }
 
-        [Route("all")]
+        [Route("paginated")]
         [RemsRequirementAttribute("GET_LCDA")]
         [HttpGet]
-        public async Task<object> Get([FromHeader] string pageSize, [FromHeader] string pageNum)
+        public async Task<object> All()
         {
             var hasClaim = User.Claims.Any(x => x.Type == ClaimTypes.NameIdentifier && x.Value.ToLower() == "mos-admin");
+
             if (hasClaim)
             {
-                pageSize = string.IsNullOrEmpty(pageSize) ? "1" : pageSize;
-                pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
-                return await wardService.Paginated(new PageModel() { PageNum = int.Parse(pageNum), PageSize = int.Parse(pageSize) });
+                return await wardService.all();
             }
             else
             {
@@ -45,15 +44,51 @@ namespace RemsNG.Controllers
                     bool v = Guid.TryParse(domainId.Value, out dId);
                     if (v)
                     {
-                        List<Ward> cd = await wardService.GetWardByLGDAId(dId);
-                        return cd;
+                        return await wardService.GetWardByLGDAId(dId);
+                    }
+                }
+            }
+
+            return new object[] { };
+        }
+
+        [Route("paginated")]
+        [RemsRequirementAttribute("GET_LCDA")]
+        [HttpGet]
+        public async Task<object> Get([FromHeader] string pageSize, [FromHeader] string pageNum)
+        {
+            var hasClaim = User.Claims.Any(x => x.Type == ClaimTypes.NameIdentifier && x.Value.ToLower() == "mos-admin");
+            pageSize = string.IsNullOrEmpty(pageSize) ? "1" : pageSize;
+            pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
+
+            if (hasClaim)
+            {
+                return await wardService.Paginated(new PageModel()
+                {
+                    PageNum = int.Parse(pageNum),
+                    PageSize = int.Parse(pageSize)
+                });
+            }
+            else
+            {
+                var domainId = User.Claims.FirstOrDefault(x => x.Type == "Domain");
+                if (domainId != null)
+                {
+                    Guid dId = Guid.Empty;
+                    bool v = Guid.TryParse(domainId.Value, out dId);
+                    if (v)
+                    {
+                        return await wardService.Paginated(new PageModel()
+                        {
+                            PageNum = int.Parse(pageNum),
+                            PageSize = int.Parse(pageSize)
+                        }, dId);
                     }
                 }
             }
             return new object[] { };
         }
 
-        // POST api/values
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]Ward ward)
         {

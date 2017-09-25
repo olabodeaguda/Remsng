@@ -154,4 +154,20 @@ export class LcdaComponent implements OnInit {
             this.lcdaModel.isErrMsg = false;
         }, 3000);
     }
+
+    next() {
+        if (this.pageModel.pageNum > 1 && this.lcdaLst.length < 1) {
+            return;
+        }
+        this.pageModel.pageNum += 1;
+        this.getLcda();
+    }
+
+    previous() {
+        this.pageModel.pageNum -= 1;
+        if (this.pageModel.pageNum < 1) {
+            this.pageModel.pageNum = 1;
+        }
+        this.getLcda();
+    }
 }

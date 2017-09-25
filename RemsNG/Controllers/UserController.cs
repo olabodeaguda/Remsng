@@ -11,6 +11,7 @@ using RemsNG.Utilities;
 using RemsNG.ORM;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using RemsNG.Exceptions;
 
 namespace RemsNG.Controllers
 {
@@ -20,11 +21,14 @@ namespace RemsNG.Controllers
         private readonly ILogger logger;
         private readonly IUserService userService;
         private readonly IDomainService domainService;
+        private readonly ILcdaService lcdaService;
         public UserController(IUserService _userService,
-            ILoggerFactory loggerFactory, IDomainService _domainService)
+            ILoggerFactory loggerFactory, IDomainService _domainService,
+            ILcdaService _lcdaService)
         {
             userService = _userService;
             domainService = _domainService;
+            lcdaService = _lcdaService;
             logger = loggerFactory.CreateLogger<UserController>();
         }
 
@@ -67,6 +71,177 @@ namespace RemsNG.Controllers
             };
 
             return Ok(response);
+        }
+
+        [RemsRequirementAttribute("GET_PROFILE")]
+        [Route("profiles")]
+        [HttpGet]
+        public async Task<object> Profiles([FromHeader] string pageSize, [FromHeader] string pageNum)
+        {
+            pageSize = string.IsNullOrEmpty(pageSize) ? "1" : pageSize;
+            pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
+            if (ClaimExtension.IsMosAdmin(User.Claims.ToList()))
+            {
+                return await userService.Paginated(new PageModel()
+                {
+                    PageNum = int.Parse(pageNum),
+                    PageSize = int.Parse(pageSize)
+                });
+            }
+            else
+            {
+                Guid lcdaId = ClaimExtension.GetDomain(User.Claims.ToList());
+                if (lcdaId == Guid.Empty)
+                {
+                    return new object[] { };
+                }
+
+                return await userService.Paginated(new PageModel()
+                {
+                    PageNum = int.Parse(pageNum),
+                    PageSize = int.Parse(pageSize)
+                }, lcdaId);
+            }
+        }
+
+        [RemsRequirementAttribute("ADD_PROFILE")]
+        [Route("add")]
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] User user)
+        {
+            User username = await userService.GetUserByUsername(user.username);
+            User email = await userService.ByEmail(user.email);
+            List<Lcda> lst = await lcdaService.byUsername(user.username);
+
+            user.id = Guid.NewGuid();
+            user.dateCreated = DateTime.Now;
+            user.createdBy = User.Identity.Name;
+            bool isAdded = false;
+
+            if (ClaimExtension.IsMosAdmin(User.Claims.ToList()))
+            {
+                if (username != null)
+                {
+                    throw new AlreadyExistException("Username already Exist");
+                }
+                else if (email != null)
+                {
+                    throw new AlreadyExistException("Email already Exist");
+                }
+                user.userStatus = UserStatus.ACTIVE.ToString();
+                isAdded = await userService.Create(user);
+            }
+            else
+            {
+                Guid domainId = ClaimExtension.GetDomain(User.Claims.ToList());
+                if (domainId == Guid.Empty)
+                {
+                    throw new InvalidCredentialsException("Logon user must be in a valid local government development authority");
+                }
+
+                if (username != null && lst.Any(x => x.id == domainId))
+                {
+                    throw new AlreadyExistException("Username already Exist");
+                }
+                else if (email != null && lst.Any(x => x.id == domainId))
+                {
+                    throw new AlreadyExistException("Email already Exist");
+                }
+
+                UserLcda userLcda = new UserLcda()
+                {
+                    userId = user.id,
+                    lgdaId = domainId
+                };
+                user.userStatus = UserStatus.NOT_ACTIVE.ToString();
+                isAdded = await userService.AddAndAssignLGDA(user, userLcda);
+            }
+
+            if (isAdded)
+            {
+                return Ok(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = $"{user.username} have been added successfully"
+                });
+            }
+            else
+            {
+                return new HttpMessageResult(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Failed, Please try again or contact administrator for help"
+                }, 409);
+            }
+        }
+
+        [RemsRequirementAttribute("UPDATE_PROFILE")]
+        [Route("update")]
+        [HttpPost]
+        public async Task<IActionResult> Update([FromBody] User user)
+        {
+            user.lastModifiedDate = DateTime.Now;
+            user.lastmodifiedby = User.Identity.Name;
+            if (user.id == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Wrong request"
+                });
+            }
+
+            bool result = await userService.Update(user);
+
+            if (result)
+            {
+                return Ok(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = $"{user.username} has been updated successfully"
+                });
+            }
+            else
+            {
+                return new HttpMessageResult(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "An error occur, Please try again or notify an administrator"
+                }, 409);
+            }
+        }
+
+        [RemsRequirementAttribute("CHANGE_USER_PWD")]
+        [Route("changepwdchange")]
+        [HttpPost]
+        public async Task<IActionResult> ChangeUserPassword([FromHeader] string value)
+        {
+            byte[] obj = Convert.FromBase64String(value);
+            string jsonValue = Encoding.UTF8.GetString(obj);
+            ChangePasswordModel ln = JsonConvert.DeserializeObject<ChangePasswordModel>(jsonValue);
+
+            if (!ln.confirmPwd.Equals(ln.newPwd))
+            {
+                throw new InvalidCredentialsException("Please re-confirm your password");
+            }
+
+            bool result = await userService.ChangePwd(ln.id, ln.newPwd);
+            if (result)
+            {
+                return Ok(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = "Password has been changed successfully"
+                });
+            }
+            else
+            {
+                return new HttpMessageResult(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Password change failed. Please contact administrator or try again"
+                }, 409);
+            }
         }
     }
 }

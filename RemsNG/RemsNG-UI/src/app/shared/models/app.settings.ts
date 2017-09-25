@@ -15,6 +15,7 @@ export class AppSettings {
     public editMode: string = 'EDIT';
     public addMode: string = 'ADD';
     public changeStatusMode: string = 'CHANGE_STATUS';
+    public changePwdMode: string = 'CHANGE_PWD';
 
     public domainStatus: string[] = ['ACTIVE', 'NOT_ACTIVE'];
 }

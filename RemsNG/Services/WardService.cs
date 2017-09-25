@@ -47,6 +47,11 @@ namespace RemsNG.Services
             return await wardDao.Paginated(pageModel);
         }
 
+        public async Task<object> Paginated(PageModel pageModel, Guid lgdaId)
+        {
+            return await wardDao.Paginated(pageModel, lgdaId);
+        }
+
         public async Task<bool> Update(Ward ward)
         {
             return await wardDao.Update(ward);

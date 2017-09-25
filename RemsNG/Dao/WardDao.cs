@@ -32,6 +32,20 @@ namespace RemsNG.Dao
             return false;
         }
 
+        public async Task<object> Paginated(Models.PageModel pageModel, Guid lgdaId)
+        {
+            return await Task.Run(() =>
+            {
+                var results = db.Wards.Where(x=>x.lcdaId == lgdaId).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToList();
+                var totalCount = db.Wards.Count();
+                return new
+                {
+                    data = results,
+                    totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
+                };
+            });
+        }
+
         public async Task<object> Paginated(Models.PageModel pageModel)
         {
             return await Task.Run(() =>

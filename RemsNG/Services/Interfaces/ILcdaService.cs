@@ -9,7 +9,8 @@ namespace RemsNG.Services.Interfaces
 {
     public interface ILcdaService
     {
-        Task<object> AllPaginated(PageModel pageModel);
+        Task<object> All();
+        Task<object> All(PageModel pageModel);
         Task<List<Lcda>> ActiveLCDAByDomainId(Guid domainId);
         Task<bool> Add(Lcda lcda);
         Task<bool> Update(Lcda lcda);

@@ -75,7 +75,7 @@ export class LoginComponent {
                     this.loginModel.isUsernameValid = true;
                     if (result.data.length > 1) {
                         this.loginModel.domainIds = result.data;
-                    }else {
+                    }else if (result.data.length == 1) {
                         const dModel = <DomainModel>result.data[0];
                         this.loginModel.domainId = dModel.id;
                     }

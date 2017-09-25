@@ -17,6 +17,7 @@ import { DomainModule } from './domain/domain.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LCDAModule } from './lcda/lcda.module';
 import { WardModule } from './ward/ward.module';
+import { UserModule } from './user/user.module';
 
 
 const appRoutes: Routes = [
@@ -33,7 +34,7 @@ const appRoutes: Routes = [
         DashBoardModule,
         FormsModule,
         DomainModule,
-        WardModule,
+        WardModule, UserModule,
         ToasterModule, LCDAModule,
         BrowserAnimationsModule,
         LaddaModule.forRoot({
