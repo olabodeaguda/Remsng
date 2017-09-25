@@ -71,6 +71,18 @@ namespace RemsNG.Dao
             return false;
         }
 
+        public async Task<bool> AssignLGDA(UserLcda userLcda)
+        {
+            db.UserLcdas.Add(userLcda);
+            int count = await db.SaveChangesAsync();
+            if (count > 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public async Task<User> ByEmail(string email)
         {
             return await db.Users.FirstOrDefaultAsync(x => x.email == email);

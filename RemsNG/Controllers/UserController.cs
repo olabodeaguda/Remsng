@@ -73,6 +73,20 @@ namespace RemsNG.Controllers
             return Ok(response);
         }
 
+        public async Task AssignToUser(UserLcda userLcda)
+        {
+            if (userLcda.lgdaId == default(Guid))
+            {
+                throw new InvalidCredentialsException("LGDA is required");
+            }
+            else if (userLcda.userId == default(Guid))
+            {
+                throw new InvalidCredentialsException("User is required");
+            }
+
+            bool result = await this.userService.AssignLGDA(userLcda);
+        }
+
         [RemsRequirementAttribute("GET_PROFILE")]
         [Route("profiles")]
         [HttpGet]

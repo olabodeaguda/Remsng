@@ -18,5 +18,6 @@ namespace RemsNG.Services.Interfaces
         Task<object> Paginated(Models.PageModel pageModel);
         Task<bool> Update(User user);
         Task<bool> ChangePwd(Guid id, string newPwd);
+        Task<bool> AssignLGDA(UserLcda userLcda);
     }
 }

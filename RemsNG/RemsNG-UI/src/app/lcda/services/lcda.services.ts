@@ -3,6 +3,7 @@ import { DataService } from '../../shared/services/data.service';
 import { Observable } from 'rxjs/Observable';
 import { PageModel } from '../../shared/models/page.model';
 import { LcdaModel } from '../models/lcda.models';
+import { AssignDomainModel } from '../../user/models/assign-domain.model';
 
 @Injectable()
 export class LcdaService {
@@ -45,4 +46,8 @@ export class LcdaService {
             id: lcdaModel.id
         }).catch(error => this.dataService.handleError(error));
      }
+
+     assignLGDAToUser(assignDomainModel: AssignDomainModel): Observable<Response>  {
+       return this.dataService.post('lcda/asssignlcda',assignDomainModel).catch(error => this.dataService.handleError(error));
+    }
 }

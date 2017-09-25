@@ -11,9 +11,6 @@
       <p class="login-box-msg">Sign in</p>
 
       <form>
-        <!--<ngb-alert [dismissible]="true">
-                <strong>Error!</strong> {{loginModel.errmsg}}
-              </ngb-alert>-->
         <div *ngIf="loginModel.isError" [ngClass]="loginModel.errorClass">
           {{loginModel.errmsg}}
         </div>

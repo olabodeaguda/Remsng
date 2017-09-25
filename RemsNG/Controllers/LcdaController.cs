@@ -8,6 +8,7 @@ using RemsNG.Models;
 using System.Security.Claims;
 using RemsNG.Services.Interfaces;
 using RemsNG.ORM;
+using RemsNG.Exceptions;
 
 namespace RemsNG.Controllers
 {
@@ -64,8 +65,7 @@ namespace RemsNG.Controllers
         {
             return await lcdaService.All();
         }
-
-
+       
         [Route("all")]
         [RemsRequirementAttribute("GET_LCDA")]
         [HttpGet]

@@ -1,25 +1,30 @@
-<!--<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" #changestatus>
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" #assignlgda>
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Approve LCDA</h4>
+                <h4 class="modal-title">Assign LCDA to <b style="font-size: 14px;">{{profileModel.surname}} {{profileModel.firstname}} {{profileModel.lastname}}</b></h4>
             </div>
             <div class="modal-body clearfix">
-                <div [ngClass]="lcdaModel.errClass" *ngIf="lcdaModel.isErrMsg">
-                    {{lcdaModel.msg}}
+                <div [ngClass]="assigndomainmodel.errClass" *ngIf="assigndomainmodel.isErrMsg">
+                    {{assigndomainmodel.msg}}
                 </div>
                 <div class="box-body">
-                    You are about to<b> {{lcdaModel.lcdaStatus === 'ACTIVE'?'deactivate':'approve'}}</b> {{lcdaModel.lcdaName}}. Are you sure?
+                    <div class="form-group">
+                        <label for="lgdaId">Select LGDA</label>
+                        <select name="lgdaId" class="form-control" [(ngModel)]="assigndomainmodel.lgdaId">
+                            <option *ngFor="let data of lcdaLst;" [ngValue]="data.id">{{data.lcdaName}}</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="box-footer">
-                        <button [ladda]="lcdaModel.isLoading" type="submit" class="btn btn-success" (click)="addLCDA()">Submit</button>
+                        <button [ladda]="assigndomainmodel.isLoading" type="submit" class="btn btn-success" (click)="addLCDA()">Submit</button>
                         <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
-</div>-->
+</div>
 
 <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" #changepwd>
     <div class="modal-dialog modal-sm" role="document">
@@ -181,6 +186,10 @@
                                                     <li>
                                                         <a (click)="open('CHANGE_PWD', data)">
                                                             <i class="fa fa-lock"></i> Change Password</a>
+                                                    </li>
+                                                    <li>
+                                                        <a (click)="open('ASSIGN_LGDA', data)">
+                                                            <i class="fa fa-lock"></i> Assign LGDA</a>
                                                     </li>
                                                 </ul>
                                             </div>

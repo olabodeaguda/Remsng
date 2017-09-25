@@ -137,5 +137,10 @@ namespace RemsNG.Services
         {
             return await userDao.ChangePwd(id, newPwd);
         }
+
+        public async Task<bool> AssignLGDA(UserLcda userLcda)
+        {
+            return await this.userDao.AssignLGDA(userLcda);
+        }
     }
 }
