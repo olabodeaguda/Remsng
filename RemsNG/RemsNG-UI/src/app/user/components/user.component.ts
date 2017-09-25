@@ -210,7 +210,7 @@ export class UserComponent implements OnInit {
                 }
             }, error => {
                 this.profileModel.isLoading = false;
-                this.toasterService.pop('error', 'Error', error);               
+                this.toasterService.pop('error', 'Error', error);        
                     jQuery(this.assignlgdaModal.nativeElement).modal('hide');
             });
         }
