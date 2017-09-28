@@ -41,14 +41,14 @@ namespace RemsNG.Services
 
             if (user.username.ToLower() != "mos-admin")
             {
-                List<Lcda> uls = await lcdaDao.getLcdaByUsername(user.username);
+                List<Lgda> uls = await lcdaDao.getLcdaByUsername(user.username);
                 if (uls.Count > 0)
                 {
                     var selectedDomain = uls.FirstOrDefault();
                     lcdaId = selectedDomain.id;
                     if (selectedDomain != null)
                     {
-                        Lcda ld = await lcdaDao.Get(lcdaId);
+                        Lgda ld = await lcdaDao.Get(lcdaId);
                         domainName = ld.lcdaName;
                     }
                 }

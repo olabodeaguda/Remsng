@@ -16,22 +16,22 @@ namespace RemsNG.Dao
         {
         }
 
-        public async Task<Lcda> Get(Guid id)
+        public async Task<Lgda> Get(Guid id)
         {
-            return await db.lcdas.FirstOrDefaultAsync(x => x.id == id);
+            return await db.lgdas.FirstOrDefaultAsync(x => x.id == id);
         }
 
         public async Task<object> All()
         {
-            return await db.lcdas.ToListAsync();
+            return await db.lgdas.ToListAsync();
         }
 
         public async Task<object> All(PageModel pageModel)
         {
             return await Task.Run(() =>
             {
-                var results = db.lcdas.Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToList();
-                var totalCount = db.lcdas.Count();
+                var results = db.lgdas.Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToList();
+                var totalCount = db.lgdas.Count();
                 return new
                 {
                     data = results,
@@ -40,17 +40,17 @@ namespace RemsNG.Dao
             });
         }
 
-        public async Task<List<Lcda>> ActiveLCDAByDomainId(Guid domainId)
+        public async Task<List<Lgda>> ActiveLCDAByDomainId(Guid domainId)
         {
             return await Task.Run(() =>
             {
-                return db.lcdas.Where(x => x.domainId == domainId && x.lcdaStatus == UserStatus.ACTIVE.ToString()).ToList();
+                return db.lgdas.Where(x => x.domainId == domainId && x.lcdaStatus == UserStatus.ACTIVE.ToString()).ToList();
             });
         }
 
-        public async Task<bool> Add(Lcda lcda)
+        public async Task<bool> Add(Lgda lcda)
         {
-            db.lcdas.Add(lcda);
+            db.lgdas.Add(lcda);
             int count = await db.SaveChangesAsync();
             if (count > 0)
             {
@@ -59,9 +59,9 @@ namespace RemsNG.Dao
             return false;
         }
 
-        public async Task<bool> Update(Lcda lcda)
+        public async Task<bool> Update(Lgda lcda)
         {
-            var oldlcda = await db.lcdas.FirstOrDefaultAsync(x => x.id == lcda.id);
+            var oldlcda = await db.lgdas.FirstOrDefaultAsync(x => x.id == lcda.id);
             if (oldlcda == null)
             {
                 throw new NotFoundException($"{lcda.lcdaName} not found");
@@ -83,7 +83,7 @@ namespace RemsNG.Dao
 
         public async Task<bool> Changetatus(Guid id, string lcdastatus)
         {
-            var oldlcda = await db.lcdas.FirstOrDefaultAsync(x => x.id == id);
+            var oldlcda = await db.lgdas.FirstOrDefaultAsync(x => x.id == id);
             if (oldlcda == null)
             {
                 throw new NotFoundException($"selected LCDA does not exist not found");
@@ -98,13 +98,13 @@ namespace RemsNG.Dao
             return false;
         }
 
-        public async Task<Lcda> byLcdaCode(string lcdaCode)
+        public async Task<Lgda> byLcdaCode(string lcdaCode)
         {
-            return await db.lcdas.FirstOrDefaultAsync(x => x.lcdaCode.ToLower() == lcdaCode.ToLower());
+            return await db.lgdas.FirstOrDefaultAsync(x => x.lcdaCode.ToLower() == lcdaCode.ToLower());
         }
 
-        public async Task<List<Lcda>> getLcdaByUsername(string username) =>
-            await db.lcdas.FromSql("sp_getUserLCDAByUsername @p0", new object[] { username }).ToListAsync();
+        public async Task<List<Lgda>> getLcdaByUsername(string username) =>
+            await db.lgdas.FromSql("sp_getUserLCDAByUsername @p0", new object[] { username }).ToListAsync();
 
         public async Task<bool> AssignUserToLgda(UserLcda userLcda)
         {

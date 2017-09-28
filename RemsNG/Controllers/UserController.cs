@@ -73,7 +73,10 @@ namespace RemsNG.Controllers
             return Ok(response);
         }
 
-        public async Task AssignToUser(UserLcda userLcda)
+        [RemsRequirementAttribute("ASSIGN_DOMAIN")]
+        [Route("assignlgda")]
+        [HttpPost]
+        public async Task<object> AssignToUser([FromBody]UserLcda userLcda)
         {
             if (userLcda.lgdaId == default(Guid))
             {
@@ -84,7 +87,51 @@ namespace RemsNG.Controllers
                 throw new InvalidCredentialsException("User is required");
             }
 
+            User user = await userService.Get(userLcda.userId);
+            if (user == null)
+            {
+                return NotFound(new Response()
+                {
+                    code = MsgCode_Enum.NOTFOUND,
+                    description = "User not found"
+                });
+            }
+
+            Lgda lcda = await lcdaService.Get(userLcda.lgdaId);
+            if (lcda == null)
+            {
+                return NotFound(new Response()
+                {
+                    code = MsgCode_Enum.NOTFOUND,
+                    description = "Select LGDA not found"
+                });
+            }
+            else if (lcda.lcdaStatus != UserStatus.ACTIVE.ToString())
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = $"{lcda.lcdaName} is not Active"
+                });
+            }
+
             bool result = await this.userService.AssignLGDA(userLcda);
+            if (result)
+            {
+                return Ok(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = $"{user.username} have been assigned to {lcda.lcdaName}"
+                });
+            }
+            else
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "An error occur. Please refresh the page or try again later"
+                });
+            }
         }
 
         [RemsRequirementAttribute("GET_PROFILE")]
@@ -125,7 +172,7 @@ namespace RemsNG.Controllers
         {
             User username = await userService.GetUserByUsername(user.username);
             User email = await userService.ByEmail(user.email);
-            List<Lcda> lst = await lcdaService.byUsername(user.username);
+            List<Lgda> lst = await lcdaService.byUsername(user.username);
 
             user.id = Guid.NewGuid();
             user.dateCreated = DateTime.Now;

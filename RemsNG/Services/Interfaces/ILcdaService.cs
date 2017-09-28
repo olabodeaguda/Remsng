@@ -11,12 +11,12 @@ namespace RemsNG.Services.Interfaces
     {
         Task<object> All();
         Task<object> All(PageModel pageModel);
-        Task<List<Lcda>> ActiveLCDAByDomainId(Guid domainId);
-        Task<bool> Add(Lcda lcda);
-        Task<bool> Update(Lcda lcda);
-        Task<Lcda> Get(Guid id);
+        Task<List<Lgda>> ActiveLCDAByDomainId(Guid domainId);
+        Task<bool> Add(Lgda lcda);
+        Task<bool> Update(Lgda lcda);
+        Task<Lgda> Get(Guid id);
         Task<bool> Changetatus(Guid id, string lcdastatus);
-        Task<Lcda> byLCDACode(string lcdaCode);
-        Task<List<Lcda>> byUsername(string username);
+        Task<Lgda> byLCDACode(string lcdaCode);
+        Task<List<Lgda>> byUsername(string username);
     }
 }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace RemsNG.ORM
 {
-    public class Lcda : AbstractModel
+    public class Lgda : AbstractModel
     {
         public Guid id { get; set; }
         public Guid domainId { get; set; }

@@ -18,7 +18,7 @@ namespace RemsNG.ORM
         public DbSet<Role> Roles { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<Address> Addresses { get; set; }
-        public DbSet<Lcda> lcdas { get; set; }
+        public DbSet<Lgda> lgdas { get; set; }
         public DbSet<Ward> Wards { get; set; }
         public DbSet<UserLcda> UserLcdas { get; set; }
 
@@ -31,7 +31,7 @@ namespace RemsNG.ORM
             modelBuilder.Entity<UserLcda>().ToTable("tbl_userlcda").HasKey(x => new { x.lgdaId, x.userId });
             modelBuilder.Entity<Role>().ToTable("tbl_role");
             modelBuilder.Entity<Address>().ToTable("tbl_address");
-            modelBuilder.Entity<Lcda>().ToTable("tbl_lcda");
+            modelBuilder.Entity<Lgda>().ToTable("tbl_lcda");
             modelBuilder.Entity<Ward>().ToTable("tbl_ward");
         }
     }

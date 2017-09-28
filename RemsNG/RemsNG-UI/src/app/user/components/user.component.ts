@@ -93,7 +93,7 @@ export class UserComponent implements OnInit {
                 }
                 this.isLoading = false;
             }, error => {
-                this.isLoading = true;
+                this.isLoading = false;
             });
     }
 
@@ -214,8 +214,6 @@ export class UserComponent implements OnInit {
                     jQuery(this.assignlgdaModal.nativeElement).modal('hide');
             });
         }
-
-
     }
 
     next() {

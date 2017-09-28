@@ -20,19 +20,31 @@ namespace RemsNG.Utilities
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            var hasClaim = context.HttpContext.User.Claims.Any(c => c.Type == _claim.Type && c.Value == _claim.Value);
-
-            if (!hasClaim)
-            {
-                hasClaim = context.HttpContext.User.Claims.Any(x => x.Type == ClaimTypes.NameIdentifier && x.Value.ToLower() == "mos-admin");
-            }
-            if (!hasClaim)
+            if (context.HttpContext.User.Claims.Count() < 1)
             {
                 context.Result = new HttpMessageResult(new Response()
                 {
-                    code = MsgCode_Enum.FORBIDDEN,
-                    description = "You have no access to this request"
-                }, 403);// new ForbidResult();
+                    code = MsgCode_Enum.INVALID_TOKEN,
+                    description = "Please re-login. access have expired"
+                }, 403);
+            }
+            else
+            {
+                var hasClaim = context.HttpContext.User.Claims.Any(c => c.Type == _claim.Type && c.Value == _claim.Value);
+
+
+                if (!hasClaim)
+                {
+                    hasClaim = context.HttpContext.User.Claims.Any(x => x.Type == ClaimTypes.NameIdentifier && x.Value.ToLower() == "mos-admin");
+                }
+                if (!hasClaim)
+                {
+                    context.Result = new HttpMessageResult(new Response()
+                    {
+                        code = MsgCode_Enum.FORBIDDEN,
+                        description = "You have no access to this request"
+                    }, 403);// new ForbidResult();
+                }
             }
         }
     }

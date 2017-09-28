@@ -11,6 +11,6 @@ namespace RemsNG.ORM
         public Guid lgdaId { get; set; }
 
         public User user { get; set; }
-        public Lcda lcda { get; set; }
+        public Lgda lcda { get; set; }
     }
 }

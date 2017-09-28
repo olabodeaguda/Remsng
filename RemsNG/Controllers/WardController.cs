@@ -108,7 +108,7 @@ namespace RemsNG.Controllers
                     description = "Ward name is required!!"
                 });
             }
-            Lcda lcda = await lcdaService.Get(ward.lcdaId);
+            Lgda lcda = await lcdaService.Get(ward.lcdaId);
             if (lcda == null)
             {
                 return BadRequest(new Response()

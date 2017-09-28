@@ -41,7 +41,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            List<Lcda> us = await this.lcdaService.byUsername(username);
+            List<Lgda> us = await this.lcdaService.byUsername(username);
             if (us.Count < 1)
             {
                 return NotFound(new Response
@@ -87,7 +87,7 @@ namespace RemsNG.Controllers
                     bool v = Guid.TryParse(domainId.Value, out dId);
                     if (v)
                     {
-                        List<Lcda> cd = await lcdaService.ActiveLCDAByDomainId(dId);
+                        List<Lgda> cd = await lcdaService.ActiveLCDAByDomainId(dId);
                         return cd;
                     }
                 }
@@ -98,7 +98,7 @@ namespace RemsNG.Controllers
         [Route("create")]
         [RemsRequirementAttribute("ADD_LCDA")]
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Lcda lcda)
+        public async Task<IActionResult> Post([FromBody] Lgda lcda)
         {
             if (string.IsNullOrEmpty(lcda.lcdaCode))
             {
@@ -161,7 +161,7 @@ namespace RemsNG.Controllers
         [Route("update")]
         [RemsRequirementAttribute("EDIT_LCDA")]
         [HttpPost]
-        public async Task<IActionResult> EditLGA([FromBody] Lcda lcda)
+        public async Task<IActionResult> EditLGA([FromBody] Lgda lcda)
         {
             if (string.IsNullOrEmpty(lcda.lcdaCode))
             {
@@ -228,7 +228,7 @@ namespace RemsNG.Controllers
         [Route("changestatus")]
         [RemsRequirementAttribute("CHANGE_LCDA_STATUS")]
         [HttpPost]
-        public async Task<IActionResult> ChangeStatu([FromBody] Lcda lcda)
+        public async Task<IActionResult> ChangeStatu([FromBody] Lgda lcda)
         {
             if (string.IsNullOrEmpty(lcda.lcdaStatus))
             {

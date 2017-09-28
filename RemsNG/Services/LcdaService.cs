@@ -18,12 +18,12 @@ namespace RemsNG.Services
             lcdaDao = new LcdaDao(_db);
         }
 
-        public async Task<List<Lcda>> ActiveLCDAByDomainId(Guid domainId)
+        public async Task<List<Lgda>> ActiveLCDAByDomainId(Guid domainId)
         {
             return await lcdaDao.ActiveLCDAByDomainId(domainId);
         }
 
-        public async Task<bool> Add(Lcda lcda)
+        public async Task<bool> Add(Lgda lcda)
         {
             return await lcdaDao.Add(lcda);
         }
@@ -38,12 +38,12 @@ namespace RemsNG.Services
             return await lcdaDao.All();
         }
 
-        public async Task<Lcda> byLCDACode(string lcdaCode)
+        public async Task<Lgda> byLCDACode(string lcdaCode)
         {
             return await lcdaDao.byLcdaCode(lcdaCode);
         }
 
-        public async Task<List<Lcda>> byUsername(string username)
+        public async Task<List<Lgda>> byUsername(string username)
         {
             return await lcdaDao.getLcdaByUsername(username);
         }
@@ -53,12 +53,12 @@ namespace RemsNG.Services
             return await lcdaDao.Changetatus(id, lcdastatus);
         }
 
-        public Task<Lcda> Get(Guid id)
+        public Task<Lgda> Get(Guid id)
         {
             return lcdaDao.Get(id);
         }
 
-        public async Task<bool> Update(Lcda lcda)
+        public async Task<bool> Update(Lgda lcda)
         {
             return await lcdaDao.Update(lcda);
         }
