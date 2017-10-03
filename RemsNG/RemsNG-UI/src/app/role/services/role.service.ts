@@ -4,6 +4,7 @@ import { DataService } from '../../shared/services/data.service';
 import { PageModel } from '../../shared/models/page.model';
 import { RoleModel } from '../models/role.model';
 import { AssignRoleModel } from '../../user/models/assig-role.model';
+import { RolePermissionModel } from "../models/role-permission.model";
 
 
 @Injectable()
@@ -56,7 +57,19 @@ export class RoleService {
     }
 
     get(roleId: string) {
-        return this.dataService.get('role/' +  roleId ).catch(error => this.dataService.handleError(error));
+        return this.dataService.get('role/' + roleId).catch(error => this.dataService.handleError(error));
     }
 
+    assignPermissionToRole(userperm: RolePermissionModel): Observable<Response> {
+        return this.dataService.post('role/assignroletopermission', {
+            roleId: userperm.roleId,
+            permissionId: userperm.permissionId
+        }).catch(error => this.dataService.handleError(error));
+    }
+    removePermission(userperm: RolePermissionModel): Observable<Response> {
+        return this.dataService.post('role/removerolepermission', {
+            roleId: userperm.roleId,
+            permissionId: userperm.permissionId
+        }).catch(error => this.dataService.handleError(error));
+    }
 }

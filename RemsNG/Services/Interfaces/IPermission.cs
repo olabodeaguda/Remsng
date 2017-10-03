@@ -12,5 +12,7 @@ namespace RemsNG.Services.Interfaces
         Task<List<Permission>> byRoleId(Guid roleId, Models.PageModel pageModel);
         Task<List<Permission>> All();
         Task<List<Permission>> GetPermissionNotInRole(Guid roleId);
+        Task<RolePermission> ByPermissionAndRoleId(RolePermission rolePermission);
+        Task<bool> RemovePermission(RolePermission rolePermission);
     }
 }

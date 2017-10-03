@@ -39,5 +39,22 @@ namespace RemsNG.Dao
             return await db.Permissions.ToListAsync();
         }
 
+        public async Task<RolePermission> ByPermissionAndRoleId(RolePermission rolePermission)
+        {
+            return await db.RolePermissions.FirstOrDefaultAsync(x => x.permissionId == rolePermission.permissionId && x.roleId == rolePermission.roleId);
+        }
+
+        public async Task<bool> RemovePermission(RolePermission rolePermission)
+        {
+            db.RolePermissions.Remove(rolePermission);
+            int count = await db.SaveChangesAsync();
+            if (count > 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
     }
 }

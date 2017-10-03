@@ -7,7 +7,8 @@ import { PageModel } from "../../shared/models/page.model";
 import { AppSettings } from "../../shared/models/app.settings";
 import { ToasterService } from "angular2-toaster/angular2-toaster";
 import { PermissionModel } from "../models/permission.model";
-import { UserPermissionModel } from "../models/user-permission.model";
+import { RolePermissionModel } from "../models/role-permission.model";
+import { ResponseModel } from "../../shared/models/response.model";
 declare var jQuery: any;
 
 @Component({
@@ -17,7 +18,7 @@ declare var jQuery: any;
 
 export class PermissionComponent implements OnInit {
 
-    userPerm: UserPermissionModel;
+    userPerm: RolePermissionModel;
     roleModel: RoleModel;
     permissionDistinct = [];
     permissionLst = [];
@@ -28,11 +29,11 @@ export class PermissionComponent implements OnInit {
 
     constructor(private activeRoute: ActivatedRoute,
         private permissionService: PermissionService,
-        private roleService: RoleService,  private appSettings: AppSettings,
+        private roleService: RoleService, private appSettings: AppSettings,
         private toasterService: ToasterService) {
-            this.pageModel = new PageModel();
-            this.roleModel = new RoleModel();
-            this.userPerm = new UserPermissionModel();
+        this.pageModel = new PageModel();
+        this.roleModel = new RoleModel();
+        this.userPerm = new RolePermissionModel();
     }
 
     ngOnInit() {
@@ -41,18 +42,23 @@ export class PermissionComponent implements OnInit {
 
     open(eventType: string, data: any) {
         if (eventType === this.appSettings.addMode) {
-            this.roleModel = new RoleModel();
+            this.userPerm = new RolePermissionModel();
+            this.userPerm.roleId = this.roleModel.id;
+            this.userPerm.eventType = this.appSettings.addMode;
             jQuery(this.addModal.nativeElement).modal('show');
         } else if (eventType === this.appSettings.removeMode) {
-            this.roleModel = data;
+            this.userPerm.permissionId = data.id;
+            this.userPerm.roleId = this.roleModel.id;
+            this.userPerm.permissionName = data.permissionName;
+            this.userPerm.eventType = this.appSettings.removeMode;
             jQuery(this.removeModal.nativeElement).modal('show');
         }
-        this.roleModel.eventType = eventType;
+        this.userPerm.eventType = eventType;
     }
 
     initializePage() {
         this.activeRoute.params.subscribe((param: any) => {
-            this.getRole(param["id"]);                        
+            this.getRole(param["id"]);
         });
     }
 
@@ -68,20 +74,20 @@ export class PermissionComponent implements OnInit {
 
     getPermissionNotInRole() {
         this.isLoading = true;
-        this.permissionService.getPermissionNotInRole(this.roleModel.id).subscribe(response => {       
-            this.isLoading = false;     
+        this.permissionService.getPermissionNotInRole(this.roleModel.id).subscribe(response => {
+            this.isLoading = false;
             this.permissionDistinct = response.json();
-        },error =>{
+        }, error => {
             this.isLoading = false;
         });
-        
+
     }
 
     getRole(id: string) {
         this.isLoading = true;
-        this.roleService.get(id).subscribe(response =>{
+        this.roleService.get(id).subscribe(response => {
             this.isLoading = false;
-            this.roleModel = Object.assign(new RoleModel(), response.json());            
+            this.roleModel = Object.assign(new RoleModel(), response.json());
             this.getPermissionByRoleId();
             this.getPermissionNotInRole();
         }, error => {
@@ -103,6 +109,46 @@ export class PermissionComponent implements OnInit {
             this.pageModel.pageNum = 1;
         }
         this.getPermissionByRoleId();
+    }
+
+    permissionActions() {
+
+        if (this.userPerm.permissionId == undefined) {
+            this.toasterService.pop('error', 'Error', 'Permission is required');
+            return;
+        } else if (this.userPerm.roleId == undefined) {
+            return;
+        }
+
+        this.userPerm.isLoading = true;
+        if (this.userPerm.eventType === this.appSettings.addMode) {
+            this.roleService.assignPermissionToRole(this.userPerm).subscribe(response => {
+                this.userPerm.isLoading = false;
+                this.notifyUI(response);
+                jQuery(this.addModal.nativeElement).modal('hide');
+            }, error => {
+                this.userPerm.isLoading = false;
+            });
+        } else if (this.userPerm.eventType === this.appSettings.removeMode) {
+            this.roleService.removePermission(this.userPerm).subscribe(response => {
+                this.userPerm.isLoading = false;
+                this.notifyUI(response);
+                jQuery(this.removeModal.nativeElement).modal('hide');
+            }, error => {
+                this.userPerm.isLoading = false;
+            });
+        }
+    }
+
+    notifyUI(response: Response) {
+        const result = Object.assign(new ResponseModel(), response.json());
+        if (result.code === "00") {
+            this.toasterService.pop('success', 'Success', result.description);
+            this.getPermissionByRoleId();
+            this.getPermissionNotInRole();
+        } else {
+            this.toasterService.pop('error', 'error', result.description);
+        }
     }
 
 }

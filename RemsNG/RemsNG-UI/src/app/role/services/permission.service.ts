@@ -16,10 +16,7 @@ export class PermissionService {
     }
 
     getPermissionNotInRole(id: string) {
-        return this.dataService.get('permissionnotinrole/'+id).catch(error => this.dataService.handleError(error));
+        return this.dataService.get('permission/permissionnotinrole/'+id).catch(error => this.dataService.handleError(error));
     }
-
     
-
-
 }

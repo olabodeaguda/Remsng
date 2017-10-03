@@ -64,7 +64,7 @@ namespace RemsNG.Controllers
         [RemsRequirementAttribute("GET_PERMISSIONS")]
         [HttpGet]
         public async Task<object> GetPermissionNotInRole([FromRoute] Guid id)
-        {
+         {
             if (id == default(Guid))
             {
                 return BadRequest(new Response()
@@ -86,5 +86,7 @@ namespace RemsNG.Controllers
 
             return await permissionService.GetPermissionNotInRole(id);
         }
+
+
     }
 }

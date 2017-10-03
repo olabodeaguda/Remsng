@@ -22,6 +22,11 @@ namespace RemsNG.Services
             return await permissionDao.All();
         }
 
+        public async Task<RolePermission> ByPermissionAndRoleId(RolePermission rolePermission)
+        {
+            return await permissionDao.ByPermissionAndRoleId(rolePermission);
+        }
+
         public async Task<List<Permission>> byRoleId(Guid roleId)
         {
             return await permissionDao.byRoleId(roleId);
@@ -35,6 +40,11 @@ namespace RemsNG.Services
         public async Task<List<Permission>> GetPermissionNotInRole(Guid roleId)
         {
             return await permissionDao.GetPermissionNotInRole(roleId);
+        }
+
+        public async Task<bool> RemovePermission(RolePermission rolePermission)
+        {
+            return await permissionDao.RemovePermission(rolePermission);
         }
     }
 }

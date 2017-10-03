@@ -17,9 +17,11 @@ namespace RemsNG.Controllers
     public class RoleController : Controller
     {
         IRoleService roleservice;
-        public RoleController(IRoleService _roleservice)
+        IPermission permissionService;
+        public RoleController(IRoleService _roleservice, IPermission _permissionService)
         {
             roleservice = _roleservice;
+            permissionService = _permissionService;
         }
 
         [RemsRequirementAttribute("GET_ROLES")]
@@ -314,7 +316,7 @@ namespace RemsNG.Controllers
         //}
 
         [Route("assignroletopermission")]
-        [RemsRequirementAttribute("ASSIGN_ROLES")]
+        [RemsRequirementAttribute("MANAGE_PERMISSION")]
         [HttpPost]
         public async Task<object> AssignPermissionToRole([FromBody] RolePermission rolePermission)
         {
@@ -334,6 +336,15 @@ namespace RemsNG.Controllers
                     description = "Role is required"
                 }, 409);
             }
+            RolePermission pem = await permissionService.ByPermissionAndRoleId(rolePermission);
+            if (pem != null)
+            {
+                return new HttpMessageResult(new Response()
+                {
+                    code = MsgCode_Enum.DUPLICATE,
+                    description = "Permission already exist in role"
+                }, 409);
+            }
 
             bool result = await roleservice.Add(rolePermission);
             if (result)
@@ -350,6 +361,57 @@ namespace RemsNG.Controllers
                 {
                     code = MsgCode_Enum.FAIL,
                     description = "Request Failed. Please try again or contact administrator"
+                }, 409);
+            }
+        }
+
+        [Route("removerolepermission")]
+        [RemsRequirementAttribute("MANAGE_PERMISSION")]
+        [HttpPost]
+        public async Task<object> removeRolePermission([FromBody] RolePermission rolePermission)
+        {
+            if (rolePermission.permissionId == Guid.Empty)
+            {
+                return new HttpMessageResult(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Permission is required"
+                }, 409);
+            }
+            else if (rolePermission.roleId == Guid.Empty)
+            {
+                return new HttpMessageResult(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Role is required"
+                }, 409);
+            }
+
+            RolePermission pem = await permissionService.ByPermissionAndRoleId(rolePermission);
+            if (pem == null)
+            {
+                return new HttpMessageResult(new Response()
+                {
+                    code = MsgCode_Enum.DUPLICATE,
+                    description = "Permission does not exist"
+                }, 409);
+            }
+
+            bool result = await permissionService.RemovePermission(pem);
+            if (result)
+            {
+                return Ok(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = "Permission has been remove successfully"
+                });
+            }
+            else
+            {
+                return new HttpMessageResult(new Response()
+                {
+                    code = MsgCode_Enum.DUPLICATE,
+                    description = "An error occur while trying to remove permission. Please contact administrator or retry"
                 }, 409);
             }
         }

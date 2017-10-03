@@ -1,3 +1,23 @@
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" #removeModal>
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Remove permission <b style="font-size:12px;">{{userPerm.permissionName}}</b></h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div [ngClass]="userPerm.errClass" *ngIf="userPerm.isErrMsg">
+                    {{userPerm.msg}}
+                </div>
+                <div class="box-body"> Are you sure?</div>
+                <div class="box-footer">
+                    <button [ladda]="userPerm.isLoading" type="submit" class="btn btn-success" (click)="permissionActions()">Submit</button>
+                    <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="modal fade" role="dialog" id="addModal" #addModal>
     <div class=" modal-dialog ">
@@ -22,7 +42,7 @@
                             </select>
                         </div>
                         <div class="box-footer">
-                            <button [ladda]="roleModel.isLoading" type="submit" class="btn btn-primary" (click)="roleAction()">Submit</button>
+                            <button [ladda]="userPerm.isLoading" type="submit" class="btn btn-primary" (click)="permissionActions()">Submit</button>
                         </div>
                     </div>
                 </div>
@@ -69,10 +89,8 @@
                                     <tr *ngFor="let data of permissionLst; let i=index">
                                         <td>
                                             <a>
-                                                <i class="fa fa-edit" (click)="open('EDIT',data)"></i>
-                                            </a>
-                                        
-                                            <a (click)="open('CHANGE_STATUS',data)">| {{data.roleStatus === 'ACTIVE'?'deactivate':'approve'}}</a>
+                                                <i class="fa fa-remove" (click)="open('REMOVE',data)"></i>
+                                            </a>                                        
                                         </td>
                                         <td>{{(pageModel.pageSize*(pageModel.pageNum - 1))+(i+1)}}</td>
                                         <td>{{data.permissionName}}</td>
