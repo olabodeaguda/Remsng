@@ -12,7 +12,7 @@ namespace RemsNG.ORM
         public Guid lcdaId { get; set; }
         public string wardStatus { get; set; }
         public string createdBy { get; set; }
-        public DateTime lastModifiedDate { get; set; }
+        public DateTime? lastModifiedDate { get; set; }
         public DateTime dateCreated { get; set; }
         public string lastmodifiedBy { get; set; }
 

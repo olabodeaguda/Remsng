@@ -5,6 +5,7 @@ import { PageModel } from '../../shared/models/page.model';
 import { ProfileModel } from '../models/profile.model';
 import { ChangePasswordModel } from '../models/change-password.model';
 import { AssignDomainModel } from '../models/assign-domain.model';
+import { AssignRoleModel } from '../models/assig-role.model';
 
 @Injectable()
 export class UserService {
@@ -58,4 +59,5 @@ export class UserService {
         this.dataService.addToHeader('value', btoa(obj))
         return this.dataService.post('user/changepwdchange', {}).catch(error => this.dataService.handleError(error));
     }
+    
 }

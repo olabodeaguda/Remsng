@@ -26,7 +26,7 @@ namespace RemsNG.Dao
             int count = await db.SaveChangesAsync();
             if (count > 0)
             {
-                return false;
+                return true;
             }
 
             return false;
@@ -36,7 +36,7 @@ namespace RemsNG.Dao
         {
             return await Task.Run(() =>
             {
-                var results = db.Wards.Where(x=>x.lcdaId == lgdaId).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToList();
+                var results = db.Wards.Where(x => x.lcdaId == lgdaId).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToList();
                 var totalCount = db.Wards.Count();
                 return new
                 {
@@ -61,6 +61,8 @@ namespace RemsNG.Dao
         }
 
         public async Task<Ward> GetWard(Guid id) => await db.Wards.FirstOrDefaultAsync(x => x.id == id);
+        public async Task<Ward> GetWard(string wardName, Guid lgdaid)
+            => await db.Wards.Where(x => x.wardName.ToLower() == wardName.ToLower() && x.lcdaId == lgdaid).FirstOrDefaultAsync();
 
         public async Task<List<Ward>> GetWardByLGDAId(Guid lgdaId) => await db.Wards.Where(x => x.lcdaId == lgdaId).ToListAsync();
 

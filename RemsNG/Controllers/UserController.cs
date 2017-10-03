@@ -53,7 +53,11 @@ namespace RemsNG.Controllers
             if (user.passwordHash != EncryptDecryptUtils.ToHexString(ln.pwd))
             {
                 logger.LogError($"{ln.username} password is incorrect", new object[] { ln.username });
-                return new HttpMessageResult("Password is incorrect", 401);
+                return new HttpMessageResult(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Password is incorrect"
+                }, 401);
             }
 
             if (user.userStatus != UserStatus.ACTIVE.ToString())
@@ -141,7 +145,7 @@ namespace RemsNG.Controllers
         {
             pageSize = string.IsNullOrEmpty(pageSize) ? "1" : pageSize;
             pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
-            if (ClaimExtension.IsMosAdmin(User.Claims.ToList()))
+            if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
             {
                 return await userService.Paginated(new PageModel()
                 {
@@ -179,7 +183,7 @@ namespace RemsNG.Controllers
             user.createdBy = User.Identity.Name;
             bool isAdded = false;
 
-            if (ClaimExtension.IsMosAdmin(User.Claims.ToList()))
+            if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
             {
                 if (username != null)
                 {

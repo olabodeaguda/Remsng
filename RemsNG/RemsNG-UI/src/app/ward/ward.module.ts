@@ -10,7 +10,7 @@ import { WardService } from './services/ward.service';
 import { SharedModule } from '../shared/shared.module';
 
 const appRoutes: Routes = [
-    { path: 'ward', component: WardComponent }
+    { path: 'ward/:id', component: WardComponent }
  ];
 
 @NgModule({

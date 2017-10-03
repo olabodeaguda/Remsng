@@ -81,6 +81,8 @@ namespace RemsNG.Services
             services.AddTransient<IDomainService, DomainService>();
             services.AddTransient<ILcdaService, LcdaService>();
             services.AddTransient<IWardService, WardService>();
+            services.AddTransient<IRoleService, RoleService>();
+            services.AddTransient<IPermission, PermissionService>();
         }
 
         public static IConfigurationSection jwtAppSettingOptions

@@ -17,6 +17,8 @@ export class AppSettings {
     public changeStatusMode: string = 'CHANGE_STATUS';
     public changePwdMode: string = 'CHANGE_PWD';
     public assignLGDA: string = 'ASSIGN_LGDA';
+    public assignRole: string = 'ASSIGN_ROLE'
+    public removeMode: string = 'REMOVE'
 
     public domainStatus: string[] = ['ACTIVE', 'NOT_ACTIVE'];
 }

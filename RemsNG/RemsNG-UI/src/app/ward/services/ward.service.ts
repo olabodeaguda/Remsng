@@ -16,15 +16,16 @@ export class WardService {
             error => this.dataService.handleError(error));
     }
 
-    getWard(pageModel: PageModel): Observable<Response> {
+    getWard(pageModel: PageModel, id: string): Observable<Response> {
         this.dataService.addToHeader('pageSize', pageModel.pageSize.toString());
         this.dataService.addToHeader('pageNum', pageModel.pageNum.toString());
+        this.dataService.addToHeader('lcdaId', id);
        return this.dataService.get('ward/paginated').catch(
             error => this.dataService.handleError(error));
     }
 
     addWard(wardModel: WardModel): Observable<Response> {
-        return this.dataService.post('ward/paginated',{
+        return this.dataService.post('ward',{
             wardName: wardModel.wardName,
             lcdaId: wardModel.lcdaId
         }).catch(error => this.dataService.handleError(error));
@@ -44,5 +45,4 @@ export class WardService {
             id: wardModel.id
         }).catch(error => this.dataService.handleError(error));
      }
-
 }

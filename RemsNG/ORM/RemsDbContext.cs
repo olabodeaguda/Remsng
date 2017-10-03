@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RemsNG.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,10 @@ namespace RemsNG.ORM
         public DbSet<Lgda> lgdas { get; set; }
         public DbSet<Ward> Wards { get; set; }
         public DbSet<UserLcda> UserLcdas { get; set; }
-
+        public DbSet<RoleExtension> RoleExtensions { get; set; }
+        public DbSet<RolePermission> RolePermissions { get; set; }
+        public DbSet<DbResponse> DbResponses { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,10 +33,12 @@ namespace RemsNG.ORM
             modelBuilder.Entity<Domain>().ToTable("tbl_domain");
             modelBuilder.Entity<UserDomain>().ToTable("tbl_userdomain").HasKey(x => new { x.domainId, x.userId });
             modelBuilder.Entity<UserLcda>().ToTable("tbl_userlcda").HasKey(x => new { x.lgdaId, x.userId });
+            modelBuilder.Entity<RolePermission>().ToTable("tbl_rolePermission").HasKey(x => new { x.permissionId, x.roleId });
             modelBuilder.Entity<Role>().ToTable("tbl_role");
             modelBuilder.Entity<Address>().ToTable("tbl_address");
             modelBuilder.Entity<Lgda>().ToTable("tbl_lcda");
             modelBuilder.Entity<Ward>().ToTable("tbl_ward");
+            modelBuilder.Entity<UserRole>().ToTable("tbl_userRole").HasKey(x => new { x.roleid, x.userid });
         }
     }
 }

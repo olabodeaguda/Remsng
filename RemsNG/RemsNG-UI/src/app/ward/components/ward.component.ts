@@ -6,6 +6,8 @@ import { ToasterService } from 'angular2-toaster';
 import { LcdaService } from '../../lcda/services/lcda.services';
 import { WardService } from '../services/ward.service';
 import { ResponseModel } from '../../shared/models/response.model';
+import { RouterModule, Routes, ActivatedRoute } from '@angular/router';
+import { LcdaModel } from "../../lcda/models/lcda.models";
 declare var jQuery: any;
 
 @Component({
@@ -16,16 +18,18 @@ export class WardComponent implements OnInit {
     wardlst = [];
     pageModel: PageModel;
     wardModel: WardModel;
-    lgdaLst = [];
+    lgda: LcdaModel;
     isLoading: boolean = false;
     @ViewChild('addModal') addModal: ElementRef;
     @ViewChild('changestatus') changestatusModal: ElementRef;
 
-    constructor(private appSettings: AppSettings,
+    constructor(private activeRoute: ActivatedRoute, private appSettings: AppSettings,
         private toasterService: ToasterService, private lcdaService: LcdaService
         , private wardService: WardService) {
+
         this.pageModel = new PageModel();
         this.wardModel = new WardModel();
+        this.lgda = new LcdaModel();
     }
 
     open(eventType: string, data: any) {
@@ -34,6 +38,7 @@ export class WardComponent implements OnInit {
             jQuery(this.addModal.nativeElement).modal('show');
         } else if (eventType === this.appSettings.addMode) {
             this.wardModel = new WardModel();
+            this.wardModel.lcdaId = this.lgda.id;
             jQuery(this.addModal.nativeElement).modal('show');
         } else if (eventType === this.appSettings.changeStatusMode) {
             this.wardModel = data;
@@ -43,18 +48,29 @@ export class WardComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.lcdaService.all().subscribe(response => {
-            this.lgdaLst = response.json();
+        this.activeRoute.params.subscribe((param: any) => {
+            this.getLcda(param["id"]);
+        });
+    }
+
+    getLcda(id: string) {
+        this.lcdaService.getLCdaById(id).subscribe(response => {
+
+            const result = Object.assign(new ResponseModel(), response.json());
+            if (result.code == '00') {
+                this.lgda = Object.assign(new LcdaModel(), result.data);
+                console.log(this.lgda);
+                this.getWard();
+            }
         }, error => {
 
         })
-        this.getWard();
     }
 
     getWard() {
         this.isLoading = true;
 
-        this.wardService.getWard(this.pageModel).subscribe(response => {
+        this.wardService.getWard(this.pageModel,this.lgda.id).subscribe(response => {
             const result = response.json();
             const resultScheme = { data: [], totalPageCount: 0 };
             const responseD = Object.assign(resultScheme, result);

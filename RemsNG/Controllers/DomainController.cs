@@ -9,6 +9,7 @@ using RemsNG.ORM;
 using RemsNG.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,10 +21,14 @@ namespace RemsNG.Controllers
         private readonly ILogger logger;
         private readonly IDomainService domainService;
         private readonly IUserService userService;
-        public DomainController(IUserService _userService, IDomainService _domainService, ILoggerFactory loggerFactory)
+        private readonly ILcdaService lcdaService;
+        public DomainController(IUserService _userService,
+            IDomainService _domainService, ILoggerFactory loggerFactory,
+            ILcdaService _lcdaService)
         {
             this.userService = _userService;
             domainService = _domainService;
+            lcdaService = _lcdaService;
             logger = loggerFactory.CreateLogger<UserController>();
         }
 
@@ -58,15 +63,15 @@ namespace RemsNG.Controllers
         }
 
         [Route("activeDomain")]
-        [RemsRequirementAttribute("GET_DOMAIN")]
-        public async Task<object> get()
+        [RemsRequirementAttribute("GET_ACTIVE_DOMAIN")]
+        public async Task<object> Get()
         {
             return await this.domainService.ActiveDomains();
         }
 
         [Route("all")]
         [RemsRequirementAttribute("GET_DOMAIN")]
-        public async Task<object> get([FromHeader] string pageSize, [FromHeader] string pageNum)
+        public async Task<object> Get([FromHeader] string pageSize, [FromHeader] string pageNum)
         {
             var hasClaim = User.Claims.Any(x => x.Type == ClaimTypes.NameIdentifier && x.Value.ToLower() == "mos-admin");
             if (hasClaim)
@@ -199,6 +204,7 @@ namespace RemsNG.Controllers
         //approval
 
         [Route("changestatus")]
+        [RemsRequirementAttribute("CHANGE_STATUS")]
         [HttpPost]
         public async Task<IActionResult> ChangeStatus([FromBody] Domain domain)
         {
@@ -246,5 +252,45 @@ namespace RemsNG.Controllers
             }
         }
 
+        [Route("currentdomain")]
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> CurrentDomain()
+        {
+            if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
+            {
+                var r = await lcdaService.All();
+                return Ok(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    data = new
+                    {
+                        isMosAdmin = true,
+                        domains = r
+                    }
+                });
+            }
+            else
+            {
+                Guid domainId = ClaimExtension.GetDomainId(User.Claims.ToArray());
+                if (domainId == Guid.Empty)
+                {
+                    return BadRequest(new Response()
+                    {
+                        code = MsgCode_Enum.NO_DOMAIN_ACCESS,
+                        description = "Aplication can not validate user domain"
+                    });
+                }
+
+                return Ok(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    data = new
+                    {
+                        isMosAdmin = false
+                    }
+                });
+            }
+        }
     }
 }

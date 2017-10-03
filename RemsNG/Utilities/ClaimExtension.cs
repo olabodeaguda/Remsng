@@ -8,7 +8,7 @@ namespace RemsNG.Utilities
 {
     public class ClaimExtension
     {
-        public static bool IsMosAdmin(List<Claim> claims)
+        public static bool IsMosAdmin(Claim[] claims)
         {
             var hasClaim = claims.Any(x => x.Type == ClaimTypes.NameIdentifier && x.Value.ToLower() == "mos-admin");
 
@@ -34,5 +34,34 @@ namespace RemsNG.Utilities
 
             return Guid.Empty;
         }
+
+        public static string GetUsername(Claim[] claim)
+        {
+            var username = claim.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+            if (username != null)
+            {
+                return username.Value;
+            }
+
+            return string.Empty;
+        }
+
+        public static Guid GetDomainId(Claim[] claim)
+        {
+            var domainId = claim.FirstOrDefault(x => x.Type == "Domain");
+            if (domainId != null)
+            {
+                Guid dId = Guid.Empty;
+                bool v = Guid.TryParse(domainId.Value, out dId);
+                if (v)
+                {
+                    return dId;
+                }
+            }
+
+            return Guid.Empty;
+        }
+
+
     }
 }

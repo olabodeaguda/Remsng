@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RemsNG.Exceptions;
+using RemsNG.Models;
 using RemsNG.ORM;
 using System;
 using System.Collections.Generic;
@@ -14,14 +15,41 @@ namespace RemsNG.Dao
         {
         }
 
-        public async Task<Role> GetUserRoleByUsernameByDomainId(string username, Guid domainId)
+        public async Task<RoleExtension> GetUserDomainRoleByUsername(string username, Guid domainId)
         {
-            return await db.Roles.FromSql("sp_getUserRoleByUsername @p0", username).FirstOrDefaultAsync();
+            return await db.RoleExtensions.FromSql("sp_getUserDomainRoleByUsername @p0, @p1", new object[] { username, domainId }).FirstOrDefaultAsync();
+        }
+
+        public async Task<object> Paginated(Models.PageModel pageModel)
+        {
+            return await Task.Run(() =>
+            {
+                List<RoleExtension> AllRole = db.RoleExtensions.FromSql("sp_getRoles @p0, @p1", new object[] { pageModel.PageSize, pageModel.PageNum }).ToList();
+
+                var totalCount = db.Roles.Count();
+                return new
+                {
+                    data = AllRole,
+                    totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
+                };
+            });
         }
 
         public async Task<bool> Add(Role role)
         {
-            db.Roles.Add(role);
+            DbResponse dbResponse = await db.DbResponses.FromSql("sp_createRole @p0,@p1, @p2",
+                new object[] { role.id, role.roleName, role.domainId }).FirstOrDefaultAsync();
+
+            if (dbResponse.success)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> Add(RolePermission role)
+        {
+            db.RolePermissions.Add(role);
             int count = await db.SaveChangesAsync();
 
             if (count > 0)
@@ -37,9 +65,25 @@ namespace RemsNG.Dao
             return await db.Roles.FirstOrDefaultAsync(x => x.roleName == rolename);
         }
 
-        public async Task<Role> GetById(Guid id)
+        public async Task<RoleExtension> GetById(Guid id)
         {
-            return await db.Roles.FirstOrDefaultAsync(x => x.id == id);
+            Role role = await db.Roles.Include("lgda").FirstOrDefaultAsync(x => x.id == id);
+
+            if (role != null)
+            {
+                RoleExtension roleExtension = new RoleExtension()
+                {
+                    domainId = role.domainId,
+                    id = role.id,
+                    roleName = role.roleName,
+                    roleStatus = role.roleStatus
+                };
+                roleExtension.domainName = role.lgda.lcdaName;
+
+                return roleExtension;
+            }
+
+            return null;
         }
 
         public async Task<bool> Update(Role role)
@@ -80,6 +124,43 @@ namespace RemsNG.Dao
             }
 
             return false;
+        }
+
+        public async Task<List<Role>> ByDomainId(Guid domainId)
+        {
+            return await db.Roles.Where(x => x.domainId == domainId).ToListAsync();
+        }
+
+        public async Task<List<RoleExtension>> AllRoleByUsername(string username)
+        {
+            return await db.RoleExtensions.FromSql("sp_getUserDomainRoleByUsername @p0", new object[] { username }).ToListAsync();
+        }
+
+        public async Task<List<RoleExtension>> AllDomainRolesByUsername(string username)
+        {
+            return await db.RoleExtensions.FromSql("sp_getDomainRolesByUsername @p0", new object[] { username }).ToListAsync();
+        }
+
+        public async Task<List<RoleExtension>> AllDomainRolesByDomainId(Guid userid, Guid domainid)
+        {
+            return await db.RoleExtensions.FromSql("sp_getUserDomainRolesByDomainId @p0, @p1", new object[] { userid, domainid }).ToListAsync();
+        }
+
+        public async Task<bool> AssignRoleToUserAsync(UserRole userRole)
+        {
+            db.UserRoles.Add(userRole);
+            int count = await db.SaveChangesAsync();
+            if (count > 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<UserRole> GetUserRoleAsync(Guid userId, Guid roleId)
+        {
+            return await db.UserRoles.FirstOrDefaultAsync(x => x.userid == userId && x.roleid == roleId);
         }
 
     }

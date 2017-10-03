@@ -38,7 +38,7 @@ namespace RemsNG.Services
         public async Task<object> GetToken(User user, Guid lcdaId)
         {
             String domainName = "";
-
+            RoleExtension role = null;
             if (user.username.ToLower() != "mos-admin")
             {
                 List<Lgda> uls = await lcdaDao.getLcdaByUsername(user.username);
@@ -52,13 +52,12 @@ namespace RemsNG.Services
                         domainName = ld.lcdaName;
                     }
                 }
+                role = await roleDao.GetUserDomainRoleByUsername(user.username, lcdaId);
             }
             else
             {
                 domainName = "mos-admin";
             }
-
-            Role role = await roleDao.GetUserRoleByUsernameByDomainId(user.username, lcdaId);
 
             int logTime = int.TryParse(jwtOptions.logOutTIme, out logTime) ? logTime : 30;
 

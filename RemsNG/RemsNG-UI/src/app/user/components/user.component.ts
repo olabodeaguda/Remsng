@@ -8,6 +8,9 @@ import { ToasterService } from 'angular2-toaster';
 import { ChangePasswordModel } from '../models/change-password.model';
 import { AssignDomainModel } from '../models/assign-domain.model';
 import { LcdaService } from '../../lcda/services/lcda.services';
+import { RoleService } from '../../role/services/role.service';
+import { RoleModel } from '../../role/models/role.model';
+import { AssignRoleModel } from '../models/assig-role.model';
 declare var jQuery: any;
 
 @Component({
@@ -18,22 +21,27 @@ declare var jQuery: any;
 export class UserComponent implements OnInit {
     userLst = []
     profileModel: ProfileModel;
+    assignRoleModel: AssignRoleModel;
     assigndomainmodel: AssignDomainModel;
     pageModel: PageModel;
     changePwd: ChangePasswordModel;
     @ViewChild('addModal') addModal: ElementRef;
     @ViewChild('changestatus') changestatusModal: ElementRef;
-    @ViewChild('changepwd') changePwdModal: ElementRef;
+    @ViewChild('changepwd') changePwdModal: ElementRef;//
     @ViewChild('assignlgda') assignlgdaModal: ElementRef;
+    @ViewChild('assignrole') assignroleModal: ElementRef;
     isLoading: boolean = false;
-    lcdaLst = []
+    lcdaLst = [];
+    roles = [];
 
     constructor(private userService: UserService, private appSettings: AppSettings,
-        private toasterService: ToasterService, private lcdaService: LcdaService) {
+        private toasterService: ToasterService,
+        private lcdaService: LcdaService, private roleservice: RoleService) {
         this.profileModel = new ProfileModel();
         this.pageModel = new PageModel();
         this.changePwd = new ChangePasswordModel();
         this.assigndomainmodel = new AssignDomainModel();
+        this.assignRoleModel = new AssignRoleModel();
     }
 
     ngOnInit() {
@@ -74,6 +82,9 @@ export class UserComponent implements OnInit {
         } else if (eventType === this.appSettings.assignLGDA) {
             this.profileModel = data;
             jQuery(this.assignlgdaModal.nativeElement).modal('show');
+        } else if (eventType === this.appSettings.assignRole) {
+            this.profileModel = data;
+            this.getAllDomainRole(this.profileModel.username, true);
         }
         this.profileModel.eventType = eventType;
     }
@@ -95,6 +106,21 @@ export class UserComponent implements OnInit {
             }, error => {
                 this.isLoading = false;
             });
+    }
+
+    getAllDomainRole(username: string, loadview: boolean) {
+        this.isLoading = true;
+        this.roleservice.getAllDomainRoles(username).subscribe(response => {
+            this.roles = Object.assign([], response.json());
+            this.isLoading = false;
+        },
+            error => {
+                this.isLoading = false;
+            }, () => {
+                if (loadview) {
+                    jQuery(this.assignroleModal.nativeElement).modal('show');
+                }
+            })
     }
 
     addUser() {
@@ -210,9 +236,27 @@ export class UserComponent implements OnInit {
                 }
             }, error => {
                 this.profileModel.isLoading = false;
-                this.toasterService.pop('error', 'Error', error);        
-                    jQuery(this.assignlgdaModal.nativeElement).modal('hide');
+                this.toasterService.pop('error', 'Error', error);
+                jQuery(this.assignlgdaModal.nativeElement).modal('hide');
             });
+        } else if (this.profileModel.eventType === this.appSettings.assignRole) {
+            this.assignRoleModel.isLoading = true;
+            this.assignRoleModel.userId = this.profileModel.id;
+            this.roleservice.assignRoleTouser(this.assignRoleModel).subscribe(
+                response => {
+                    this.assignRoleModel.isLoading = false;
+                    const result = Object.assign(new ResponseModel(), response.json());
+                    if (result.code === '00') {
+                        this.toasterService.pop('success', 'Success', result.description);
+                        this.assignRoleModel = new AssignRoleModel();
+                        jQuery(this.assignroleModal.nativeElement).modal('hide');
+                    } else {
+                        this.toasterService.pop('error', 'Error', result.description);
+                    }
+                },
+                error => {
+                    this.assignRoleModel.isLoading = false;
+                })            
         }
     }
 

@@ -59,6 +59,10 @@ export class DataService {
         return this.http.delete(this.appConfig.BASE_URL + url, this.options);
     }
 
+    translateResponse(result: any): ResponseModel {
+        return Object.assign(new ResponseModel(), result);
+    }
+
     handleError(err: any) {
         const res = Object.assign(new ResponseModel(), err._body);
         if (err.status === 404) {
@@ -68,11 +72,16 @@ export class DataService {
         } else if (err.status === 403) {
             this.toasterService.pop('error', res.description || 'You have no access to the selected page');
             console.log(res);
-            if(res.code === '09' || res.code == '10' || res.code === '11') {
+            if (res.code === '09' || res.code == '10' || res.code === '11') {
                 this.storageService.remove();
             }
-            
             return Observable.throw(res.description || 'You have not access to the selected page');
+        } else if (err.status == 500) {
+            this.toasterService.pop('error', res.description || 'Internal server error occur. Please contact administrator');
+        } else if (err.status == 400) {
+            this.toasterService.pop('error', res.description || 'Internal server error occur. Please contact administrator');
+        } else if (err.status == 409) {
+            this.toasterService.pop('error', res.description || 'Internal server error occur. Please contact administrator');
         } else {
             return Observable.throw(res.description || 'Connection to the server failed');
         }

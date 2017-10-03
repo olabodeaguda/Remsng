@@ -26,7 +26,7 @@ namespace RemsNG.Utilities
 
             try
             {
-                await next(context);
+                await next(context);    
             }
             catch (Exception ex)
             {

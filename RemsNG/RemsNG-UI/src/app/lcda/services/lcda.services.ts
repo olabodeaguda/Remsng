@@ -48,10 +48,14 @@ export class LcdaService {
      }
 
      assignLGDAToUser(assignDomainModel: AssignDomainModel): Observable<Response>  {
-         console.log(assignDomainModel);
        return this.dataService.post('user/assignlgda',{
            userId: assignDomainModel.userId,
            lgdaId: assignDomainModel.lgdaId
        }).catch(error => this.dataService.handleError(error));
     }
+
+    getLCdaById(id: string) {
+        return this.dataService.get('lcda/'+id).catch(error => this.dataService.handleError(error));
+    }
+
 }

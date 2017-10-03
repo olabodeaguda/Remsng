@@ -59,13 +59,35 @@ namespace RemsNG.Controllers
         }
 
         [Route("total")]
-        [RemsRequirementAttribute("MOSADMIN")]
+        [RemsRequirementAttribute("GET_ALL_DOMAIN")]
         [HttpGet]
         public async Task<object> All()
         {
             return await lcdaService.All();
         }
-       
+
+        [Route("{id}")]
+        [RemsRequirementAttribute("GET_LCDA")]
+        [HttpGet]
+        public async Task<object> Get([FromRoute] Guid id)
+        {
+            Lgda lgda = await lcdaService.Get(id);
+            if (lgda == null)
+            {
+                return NotFound(new Response()
+                {
+                    code = MsgCode_Enum.NOTFOUND,
+                    description = "Selected LCDA could not be found"
+                });
+            }
+
+            return Ok(new Response()
+            {
+                code = MsgCode_Enum.SUCCESS,
+                data = lgda
+            });
+        }
+
         [Route("all")]
         [RemsRequirementAttribute("GET_LCDA")]
         [HttpGet]

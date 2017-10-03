@@ -24,7 +24,7 @@ namespace RemsNG.Controllers
             lcdaService = _lcdaService;
         }
 
-        [Route("paginated")]
+        [Route("all")]
         [RemsRequirementAttribute("GET_LCDA")]
         [HttpGet]
         public async Task<object> All()
@@ -55,29 +55,47 @@ namespace RemsNG.Controllers
         [Route("paginated")]
         [RemsRequirementAttribute("GET_LCDA")]
         [HttpGet]
-        public async Task<object> Get([FromHeader] string pageSize, [FromHeader] string pageNum)
+        public async Task<object> Get([FromHeader] string pageSize, [FromHeader] string pageNum, [FromHeader] string lcdaId)
         {
             var hasClaim = User.Claims.Any(x => x.Type == ClaimTypes.NameIdentifier && x.Value.ToLower() == "mos-admin");
             pageSize = string.IsNullOrEmpty(pageSize) ? "1" : pageSize;
             pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
+            Guid domainId = Guid.Empty;
+            bool v2 = Guid.TryParse(lcdaId, out domainId);
 
             if (hasClaim)
             {
+                if (domainId == default(Guid))
+                {
+                    return BadRequest(new Response()
+                    {
+                        code = MsgCode_Enum.WRONG_CREDENTIALS,
+                        description = "LCDA is required!!!"
+                    });
+                }
                 return await wardService.Paginated(new PageModel()
                 {
                     PageNum = int.Parse(pageNum),
                     PageSize = int.Parse(pageSize)
-                });
+                }, domainId);
             }
             else
             {
-                var domainId = User.Claims.FirstOrDefault(x => x.Type == "Domain");
-                if (domainId != null)
+                var domainId2 = User.Claims.FirstOrDefault(x => x.Type == "Domain");
+                if (domainId2 != null)
                 {
                     Guid dId = Guid.Empty;
-                    bool v = Guid.TryParse(domainId.Value, out dId);
+                    bool v = Guid.TryParse(domainId2.Value, out dId);
                     if (v)
                     {
+                        if (dId != domainId)
+                        {
+                            return BadRequest(new Response()
+                            {
+                                code = MsgCode_Enum.WRONG_CREDENTIALS,
+                                description = "You are not authorised to the selected LCDA!!!"
+                            });
+                        }
                         return await wardService.Paginated(new PageModel()
                         {
                             PageNum = int.Parse(pageNum),
@@ -118,6 +136,20 @@ namespace RemsNG.Controllers
                 });
             }
 
+            Ward w = await wardService.GetWard(ward.wardName, ward.lcdaId);
+            if (w != null)
+            {
+                return new HttpMessageResult(new Response()
+                {
+                    code = MsgCode_Enum.DUPLICATE,
+                    description = $"{ward.wardName} already exist"
+                }, 409);
+            }
+            ward.id = Guid.NewGuid();
+            ward.createdBy = User.Identity.Name;
+            ward.dateCreated = DateTime.Now;
+            ward.wardStatus = UserStatus.ACTIVE.ToString();
+
             bool result = await wardService.Add(ward);
             if (result)
             {
@@ -137,16 +169,47 @@ namespace RemsNG.Controllers
             }
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        [RemsRequirementAttribute("GET_LCDA")]
+        [Route("update")]
+        [HttpPost]
+        public async Task<IActionResult> Update([FromBody] Ward ward)
         {
-        }
+            if (string.IsNullOrEmpty(ward.wardName))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Ward name is required"
+                });
+            }
+            else if (default(Guid) == ward.id)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "LCDA is required"
+                });
+            }
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            ward.lastmodifiedBy = User.Identity.Name;
+            ward.lastModifiedDate = DateTime.Now;
+            bool result = await this.wardService.Update(ward);
+            if (result)
+            {
+                return Ok(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = "Update was successful"
+                });
+            }
+            else
+            {
+                return new HttpMessageResult(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "An error occur while trying to update record. Please try again or contact administrator"
+                }, 409);
+            }
         }
     }
 }

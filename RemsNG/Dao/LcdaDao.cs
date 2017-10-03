@@ -23,7 +23,7 @@ namespace RemsNG.Dao
 
         public async Task<object> All()
         {
-            return await db.lgdas.ToListAsync();
+            return await db.lgdas.OrderBy(x => x.lcdaName).ToListAsync();
         }
 
         public async Task<object> All(PageModel pageModel)

@@ -18,6 +18,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LCDAModule } from './lcda/lcda.module';
 import { WardModule } from './ward/ward.module';
 import { UserModule } from './user/user.module';
+import { RoleModule } from './role/role.module';
 
 
 const appRoutes: Routes = [
@@ -35,7 +36,7 @@ const appRoutes: Routes = [
         FormsModule,
         DomainModule,
         WardModule, UserModule,
-        ToasterModule, LCDAModule,
+        ToasterModule, LCDAModule, RoleModule,
         BrowserAnimationsModule,
         LaddaModule.forRoot({
             style: 'zoom-in',
@@ -51,4 +52,5 @@ const appRoutes: Routes = [
     bootstrap: [AppComponent],
     exports: []
 })
+
 export class AppModule { }

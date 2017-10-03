@@ -37,6 +37,11 @@ namespace RemsNG.Services
             return await wardDao.GetWard(id);
         }
 
+        public async Task<Ward> GetWard(string wardName, Guid lgdaid)
+        {
+            return await wardDao.GetWard(wardName, lgdaid);
+        }
+
         public async Task<List<Ward>> GetWardByLGDAId(Guid lgdaId)
         {
             return await wardDao.GetWardByLGDAId(lgdaId);
