@@ -6,9 +6,11 @@ import { LaddaModule } from 'angular2-ladda';
 import { SharedModule } from '../shared/shared.module';
 import { UserComponent } from './components/user.component';
 import { UserService } from './services/user.service';
+import { UserProfileComponent } from "./components/user-profile.component";
 
 const appRoutes: Routes = [
-    { path: 'users', component: UserComponent }
+    { path: 'users', component: UserComponent },
+    { path: 'profile/:id', component: UserComponent }
  ];
 
 @NgModule({
@@ -21,7 +23,7 @@ const appRoutes: Routes = [
       RouterModule.forChild(appRoutes)
     ],
     declarations: [
-        UserComponent
+        UserComponent, UserProfileComponent
     ],
     providers: [ UserService],
     exports: [

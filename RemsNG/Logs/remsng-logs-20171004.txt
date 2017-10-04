@@ -1,0 +1,817 @@
+2017-10-04T07:30:27.1602332+01:00  [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T07:30:27.9394377+01:00  [INF] Executed DbCommand ("75"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE') SELECT 1 ELSE SELECT 0" (0723d8ff)
+2017-10-04T07:30:28.1078661+01:00  [INF] Executed DbCommand ("3"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[addressId], [x].[datecreated], [x].[domainCode], [x].[domainName], [x].[domainStatus], [x].[domainType]
+FROM [tbl_domain] AS [x]
+WHERE LOWER([x].[domainCode]) = N'mos-admin'" (0723d8ff)
+2017-10-04T07:30:28.2063467+01:00  [INF] Executed DbCommand ("2"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[createdBy], [x].[dateCreated], [x].[email], [x].[firstname], [x].[gender], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lastname], [x].[lockedOutEndDateUTC], [x].[lockedoutenabled], [x].[passwordHash], [x].[securityStamp], [x].[surname], [x].[userStatus], [x].[username]
+FROM [tbl_users] AS [x]
+WHERE LOWER([x].[username]) = N'mos-admin'" (0723d8ff)
+2017-10-04T07:30:28.3111172+01:00  [INF] Executed DbCommand ("40"ms) [Parameters=["@__mosUser_id_0='?', @__mosDomain_id_1='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[domainId], [x].[userId]
+FROM [tbl_userdomain] AS [x]
+WHERE ([x].[userId] = @__mosUser_id_0) AND ([x].[domainId] = @__mosDomain_id_1)" (0723d8ff)
+2017-10-04T07:30:29.2804789+01:00 0HL8AU5JV8HP8:00000001 [INF] Request starting HTTP/1.1 GET http://localhost:54313/index.html   (ca22a1cb)
+2017-10-04T07:30:29.9310924+01:00 0HL8AU5JV8HP8:00000001 [INF] Request finished in 696.8048ms 404  (791a596a)
+2017-10-04T07:34:38.7584779+01:00 0HL8AU5JV8HPA:00000001 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/lcda/byusername/mos-admin   (ca22a1cb)
+2017-10-04T07:34:38.8042151+01:00 0HL8AU5JV8HPA:00000001 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:34:38.8450305+01:00 0HL8AU5JV8HPA:00000001 [INF] Request finished in 65.3969ms 204  (791a596a)
+2017-10-04T07:34:38.8929453+01:00 0HL8AU5JV8HPA:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/lcda/byusername/mos-admin   (ca22a1cb)
+2017-10-04T07:34:38.9266105+01:00 0HL8AU5JV8HPA:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:34:39.1663235+01:00 0HL8AU5JV8HPA:00000002 [INF] Failed to validate the token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJtb3MtYWRtaW4iLCJ1bmlxdWVfbmFtZSI6IkFndWRhIE9sYWJvZGUgSCIsInJvbGUiOiIiLCJEb21haW4iOiJcIjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMFwiIiwiaWRlbnRpdHkiOiI2MTAwNjQwMDM4MDAzNDAwMzkwMDYxMDAzMDAwMzYwMDJEMDAzNTAwMzMwMDMwMDAzOTAwMkQwMDM0MDAzNTAwNjIwMDMyMDAyRDAwNjEwMDYxMDAzNjAwMzIwMDJEMDAzNjAwMzQwMDMxMDA2MjAwMzYwMDM3MDA2MzAwMzcwMDYyMDAzNDAwNjYwMDM4MDAiLCJuYmYiOjE1MDcwNDU5OTAsImV4cCI6MTUwNzA0NjU5MCwiaWF0IjoxNTA3MDQ1OTkwLCJpc3MiOiJyZW1zbmciLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAifQ.URKYIqH7Rn4Fr6wk5UQm6JFn6_0nPEBwiad6n63Z_jY". (f3081a27)
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '10/03/2017 16:03:10'
+Current time: '10/04/2017 06:34:39'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, JwtSecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateTokenPayload(JwtSecurityToken jwt, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateToken(String token, TokenValidationParameters validationParameters, SecurityToken& validatedToken)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.<HandleAuthenticateAsync>d__6.MoveNext()
+2017-10-04T07:34:39.1823665+01:00 0HL8AU5JV8HPA:00000002 [INF] "Bearer" was not authenticated. Failure message: "IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '10/03/2017 16:03:10'
+Current time: '10/04/2017 06:34:39'." (48071232)
+2017-10-04T07:34:39.3511761+01:00 0HL8AU5JV8HPA:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:34:39.4435902+01:00 0HL8AU5JV8HPA:00000002 [INF] Executing action method "RemsNG.Controllers.LcdaController.LCDAByusername (RemsNG)" with arguments (["mos-admin"]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T07:34:39.4919734+01:00 0HL8AU5JV8HPA:00000002 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T07:34:39.5765274+01:00 0HL8AU5JV8HPA:00000002 [INF] Executed action "RemsNG.Controllers.LcdaController.LCDAByusername (RemsNG)" in 225.8091ms (afa2e885)
+2017-10-04T07:34:39.6134812+01:00 0HL8AU5JV8HPA:00000002 [INF] Request finished in 726.6202ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T07:34:44.7045749+01:00 0HL8AU5JV8HPA:00000003 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/user   (ca22a1cb)
+2017-10-04T07:34:44.7299668+01:00 0HL8AU5JV8HPA:00000003 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:34:44.7795044+01:00 0HL8AU5JV8HPA:00000003 [INF] Request finished in 62.1013ms 204  (791a596a)
+2017-10-04T07:34:44.8116979+01:00 0HL8AU5JV8HPA:00000004 [INF] Request starting HTTP/1.1 POST http://localhost:54313/api/v1/user application/json 2 (ca22a1cb)
+2017-10-04T07:34:44.8275735+01:00 0HL8AU5JV8HPA:00000004 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:34:44.9144994+01:00 0HL8AU5JV8HPA:00000004 [INF] Failed to validate the token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJtb3MtYWRtaW4iLCJ1bmlxdWVfbmFtZSI6IkFndWRhIE9sYWJvZGUgSCIsInJvbGUiOiIiLCJEb21haW4iOiJcIjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMFwiIiwiaWRlbnRpdHkiOiI2MTAwNjQwMDM4MDAzNDAwMzkwMDYxMDAzMDAwMzYwMDJEMDAzNTAwMzMwMDMwMDAzOTAwMkQwMDM0MDAzNTAwNjIwMDMyMDAyRDAwNjEwMDYxMDAzNjAwMzIwMDJEMDAzNjAwMzQwMDMxMDA2MjAwMzYwMDM3MDA2MzAwMzcwMDYyMDAzNDAwNjYwMDM4MDAiLCJuYmYiOjE1MDcwNDU5OTAsImV4cCI6MTUwNzA0NjU5MCwiaWF0IjoxNTA3MDQ1OTkwLCJpc3MiOiJyZW1zbmciLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAifQ.URKYIqH7Rn4Fr6wk5UQm6JFn6_0nPEBwiad6n63Z_jY". (f3081a27)
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '10/03/2017 16:03:10'
+Current time: '10/04/2017 06:34:44'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, JwtSecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateTokenPayload(JwtSecurityToken jwt, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateToken(String token, TokenValidationParameters validationParameters, SecurityToken& validatedToken)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.<HandleAuthenticateAsync>d__6.MoveNext()
+2017-10-04T07:34:44.9470023+01:00 0HL8AU5JV8HPA:00000004 [INF] "Bearer" was not authenticated. Failure message: "IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '10/03/2017 16:03:10'
+Current time: '10/04/2017 06:34:44'." (48071232)
+2017-10-04T07:34:44.9920490+01:00 0HL8AU5JV8HPA:00000004 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:34:45.0203863+01:00 0HL8AU5JV8HPA:00000004 [INF] Executing action method "RemsNG.Controllers.UserController.Post (RemsNG)" with arguments (["eyJ1c2VybmFtZSI6Im1vcy1hZG1pbiIsInB3ZCI6IkBtaXN0bGV0bGUxMDIwMTYifQ=="]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T07:34:45.0791771+01:00 0HL8AU5JV8HPA:00000004 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T07:34:45.1888925+01:00 0HL8AU5JV8HPA:00000004 [INF] Executed DbCommand ("25"ms) [Parameters=["@__username_0='?' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[createdBy], [x].[dateCreated], [x].[email], [x].[firstname], [x].[gender], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lastname], [x].[lockedOutEndDateUTC], [x].[lockedoutenabled], [x].[passwordHash], [x].[securityStamp], [x].[surname], [x].[userStatus], [x].[username]
+FROM [tbl_users] AS [x]
+WHERE [x].[username] = @__username_0" (0723d8ff)
+2017-10-04T07:34:45.2523522+01:00 0HL8AU5JV8HPA:00000004 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T07:34:45.2785527+01:00 0HL8AU5JV8HPA:00000004 [INF] Executed action "RemsNG.Controllers.UserController.Post (RemsNG)" in 302.4883ms (afa2e885)
+2017-10-04T07:34:45.3161598+01:00 0HL8AU5JV8HPA:00000004 [INF] Request finished in 491.9111ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T07:34:50.6910400+01:00 0HL8AU5JV8HPA:00000005 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/role   (ca22a1cb)
+2017-10-04T07:34:50.7079558+01:00 0HL8AU5JV8HPB:00000001 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/domain/currentdomain   (ca22a1cb)
+2017-10-04T07:34:50.7928416+01:00 0HL8AU5JV8HPB:00000001 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:34:50.7999911+01:00 0HL8AU5JV8HPA:00000005 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:34:50.8918786+01:00 0HL8AU5JV8HPA:00000005 [INF] Request finished in 179.3854ms 204  (791a596a)
+2017-10-04T07:34:50.9368393+01:00 0HL8AU5JV8HPB:00000001 [INF] Request finished in 105.519ms 204  (791a596a)
+2017-10-04T07:34:50.9404190+01:00 0HL8AU5JV8HPA:00000006 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/role   (ca22a1cb)
+2017-10-04T07:34:51.0311237+01:00 0HL8AU5JV8HPA:00000006 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:34:51.0395982+01:00 0HL8AU5JV8HPB:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/domain/currentdomain   (ca22a1cb)
+2017-10-04T07:34:51.0523544+01:00 0HL8AU5JV8HPB:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:34:51.1330963+01:00 0HL8AU5JV8HPB:00000002 [INF] Successfully validated the token. (60169667)
+2017-10-04T07:34:51.1360055+01:00 0HL8AU5JV8HPA:00000006 [INF] Successfully validated the token. (60169667)
+2017-10-04T07:34:51.2163857+01:00 0HL8AU5JV8HPB:00000002 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T07:34:51.2436762+01:00 0HL8AU5JV8HPA:00000006 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T07:34:51.2804094+01:00 0HL8AU5JV8HPB:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:34:51.3152377+01:00 0HL8AU5JV8HPA:00000006 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:34:51.3516636+01:00 0HL8AU5JV8HPA:00000006 [INF] Executing action method "RemsNG.Controllers.RoleController.Get (RemsNG)" with arguments (["20", "1"]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T07:34:51.3890235+01:00 0HL8AU5JV8HPB:00000002 [INF] Authorization was successful for user: "Aguda Olabode H". (d7eb274a)
+2017-10-04T07:34:51.4243559+01:00 0HL8AU5JV8HPB:00000002 [INF] Executing action method "RemsNG.Controllers.DomainController.CurrentDomain (RemsNG)" with arguments (null) - ModelState is Valid (ba7f4ac2)
+2017-10-04T07:34:51.4578262+01:00 0HL8AU5JV8HPA:00000006 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T07:34:51.4969330+01:00 0HL8AU5JV8HPB:00000002 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T07:34:51.5417449+01:00 0HL8AU5JV8HPA:00000006 [INF] Executed DbCommand ("6"ms) [Parameters=["@p0='?', @p1='?'"], CommandType='Text', CommandTimeout='30']"
+""sp_getRoles @p0, @p1" (0723d8ff)
+2017-10-04T07:34:51.6058134+01:00 0HL8AU5JV8HPB:00000002 [INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [x].[id], [x].[addressId], [x].[createdBy], [x].[dateCreated], [x].[domainId], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lcdaCode], [x].[lcdaName], [x].[lcdaStatus]
+FROM [tbl_lcda] AS [x]
+ORDER BY [x].[lcdaName]" (0723d8ff)
+2017-10-04T07:34:51.6545155+01:00 0HL8AU5JV8HPB:00000002 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T07:34:51.6897506+01:00 0HL8AU5JV8HPA:00000006 [INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT COUNT(*)
+FROM [tbl_role] AS [t]" (0723d8ff)
+2017-10-04T07:34:51.7250782+01:00 0HL8AU5JV8HPA:00000006 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T07:34:51.7469354+01:00 0HL8AU5JV8HPB:00000002 [INF] Executed action "RemsNG.Controllers.DomainController.CurrentDomain (RemsNG)" in 482.746ms (afa2e885)
+2017-10-04T07:34:51.7819407+01:00 0HL8AU5JV8HPB:00000002 [INF] Request finished in 780.6659ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T07:34:51.8093999+01:00 0HL8AU5JV8HPA:00000006 [INF] Executed action "RemsNG.Controllers.RoleController.Get (RemsNG)" in 512.8486ms (afa2e885)
+2017-10-04T07:34:51.8288578+01:00 0HL8AU5JV8HPA:00000006 [INF] Request finished in 909.2815ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T07:34:57.1362541+01:00 0HL8AU5JV8HPB:00000003 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/role/8c5110a8-0bcb-4762-9eaa-23458e39ba21   (ca22a1cb)
+2017-10-04T07:34:57.1743183+01:00 0HL8AU5JV8HPB:00000003 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:34:57.1934396+01:00 0HL8AU5JV8HPB:00000003 [INF] Request finished in 76.7408ms 204  (791a596a)
+2017-10-04T07:34:57.2548324+01:00 0HL8AU5JV8HPA:00000007 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/role/8c5110a8-0bcb-4762-9eaa-23458e39ba21   (ca22a1cb)
+2017-10-04T07:34:57.3073223+01:00 0HL8AU5JV8HPA:00000007 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:34:57.3426997+01:00 0HL8AU5JV8HPA:00000007 [INF] Successfully validated the token. (60169667)
+2017-10-04T07:34:57.3756076+01:00 0HL8AU5JV8HPA:00000007 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T07:34:57.4110865+01:00 0HL8AU5JV8HPA:00000007 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:34:57.4446165+01:00 0HL8AU5JV8HPA:00000007 [INF] Executing action method "RemsNG.Controllers.RoleController.Get (RemsNG)" with arguments (["8c5110a8-0bcb-4762-9eaa-23458e39ba21"]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T07:34:57.4649034+01:00 0HL8AU5JV8HPA:00000007 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T07:34:57.5458769+01:00 0HL8AU5JV8HPA:00000007 [INF] Executed DbCommand ("1"ms) [Parameters=["@__id_0='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[domainId], [x].[roleName], [x].[roleStatus], [x.lgda].[id], [x.lgda].[addressId], [x.lgda].[createdBy], [x.lgda].[dateCreated], [x.lgda].[domainId], [x.lgda].[lastModifiedDate], [x.lgda].[lastmodifiedby], [x.lgda].[lcdaCode], [x.lgda].[lcdaName], [x.lgda].[lcdaStatus]
+FROM [tbl_role] AS [x]
+INNER JOIN [tbl_lcda] AS [x.lgda] ON [x].[domainId] = [x.lgda].[id]
+WHERE [x].[id] = @__id_0" (0723d8ff)
+2017-10-04T07:34:57.6048490+01:00 0HL8AU5JV8HPA:00000007 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T07:34:57.6396098+01:00 0HL8AU5JV8HPA:00000007 [INF] Executed action "RemsNG.Controllers.RoleController.Get (RemsNG)" in 224.3276ms (afa2e885)
+2017-10-04T07:34:57.6642106+01:00 0HL8AU5JV8HPA:00000007 [INF] Request finished in 446.3979ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T07:34:57.7275122+01:00 0HL8AU5JV8HPB:00000004 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/permission/byRoleid/8c5110a8-0bcb-4762-9eaa-23458e39ba21   (ca22a1cb)
+2017-10-04T07:34:57.7632448+01:00 0HL8AU5JV8HPA:00000008 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/permission/permissionnotinrole/8c5110a8-0bcb-4762-9eaa-23458e39ba21   (ca22a1cb)
+2017-10-04T07:34:57.7926406+01:00 0HL8AU5JV8HPB:00000004 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:34:57.8454256+01:00 0HL8AU5JV8HPA:00000008 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:34:57.8792402+01:00 0HL8AU5JV8HPB:00000004 [INF] Request finished in 131.0191ms 204  (791a596a)
+2017-10-04T07:34:57.9398975+01:00 0HL8AU5JV8HPA:00000008 [INF] Request finished in 147.769ms 204  (791a596a)
+2017-10-04T07:34:57.9945497+01:00 0HL8AU5JV8HPB:00000005 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/permission/byRoleid/8c5110a8-0bcb-4762-9eaa-23458e39ba21   (ca22a1cb)
+2017-10-04T07:34:58.0750273+01:00 0HL8AU5JV8HPA:00000009 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/permission/permissionnotinrole/8c5110a8-0bcb-4762-9eaa-23458e39ba21   (ca22a1cb)
+2017-10-04T07:34:58.0780108+01:00 0HL8AU5JV8HPB:00000005 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:34:58.1304004+01:00 0HL8AU5JV8HPA:00000009 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:34:58.1615669+01:00 0HL8AU5JV8HPB:00000005 [INF] Successfully validated the token. (60169667)
+2017-10-04T07:34:58.2392728+01:00 0HL8AU5JV8HPA:00000009 [INF] Successfully validated the token. (60169667)
+2017-10-04T07:34:58.2452691+01:00 0HL8AU5JV8HPB:00000005 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T07:34:58.2765394+01:00 0HL8AU5JV8HPA:00000009 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T07:34:58.3629577+01:00 0HL8AU5JV8HPB:00000005 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:34:58.3689207+01:00 0HL8AU5JV8HPA:00000009 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:34:58.4501032+01:00 0HL8AU5JV8HPB:00000005 [INF] Executing action method "RemsNG.Controllers.PermissionController.GetByRoleId (RemsNG)" with arguments (["8c5110a8-0bcb-4762-9eaa-23458e39ba21", "20", "1"]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T07:34:58.4530717+01:00 0HL8AU5JV8HPA:00000009 [INF] Executing action method "RemsNG.Controllers.PermissionController.GetPermissionNotInRole (RemsNG)" with arguments (["8c5110a8-0bcb-4762-9eaa-23458e39ba21"]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T07:34:58.4874212+01:00 0HL8AU5JV8HPB:00000005 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T07:34:58.5418031+01:00 0HL8AU5JV8HPA:00000009 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T07:34:58.6259789+01:00 0HL8AU5JV8HPB:00000005 [INF] Executed DbCommand ("1"ms) [Parameters=["@__id_0='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[domainId], [x].[roleName], [x].[roleStatus], [x.lgda].[id], [x.lgda].[addressId], [x.lgda].[createdBy], [x.lgda].[dateCreated], [x.lgda].[domainId], [x.lgda].[lastModifiedDate], [x.lgda].[lastmodifiedby], [x.lgda].[lcdaCode], [x.lgda].[lcdaName], [x.lgda].[lcdaStatus]
+FROM [tbl_role] AS [x]
+INNER JOIN [tbl_lcda] AS [x.lgda] ON [x].[domainId] = [x.lgda].[id]
+WHERE [x].[id] = @__id_0" (0723d8ff)
+2017-10-04T07:34:58.6294910+01:00 0HL8AU5JV8HPA:00000009 [INF] Executed DbCommand ("0"ms) [Parameters=["@__id_0='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[domainId], [x].[roleName], [x].[roleStatus], [x.lgda].[id], [x.lgda].[addressId], [x.lgda].[createdBy], [x.lgda].[dateCreated], [x.lgda].[domainId], [x.lgda].[lastModifiedDate], [x.lgda].[lastmodifiedby], [x.lgda].[lcdaCode], [x.lgda].[lcdaName], [x.lgda].[lcdaStatus]
+FROM [tbl_role] AS [x]
+INNER JOIN [tbl_lcda] AS [x.lgda] ON [x].[domainId] = [x.lgda].[id]
+WHERE [x].[id] = @__id_0" (0723d8ff)
+2017-10-04T07:34:58.6833897+01:00 0HL8AU5JV8HPB:00000005 [INF] Executed DbCommand ("4"ms) [Parameters=["@p0='?', @p1='?', @p2='?'"], CommandType='Text', CommandTimeout='30']"
+""sp_getRolePermissionPaginated @p0, @p1, @p2" (0723d8ff)
+2017-10-04T07:34:58.7332473+01:00 0HL8AU5JV8HPA:00000009 [INF] Executed DbCommand ("7"ms) [Parameters=["@p0='?'"], CommandType='Text', CommandTimeout='30']"
+""sp_getPermissionNotInRole @p0" (0723d8ff)
+2017-10-04T07:34:58.8205023+01:00 0HL8AU5JV8HPB:00000005 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T07:34:58.8423110+01:00 0HL8AU5JV8HPA:00000009 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T07:34:58.8871042+01:00 0HL8AU5JV8HPA:00000009 [INF] Executed action "RemsNG.Controllers.PermissionController.GetPermissionNotInRole (RemsNG)" in 557.3479ms (afa2e885)
+2017-10-04T07:34:58.9240931+01:00 0HL8AU5JV8HPA:00000009 [INF] Request finished in 895.8383ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T07:34:58.9668144+01:00 0HL8AU5JV8HPB:00000005 [INF] Executed action "RemsNG.Controllers.PermissionController.GetByRoleId (RemsNG)" in 544.497ms (afa2e885)
+2017-10-04T07:34:59.0108412+01:00 0HL8AU5JV8HPB:00000005 [INF] Request finished in 1058.9223ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T07:35:04.9443969+01:00 0HL8AU5JV8HPA:0000000A [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/role/assignroletopermission   (ca22a1cb)
+2017-10-04T07:35:04.9646430+01:00 0HL8AU5JV8HPA:0000000A [INF] Policy execution successful. (0204925d)
+2017-10-04T07:35:04.9880260+01:00 0HL8AU5JV8HPA:0000000A [INF] Request finished in 34.7413ms 204  (791a596a)
+2017-10-04T07:35:05.0441134+01:00 0HL8AU5JV8HPB:00000006 [INF] Request starting HTTP/1.1 POST http://localhost:54313/api/v1/role/assignroletopermission application/json 112 (ca22a1cb)
+2017-10-04T07:35:05.0802402+01:00 0HL8AU5JV8HPB:00000006 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:35:05.1138054+01:00 0HL8AU5JV8HPB:00000006 [INF] Successfully validated the token. (60169667)
+2017-10-04T07:35:05.1636741+01:00 0HL8AU5JV8HPB:00000006 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T07:35:05.2023136+01:00 0HL8AU5JV8HPB:00000006 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:35:05.2572967+01:00 0HL8AU5JV8HPB:00000006 [INF] Executing action method "RemsNG.Controllers.RoleController.AssignPermissionToRole (RemsNG)" with arguments (["RemsNG.ORM.RolePermission"]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T07:35:05.2773568+01:00 0HL8AU5JV8HPB:00000006 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T07:35:05.3228707+01:00 0HL8AU5JV8HPB:00000006 [INF] Executed DbCommand ("2"ms) [Parameters=["@__rolePermission_permissionId_0='?', @__rolePermission_roleId_1='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[permissionId], [x].[roleId]
+FROM [tbl_rolePermission] AS [x]
+WHERE ([x].[permissionId] = @__rolePermission_permissionId_0) AND ([x].[roleId] = @__rolePermission_roleId_1)" (0723d8ff)
+2017-10-04T07:35:05.3764782+01:00 0HL8AU5JV8HPB:00000006 [INF] Executed DbCommand ("2"ms) [Parameters=["@p0='?', @p1='?'"], CommandType='Text', CommandTimeout='30']"
+""SET NOCOUNT ON;
+INSERT INTO [tbl_rolePermission] ([permissionId], [roleId])
+VALUES (@p0, @p1);" (0723d8ff)
+2017-10-04T07:35:05.4177718+01:00 0HL8AU5JV8HPB:00000006 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T07:35:05.4540127+01:00 0HL8AU5JV8HPB:00000006 [INF] Executed action "RemsNG.Controllers.RoleController.AssignPermissionToRole (RemsNG)" in 249.4168ms (afa2e885)
+2017-10-04T07:35:05.4962140+01:00 0HL8AU5JV8HPB:00000006 [INF] Request finished in 466.7918ms 201 application/json; charset=utf-8 (791a596a)
+2017-10-04T07:35:05.6128746+01:00 0HL8AU5JV8HPA:0000000B [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/permission/byRoleid/8c5110a8-0bcb-4762-9eaa-23458e39ba21   (ca22a1cb)
+2017-10-04T07:35:05.7017838+01:00 0HL8AU5JV8HPB:00000007 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/permission/permissionnotinrole/8c5110a8-0bcb-4762-9eaa-23458e39ba21   (ca22a1cb)
+2017-10-04T07:35:05.7060287+01:00 0HL8AU5JV8HPA:0000000B [INF] Policy execution successful. (0204925d)
+2017-10-04T07:35:05.7923209+01:00 0HL8AU5JV8HPB:00000007 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:35:05.8316150+01:00 0HL8AU5JV8HPB:00000007 [INF] Request finished in 194.4712ms 204  (791a596a)
+2017-10-04T07:35:05.8795064+01:00 0HL8AU5JV8HPA:0000000B [INF] Request finished in 210.4459ms 204  (791a596a)
+2017-10-04T07:35:05.9094861+01:00 0HL8AU5JV8HPB:00000008 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/permission/permissionnotinrole/8c5110a8-0bcb-4762-9eaa-23458e39ba21   (ca22a1cb)
+2017-10-04T07:35:05.9891239+01:00 0HL8AU5JV8HPA:0000000C [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/permission/byRoleid/8c5110a8-0bcb-4762-9eaa-23458e39ba21   (ca22a1cb)
+2017-10-04T07:35:06.0133092+01:00 0HL8AU5JV8HPB:00000008 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:35:06.0473003+01:00 0HL8AU5JV8HPA:0000000C [INF] Policy execution successful. (0204925d)
+2017-10-04T07:35:06.1297091+01:00 0HL8AU5JV8HPB:00000008 [INF] Successfully validated the token. (60169667)
+2017-10-04T07:35:06.1356295+01:00 0HL8AU5JV8HPA:0000000C [INF] Successfully validated the token. (60169667)
+2017-10-04T07:35:06.2190228+01:00 0HL8AU5JV8HPA:0000000C [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T07:35:06.2424523+01:00 0HL8AU5JV8HPB:00000008 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T07:35:06.3213023+01:00 0HL8AU5JV8HPA:0000000C [INF] Policy execution successful. (0204925d)
+2017-10-04T07:35:06.3269533+01:00 0HL8AU5JV8HPB:00000008 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:35:06.3874389+01:00 0HL8AU5JV8HPB:00000008 [INF] Executing action method "RemsNG.Controllers.PermissionController.GetPermissionNotInRole (RemsNG)" with arguments (["8c5110a8-0bcb-4762-9eaa-23458e39ba21"]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T07:35:06.3942316+01:00 0HL8AU5JV8HPA:0000000C [INF] Executing action method "RemsNG.Controllers.PermissionController.GetByRoleId (RemsNG)" with arguments (["8c5110a8-0bcb-4762-9eaa-23458e39ba21", "20", "1"]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T07:35:06.4481694+01:00 0HL8AU5JV8HPA:0000000C [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T07:35:06.4994776+01:00 0HL8AU5JV8HPB:00000008 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T07:35:06.5840482+01:00 0HL8AU5JV8HPA:0000000C [INF] Executed DbCommand ("3"ms) [Parameters=["@__id_0='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[domainId], [x].[roleName], [x].[roleStatus], [x.lgda].[id], [x.lgda].[addressId], [x.lgda].[createdBy], [x.lgda].[dateCreated], [x.lgda].[domainId], [x.lgda].[lastModifiedDate], [x.lgda].[lastmodifiedby], [x.lgda].[lcdaCode], [x.lgda].[lcdaName], [x.lgda].[lcdaStatus]
+FROM [tbl_role] AS [x]
+INNER JOIN [tbl_lcda] AS [x.lgda] ON [x].[domainId] = [x.lgda].[id]
+WHERE [x].[id] = @__id_0" (0723d8ff)
+2017-10-04T07:35:06.5914647+01:00 0HL8AU5JV8HPB:00000008 [INF] Executed DbCommand ("3"ms) [Parameters=["@__id_0='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[domainId], [x].[roleName], [x].[roleStatus], [x.lgda].[id], [x.lgda].[addressId], [x.lgda].[createdBy], [x.lgda].[dateCreated], [x.lgda].[domainId], [x.lgda].[lastModifiedDate], [x.lgda].[lastmodifiedby], [x.lgda].[lcdaCode], [x.lgda].[lcdaName], [x.lgda].[lcdaStatus]
+FROM [tbl_role] AS [x]
+INNER JOIN [tbl_lcda] AS [x.lgda] ON [x].[domainId] = [x.lgda].[id]
+WHERE [x].[id] = @__id_0" (0723d8ff)
+2017-10-04T07:35:06.6353530+01:00 0HL8AU5JV8HPA:0000000C [INF] Executed DbCommand ("4"ms) [Parameters=["@p0='?', @p1='?', @p2='?'"], CommandType='Text', CommandTimeout='30']"
+""sp_getRolePermissionPaginated @p0, @p1, @p2" (0723d8ff)
+2017-10-04T07:35:06.6857375+01:00 0HL8AU5JV8HPB:00000008 [INF] Executed DbCommand ("11"ms) [Parameters=["@p0='?'"], CommandType='Text', CommandTimeout='30']"
+""sp_getPermissionNotInRole @p0" (0723d8ff)
+2017-10-04T07:35:06.7385444+01:00 0HL8AU5JV8HPA:0000000C [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T07:35:06.7818696+01:00 0HL8AU5JV8HPA:0000000C [INF] Executed action "RemsNG.Controllers.PermissionController.GetByRoleId (RemsNG)" in 496.3077ms (afa2e885)
+2017-10-04T07:35:06.8088456+01:00 0HL8AU5JV8HPA:0000000C [INF] Request finished in 872.4585ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T07:35:06.8597928+01:00 0HL8AU5JV8HPB:00000008 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T07:35:06.9193528+01:00 0HL8AU5JV8HPB:00000008 [INF] Executed action "RemsNG.Controllers.PermissionController.GetPermissionNotInRole (RemsNG)" in 617.4349ms (afa2e885)
+2017-10-04T07:35:06.9619096+01:00 0HL8AU5JV8HPB:00000008 [INF] Request finished in 1076.7297ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T07:36:07.8224400+01:00 0HL8AU5JV8HPC:00000001 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/user/profiles   (ca22a1cb)
+2017-10-04T07:36:07.9073938+01:00 0HL8AU5JV8HPD:00000001 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/lcda/total   (ca22a1cb)
+2017-10-04T07:36:07.9105488+01:00 0HL8AU5JV8HPC:00000001 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:36:07.9920161+01:00 0HL8AU5JV8HPD:00000001 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:36:07.9952462+01:00 0HL8AU5JV8HPC:00000001 [INF] Request finished in 127.7745ms 204  (791a596a)
+2017-10-04T07:36:08.0600051+01:00 0HL8AU5JV8HPD:00000001 [INF] Request finished in 203.6679ms 204  (791a596a)
+2017-10-04T07:36:08.0883002+01:00 0HL8AU5JV8HPC:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/user/profiles   (ca22a1cb)
+2017-10-04T07:36:08.1449825+01:00 0HL8AU5JV8HPC:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:36:08.2051695+01:00 0HL8AU5JV8HPD:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/lcda/total   (ca22a1cb)
+2017-10-04T07:36:08.2319420+01:00 0HL8AU5JV8HPC:00000002 [INF] Successfully validated the token. (60169667)
+2017-10-04T07:36:08.3114760+01:00 0HL8AU5JV8HPC:00000002 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T07:36:08.3171348+01:00 0HL8AU5JV8HPD:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:36:08.3686355+01:00 0HL8AU5JV8HPD:00000002 [INF] Successfully validated the token. (60169667)
+2017-10-04T07:36:08.3826448+01:00 0HL8AU5JV8HPD:00000002 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T07:36:08.4215350+01:00 0HL8AU5JV8HPD:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:36:08.4758376+01:00 0HL8AU5JV8HPD:00000002 [INF] Executing action method "RemsNG.Controllers.LcdaController.All (RemsNG)" with arguments (null) - ModelState is Valid (ba7f4ac2)
+2017-10-04T07:36:08.5044835+01:00 0HL8AU5JV8HPC:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:36:08.5363642+01:00 0HL8AU5JV8HPC:00000002 [INF] Executing action method "RemsNG.Controllers.UserController.Profiles (RemsNG)" with arguments (["20", "1"]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T07:36:08.5681801+01:00 0HL8AU5JV8HPD:00000002 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T07:36:08.6132662+01:00 0HL8AU5JV8HPD:00000002 [INF] Executed DbCommand ("7"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [x].[id], [x].[addressId], [x].[createdBy], [x].[dateCreated], [x].[domainId], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lcdaCode], [x].[lcdaName], [x].[lcdaStatus]
+FROM [tbl_lcda] AS [x]
+ORDER BY [x].[lcdaName]" (0723d8ff)
+2017-10-04T07:36:08.6469693+01:00 0HL8AU5JV8HPD:00000002 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T07:36:08.7005081+01:00 0HL8AU5JV8HPC:00000002 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T07:36:08.7362807+01:00 0HL8AU5JV8HPD:00000002 [INF] Executed action "RemsNG.Controllers.LcdaController.All (RemsNG)" in 312.1756ms (afa2e885)
+2017-10-04T07:36:08.7765086+01:00 0HL8AU5JV8HPD:00000002 [INF] Request finished in 615.8641ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T07:36:08.8009416+01:00 0HL8AU5JV8HPC:00000002 [WRN] Query: '"(from User <generated>_2 in DbSet<User> select [<generated>_2]).Skip(__p_0).Take(__p_1)"' uses a row limiting operation (Skip/Take) without OrderBy which may lead to unpredictable results. (32148ccc)
+2017-10-04T07:36:08.8659206+01:00 0HL8AU5JV8HPC:00000002 [INF] Executed DbCommand ("1"ms) [Parameters=["@__p_0='?', @__p_1='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT [t].[id], [t].[createdBy], [t].[dateCreated], [t].[email], [t].[firstname], [t].[gender], [t].[lastModifiedDate], [t].[lastmodifiedby], [t].[lastname], [t].[lockedOutEndDateUTC], [t].[lockedoutenabled], [t].[passwordHash], [t].[securityStamp], [t].[surname], [t].[userStatus], [t].[username]
+FROM [tbl_users] AS [t]
+ORDER BY (SELECT 1)
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY" (0723d8ff)
+2017-10-04T07:36:08.9108593+01:00 0HL8AU5JV8HPC:00000002 [INF] Executed DbCommand ("3"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT COUNT(*)
+FROM [tbl_users] AS [t]" (0723d8ff)
+2017-10-04T07:36:08.9415758+01:00 0HL8AU5JV8HPC:00000002 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T07:36:08.9683574+01:00 0HL8AU5JV8HPC:00000002 [INF] Executed action "RemsNG.Controllers.UserController.Profiles (RemsNG)" in 528.1604ms (afa2e885)
+2017-10-04T07:36:08.9912722+01:00 0HL8AU5JV8HPC:00000002 [INF] Request finished in 943.2679ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T07:36:21.0346038+01:00 0HL8AU5JV8HPD:00000003 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/role/alldomainroles   (ca22a1cb)
+2017-10-04T07:36:21.0580030+01:00 0HL8AU5JV8HPD:00000003 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:36:21.0874995+01:00 0HL8AU5JV8HPD:00000003 [INF] Request finished in 39.3995ms 204  (791a596a)
+2017-10-04T07:36:21.1560613+01:00 0HL8AU5JV8HPC:00000003 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/role/alldomainroles   (ca22a1cb)
+2017-10-04T07:36:21.2069859+01:00 0HL8AU5JV8HPC:00000003 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:36:21.2423152+01:00 0HL8AU5JV8HPC:00000003 [INF] Successfully validated the token. (60169667)
+2017-10-04T07:36:21.2969234+01:00 0HL8AU5JV8HPC:00000003 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T07:36:21.3236992+01:00 0HL8AU5JV8HPC:00000003 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:36:21.3400006+01:00 0HL8AU5JV8HPC:00000003 [INF] Executing action method "RemsNG.Controllers.RoleController.AllUserRoles (RemsNG)" with arguments (["oaguda"]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T07:36:21.3765130+01:00 0HL8AU5JV8HPC:00000003 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T07:36:21.4427048+01:00 0HL8AU5JV8HPC:00000003 [INF] Executed DbCommand ("16"ms) [Parameters=["@p0='?' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""sp_getDomainRolesByUsername @p0" (0723d8ff)
+2017-10-04T07:36:21.4551995+01:00 0HL8AU5JV8HPC:00000003 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T07:36:21.4919359+01:00 0HL8AU5JV8HPC:00000003 [INF] Executed action "RemsNG.Controllers.RoleController.AllUserRoles (RemsNG)" in 149.143ms (afa2e885)
+2017-10-04T07:36:21.5125396+01:00 0HL8AU5JV8HPC:00000003 [INF] Request finished in 408.2251ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T07:37:46.5828504+01:00 0HL8AU5JV8HPF:00000001 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/lcda/total   (ca22a1cb)
+2017-10-04T07:37:46.6538916+01:00 0HL8AU5JV8HPF:00000001 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:37:46.6748351+01:00 0HL8AU5JV8HPF:00000001 [INF] Request finished in 177.7052ms 204  (791a596a)
+2017-10-04T07:37:46.7117698+01:00 0HL8AU5JV8HPE:00000001 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/user/profiles   (ca22a1cb)
+2017-10-04T07:37:46.7324600+01:00 0HL8AU5JV8HPE:00000001 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:37:46.7857756+01:00 0HL8AU5JV8HPE:00000001 [INF] Request finished in 196.3312ms 204  (791a596a)
+2017-10-04T07:37:46.8544247+01:00 0HL8AU5JV8HPF:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/lcda/total   (ca22a1cb)
+2017-10-04T07:37:46.9270256+01:00 0HL8AU5JV8HPE:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/user/profiles   (ca22a1cb)
+2017-10-04T07:37:46.9618097+01:00 0HL8AU5JV8HPF:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:37:47.0347690+01:00 0HL8AU5JV8HPE:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:37:47.0610252+01:00 0HL8AU5JV8HPF:00000002 [INF] Successfully validated the token. (60169667)
+2017-10-04T07:37:47.0966649+01:00 0HL8AU5JV8HPF:00000002 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T07:37:47.1491232+01:00 0HL8AU5JV8HPE:00000002 [INF] Successfully validated the token. (60169667)
+2017-10-04T07:37:47.1626485+01:00 0HL8AU5JV8HPE:00000002 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T07:37:47.2009119+01:00 0HL8AU5JV8HPF:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:37:47.2181899+01:00 0HL8AU5JV8HPF:00000002 [INF] Executing action method "RemsNG.Controllers.LcdaController.All (RemsNG)" with arguments (null) - ModelState is Valid (ba7f4ac2)
+2017-10-04T07:37:47.2533765+01:00 0HL8AU5JV8HPE:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:37:47.3386384+01:00 0HL8AU5JV8HPF:00000002 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T07:37:47.3455350+01:00 0HL8AU5JV8HPE:00000002 [INF] Executing action method "RemsNG.Controllers.UserController.Profiles (RemsNG)" with arguments (["20", "1"]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T07:37:47.3829711+01:00 0HL8AU5JV8HPF:00000002 [INF] Executed DbCommand ("3"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [x].[id], [x].[addressId], [x].[createdBy], [x].[dateCreated], [x].[domainId], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lcdaCode], [x].[lcdaName], [x].[lcdaStatus]
+FROM [tbl_lcda] AS [x]
+ORDER BY [x].[lcdaName]" (0723d8ff)
+2017-10-04T07:37:47.4391221+01:00 0HL8AU5JV8HPE:00000002 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T07:37:47.4677877+01:00 0HL8AU5JV8HPF:00000002 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T07:37:47.5012428+01:00 0HL8AU5JV8HPF:00000002 [INF] Executed action "RemsNG.Controllers.LcdaController.All (RemsNG)" in 370.7321ms (afa2e885)
+2017-10-04T07:37:47.5658141+01:00 0HL8AU5JV8HPE:00000002 [INF] Executed DbCommand ("7"ms) [Parameters=["@__p_0='?', @__p_1='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT [t].[id], [t].[createdBy], [t].[dateCreated], [t].[email], [t].[firstname], [t].[gender], [t].[lastModifiedDate], [t].[lastmodifiedby], [t].[lastname], [t].[lockedOutEndDateUTC], [t].[lockedoutenabled], [t].[passwordHash], [t].[securityStamp], [t].[surname], [t].[userStatus], [t].[username]
+FROM [tbl_users] AS [t]
+ORDER BY (SELECT 1)
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY" (0723d8ff)
+2017-10-04T07:37:47.5890075+01:00 0HL8AU5JV8HPF:00000002 [INF] Request finished in 697.0561ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T07:37:47.6320628+01:00 0HL8AU5JV8HPE:00000002 [INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT COUNT(*)
+FROM [tbl_users] AS [t]" (0723d8ff)
+2017-10-04T07:37:47.6646512+01:00 0HL8AU5JV8HPE:00000002 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T07:37:47.6998721+01:00 0HL8AU5JV8HPE:00000002 [INF] Executed action "RemsNG.Controllers.UserController.Profiles (RemsNG)" in 475.1683ms (afa2e885)
+2017-10-04T07:37:47.7173082+01:00 0HL8AU5JV8HPE:00000002 [INF] Request finished in 879.6087ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T07:38:02.4570946+01:00 0HL8AU5JV8HPF:00000003 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/lcda/total   (ca22a1cb)
+2017-10-04T07:38:02.4887529+01:00 0HL8AU5JV8HPE:00000003 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/user/profiles   (ca22a1cb)
+2017-10-04T07:38:02.5381372+01:00 0HL8AU5JV8HPF:00000003 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:38:02.6625265+01:00 0HL8AU5JV8HPF:00000003 [INF] Request finished in 167.3941ms 204  (791a596a)
+2017-10-04T07:38:02.7299371+01:00 0HL8AU5JV8HPE:00000003 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:38:02.8083273+01:00 0HL8AU5JV8HPE:00000003 [INF] Request finished in 337.1084ms 204  (791a596a)
+2017-10-04T07:38:02.9558178+01:00 0HL8AU5JV8HPF:00000004 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/lcda/total   (ca22a1cb)
+2017-10-04T07:38:03.0958574+01:00 0HL8AU5JV8HPE:00000004 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/user/profiles   (ca22a1cb)
+2017-10-04T07:38:03.1360759+01:00 0HL8AU5JV8HPE:00000004 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:38:03.1609230+01:00 0HL8AU5JV8HPE:00000004 [INF] Successfully validated the token. (60169667)
+2017-10-04T07:38:03.2030022+01:00 0HL8AU5JV8HPE:00000004 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T07:38:03.2198097+01:00 0HL8AU5JV8HPE:00000004 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:38:03.2468208+01:00 0HL8AU5JV8HPE:00000004 [INF] Executing action method "RemsNG.Controllers.UserController.Profiles (RemsNG)" with arguments (["20", "1"]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T07:38:03.3035403+01:00 0HL8AU5JV8HPF:00000004 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:38:03.3437773+01:00 0HL8AU5JV8HPE:00000004 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T07:38:03.3892850+01:00 0HL8AU5JV8HPF:00000004 [INF] Successfully validated the token. (60169667)
+2017-10-04T07:38:03.4424516+01:00 0HL8AU5JV8HPF:00000004 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T07:38:03.4915966+01:00 0HL8AU5JV8HPE:00000004 [INF] Executed DbCommand ("34"ms) [Parameters=["@__p_0='?', @__p_1='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT [t].[id], [t].[createdBy], [t].[dateCreated], [t].[email], [t].[firstname], [t].[gender], [t].[lastModifiedDate], [t].[lastmodifiedby], [t].[lastname], [t].[lockedOutEndDateUTC], [t].[lockedoutenabled], [t].[passwordHash], [t].[securityStamp], [t].[surname], [t].[userStatus], [t].[username]
+FROM [tbl_users] AS [t]
+ORDER BY (SELECT 1)
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY" (0723d8ff)
+2017-10-04T07:38:03.5170338+01:00 0HL8AU5JV8HPF:00000004 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:38:03.5618647+01:00 0HL8AU5JV8HPE:00000004 [INF] Executed DbCommand ("15"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT COUNT(*)
+FROM [tbl_users] AS [t]" (0723d8ff)
+2017-10-04T07:38:03.6165097+01:00 0HL8AU5JV8HPE:00000004 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T07:38:03.6516133+01:00 0HL8AU5JV8HPE:00000004 [INF] Executed action "RemsNG.Controllers.UserController.Profiles (RemsNG)" in 413.5572ms (afa2e885)
+2017-10-04T07:38:03.7318824+01:00 0HL8AU5JV8HPF:00000004 [INF] Executing action method "RemsNG.Controllers.LcdaController.All (RemsNG)" with arguments (null) - ModelState is Valid (ba7f4ac2)
+2017-10-04T07:38:03.7663208+01:00 0HL8AU5JV8HPE:00000004 [INF] Request finished in 641.1355ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T07:38:03.8061844+01:00 0HL8AU5JV8HPF:00000004 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T07:38:03.8415287+01:00 0HL8AU5JV8HPF:00000004 [INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [x].[id], [x].[addressId], [x].[createdBy], [x].[dateCreated], [x].[domainId], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lcdaCode], [x].[lcdaName], [x].[lcdaStatus]
+FROM [tbl_lcda] AS [x]
+ORDER BY [x].[lcdaName]" (0723d8ff)
+2017-10-04T07:38:03.8753666+01:00 0HL8AU5JV8HPF:00000004 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T07:38:03.9001883+01:00 0HL8AU5JV8HPF:00000004 [INF] Executed action "RemsNG.Controllers.LcdaController.All (RemsNG)" in 422.454ms (afa2e885)
+2017-10-04T07:38:03.9286351+01:00 0HL8AU5JV8HPF:00000004 [INF] Request finished in 1094.5679ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T07:56:08.7608006+01:00 0HL8AU5JV8HPH:00000001 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/lcda/total   (ca22a1cb)
+2017-10-04T07:56:08.7982579+01:00 0HL8AU5JV8HPH:00000001 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:56:08.8663023+01:00 0HL8AU5JV8HPH:00000001 [INF] Request finished in 84.8091ms 204  (791a596a)
+2017-10-04T07:56:08.9495533+01:00 0HL8AU5JV8HPG:00000001 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/user/profiles   (ca22a1cb)
+2017-10-04T07:56:08.9963950+01:00 0HL8AU5JV8HPG:00000001 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:56:09.0110486+01:00 0HL8AU5JV8HPG:00000001 [INF] Request finished in 291.4107ms 204  (791a596a)
+2017-10-04T07:56:09.1950986+01:00 0HL8AU5JV8HPH:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/lcda/total   (ca22a1cb)
+2017-10-04T07:56:09.2421848+01:00 0HL8AU5JV8HPH:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:56:09.2482668+01:00 0HL8AU5JV8HPG:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/user/profiles   (ca22a1cb)
+2017-10-04T07:56:09.3120899+01:00 0HL8AU5JV8HPG:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:56:09.4927502+01:00 0HL8AU5JV8HPG:00000002 [INF] Failed to validate the token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJtb3MtYWRtaW4iLCJ1bmlxdWVfbmFtZSI6IkFndWRhIE9sYWJvZGUgSCIsInJvbGUiOiIiLCJEb21haW4iOiJcIjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMFwiIiwiaWRlbnRpdHkiOiI2MTAwNjQwMDM4MDAzNDAwMzkwMDYxMDAzMDAwMzYwMDJEMDAzNTAwMzMwMDMwMDAzOTAwMkQwMDM0MDAzNTAwNjIwMDMyMDAyRDAwNjEwMDYxMDAzNjAwMzIwMDJEMDAzNjAwMzQwMDMxMDA2MjAwMzYwMDM3MDA2MzAwMzcwMDYyMDAzNDAwNjYwMDM4MDAiLCJuYmYiOjE1MDcwOTg4ODUsImV4cCI6MTUwNzA5OTQ4NSwiaWF0IjoxNTA3MDk4ODg1LCJpc3MiOiJyZW1zbmciLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAifQ.k8igw6oJL1BE1-Ni0x2Ak6ZR1AjlqF5VSRvS3xWUvsM". (f3081a27)
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '10/04/2017 06:44:45'
+Current time: '10/04/2017 06:56:09'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, JwtSecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateTokenPayload(JwtSecurityToken jwt, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateToken(String token, TokenValidationParameters validationParameters, SecurityToken& validatedToken)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.<HandleAuthenticateAsync>d__6.MoveNext()
+2017-10-04T07:56:09.5016141+01:00 0HL8AU5JV8HPG:00000002 [INF] "Bearer" was not authenticated. Failure message: "IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '10/04/2017 06:44:45'
+Current time: '10/04/2017 06:56:09'." (48071232)
+2017-10-04T07:56:09.5109728+01:00 0HL8AU5JV8HPG:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:56:09.5403259+01:00 0HL8AU5JV8HPG:00000002 [INF] Authorization failed for the request at filter '"RemsNG.Utilities.RemsRequirementFilter"'. (8b6446cb)
+2017-10-04T07:56:09.5603868+01:00 0HL8AU5JV8HPH:00000002 [INF] Failed to validate the token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJtb3MtYWRtaW4iLCJ1bmlxdWVfbmFtZSI6IkFndWRhIE9sYWJvZGUgSCIsInJvbGUiOiIiLCJEb21haW4iOiJcIjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMFwiIiwiaWRlbnRpdHkiOiI2MTAwNjQwMDM4MDAzNDAwMzkwMDYxMDAzMDAwMzYwMDJEMDAzNTAwMzMwMDMwMDAzOTAwMkQwMDM0MDAzNTAwNjIwMDMyMDAyRDAwNjEwMDYxMDAzNjAwMzIwMDJEMDAzNjAwMzQwMDMxMDA2MjAwMzYwMDM3MDA2MzAwMzcwMDYyMDAzNDAwNjYwMDM4MDAiLCJuYmYiOjE1MDcwOTg4ODUsImV4cCI6MTUwNzA5OTQ4NSwiaWF0IjoxNTA3MDk4ODg1LCJpc3MiOiJyZW1zbmciLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAifQ.k8igw6oJL1BE1-Ni0x2Ak6ZR1AjlqF5VSRvS3xWUvsM". (f3081a27)
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '10/04/2017 06:44:45'
+Current time: '10/04/2017 06:56:09'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, JwtSecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateTokenPayload(JwtSecurityToken jwt, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateToken(String token, TokenValidationParameters validationParameters, SecurityToken& validatedToken)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.<HandleAuthenticateAsync>d__6.MoveNext()
+2017-10-04T07:56:09.6111064+01:00 0HL8AU5JV8HPG:00000002 [INF] Executed action "RemsNG.Controllers.UserController.Profiles (RemsNG)" in 57.7971ms (afa2e885)
+2017-10-04T07:56:09.6514406+01:00 0HL8AU5JV8HPH:00000002 [INF] "Bearer" was not authenticated. Failure message: "IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '10/04/2017 06:44:45'
+Current time: '10/04/2017 06:56:09'." (48071232)
+2017-10-04T07:56:09.6852367+01:00 0HL8AU5JV8HPG:00000002 [INF] Request finished in 422.1309ms 403  (791a596a)
+2017-10-04T07:56:09.7415234+01:00 0HL8AU5JV8HPH:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T07:56:09.7533990+01:00 0HL8AU5JV8HPH:00000002 [INF] Authorization failed for the request at filter '"RemsNG.Utilities.RemsRequirementFilter"'. (8b6446cb)
+2017-10-04T07:56:09.7792314+01:00 0HL8AU5JV8HPH:00000002 [INF] Executed action "RemsNG.Controllers.LcdaController.All (RemsNG)" in 102.1421ms (afa2e885)
+2017-10-04T07:56:09.8051936+01:00 0HL8AU5JV8HPH:00000002 [INF] Request finished in 641.5645ms 403  (791a596a)
+2017-10-04T10:33:39.7646678+01:00 0HL8AU5JV8HPI:00000001 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/lcda/byusername/mos-admin   (ca22a1cb)
+2017-10-04T10:33:39.7970759+01:00 0HL8AU5JV8HPI:00000001 [INF] Policy execution successful. (0204925d)
+2017-10-04T10:33:39.8271136+01:00 0HL8AU5JV8HPI:00000001 [INF] Request finished in 65.999ms 204  (791a596a)
+2017-10-04T10:33:39.8612771+01:00 0HL8AU5JV8HPI:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/lcda/byusername/mos-admin   (ca22a1cb)
+2017-10-04T10:33:39.8893316+01:00 0HL8AU5JV8HPI:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T10:33:39.9724202+01:00 0HL8AU5JV8HPI:00000002 [INF] Failed to validate the token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJtb3MtYWRtaW4iLCJ1bmlxdWVfbmFtZSI6IkFndWRhIE9sYWJvZGUgSCIsInJvbGUiOiIiLCJEb21haW4iOiJcIjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMFwiIiwiaWRlbnRpdHkiOiI2MTAwNjQwMDM4MDAzNDAwMzkwMDYxMDAzMDAwMzYwMDJEMDAzNTAwMzMwMDMwMDAzOTAwMkQwMDM0MDAzNTAwNjIwMDMyMDAyRDAwNjEwMDYxMDAzNjAwMzIwMDJEMDAzNjAwMzQwMDMxMDA2MjAwMzYwMDM3MDA2MzAwMzcwMDYyMDAzNDAwNjYwMDM4MDAiLCJuYmYiOjE1MDcwOTg4ODUsImV4cCI6MTUwNzA5OTQ4NSwiaWF0IjoxNTA3MDk4ODg1LCJpc3MiOiJyZW1zbmciLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAifQ.k8igw6oJL1BE1-Ni0x2Ak6ZR1AjlqF5VSRvS3xWUvsM". (f3081a27)
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '10/04/2017 06:44:45'
+Current time: '10/04/2017 09:33:39'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, JwtSecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateTokenPayload(JwtSecurityToken jwt, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateToken(String token, TokenValidationParameters validationParameters, SecurityToken& validatedToken)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.<HandleAuthenticateAsync>d__6.MoveNext()
+2017-10-04T10:33:40.0011175+01:00 0HL8AU5JV8HPI:00000002 [INF] "Bearer" was not authenticated. Failure message: "IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '10/04/2017 06:44:45'
+Current time: '10/04/2017 09:33:39'." (48071232)
+2017-10-04T10:33:40.0321062+01:00 0HL8AU5JV8HPI:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T10:33:40.0654329+01:00 0HL8AU5JV8HPI:00000002 [INF] Executing action method "RemsNG.Controllers.LcdaController.LCDAByusername (RemsNG)" with arguments (["mos-admin"]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T10:33:40.0939208+01:00 0HL8AU5JV8HPI:00000002 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T10:33:40.1235809+01:00 0HL8AU5JV8HPI:00000002 [INF] Executed action "RemsNG.Controllers.LcdaController.LCDAByusername (RemsNG)" in 91.1297ms (afa2e885)
+2017-10-04T10:33:40.1353533+01:00 0HL8AU5JV8HPI:00000002 [INF] Request finished in 291.3724ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T10:33:44.4474657+01:00 0HL8AU5JV8HPI:00000003 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/user   (ca22a1cb)
+2017-10-04T10:33:44.4570772+01:00 0HL8AU5JV8HPI:00000003 [INF] Policy execution successful. (0204925d)
+2017-10-04T10:33:44.5050512+01:00 0HL8AU5JV8HPI:00000003 [INF] Request finished in 38.8124ms 204  (791a596a)
+2017-10-04T10:33:44.5372330+01:00 0HL8AU5JV8HPI:00000004 [INF] Request starting HTTP/1.1 POST http://localhost:54313/api/v1/user application/json 2 (ca22a1cb)
+2017-10-04T10:33:44.5455154+01:00 0HL8AU5JV8HPI:00000004 [INF] Policy execution successful. (0204925d)
+2017-10-04T10:33:44.5753367+01:00 0HL8AU5JV8HPI:00000004 [INF] Failed to validate the token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJtb3MtYWRtaW4iLCJ1bmlxdWVfbmFtZSI6IkFndWRhIE9sYWJvZGUgSCIsInJvbGUiOiIiLCJEb21haW4iOiJcIjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMFwiIiwiaWRlbnRpdHkiOiI2MTAwNjQwMDM4MDAzNDAwMzkwMDYxMDAzMDAwMzYwMDJEMDAzNTAwMzMwMDMwMDAzOTAwMkQwMDM0MDAzNTAwNjIwMDMyMDAyRDAwNjEwMDYxMDAzNjAwMzIwMDJEMDAzNjAwMzQwMDMxMDA2MjAwMzYwMDM3MDA2MzAwMzcwMDYyMDAzNDAwNjYwMDM4MDAiLCJuYmYiOjE1MDcwOTg4ODUsImV4cCI6MTUwNzA5OTQ4NSwiaWF0IjoxNTA3MDk4ODg1LCJpc3MiOiJyZW1zbmciLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAifQ.k8igw6oJL1BE1-Ni0x2Ak6ZR1AjlqF5VSRvS3xWUvsM". (f3081a27)
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '10/04/2017 06:44:45'
+Current time: '10/04/2017 09:33:44'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, JwtSecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateTokenPayload(JwtSecurityToken jwt, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateToken(String token, TokenValidationParameters validationParameters, SecurityToken& validatedToken)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.<HandleAuthenticateAsync>d__6.MoveNext()
+2017-10-04T10:33:44.5857876+01:00 0HL8AU5JV8HPI:00000004 [INF] "Bearer" was not authenticated. Failure message: "IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '10/04/2017 06:44:45'
+Current time: '10/04/2017 09:33:44'." (48071232)
+2017-10-04T10:33:44.6129604+01:00 0HL8AU5JV8HPI:00000004 [INF] Policy execution successful. (0204925d)
+2017-10-04T10:33:44.6413839+01:00 0HL8AU5JV8HPI:00000004 [INF] Executing action method "RemsNG.Controllers.UserController.Post (RemsNG)" with arguments (["eyJ1c2VybmFtZSI6Im1vcy1hZG1pbiIsInB3ZCI6IkBtaXN0bGV0bGUxMDIwMTYifQ=="]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T10:33:44.6808890+01:00 0HL8AU5JV8HPI:00000004 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T10:33:44.7594060+01:00 0HL8AU5JV8HPI:00000004 [INF] Executed DbCommand ("5"ms) [Parameters=["@__username_0='?' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[createdBy], [x].[dateCreated], [x].[email], [x].[firstname], [x].[gender], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lastname], [x].[lockedOutEndDateUTC], [x].[lockedoutenabled], [x].[passwordHash], [x].[securityStamp], [x].[surname], [x].[userStatus], [x].[username]
+FROM [tbl_users] AS [x]
+WHERE [x].[username] = @__username_0" (0723d8ff)
+2017-10-04T10:33:44.8154625+01:00 0HL8AU5JV8HPI:00000004 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T10:33:44.8559733+01:00 0HL8AU5JV8HPI:00000004 [INF] Executed action "RemsNG.Controllers.UserController.Post (RemsNG)" in 229.8056ms (afa2e885)
+2017-10-04T10:33:44.8833832+01:00 0HL8AU5JV8HPI:00000004 [INF] Request finished in 348.1575ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T10:33:48.1916580+01:00 0HL8AU5JV8HPI:00000005 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/user/profiles   (ca22a1cb)
+2017-10-04T10:33:48.2658190+01:00 0HL8AU5JV8HPI:00000005 [INF] Policy execution successful. (0204925d)
+2017-10-04T10:33:48.2699767+01:00 0HL8AU5JV8HPJ:00000001 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/lcda/total   (ca22a1cb)
+2017-10-04T10:33:48.3463496+01:00 0HL8AU5JV8HPJ:00000001 [INF] Policy execution successful. (0204925d)
+2017-10-04T10:33:48.3485363+01:00 0HL8AU5JV8HPI:00000005 [INF] Request finished in 112.0589ms 204  (791a596a)
+2017-10-04T10:33:48.4009875+01:00 0HL8AU5JV8HPJ:00000001 [INF] Request finished in 156.8222ms 204  (791a596a)
+2017-10-04T10:33:48.4349317+01:00 0HL8AU5JV8HPI:00000006 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/user/profiles   (ca22a1cb)
+2017-10-04T10:33:48.5102897+01:00 0HL8AU5JV8HPI:00000006 [INF] Policy execution successful. (0204925d)
+2017-10-04T10:33:48.5340642+01:00 0HL8AU5JV8HPJ:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/lcda/total   (ca22a1cb)
+2017-10-04T10:33:48.5811670+01:00 0HL8AU5JV8HPJ:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T10:33:48.6092670+01:00 0HL8AU5JV8HPI:00000006 [INF] Successfully validated the token. (60169667)
+2017-10-04T10:33:48.6631096+01:00 0HL8AU5JV8HPJ:00000002 [INF] Successfully validated the token. (60169667)
+2017-10-04T10:33:48.6872265+01:00 0HL8AU5JV8HPI:00000006 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T10:33:48.7355474+01:00 0HL8AU5JV8HPJ:00000002 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T10:33:48.7845975+01:00 0HL8AU5JV8HPI:00000006 [INF] Policy execution successful. (0204925d)
+2017-10-04T10:33:48.8144507+01:00 0HL8AU5JV8HPJ:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T10:33:48.8489492+01:00 0HL8AU5JV8HPI:00000006 [INF] Executing action method "RemsNG.Controllers.UserController.Profiles (RemsNG)" with arguments (["20", "1"]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T10:33:48.8731068+01:00 0HL8AU5JV8HPJ:00000002 [INF] Executing action method "RemsNG.Controllers.LcdaController.All (RemsNG)" with arguments (null) - ModelState is Valid (ba7f4ac2)
+2017-10-04T10:33:48.9062498+01:00 0HL8AU5JV8HPI:00000006 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T10:33:48.9356439+01:00 0HL8AU5JV8HPJ:00000002 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T10:33:48.9934648+01:00 0HL8AU5JV8HPI:00000006 [INF] Executed DbCommand ("4"ms) [Parameters=["@__p_0='?', @__p_1='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT [t].[id], [t].[createdBy], [t].[dateCreated], [t].[email], [t].[firstname], [t].[gender], [t].[lastModifiedDate], [t].[lastmodifiedby], [t].[lastname], [t].[lockedOutEndDateUTC], [t].[lockedoutenabled], [t].[passwordHash], [t].[securityStamp], [t].[surname], [t].[userStatus], [t].[username]
+FROM [tbl_users] AS [t]
+ORDER BY (SELECT 1)
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY" (0723d8ff)
+2017-10-04T10:33:49.0082801+01:00 0HL8AU5JV8HPI:00000006 [INF] Executed DbCommand ("3"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT COUNT(*)
+FROM [tbl_users] AS [t]" (0723d8ff)
+2017-10-04T10:33:49.0433789+01:00 0HL8AU5JV8HPI:00000006 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T10:33:49.0590866+01:00 0HL8AU5JV8HPI:00000006 [INF] Executed action "RemsNG.Controllers.UserController.Profiles (RemsNG)" in 331.3065ms (afa2e885)
+2017-10-04T10:33:49.1074141+01:00 0HL8AU5JV8HPI:00000006 [INF] Request finished in 680.8439ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T10:33:49.1547766+01:00 0HL8AU5JV8HPJ:00000002 [INF] Executed DbCommand ("40"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [x].[id], [x].[addressId], [x].[createdBy], [x].[dateCreated], [x].[domainId], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lcdaCode], [x].[lcdaName], [x].[lcdaStatus]
+FROM [tbl_lcda] AS [x]
+ORDER BY [x].[lcdaName]" (0723d8ff)
+2017-10-04T10:33:49.1872696+01:00 0HL8AU5JV8HPJ:00000002 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T10:33:49.2172674+01:00 0HL8AU5JV8HPJ:00000002 [INF] Executed action "RemsNG.Controllers.LcdaController.All (RemsNG)" in 427.5918ms (afa2e885)
+2017-10-04T10:33:49.2277133+01:00 0HL8AU5JV8HPJ:00000002 [INF] Request finished in 760.4493ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T14:01:44.0894457+01:00  [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T14:01:44.7621964+01:00  [INF] Executed DbCommand ("85"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE') SELECT 1 ELSE SELECT 0" (0723d8ff)
+2017-10-04T14:01:44.9260573+01:00  [INF] Executed DbCommand ("11"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[addressId], [x].[datecreated], [x].[domainCode], [x].[domainName], [x].[domainStatus], [x].[domainType]
+FROM [tbl_domain] AS [x]
+WHERE LOWER([x].[domainCode]) = N'mos-admin'" (0723d8ff)
+2017-10-04T14:01:45.0089175+01:00  [INF] Executed DbCommand ("2"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[createdBy], [x].[dateCreated], [x].[email], [x].[firstname], [x].[gender], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lastname], [x].[lockedOutEndDateUTC], [x].[lockedoutenabled], [x].[passwordHash], [x].[securityStamp], [x].[surname], [x].[userStatus], [x].[username]
+FROM [tbl_users] AS [x]
+WHERE LOWER([x].[username]) = N'mos-admin'" (0723d8ff)
+2017-10-04T14:01:45.0871232+01:00  [INF] Executed DbCommand ("26"ms) [Parameters=["@__mosUser_id_0='?', @__mosDomain_id_1='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[domainId], [x].[userId]
+FROM [tbl_userdomain] AS [x]
+WHERE ([x].[userId] = @__mosUser_id_0) AND ([x].[domainId] = @__mosDomain_id_1)" (0723d8ff)
+2017-10-04T14:01:46.1044806+01:00 0HL8B508JOCAL:00000001 [INF] Request starting HTTP/1.1 GET http://localhost:54313/index.html   (ca22a1cb)
+2017-10-04T14:01:46.6855146+01:00 0HL8B508JOCAL:00000001 [INF] Request finished in 622.743ms 404  (791a596a)
+2017-10-04T14:01:57.3523196+01:00 0HL8B508JOCAL:00000002 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/lcda/byusername/mos-admin   (ca22a1cb)
+2017-10-04T14:01:57.3890268+01:00 0HL8B508JOCAL:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:01:57.4256206+01:00 0HL8B508JOCAL:00000002 [INF] Request finished in 72.028ms 204  (791a596a)
+2017-10-04T14:01:57.4676527+01:00 0HL8B508JOCAL:00000003 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/lcda/byusername/mos-admin   (ca22a1cb)
+2017-10-04T14:01:57.5027488+01:00 0HL8B508JOCAL:00000003 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:01:57.7520524+01:00 0HL8B508JOCAL:00000003 [INF] Failed to validate the token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJtb3MtYWRtaW4iLCJ1bmlxdWVfbmFtZSI6IkFndWRhIE9sYWJvZGUgSCIsInJvbGUiOiIiLCJEb21haW4iOiJcIjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMFwiIiwiaWRlbnRpdHkiOiI2MTAwNjQwMDM4MDAzNDAwMzkwMDYxMDAzMDAwMzYwMDJEMDAzNTAwMzMwMDMwMDAzOTAwMkQwMDM0MDAzNTAwNjIwMDMyMDAyRDAwNjEwMDYxMDAzNjAwMzIwMDJEMDAzNjAwMzQwMDMxMDA2MjAwMzYwMDM3MDA2MzAwMzcwMDYyMDAzNDAwNjYwMDM4MDAiLCJuYmYiOjE1MDcxMDk2MjQsImV4cCI6MTUwNzExMDIyNCwiaWF0IjoxNTA3MTA5NjI0LCJpc3MiOiJyZW1zbmciLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAifQ.qOhSyqPECzWDZuuzPfTZVEZKtN_937r_bwssFBlHVLA". (f3081a27)
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '10/04/2017 09:43:44'
+Current time: '10/04/2017 13:01:57'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, JwtSecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateTokenPayload(JwtSecurityToken jwt, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateToken(String token, TokenValidationParameters validationParameters, SecurityToken& validatedToken)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.<HandleAuthenticateAsync>d__6.MoveNext()
+2017-10-04T14:01:57.7891732+01:00 0HL8B508JOCAL:00000003 [INF] "Bearer" was not authenticated. Failure message: "IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '10/04/2017 09:43:44'
+Current time: '10/04/2017 13:01:57'." (48071232)
+2017-10-04T14:01:57.9601618+01:00 0HL8B508JOCAL:00000003 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:01:58.0427893+01:00 0HL8B508JOCAL:00000003 [INF] Executing action method "RemsNG.Controllers.LcdaController.LCDAByusername (RemsNG)" with arguments (["mos-admin"]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T14:01:58.0858546+01:00 0HL8B508JOCAL:00000003 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T14:01:58.1531746+01:00 0HL8B508JOCAL:00000003 [INF] Executed action "RemsNG.Controllers.LcdaController.LCDAByusername (RemsNG)" in 190.2241ms (afa2e885)
+2017-10-04T14:01:58.1882190+01:00 0HL8B508JOCAL:00000003 [INF] Request finished in 721.0648ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T14:02:03.5802156+01:00 0HL8B508JOCAL:00000004 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/user   (ca22a1cb)
+2017-10-04T14:02:03.6135419+01:00 0HL8B508JOCAL:00000004 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:02:03.6289729+01:00 0HL8B508JOCAL:00000004 [INF] Request finished in 67.1663ms 204  (791a596a)
+2017-10-04T14:02:03.6708571+01:00 0HL8B508JOCAL:00000005 [INF] Request starting HTTP/1.1 POST http://localhost:54313/api/v1/user application/json 2 (ca22a1cb)
+2017-10-04T14:02:03.6857291+01:00 0HL8B508JOCAL:00000005 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:02:03.7294087+01:00 0HL8B508JOCAL:00000005 [INF] Failed to validate the token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJtb3MtYWRtaW4iLCJ1bmlxdWVfbmFtZSI6IkFndWRhIE9sYWJvZGUgSCIsInJvbGUiOiIiLCJEb21haW4iOiJcIjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMFwiIiwiaWRlbnRpdHkiOiI2MTAwNjQwMDM4MDAzNDAwMzkwMDYxMDAzMDAwMzYwMDJEMDAzNTAwMzMwMDMwMDAzOTAwMkQwMDM0MDAzNTAwNjIwMDMyMDAyRDAwNjEwMDYxMDAzNjAwMzIwMDJEMDAzNjAwMzQwMDMxMDA2MjAwMzYwMDM3MDA2MzAwMzcwMDYyMDAzNDAwNjYwMDM4MDAiLCJuYmYiOjE1MDcxMDk2MjQsImV4cCI6MTUwNzExMDIyNCwiaWF0IjoxNTA3MTA5NjI0LCJpc3MiOiJyZW1zbmciLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAifQ.qOhSyqPECzWDZuuzPfTZVEZKtN_937r_bwssFBlHVLA". (f3081a27)
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '10/04/2017 09:43:44'
+Current time: '10/04/2017 13:02:03'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, JwtSecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateTokenPayload(JwtSecurityToken jwt, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateToken(String token, TokenValidationParameters validationParameters, SecurityToken& validatedToken)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.<HandleAuthenticateAsync>d__6.MoveNext()
+2017-10-04T14:02:03.7449472+01:00 0HL8B508JOCAL:00000005 [INF] "Bearer" was not authenticated. Failure message: "IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '10/04/2017 09:43:44'
+Current time: '10/04/2017 13:02:03'." (48071232)
+2017-10-04T14:02:03.7969097+01:00 0HL8B508JOCAL:00000005 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:02:03.8450816+01:00 0HL8B508JOCAL:00000005 [INF] Executing action method "RemsNG.Controllers.UserController.Post (RemsNG)" with arguments (["eyJ1c2VybmFtZSI6Im1vcy1hZG1pbiIsInB3ZCI6IkBtaXN0bGV0bGUxMDIwMTYifQ=="]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T14:02:03.9168425+01:00 0HL8B508JOCAL:00000005 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T14:02:04.0111800+01:00 0HL8B508JOCAL:00000005 [INF] Executed DbCommand ("23"ms) [Parameters=["@__username_0='?' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT TOP(1) [x].[id], [x].[createdBy], [x].[dateCreated], [x].[email], [x].[firstname], [x].[gender], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lastname], [x].[lockedOutEndDateUTC], [x].[lockedoutenabled], [x].[passwordHash], [x].[securityStamp], [x].[surname], [x].[userStatus], [x].[username]
+FROM [tbl_users] AS [x]
+WHERE [x].[username] = @__username_0" (0723d8ff)
+2017-10-04T14:02:04.0572181+01:00 0HL8B508JOCAL:00000005 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T14:02:04.0762554+01:00 0HL8B508JOCAL:00000005 [INF] Executed action "RemsNG.Controllers.UserController.Post (RemsNG)" in 307.2267ms (afa2e885)
+2017-10-04T14:02:04.0960373+01:00 0HL8B508JOCAL:00000005 [INF] Request finished in 443.5952ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T14:02:09.4555035+01:00 0HL8B508JOCAL:00000006 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/role   (ca22a1cb)
+2017-10-04T14:02:09.4746959+01:00 0HL8B508JOCAL:00000006 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:02:09.5232762+01:00 0HL8B508JOCAL:00000006 [INF] Request finished in 55.9936ms 204  (791a596a)
+2017-10-04T14:02:09.5545101+01:00 0HL8B508JOCAM:00000001 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/domain/currentdomain   (ca22a1cb)
+2017-10-04T14:02:09.6413309+01:00 0HL8B508JOCAM:00000001 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:02:09.6687537+01:00 0HL8B508JOCAL:00000007 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/role   (ca22a1cb)
+2017-10-04T14:02:09.7239754+01:00 0HL8B508JOCAM:00000001 [INF] Request finished in 168.6731ms 204  (791a596a)
+2017-10-04T14:02:09.7577729+01:00 0HL8B508JOCAL:00000007 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:02:09.8009389+01:00 0HL8B508JOCAM:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/domain/currentdomain   (ca22a1cb)
+2017-10-04T14:02:09.8552243+01:00 0HL8B508JOCAM:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:02:09.8693550+01:00 0HL8B508JOCAL:00000007 [INF] Successfully validated the token. (60169667)
+2017-10-04T14:02:09.8842032+01:00 0HL8B508JOCAM:00000002 [INF] Successfully validated the token. (60169667)
+2017-10-04T14:02:09.9622204+01:00 0HL8B508JOCAL:00000007 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T14:02:09.9883992+01:00 0HL8B508JOCAM:00000002 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T14:02:10.0250744+01:00 0HL8B508JOCAM:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:02:10.0601475+01:00 0HL8B508JOCAL:00000007 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:02:10.0962044+01:00 0HL8B508JOCAL:00000007 [INF] Executing action method "RemsNG.Controllers.RoleController.Get (RemsNG)" with arguments (["20", "1"]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T14:02:10.1330996+01:00 0HL8B508JOCAM:00000002 [INF] Authorization was successful for user: "Aguda Olabode H". (d7eb274a)
+2017-10-04T14:02:10.1693678+01:00 0HL8B508JOCAM:00000002 [INF] Executing action method "RemsNG.Controllers.DomainController.CurrentDomain (RemsNG)" with arguments (null) - ModelState is Valid (ba7f4ac2)
+2017-10-04T14:02:10.1882375+01:00 0HL8B508JOCAL:00000007 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T14:02:10.2235418+01:00 0HL8B508JOCAM:00000002 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T14:02:10.2795943+01:00 0HL8B508JOCAL:00000007 [INF] Executed DbCommand ("14"ms) [Parameters=["@p0='?', @p1='?'"], CommandType='Text', CommandTimeout='30']"
+""sp_getRoles @p0, @p1" (0723d8ff)
+2017-10-04T14:02:10.3329557+01:00 0HL8B508JOCAM:00000002 [INF] Executed DbCommand ("3"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [x].[id], [x].[addressId], [x].[createdBy], [x].[dateCreated], [x].[domainId], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lcdaCode], [x].[lcdaName], [x].[lcdaStatus]
+FROM [tbl_lcda] AS [x]
+ORDER BY [x].[lcdaName]" (0723d8ff)
+2017-10-04T14:02:10.3596705+01:00 0HL8B508JOCAM:00000002 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T14:02:10.3996065+01:00 0HL8B508JOCAL:00000007 [INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT COUNT(*)
+FROM [tbl_role] AS [t]" (0723d8ff)
+2017-10-04T14:02:10.4360992+01:00 0HL8B508JOCAL:00000007 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T14:02:10.4736585+01:00 0HL8B508JOCAM:00000002 [INF] Executed action "RemsNG.Controllers.DomainController.CurrentDomain (RemsNG)" in 446.2587ms (afa2e885)
+2017-10-04T14:02:10.5064253+01:00 0HL8B508JOCAM:00000002 [INF] Request finished in 709.0031ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T14:02:10.5682006+01:00 0HL8B508JOCAL:00000007 [INF] Executed action "RemsNG.Controllers.RoleController.Get (RemsNG)" in 508.9838ms (afa2e885)
+2017-10-04T14:02:10.6014336+01:00 0HL8B508JOCAL:00000007 [INF] Request finished in 1006.8705ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T14:02:27.4394683+01:00 0HL8B508JOCAM:00000003 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/lcda/all   (ca22a1cb)
+2017-10-04T14:02:27.4734278+01:00 0HL8B508JOCAM:00000003 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:02:27.4918479+01:00 0HL8B508JOCAM:00000003 [INF] Request finished in 74.5493ms 204  (791a596a)
+2017-10-04T14:02:27.5062506+01:00 0HL8B508JOCAL:00000008 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/domain/activeDomain   (ca22a1cb)
+2017-10-04T14:02:27.5463242+01:00 0HL8B508JOCAL:00000008 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:02:27.5829838+01:00 0HL8B508JOCAM:00000004 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/lcda/all   (ca22a1cb)
+2017-10-04T14:02:27.6121658+01:00 0HL8B508JOCAL:00000008 [INF] Request finished in 109.6619ms 204  (791a596a)
+2017-10-04T14:02:27.6544951+01:00 0HL8B508JOCAM:00000004 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:02:27.6864204+01:00 0HL8B508JOCAL:00000009 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/domain/activeDomain   (ca22a1cb)
+2017-10-04T14:02:27.7207154+01:00 0HL8B508JOCAM:00000004 [INF] Successfully validated the token. (60169667)
+2017-10-04T14:02:27.7356594+01:00 0HL8B508JOCAL:00000009 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:02:27.7581858+01:00 0HL8B508JOCAM:00000004 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T14:02:27.8201725+01:00 0HL8B508JOCAL:00000009 [INF] Successfully validated the token. (60169667)
+2017-10-04T14:02:27.8606635+01:00 0HL8B508JOCAL:00000009 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T14:02:27.8945674+01:00 0HL8B508JOCAM:00000004 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:02:27.9265598+01:00 0HL8B508JOCAM:00000004 [INF] Executing action method "RemsNG.Controllers.LcdaController.Get (RemsNG)" with arguments (["20", "1"]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T14:02:27.9587664+01:00 0HL8B508JOCAL:00000009 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:02:27.9898298+01:00 0HL8B508JOCAL:00000009 [INF] Executing action method "RemsNG.Controllers.DomainController.Get (RemsNG)" with arguments (null) - ModelState is Valid (ba7f4ac2)
+2017-10-04T14:02:28.0257519+01:00 0HL8B508JOCAM:00000004 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T14:02:28.0564533+01:00 0HL8B508JOCAL:00000009 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T14:02:28.0887006+01:00 0HL8B508JOCAM:00000004 [WRN] Query: '"(from Lgda <generated>_2 in DbSet<Lgda> select [<generated>_2]).Skip(__p_0).Take(__p_1)"' uses a row limiting operation (Skip/Take) without OrderBy which may lead to unpredictable results. (32148ccc)
+2017-10-04T14:02:28.1287994+01:00 0HL8B508JOCAL:00000009 [INF] Executed DbCommand ("2"ms) [Parameters=["@__ToString_0='?' (Size = 4000)"], CommandType='Text', CommandTimeout='30']"
+""SELECT [x].[id], [x].[addressId], [x].[datecreated], [x].[domainCode], [x].[domainName], [x].[domainStatus], [x].[domainType]
+FROM [tbl_domain] AS [x]
+WHERE [x].[domainStatus] = @__ToString_0
+ORDER BY [x].[domainName]" (0723d8ff)
+2017-10-04T14:02:28.1615216+01:00 0HL8B508JOCAL:00000009 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T14:02:28.2130119+01:00 0HL8B508JOCAM:00000004 [INF] Executed DbCommand ("6"ms) [Parameters=["@__p_0='?', @__p_1='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT [t].[id], [t].[addressId], [t].[createdBy], [t].[dateCreated], [t].[domainId], [t].[lastModifiedDate], [t].[lastmodifiedby], [t].[lcdaCode], [t].[lcdaName], [t].[lcdaStatus]
+FROM [tbl_lcda] AS [t]
+ORDER BY (SELECT 1)
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY" (0723d8ff)
+2017-10-04T14:02:28.2475118+01:00 0HL8B508JOCAM:00000004 [INF] Executed DbCommand ("0"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT COUNT(*)
+FROM [tbl_lcda] AS [t]" (0723d8ff)
+2017-10-04T14:02:28.2813757+01:00 0HL8B508JOCAM:00000004 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T14:02:28.3167835+01:00 0HL8B508JOCAL:00000009 [INF] Executed action "RemsNG.Controllers.DomainController.Get (RemsNG)" in 355.2535ms (afa2e885)
+2017-10-04T14:02:28.3494626+01:00 0HL8B508JOCAM:00000004 [INF] Executed action "RemsNG.Controllers.LcdaController.Get (RemsNG)" in 466.4938ms (afa2e885)
+2017-10-04T14:02:28.3837432+01:00 0HL8B508JOCAL:00000009 [INF] Request finished in 665.4274ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T14:02:28.4431312+01:00 0HL8B508JOCAM:00000004 [INF] Request finished in 820.3011ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T14:02:37.8055070+01:00 0HL8B508JOCAL:0000000A [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/user/profiles   (ca22a1cb)
+2017-10-04T14:02:37.8606355+01:00 0HL8B508JOCAM:00000005 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/lcda/total   (ca22a1cb)
+2017-10-04T14:02:37.8930973+01:00 0HL8B508JOCAL:0000000A [INF] Policy execution successful. (0204925d)
+2017-10-04T14:02:37.9051953+01:00 0HL8B508JOCAM:00000005 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:02:37.9609705+01:00 0HL8B508JOCAL:0000000A [INF] Request finished in 129.7362ms 204  (791a596a)
+2017-10-04T14:02:37.9903931+01:00 0HL8B508JOCAM:00000005 [INF] Request finished in 128.7703ms 204  (791a596a)
+2017-10-04T14:02:38.0763202+01:00 0HL8B508JOCAM:00000006 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/lcda/total   (ca22a1cb)
+2017-10-04T14:02:38.1336937+01:00 0HL8B508JOCAL:0000000B [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/user/profiles   (ca22a1cb)
+2017-10-04T14:02:38.1593020+01:00 0HL8B508JOCAM:00000006 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:02:38.2105131+01:00 0HL8B508JOCAL:0000000B [INF] Policy execution successful. (0204925d)
+2017-10-04T14:02:38.2414452+01:00 0HL8B508JOCAM:00000006 [INF] Successfully validated the token. (60169667)
+2017-10-04T14:02:38.3214618+01:00 0HL8B508JOCAL:0000000B [INF] Successfully validated the token. (60169667)
+2017-10-04T14:02:38.3287203+01:00 0HL8B508JOCAM:00000006 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T14:02:38.3810888+01:00 0HL8B508JOCAL:0000000B [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T14:02:38.4175798+01:00 0HL8B508JOCAM:00000006 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:02:38.5001303+01:00 0HL8B508JOCAM:00000006 [INF] Executing action method "RemsNG.Controllers.LcdaController.All (RemsNG)" with arguments (null) - ModelState is Valid (ba7f4ac2)
+2017-10-04T14:02:38.5044061+01:00 0HL8B508JOCAL:0000000B [INF] Policy execution successful. (0204925d)
+2017-10-04T14:02:38.5834583+01:00 0HL8B508JOCAM:00000006 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T14:02:38.6088098+01:00 0HL8B508JOCAL:0000000B [INF] Executing action method "RemsNG.Controllers.UserController.Profiles (RemsNG)" with arguments (["20", "1"]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T14:02:38.6443590+01:00 0HL8B508JOCAM:00000006 [INF] Executed DbCommand ("0"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [x].[id], [x].[addressId], [x].[createdBy], [x].[dateCreated], [x].[domainId], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lcdaCode], [x].[lcdaName], [x].[lcdaStatus]
+FROM [tbl_lcda] AS [x]
+ORDER BY [x].[lcdaName]" (0723d8ff)
+2017-10-04T14:02:38.6592118+01:00 0HL8B508JOCAM:00000006 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T14:02:38.6924716+01:00 0HL8B508JOCAM:00000006 [INF] Executed action "RemsNG.Controllers.LcdaController.All (RemsNG)" in 274.1446ms (afa2e885)
+2017-10-04T14:02:38.7291693+01:00 0HL8B508JOCAM:00000006 [INF] Request finished in 669.1525ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T14:02:38.7692992+01:00 0HL8B508JOCAL:0000000B [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T14:02:38.8032958+01:00 0HL8B508JOCAL:0000000B [WRN] Query: '"(from User <generated>_2 in DbSet<User> select [<generated>_2]).Skip(__p_0).Take(__p_1)"' uses a row limiting operation (Skip/Take) without OrderBy which may lead to unpredictable results. (32148ccc)
+2017-10-04T14:02:38.8416477+01:00 0HL8B508JOCAL:0000000B [INF] Executed DbCommand ("1"ms) [Parameters=["@__p_0='?', @__p_1='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT [t].[id], [t].[createdBy], [t].[dateCreated], [t].[email], [t].[firstname], [t].[gender], [t].[lastModifiedDate], [t].[lastmodifiedby], [t].[lastname], [t].[lockedOutEndDateUTC], [t].[lockedoutenabled], [t].[passwordHash], [t].[securityStamp], [t].[surname], [t].[userStatus], [t].[username]
+FROM [tbl_users] AS [t]
+ORDER BY (SELECT 1)
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY" (0723d8ff)
+2017-10-04T14:02:38.8785049+01:00 0HL8B508JOCAL:0000000B [INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT COUNT(*)
+FROM [tbl_users] AS [t]" (0723d8ff)
+2017-10-04T14:02:38.9125664+01:00 0HL8B508JOCAL:0000000B [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T14:02:38.9556297+01:00 0HL8B508JOCAL:0000000B [INF] Executed action "RemsNG.Controllers.UserController.Profiles (RemsNG)" in 504.6346ms (afa2e885)
+2017-10-04T14:02:38.9906763+01:00 0HL8B508JOCAL:0000000B [INF] Request finished in 932.2682ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T14:03:52.9076364+01:00 0HL8B508JOCAN:00000001 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/user/profiles   (ca22a1cb)
+2017-10-04T14:03:52.9753941+01:00 0HL8B508JOCAN:00000001 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:03:52.9829067+01:00 0HL8B508JOCAO:00000001 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/lcda/total   (ca22a1cb)
+2017-10-04T14:03:53.0731557+01:00 0HL8B508JOCAN:00000001 [INF] Request finished in 188.0765ms 204  (791a596a)
+2017-10-04T14:03:53.1066759+01:00 0HL8B508JOCAO:00000001 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:03:53.2106909+01:00 0HL8B508JOCAO:00000001 [INF] Request finished in 317.7693ms 204  (791a596a)
+2017-10-04T14:03:53.2222827+01:00 0HL8B508JOCAN:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/user/profiles   (ca22a1cb)
+2017-10-04T14:03:53.2862674+01:00 0HL8B508JOCAN:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:03:53.3532871+01:00 0HL8B508JOCAO:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/lcda/total   (ca22a1cb)
+2017-10-04T14:03:53.3575151+01:00 0HL8B508JOCAN:00000002 [INF] Successfully validated the token. (60169667)
+2017-10-04T14:03:53.4384052+01:00 0HL8B508JOCAO:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:03:53.4444927+01:00 0HL8B508JOCAN:00000002 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T14:03:53.4804702+01:00 0HL8B508JOCAO:00000002 [INF] Successfully validated the token. (60169667)
+2017-10-04T14:03:53.5139729+01:00 0HL8B508JOCAO:00000002 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T14:03:53.5945279+01:00 0HL8B508JOCAN:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:03:53.6006265+01:00 0HL8B508JOCAO:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:03:53.6788171+01:00 0HL8B508JOCAN:00000002 [INF] Executing action method "RemsNG.Controllers.UserController.Profiles (RemsNG)" with arguments (["20", "1"]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T14:03:53.7031846+01:00 0HL8B508JOCAO:00000002 [INF] Executing action method "RemsNG.Controllers.LcdaController.All (RemsNG)" with arguments (null) - ModelState is Valid (ba7f4ac2)
+2017-10-04T14:03:53.7177690+01:00 0HL8B508JOCAN:00000002 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T14:03:53.7697725+01:00 0HL8B508JOCAO:00000002 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T14:03:53.8323495+01:00 0HL8B508JOCAN:00000002 [INF] Executed DbCommand ("0"ms) [Parameters=["@__p_0='?', @__p_1='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT [t].[id], [t].[createdBy], [t].[dateCreated], [t].[email], [t].[firstname], [t].[gender], [t].[lastModifiedDate], [t].[lastmodifiedby], [t].[lastname], [t].[lockedOutEndDateUTC], [t].[lockedoutenabled], [t].[passwordHash], [t].[securityStamp], [t].[surname], [t].[userStatus], [t].[username]
+FROM [tbl_users] AS [t]
+ORDER BY (SELECT 1)
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY" (0723d8ff)
+2017-10-04T14:03:53.8388886+01:00 0HL8B508JOCAO:00000002 [INF] Executed DbCommand ("0"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [x].[id], [x].[addressId], [x].[createdBy], [x].[dateCreated], [x].[domainId], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lcdaCode], [x].[lcdaName], [x].[lcdaStatus]
+FROM [tbl_lcda] AS [x]
+ORDER BY [x].[lcdaName]" (0723d8ff)
+2017-10-04T14:03:53.9218653+01:00 0HL8B508JOCAO:00000002 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T14:03:53.9261735+01:00 0HL8B508JOCAN:00000002 [INF] Executed DbCommand ("3"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT COUNT(*)
+FROM [tbl_users] AS [t]" (0723d8ff)
+2017-10-04T14:03:54.0089191+01:00 0HL8B508JOCAN:00000002 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T14:03:54.0160627+01:00 0HL8B508JOCAO:00000002 [INF] Executed action "RemsNG.Controllers.LcdaController.All (RemsNG)" in 409.0376ms (afa2e885)
+2017-10-04T14:03:54.0584156+01:00 0HL8B508JOCAN:00000002 [INF] Executed action "RemsNG.Controllers.UserController.Profiles (RemsNG)" in 567.9258ms (afa2e885)
+2017-10-04T14:03:54.0967575+01:00 0HL8B508JOCAO:00000002 [INF] Request finished in 780.2869ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T14:03:54.1290992+01:00 0HL8B508JOCAN:00000002 [INF] Request finished in 944.7131ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T14:05:14.1924794+01:00 0HL8B508JOCAQ:00000001 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/lcda/total   (ca22a1cb)
+2017-10-04T14:05:14.2597631+01:00 0HL8B508JOCAP:00000001 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/user/profiles   (ca22a1cb)
+2017-10-04T14:05:14.3196801+01:00 0HL8B508JOCAP:00000001 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:05:14.3757132+01:00 0HL8B508JOCAQ:00000001 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:05:14.4162331+01:00 0HL8B508JOCAP:00000001 [INF] Request finished in 141.4434ms 204  (791a596a)
+2017-10-04T14:05:14.4636025+01:00 0HL8B508JOCAQ:00000001 [INF] Request finished in 228.6695ms 204  (791a596a)
+2017-10-04T14:05:14.5385691+01:00 0HL8B508JOCAP:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/user/profiles   (ca22a1cb)
+2017-10-04T14:05:14.6509163+01:00 0HL8B508JOCAP:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:05:14.6860653+01:00 0HL8B508JOCAQ:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/lcda/total   (ca22a1cb)
+2017-10-04T14:05:14.7663086+01:00 0HL8B508JOCAQ:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:05:14.7727615+01:00 0HL8B508JOCAP:00000002 [INF] Successfully validated the token. (60169667)
+2017-10-04T14:05:14.8245304+01:00 0HL8B508JOCAP:00000002 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T14:05:14.8567584+01:00 0HL8B508JOCAQ:00000002 [INF] Successfully validated the token. (60169667)
+2017-10-04T14:05:14.9344867+01:00 0HL8B508JOCAQ:00000002 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T14:05:14.9622058+01:00 0HL8B508JOCAP:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:05:14.9976092+01:00 0HL8B508JOCAQ:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:05:15.0501746+01:00 0HL8B508JOCAP:00000002 [INF] Executing action method "RemsNG.Controllers.UserController.Profiles (RemsNG)" with arguments (["20", "1"]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T14:05:15.0862421+01:00 0HL8B508JOCAQ:00000002 [INF] Executing action method "RemsNG.Controllers.LcdaController.All (RemsNG)" with arguments (null) - ModelState is Valid (ba7f4ac2)
+2017-10-04T14:05:15.1716118+01:00 0HL8B508JOCAQ:00000002 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T14:05:15.1758662+01:00 0HL8B508JOCAP:00000002 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T14:05:15.2317121+01:00 0HL8B508JOCAP:00000002 [INF] Executed DbCommand ("1"ms) [Parameters=["@__p_0='?', @__p_1='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT [t].[id], [t].[createdBy], [t].[dateCreated], [t].[email], [t].[firstname], [t].[gender], [t].[lastModifiedDate], [t].[lastmodifiedby], [t].[lastname], [t].[lockedOutEndDateUTC], [t].[lockedoutenabled], [t].[passwordHash], [t].[securityStamp], [t].[surname], [t].[userStatus], [t].[username]
+FROM [tbl_users] AS [t]
+ORDER BY (SELECT 1)
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY" (0723d8ff)
+2017-10-04T14:05:15.2468197+01:00 0HL8B508JOCAQ:00000002 [INF] Executed DbCommand ("1"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [x].[id], [x].[addressId], [x].[createdBy], [x].[dateCreated], [x].[domainId], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lcdaCode], [x].[lcdaName], [x].[lcdaStatus]
+FROM [tbl_lcda] AS [x]
+ORDER BY [x].[lcdaName]" (0723d8ff)
+2017-10-04T14:05:15.3292975+01:00 0HL8B508JOCAQ:00000002 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T14:05:15.3591357+01:00 0HL8B508JOCAP:00000002 [INF] Executed DbCommand ("0"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT COUNT(*)
+FROM [tbl_users] AS [t]" (0723d8ff)
+2017-10-04T14:05:15.3733768+01:00 0HL8B508JOCAQ:00000002 [INF] Executed action "RemsNG.Controllers.LcdaController.All (RemsNG)" in 395.0896ms (afa2e885)
+2017-10-04T14:05:15.4536423+01:00 0HL8B508JOCAP:00000002 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T14:05:15.4579793+01:00 0HL8B508JOCAQ:00000002 [INF] Request finished in 871.2703ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T14:05:15.4791087+01:00 0HL8B508JOCAP:00000002 [INF] Executed action "RemsNG.Controllers.UserController.Profiles (RemsNG)" in 601.275ms (afa2e885)
+2017-10-04T14:05:15.5165404+01:00 0HL8B508JOCAP:00000002 [INF] Request finished in 988.2844ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T14:11:30.8472330+01:00 0HL8B508JOCAR:00000001 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/user/profiles   (ca22a1cb)
+2017-10-04T14:11:30.9063338+01:00 0HL8B508JOCAS:00000001 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/lcda/total   (ca22a1cb)
+2017-10-04T14:11:30.9414221+01:00 0HL8B508JOCAR:00000001 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:11:30.9748347+01:00 0HL8B508JOCAR:00000001 [INF] Request finished in 107.6428ms 204  (791a596a)
+2017-10-04T14:11:31.0266317+01:00 0HL8B508JOCAS:00000001 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:11:31.0727669+01:00 0HL8B508JOCAS:00000001 [INF] Request finished in 203.5696ms 204  (791a596a)
+2017-10-04T14:11:31.0972813+01:00 0HL8B508JOCAR:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/user/profiles   (ca22a1cb)
+2017-10-04T14:11:31.1809032+01:00 0HL8B508JOCAR:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:11:31.2117434+01:00 0HL8B508JOCAS:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/lcda/total   (ca22a1cb)
+2017-10-04T14:11:31.2446637+01:00 0HL8B508JOCAR:00000002 [INF] Successfully validated the token. (60169667)
+2017-10-04T14:11:31.3003900+01:00 0HL8B508JOCAS:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:11:31.3123371+01:00 0HL8B508JOCAR:00000002 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T14:11:31.3374175+01:00 0HL8B508JOCAS:00000002 [INF] Successfully validated the token. (60169667)
+2017-10-04T14:11:31.3661405+01:00 0HL8B508JOCAR:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:11:31.3759448+01:00 0HL8B508JOCAR:00000002 [INF] Executing action method "RemsNG.Controllers.UserController.Profiles (RemsNG)" with arguments (["20", "1"]) - ModelState is Valid (ba7f4ac2)
+2017-10-04T14:11:31.4115422+01:00 0HL8B508JOCAR:00000002 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T14:11:31.4239858+01:00 0HL8B508JOCAS:00000002 [INF] AuthenticationScheme: "Bearer" was successfully authenticated. (1805f3b3)
+2017-10-04T14:11:31.4525385+01:00 0HL8B508JOCAS:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:11:31.4805230+01:00 0HL8B508JOCAS:00000002 [INF] Executing action method "RemsNG.Controllers.LcdaController.All (RemsNG)" with arguments (null) - ModelState is Valid (ba7f4ac2)
+2017-10-04T14:11:31.4998210+01:00 0HL8B508JOCAR:00000002 [INF] Executed DbCommand ("2"ms) [Parameters=["@__p_0='?', @__p_1='?'"], CommandType='Text', CommandTimeout='30']"
+""SELECT [t].[id], [t].[createdBy], [t].[dateCreated], [t].[email], [t].[firstname], [t].[gender], [t].[lastModifiedDate], [t].[lastmodifiedby], [t].[lastname], [t].[lockedOutEndDateUTC], [t].[lockedoutenabled], [t].[passwordHash], [t].[securityStamp], [t].[surname], [t].[userStatus], [t].[username]
+FROM [tbl_users] AS [t]
+ORDER BY (SELECT 1)
+OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY" (0723d8ff)
+2017-10-04T14:11:31.5150510+01:00 0HL8B508JOCAS:00000002 [INF] Entity Framework Core "2.0.0-rtm-26452" initialized '"RemsDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2017-10-04T14:11:31.5503715+01:00 0HL8B508JOCAR:00000002 [INF] Executed DbCommand ("4"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT COUNT(*)
+FROM [tbl_users] AS [t]" (0723d8ff)
+2017-10-04T14:11:31.5583798+01:00 0HL8B508JOCAR:00000002 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T14:11:31.5900997+01:00 0HL8B508JOCAR:00000002 [INF] Executed action "RemsNG.Controllers.UserController.Profiles (RemsNG)" in 221.3498ms (afa2e885)
+2017-10-04T14:11:31.6192892+01:00 0HL8B508JOCAR:00000002 [INF] Request finished in 516.8468ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T14:11:31.6690800+01:00 0HL8B508JOCAS:00000002 [INF] Executed DbCommand ("6"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT [x].[id], [x].[addressId], [x].[createdBy], [x].[dateCreated], [x].[domainId], [x].[lastModifiedDate], [x].[lastmodifiedby], [x].[lcdaCode], [x].[lcdaName], [x].[lcdaStatus]
+FROM [tbl_lcda] AS [x]
+ORDER BY [x].[lcdaName]" (0723d8ff)
+2017-10-04T14:11:31.6961358+01:00 0HL8B508JOCAS:00000002 [INF] Executing ObjectResult, writing value "Microsoft.AspNetCore.Mvc.ControllerContext". (4e968210)
+2017-10-04T14:11:31.7429799+01:00 0HL8B508JOCAS:00000002 [INF] Executed action "RemsNG.Controllers.LcdaController.All (RemsNG)" in 272.084ms (afa2e885)
+2017-10-04T14:11:31.7525099+01:00 0HL8B508JOCAS:00000002 [INF] Request finished in 611.34ms 200 application/json; charset=utf-8 (791a596a)
+2017-10-04T14:38:52.9895334+01:00 0HL8B508JOCAT:00000001 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/user/profiles   (ca22a1cb)
+2017-10-04T14:38:53.0098230+01:00 0HL8B508JOCAT:00000001 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:38:53.0483885+01:00 0HL8B508JOCAU:00000001 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:54313/api/v1/lcda/total   (ca22a1cb)
+2017-10-04T14:38:53.0760839+01:00 0HL8B508JOCAU:00000001 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:38:53.1098000+01:00 0HL8B508JOCAU:00000001 [INF] Request finished in 160.8505ms 204  (791a596a)
+2017-10-04T14:38:53.1486377+01:00 0HL8B508JOCAT:00000001 [INF] Request finished in 103.0905ms 204  (791a596a)
+2017-10-04T14:38:53.2731288+01:00 0HL8B508JOCAT:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/user/profiles   (ca22a1cb)
+2017-10-04T14:38:53.3255317+01:00 0HL8B508JOCAU:00000002 [INF] Request starting HTTP/1.1 GET http://localhost:54313/api/v1/lcda/total   (ca22a1cb)
+2017-10-04T14:38:53.3391317+01:00 0HL8B508JOCAT:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:38:53.3782890+01:00 0HL8B508JOCAU:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:38:53.4914406+01:00 0HL8B508JOCAU:00000002 [INF] Failed to validate the token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJtb3MtYWRtaW4iLCJ1bmlxdWVfbmFtZSI6IkFndWRhIE9sYWJvZGUgSCIsInJvbGUiOiIiLCJEb21haW4iOiJcIjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMFwiIiwiaWRlbnRpdHkiOiI2MTAwNjQwMDM4MDAzNDAwMzkwMDYxMDAzMDAwMzYwMDJEMDAzNTAwMzMwMDMwMDAzOTAwMkQwMDM0MDAzNTAwNjIwMDMyMDAyRDAwNjEwMDYxMDAzNjAwMzIwMDJEMDAzNjAwMzQwMDMxMDA2MjAwMzYwMDM3MDA2MzAwMzcwMDYyMDAzNDAwNjYwMDM4MDAiLCJuYmYiOjE1MDcxMjIxMjQsImV4cCI6MTUwNzEyMjcyNCwiaWF0IjoxNTA3MTIyMTI0LCJpc3MiOiJyZW1zbmciLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAifQ.JoyQBBMc3-WRtjc-0_KEraBi7qXEsmqqYGKPkKfwF9g". (f3081a27)
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '10/04/2017 13:12:04'
+Current time: '10/04/2017 13:38:53'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, JwtSecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateTokenPayload(JwtSecurityToken jwt, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateToken(String token, TokenValidationParameters validationParameters, SecurityToken& validatedToken)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.<HandleAuthenticateAsync>d__6.MoveNext()
+2017-10-04T14:38:53.5040861+01:00 0HL8B508JOCAU:00000002 [INF] "Bearer" was not authenticated. Failure message: "IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '10/04/2017 13:12:04'
+Current time: '10/04/2017 13:38:53'." (48071232)
+2017-10-04T14:38:53.5129209+01:00 0HL8B508JOCAU:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:38:53.5209074+01:00 0HL8B508JOCAT:00000002 [INF] Failed to validate the token "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJtb3MtYWRtaW4iLCJ1bmlxdWVfbmFtZSI6IkFndWRhIE9sYWJvZGUgSCIsInJvbGUiOiIiLCJEb21haW4iOiJcIjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMFwiIiwiaWRlbnRpdHkiOiI2MTAwNjQwMDM4MDAzNDAwMzkwMDYxMDAzMDAwMzYwMDJEMDAzNTAwMzMwMDMwMDAzOTAwMkQwMDM0MDAzNTAwNjIwMDMyMDAyRDAwNjEwMDYxMDAzNjAwMzIwMDJEMDAzNjAwMzQwMDMxMDA2MjAwMzYwMDM3MDA2MzAwMzcwMDYyMDAzNDAwNjYwMDM4MDAiLCJuYmYiOjE1MDcxMjIxMjQsImV4cCI6MTUwNzEyMjcyNCwiaWF0IjoxNTA3MTIyMTI0LCJpc3MiOiJyZW1zbmciLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQyMDAifQ.JoyQBBMc3-WRtjc-0_KEraBi7qXEsmqqYGKPkKfwF9g". (f3081a27)
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '10/04/2017 13:12:04'
+Current time: '10/04/2017 13:38:53'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, JwtSecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateTokenPayload(JwtSecurityToken jwt, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateToken(String token, TokenValidationParameters validationParameters, SecurityToken& validatedToken)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.<HandleAuthenticateAsync>d__6.MoveNext()
+2017-10-04T14:38:53.5758625+01:00 0HL8B508JOCAT:00000002 [INF] "Bearer" was not authenticated. Failure message: "IDX10223: Lifetime validation failed. The token is expired.
+ValidTo: '10/04/2017 13:12:04'
+Current time: '10/04/2017 13:38:53'." (48071232)
+2017-10-04T14:38:53.6070372+01:00 0HL8B508JOCAU:00000002 [INF] Authorization failed for the request at filter '"RemsNG.Utilities.RemsRequirementFilter"'. (8b6446cb)
+2017-10-04T14:38:53.6087178+01:00 0HL8B508JOCAT:00000002 [INF] Policy execution successful. (0204925d)
+2017-10-04T14:38:53.6381088+01:00 0HL8B508JOCAT:00000002 [INF] Authorization failed for the request at filter '"RemsNG.Utilities.RemsRequirementFilter"'. (8b6446cb)
+2017-10-04T14:38:53.6913216+01:00 0HL8B508JOCAU:00000002 [INF] Executed action "RemsNG.Controllers.LcdaController.All (RemsNG)" in 152.9725ms (afa2e885)
+2017-10-04T14:38:53.7476653+01:00 0HL8B508JOCAT:00000002 [INF] Executed action "RemsNG.Controllers.UserController.Profiles (RemsNG)" in 83.5638ms (afa2e885)
+2017-10-04T14:38:53.7843740+01:00 0HL8B508JOCAU:00000002 [INF] Request finished in 475.5051ms 403  (791a596a)
+2017-10-04T14:38:53.8225623+01:00 0HL8B508JOCAT:00000002 [INF] Request finished in 530.73ms 403  (791a596a)
