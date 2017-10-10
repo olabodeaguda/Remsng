@@ -26,6 +26,7 @@
                             <p>
                                     {{userModel.fullname}}
                                 <small>{{userModel.domainName}}</small>
+                                <small *ngIf="userModel.role !== null">Role:{{userModel.role}}</small>
                             </p>
                         </li>
                         

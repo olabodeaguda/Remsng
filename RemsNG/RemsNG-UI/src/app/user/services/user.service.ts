@@ -6,18 +6,22 @@ import { ProfileModel } from '../models/profile.model';
 import { ChangePasswordModel } from '../models/change-password.model';
 import { AssignDomainModel } from '../models/assign-domain.model';
 import { AssignRoleModel } from '../models/assig-role.model';
+import { ContactModel } from "../models/contact.model";
 
 @Injectable()
 export class UserService {
 
     constructor(private dataService: DataService) {
-
     }
 
     getProfile(pageModel: PageModel): Observable<Response> {
         this.dataService.addToHeader('pageSize', pageModel.pageSize.toString());
         this.dataService.addToHeader('pageNum', pageModel.pageNum.toString());
       return this.dataService.get('user/profiles').catch(error => this.dataService.handleError(error));
+    }
+
+    get(profileId: string){
+        return this.dataService.get('user/'+profileId).catch(error => this.dataService.handleError(error));
     }
 
     add(user: ProfileModel) {

@@ -1,19 +1,27 @@
-<div class="content-wrapper">
-    <section class="content-header">
-        <h1>
-            General Form Elements
-            <small>Preview</small>
-        </h1>
-    </section>
-
-    <section class="content">
-        <div class="row">
-            <div class="col-md-6">
-
+<div class="wrapper hold-transition skin-blue fixed sidebar-mini">
+    <app-hd></app-hd>
+    <app-sbar></app-sbar>
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>
+                Profile 
+                <small>{{profileModel.surname}} {{profileModel.firstname}} {{profileModel.lastname}}.</small>
+            </h1>
+        </section>
+        <section class="content" style="border-style:thin">
+            <div class="row">
+                <div class="col-md-6">
+                    <user-profile [profileModel]='profileModel'></user-profile>
+                </div>
+                <div class="col-md-6">
+                    <user-contact [profileModel]='profileModel'></user-contact>
+                </div>
             </div>
-            <div class="col-md-6">
-
+            <div class="row">
+                <div class="col-md-6">
+                    <role-profile [profileModel]='profileModel'></role-profile>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </div>
 </div>

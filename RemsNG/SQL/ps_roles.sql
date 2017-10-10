@@ -203,6 +203,24 @@ GO
 
 IF EXISTS(SELECT *
           FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_getDomainRolesByUserId') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_getDomainRolesByUserId
+  GO
+  CREATE PROCEDURE sp_getDomainRolesByUserId(
+  @id uniqueidentifier
+  )
+  AS
+  BEGIN
+		select tbl_role.*,tbl_lcda.lcdaName as domainName from tbl_users
+		  inner join tbl_userRole on tbl_userRole.userid = tbl_users.id
+		  inner join tbl_role on tbl_role.id = tbl_userRole.roleid
+		  inner join tbl_lcda on tbl_lcda.id = tbl_role.domainId
+		  where tbl_users. id = @id
+  END
+GO
+
+IF EXISTS(SELECT *
+          FROM sys.objects
           WHERE object_id = OBJECT_ID(N'sp_getUserDomainRolesByDomainId') AND type IN (N'P', N'PC'))
   DROP PROCEDURE sp_getUserDomainRolesByDomainId
   GO

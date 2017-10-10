@@ -5,7 +5,8 @@ IF NOT EXISTS(SELECT *
 CREATE TABLE tbl_permission
 (
 	id uniqueidentifier NOT NULL PRIMARY KEY,
-	permissionName varchar(100) not null unique
+	permissionName varchar(100) not null unique,
+	permissionDescription varchar(Max)
 )
 GO
 

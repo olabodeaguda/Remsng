@@ -37,6 +37,11 @@ namespace RemsNG.Services
             return await roleDao.AllDomainRolesByUsername(username);
         }
 
+        public async Task<List<RoleExtension>> AllRoleByUserId(Guid id)
+        {
+            return await roleDao.AllRoleByUserId(id);
+        }
+
         public async Task<List<RoleExtension>> AllRoleByUsername(string username)
         {
             return await roleDao.AllRoleByUsername(username);
@@ -77,6 +82,11 @@ namespace RemsNG.Services
             return await roleDao.Paginated(pageModel);
         }
 
+        public async Task<bool> Remove(UserRole userRole)
+        {
+            return await roleDao.Remove(userRole);
+        }
+
         public async Task<bool> Update(Role role)
         {
             return await roleDao.Update(role);
@@ -86,5 +96,7 @@ namespace RemsNG.Services
         {
             return await roleDao.UpdateStatus(role);
         }
+
+
     }
 }

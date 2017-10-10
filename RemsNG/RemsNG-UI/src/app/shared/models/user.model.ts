@@ -5,4 +5,5 @@ export class UserModel {
     userStatus: string = '';
     diplayImage: string = '';
     domainName: string = '';
+    role:string='';
 }

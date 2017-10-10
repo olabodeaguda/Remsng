@@ -47,6 +47,11 @@ namespace RemsNG.Dao
             return false;
         }
 
+        public async Task<UserRole> GetRoleAsync(UserRole userRole)
+        {
+            return await db.UserRoles.FirstOrDefaultAsync(x => x.roleid == userRole.roleid && x.userid == userRole.userid);
+        }
+
         public async Task<bool> Add(RolePermission role)
         {
             db.RolePermissions.Add(role);
@@ -131,6 +136,11 @@ namespace RemsNG.Dao
             return await db.Roles.Where(x => x.domainId == domainId).ToListAsync();
         }
 
+        public async Task<List<RoleExtension>> AllRoleByUserId(Guid id)
+        {
+            return await db.RoleExtensions.FromSql("sp_getDomainRolesByUserId @p0", new object[] { id }).ToListAsync();
+        }
+
         public async Task<List<RoleExtension>> AllRoleByUsername(string username)
         {
             return await db.RoleExtensions.FromSql("sp_getUserDomainRoleByUsername @p0", new object[] { username }).ToListAsync();
@@ -163,5 +173,16 @@ namespace RemsNG.Dao
             return await db.UserRoles.FirstOrDefaultAsync(x => x.userid == userId && x.roleid == roleId);
         }
 
+        public async Task<bool> Remove(UserRole userRole)
+        {
+            db.UserRoles.Remove(userRole);
+
+            int count = await db.SaveChangesAsync();
+            if (count > 0)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

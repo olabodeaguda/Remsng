@@ -72,4 +72,15 @@ export class RoleService {
             permissionId: userperm.permissionId
         }).catch(error => this.dataService.handleError(error));
     }
+
+    getUserRole(userId: string) {
+        return this.dataService.get('role/currentrole/' + userId).catch(error => this.dataService.handleError(error));
+    }
+
+    removeRole(userId: string, roleId: string) {
+        return this.dataService.post('role/remove', {
+            userId: userId,
+            roleId: roleId
+        }).catch(error => this.dataService.handleError(error));
+    }
 }

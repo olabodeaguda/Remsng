@@ -26,6 +26,7 @@ namespace RemsNG.ORM
         public DbSet<RolePermission> RolePermissions { get; set; }
         public DbSet<DbResponse> DbResponses { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<ContactDetail> ContactDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -39,6 +40,7 @@ namespace RemsNG.ORM
             modelBuilder.Entity<Lgda>().ToTable("tbl_lcda");
             modelBuilder.Entity<Ward>().ToTable("tbl_ward");
             modelBuilder.Entity<UserRole>().ToTable("tbl_userRole").HasKey(x => new { x.roleid, x.userid });
+            modelBuilder.Entity<ContactDetail>().ToTable("tbl_contactDetail");
         }
     }
 }

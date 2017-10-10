@@ -8,11 +8,13 @@ using RemsNG.Services.Interfaces;
 using System.Security.Claims;
 using RemsNG.Models;
 using RemsNG.ORM;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace RemsNG.Controllers
 {
+    [Authorize]
     [Route("api/v1/role")]
     public class RoleController : Controller
     {
@@ -309,12 +311,6 @@ namespace RemsNG.Controllers
             }
         }
 
-        //public async Task<object> RemoveRole()
-        //{
-
-        //    return;
-        //}
-
         [Route("assignroletopermission")]
         [RemsRequirementAttribute("MANAGE_PERMISSION")]
         [HttpPost]
@@ -431,6 +427,67 @@ namespace RemsNG.Controllers
                 });
             }
             return role;
+        }
+
+        [HttpGet]
+        [Route("currentrole/{id}")]
+        public async Task<object> CurrentUserRole([FromRoute] Guid id)
+        {
+            if (id == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Bad request"
+                });
+            }
+
+            List<RoleExtension> roleExtensions = await roleservice.AllRoleByUserId(id);
+            Response response = new Models.Response();
+            response.code = MsgCode_Enum.SUCCESS;
+            Guid domainId = ClaimExtension.GetDomainId(User.Claims.ToArray());
+            if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
+            {
+                response.data = roleExtensions;
+            }
+            else
+            {
+                response.data = roleExtensions.Where(x => x.domainId == domainId);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("remove")]
+        public async Task<object> RemoveRole([FromBody] UserRole userRole)
+        {
+            UserRole ur = await roleservice.GetUserRoleAsync(userRole.userid, userRole.roleid);
+            if (ur == null)
+            {
+                return NotFound(new Response()
+                {
+                    code = MsgCode_Enum.NOTFOUND,
+                    description = "Request not found"
+                });
+            }
+
+            bool result = await roleservice.Remove(userRole);
+
+            if (result)
+            {
+                return Ok(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = "Remove was successful"
+                });
+            }
+
+            return new HttpMessageResult(new Response()
+            {
+                code = MsgCode_Enum.FAIL,
+                description = ""
+            }, 409);
         }
     }
 }

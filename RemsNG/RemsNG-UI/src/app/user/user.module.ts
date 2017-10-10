@@ -7,10 +7,15 @@ import { SharedModule } from '../shared/shared.module';
 import { UserComponent } from './components/user.component';
 import { UserService } from './services/user.service';
 import { UserProfileComponent } from "./components/user-profile.component";
+import { ProfileComponent } from "./components/profile.component";
+import { ContactComponent } from "./components/contact.component";
+import { AddContactComponent } from "./components/add-contact.component";
+import { ContactService } from "./services/contact.service";
+import { RoleModule } from "../role/role.module";
 
 const appRoutes: Routes = [
     { path: 'users', component: UserComponent },
-    { path: 'profile/:id', component: UserComponent }
+    { path: 'user/:id', component: UserProfileComponent }
  ];
 
 @NgModule({
@@ -19,15 +24,17 @@ const appRoutes: Routes = [
       LaddaModule,
       FormsModule,
       ReactiveFormsModule,
-      SharedModule,
+      SharedModule,RoleModule,
       RouterModule.forChild(appRoutes)
     ],
     declarations: [
-        UserComponent, UserProfileComponent
+        UserComponent, UserProfileComponent,
+        ProfileComponent,ContactComponent,AddContactComponent
     ],
-    providers: [ UserService],
+    providers: [ UserService, ContactService],
     exports: [
-        UserComponent
+        UserComponent, UserProfileComponent, 
+        ProfileComponent, ContactComponent,AddContactComponent
     ]
   })
 

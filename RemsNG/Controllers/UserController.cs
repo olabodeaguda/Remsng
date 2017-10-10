@@ -22,14 +22,48 @@ namespace RemsNG.Controllers
         private readonly IUserService userService;
         private readonly IDomainService domainService;
         private readonly ILcdaService lcdaService;
+        private readonly IRoleService roleService;
         public UserController(IUserService _userService,
             ILoggerFactory loggerFactory, IDomainService _domainService,
-            ILcdaService _lcdaService)
+            ILcdaService _lcdaService, IRoleService _roleservice)
         {
             userService = _userService;
             domainService = _domainService;
             lcdaService = _lcdaService;
+            roleService = _roleservice;
             logger = loggerFactory.CreateLogger<UserController>();
+        }
+
+
+        [Route("{id}")]
+        public async Task<IActionResult> Get([FromRoute] Guid id)
+        {
+            if (id == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Bad request"
+                });
+            }
+
+            User user = await this.userService.Get(id);
+            user.passwordHash = null;
+
+            if (user == null)
+            {
+                return NotFound(new Response()
+                {
+                    code = MsgCode_Enum.NOTFOUND,
+                    description = "User Profile could not be found"
+                });
+            }
+
+            return Ok(new Response()
+            {
+                code = MsgCode_Enum.SUCCESS,
+                data = user
+            });
         }
 
         [AllowAnonymous]

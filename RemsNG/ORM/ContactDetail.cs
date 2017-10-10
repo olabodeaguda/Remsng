@@ -11,5 +11,6 @@ namespace RemsNG.ORM
         public Guid ownerId { get; set; }
         public string contactValue { get; set; }
         public string contactType { get; set; }
+
     }
 }

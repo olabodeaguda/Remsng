@@ -88,7 +88,8 @@ namespace RemsNG.Services
                 username = user.username,
                 fullname = $"{user.surname} {user.firstname} {user.lastname}",
                 userStatus = user.userStatus,
-                domainName = domainName
+                domainName = domainName,
+                role = role?.roleName
             };
         }
 

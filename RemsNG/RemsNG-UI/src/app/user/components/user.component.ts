@@ -11,6 +11,7 @@ import { LcdaService } from '../../lcda/services/lcda.services';
 import { RoleService } from '../../role/services/role.service';
 import { RoleModel } from '../../role/models/role.model';
 import { AssignRoleModel } from '../models/assig-role.model';
+import { Router } from "@angular/router";
 declare var jQuery: any;
 
 @Component({
@@ -33,15 +34,19 @@ export class UserComponent implements OnInit {
     isLoading: boolean = false;
     lcdaLst = [];
     roles = [];
+    roleModel: RoleModel;
 
-    constructor(private userService: UserService, private appSettings: AppSettings,
+    constructor(private userService: UserService,
+        private appSettings: AppSettings,
         private toasterService: ToasterService,
-        private lcdaService: LcdaService, private roleservice: RoleService) {
+        private lcdaService: LcdaService, private roleservice: RoleService,
+        private router: Router) {
         this.profileModel = new ProfileModel();
         this.pageModel = new PageModel();
         this.changePwd = new ChangePasswordModel();
         this.assigndomainmodel = new AssignDomainModel();
         this.assignRoleModel = new AssignRoleModel();
+        this.roleModel = new RoleModel();
     }
 
     ngOnInit() {
@@ -84,9 +89,28 @@ export class UserComponent implements OnInit {
             jQuery(this.assignlgdaModal.nativeElement).modal('show');
         } else if (eventType === this.appSettings.assignRole) {
             this.profileModel = data;
+            this.getCurrentUserDomain(this.profileModel.username);
             this.getAllDomainRole(this.profileModel.username, true);
+        } else if (eventType === this.appSettings.profileMode) {
+            this.profileModel = data;
+            const val = btoa(this.profileModel.id);
+            this.router.navigate(['user', val])
         }
         this.profileModel.eventType = eventType;
+    }
+
+    getCurrentUserDomain(username: string) {
+        this.roleservice.getAllDomainRoles(username).subscribe(response => {
+            const roles: RoleModel[] = Object.assign([], response.json());   
+            if (roles.length > 0) {
+                this.assignRoleModel.currentRole = roles[0];
+            } else{
+                
+                this.assignRoleModel.currentRole.roleName = 'Anonymous';
+            }
+        }, error => {
+
+        })
     }
 
     getProfile() {
@@ -256,7 +280,7 @@ export class UserComponent implements OnInit {
                 },
                 error => {
                     this.assignRoleModel.isLoading = false;
-                })            
+                })
         }
     }
 

@@ -12,4 +12,5 @@ export class ProfileModel {
     errClass: string[] = [];
     isLoading: boolean = false;
     gender: string = '';
+    isDisabled: boolean = true;
 }

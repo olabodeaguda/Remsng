@@ -22,5 +22,7 @@ namespace RemsNG.Services.Interfaces
         Task<bool> AssignRoleToUserAsync(UserRole userRole);
         Task<UserRole> GetUserRoleAsync(Guid userId, Guid roleId);
         Task<List<RoleExtension>> AllDomainRolesByDomainId(Guid userid, Guid domainid);
+        Task<List<RoleExtension>> AllRoleByUserId(Guid id);
+        Task<bool> Remove(UserRole userRole);
     }
 }

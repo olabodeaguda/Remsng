@@ -12,8 +12,9 @@ export class StorageService {
     }
     remove() {
         const val = localStorage.getItem(this.appsettings.tk);
+        console.log(val);
         if (val === null) {
-
+            return;
         } else {
             localStorage.removeItem(this.appsettings.tk);
         }

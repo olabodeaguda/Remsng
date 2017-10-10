@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace RemsNG.ORM
         [DataType(DataType.EmailAddress)]
         [Required(AllowEmptyStrings = false, ErrorMessage = "Email is required")]
         public string email { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string passwordHash { get; set; }
         public string securityStamp { get; set; }
         public DateTime? lockedOutEndDateUTC { get; set; }

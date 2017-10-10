@@ -3,7 +3,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Assign Role to <b style="font-size: 14px;">{{profileModel.surname}} {{profileModel.firstname}} {{profileModel.lastname}}</b></h4>
+                <h4 class="modal-title">Assign Role to
+                    <b style="font-size: 14px;">{{profileModel.surname}} {{profileModel.firstname}} {{profileModel.lastname}}</b>
+                </h4>
             </div>
             <div class="modal-body clearfix">
                 <div [ngClass]="assignRoleModel.errClass" *ngIf="assignRoleModel.isErrMsg">
@@ -11,15 +13,19 @@
                 </div>
                 <div class="box-body">
                     <div class="form-group">
+                        <label for="roleId">Current Role</label>
+                        <input class="form-control" [(ngModel)]="assignRoleModel.currentRole.roleName" disabled="disabled" />
+                    </div>
+                    <div class="form-group">
                         <label for="roleId">Select Role</label>
                         <select name="roleId" class="form-control" [(ngModel)]="assignRoleModel.roleId">
-                            <option *ngFor="let data of roles;" [ngValue]="data.id">{{data.roleName}}</option>
+                            <option *ngFor="let data of roles;" [ngValue]="data.id" [hidden]="assignRoleModel.currentRole.roleName === data.roleName">{{data.roleName}}</option>
                         </select>
                     </div>
                 </div>
                 <div class="box-footer">
-                        <button [ladda]="assignRoleModel.isLoading" type="submit" class="btn btn-success" (click)="addUser()">Submit</button>
-                        <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
+                    <button [ladda]="assignRoleModel.isLoading" type="submit" class="btn btn-success" (click)="addUser()">Submit</button>
+                    <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -31,7 +37,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Assign LCDA to <b style="font-size: 14px;">{{profileModel.surname}} {{profileModel.firstname}} {{profileModel.lastname}}</b></h4>
+                <h4 class="modal-title">Assign LCDA to
+                    <b style="font-size: 14px;">{{profileModel.surname}} {{profileModel.firstname}} {{profileModel.lastname}}</b>
+                </h4>
             </div>
             <div class="modal-body clearfix">
                 <div [ngClass]="assigndomainmodel.errClass" *ngIf="assigndomainmodel.isErrMsg">
@@ -46,8 +54,8 @@
                     </div>
                 </div>
                 <div class="box-footer">
-                        <button [ladda]="assigndomainmodel.isLoading" type="submit" class="btn btn-success" (click)="addUser()">Submit</button>
-                        <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
+                    <button [ladda]="assigndomainmodel.isLoading" type="submit" class="btn btn-success" (click)="addUser()">Submit</button>
+                    <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
