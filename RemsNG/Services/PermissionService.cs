@@ -42,6 +42,11 @@ namespace RemsNG.Services
             return await permissionDao.GetPermissionNotInRole(roleId);
         }
 
+        public async Task<int> PermissionCountByRoleId(Guid id)
+        {
+            return await permissionDao.PermissionCountByRoleId(id);
+        }
+
         public async Task<bool> RemovePermission(RolePermission rolePermission)
         {
             return await permissionDao.RemovePermission(rolePermission);

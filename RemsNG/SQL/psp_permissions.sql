@@ -25,10 +25,79 @@ GO
 IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'CREATE_DOMAIN')
 INSERT INTO tbl_permission(id,permissionName) values(newid(),'CREATE_DOMAIN');
 GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'ASSIGN_DOMAIN')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'ASSIGN_DOMAIN');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'GET_PROFILE')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'GET_PROFILE');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'ADD_PROFILE')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'ADD_PROFILE');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'UPDATE_PROFILE')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'UPDATE_PROFILE');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'CHANGE_USER_PWD')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'CHANGE_USER_PWD');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'GET_WARD')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'GET_WARD');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'UPDATE_WARD')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'UPDATE_WARD');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'GET_ROLES')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'GET_ROLES');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'ADD_ROLES')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'ADD_ROLES');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'UPDATE_ROLES')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'UPDATE_ROLES');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'CHANGE_STATUS')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'CHANGE_STATUS');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'ASSIGN_ROLES')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'ASSIGN_ROLES');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'MANAGE_PERMISSION')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'MANAGE_PERMISSION');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'GET_ROLES')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'GET_ROLES');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'GET_REMOVE')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'GET_REMOVE');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'GET_PERMISSIONS')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'GET_PERMISSIONS');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'GET_LCDA')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'GET_LCDA');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'ADD_LCDA')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'ADD_LCDA');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'UPDATE_LCDA')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'UPDATE_LCDA');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'CHANGE_LCDA_STATUS')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'CHANGE_LCDA_STATUS');
+GO
 IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'GET_DOMAIN')
 INSERT INTO tbl_permission(id,permissionName) values(newid(),'GET_DOMAIN');
 GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'CREATE_DOMAIN')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'CREATE_DOMAIN');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'UPDATE_DOMAIN')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'UPDATE_DOMAIN');
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'CHANGE_STATUS')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'CHANGE_STATUS');
 
+GO
 IF EXISTS(SELECT *
           FROM sys.objects
           WHERE object_id = OBJECT_ID(N'sp_getRolePermission') AND type IN (N'P', N'PC'))

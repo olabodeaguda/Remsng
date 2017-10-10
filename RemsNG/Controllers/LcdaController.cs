@@ -20,7 +20,7 @@ namespace RemsNG.Controllers
         {
             this.lcdaService = _lcdaService;
         }
-
+        
         [Route("byusername/{username}")]
         public async Task<IActionResult> LCDAByusername(string username)
         {
@@ -59,7 +59,7 @@ namespace RemsNG.Controllers
         }
 
         [Route("total")]
-        [RemsRequirementAttribute("GET_ALL_DOMAIN")]
+        [RemsRequirementAttribute("GET_LCDA")]
         [HttpGet]
         public async Task<object> All()
         {
@@ -181,7 +181,7 @@ namespace RemsNG.Controllers
         }
 
         [Route("update")]
-        [RemsRequirementAttribute("EDIT_LCDA")]
+        [RemsRequirementAttribute("UPDATE_LCDA")]
         [HttpPost]
         public async Task<IActionResult> EditLGA([FromBody] Lgda lcda)
         {

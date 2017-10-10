@@ -18,8 +18,13 @@ namespace RemsNG.Dao
             return await db.Permissions.FromSql("sp_getRolePermission @p0", new object[] { roleId }).ToListAsync();
         }
 
-        public async Task<List<Permission>> byRoleId(Guid roleId, Models.PageModel pageModel)
+        public async Task<int> PermissionCountByRoleId(Guid id)
         {
+            return await db.RolePermissions.Where(x => x.roleId == id).CountAsync();
+        }
+
+        public async Task<List<Permission>> byRoleId(Guid roleId, Models.PageModel pageModel)
+        {            
             return await db.Permissions.FromSql("sp_getRolePermissionPaginated @p0, @p1, @p2", new object[] {
                 roleId,
                 pageModel.PageNum,

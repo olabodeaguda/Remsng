@@ -25,7 +25,7 @@ namespace RemsNG.Controllers
         }
 
         [Route("all")]
-        [RemsRequirementAttribute("GET_LCDA")]
+        [RemsRequirementAttribute("GET_WARD")]
         [HttpGet]
         public async Task<object> All()
         {
@@ -53,7 +53,7 @@ namespace RemsNG.Controllers
         }
 
         [Route("paginated")]
-        [RemsRequirementAttribute("GET_LCDA")]
+        [RemsRequirementAttribute("GET_WARD")]
         [HttpGet]
         public async Task<object> Get([FromHeader] string pageSize, [FromHeader] string pageNum, [FromHeader] string lcdaId)
         {
@@ -169,7 +169,7 @@ namespace RemsNG.Controllers
             }
         }
 
-        [RemsRequirementAttribute("GET_LCDA")]
+        [RemsRequirementAttribute("UPDATE_WARD")]
         [Route("update")]
         [HttpPost]
         public async Task<IActionResult> Update([FromBody] Ward ward)

@@ -152,7 +152,7 @@ namespace RemsNG.Controllers
             }
         }
 
-        //edit
+        [RemsRequirementAttribute("UPDATE_DOMAIN")]
         [Route("update")]
         [HttpPost]
         public async Task<IActionResult> Update([FromBody] Domain domain)

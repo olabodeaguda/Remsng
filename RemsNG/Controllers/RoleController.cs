@@ -429,6 +429,7 @@ namespace RemsNG.Controllers
             return role;
         }
 
+        [RemsRequirementAttribute("GET_ROLES")]
         [HttpGet]
         [Route("currentrole/{id}")]
         public async Task<object> CurrentUserRole([FromRoute] Guid id)
@@ -458,6 +459,7 @@ namespace RemsNG.Controllers
             return Ok(response);
         }
 
+        [RemsRequirementAttribute("GET_REMOVE")]
         [HttpPost]
         [Route("remove")]
         public async Task<object> RemoveRole([FromBody] UserRole userRole)

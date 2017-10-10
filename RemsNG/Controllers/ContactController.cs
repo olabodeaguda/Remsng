@@ -136,7 +136,7 @@ namespace RemsNG.Controllers
             }
         }
 
-        // DELETE api/values/5
+        
         [HttpDelete("{id}")]
         public async Task<object> Delete(Guid id)
         {

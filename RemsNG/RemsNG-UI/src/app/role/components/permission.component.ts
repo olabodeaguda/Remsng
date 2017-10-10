@@ -66,7 +66,10 @@ export class PermissionComponent implements OnInit {
         this.isLoading = true;
         this.permissionService.getPermissionByROleId(this.roleModel.id, this.pageModel).subscribe(response => {
             this.isLoading = false;
-            this.permissionLst = response.json();
+            const objSchema = { data: [], totalCount: 0 };
+            const result = Object.assign(objSchema, response.json());
+            this.permissionLst = result.data;
+            this.pageModel.totalPageCount = (objSchema.totalCount % this.pageModel.pageSize > 0 ? 1 : 0) + Math.floor(objSchema.totalCount / this.pageModel.pageSize);
         }, error => {
             this.isLoading = false;
         })

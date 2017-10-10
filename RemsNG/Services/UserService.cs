@@ -24,6 +24,7 @@ namespace RemsNG.Services
         private readonly RoleDao roleDao;
         private readonly LcdaDao lcdaDao;
         private readonly UserDao userDao;
+        private readonly PermissionDao permissionDao;
         public UserService(RemsDbContext _db,
             IOptions<JwtIssuerOptions> _jwtOptions)
         {
@@ -32,6 +33,7 @@ namespace RemsNG.Services
             roleDao = new RoleDao(_db);
             lcdaDao = new LcdaDao(_db);
             userDao = new UserDao(_db);
+            permissionDao = new PermissionDao(_db);
             jwtOptions = _jwtOptions.Value;
         }
 
@@ -39,6 +41,8 @@ namespace RemsNG.Services
         {
             String domainName = "";
             RoleExtension role = null;
+            string permissions = string.Empty;
+
             if (user.username.ToLower() != "mos-admin")
             {
                 List<Lgda> uls = await lcdaDao.getLcdaByUsername(user.username);
@@ -52,7 +56,14 @@ namespace RemsNG.Services
                         domainName = ld.lcdaName;
                     }
                 }
+
                 role = await roleDao.GetUserDomainRoleByUsername(user.username, lcdaId);
+                if (role != null)
+                {
+                    List<Permission> permissionlst = await permissionDao.byRoleId(role.id);
+                    List<string> pl = permissionlst.Select(x => x.permissionName).ToList();
+                    permissions = string.Join(",", pl);
+                }
             }
             else
             {
@@ -72,7 +83,8 @@ namespace RemsNG.Services
                             new Claim(ClaimTypes.Name, $"{user.surname} {user.firstname} {user.lastname}"),
                             new Claim(ClaimTypes.Role, role != null? role.roleName:string.Empty),
                             new Claim("Domain",JsonConvert.SerializeObject(lcdaId)),
-                            new Claim("identity",EncryptDecryptUtils.ToHexString(user.id.ToString()))
+                            new Claim("identity",EncryptDecryptUtils.ToHexString(user.id.ToString())),
+                            new Claim("permission",permissions)
                         }),
                 Expires = DateTime.UtcNow.AddMinutes(logTime),
                 NotBefore = DateTime.UtcNow,

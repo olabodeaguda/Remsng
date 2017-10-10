@@ -51,7 +51,6 @@ export class RoleProfileComponent implements OnInit {
         this.roleService.removeRole(this.profileModel.id,this.role.id)
         .subscribe(response=>{
             this.isLoading = false;
-            console.log(response);
             const resp = Object.assign(new ResponseModel(),response.json());
             if(resp.code == '00'){
                 this.getCurrentUserDomain(this.profileModel.id);

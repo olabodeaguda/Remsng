@@ -30,6 +30,12 @@ namespace RemsNG.Utilities
             }
             else
             {
+                Claim claim = context.HttpContext.User.Claims.FirstOrDefault(c => c.Type == _claim.Type);
+                if (claim != null)
+                {
+
+                }
+
                 var hasClaim = context.HttpContext.User.Claims.Any(c => c.Type == _claim.Type && c.Value == _claim.Value);
 
 

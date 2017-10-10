@@ -53,10 +53,17 @@ namespace RemsNG.Controllers
                 pageNum = "1";
             }
 
-            return await permissionService.byRoleId(id, new PageModel()
+            int totalCount = await permissionService.PermissionCountByRoleId(id);
+            var r = await permissionService.byRoleId(id, new PageModel()
             {
                 PageNum = int.Parse(pageNum),
                 PageSize = int.Parse(pageSize)
+            });
+
+            return Ok(new
+            {
+                data = r,
+                totalCount = totalCount
             });
         }
 
@@ -64,7 +71,7 @@ namespace RemsNG.Controllers
         [RemsRequirementAttribute("GET_PERMISSIONS")]
         [HttpGet]
         public async Task<object> GetPermissionNotInRole([FromRoute] Guid id)
-         {
+        {
             if (id == default(Guid))
             {
                 return BadRequest(new Response()

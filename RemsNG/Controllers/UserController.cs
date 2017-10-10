@@ -153,6 +153,16 @@ namespace RemsNG.Controllers
                 });
             }
 
+            UserLcda lg = await lcdaService.userDomainRoleId(lcda.id, user.id);
+            if (lg != null)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.DUPLICATE,
+                    description = "Role already exist for the selected user"
+                });
+            }
+
             bool result = await this.userService.AssignLGDA(userLcda);
             if (result)
             {

@@ -42,10 +42,13 @@ namespace RemsNG.Dao
 
         public async Task<List<Lgda>> ActiveLCDAByDomainId(Guid domainId)
         {
-            return await Task.Run(() =>
-            {
-                return db.lgdas.Where(x => x.domainId == domainId && x.lcdaStatus == UserStatus.ACTIVE.ToString()).ToList();
-            });
+            return await db.lgdas.Where(x => x.domainId == domainId && x.lcdaStatus == UserStatus.ACTIVE.ToString()).ToListAsync();
+            
+        }
+
+        public async Task<UserLcda> userDomainRoleId(Guid lgdaId, Guid userId)
+        {
+            return await db.UserLcdas.FirstOrDefaultAsync(x => x.userId == userId && x.lgdaId == lgdaId);
         }
 
         public async Task<bool> Add(Lgda lcda)
