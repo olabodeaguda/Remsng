@@ -77,14 +77,17 @@ export class DataService {
             }
             return Observable.throw(res.description || 'You have not access to the selected page');
         } else if (err.status == 500) {            
-            this.toasterService.pop('error', res.description || 'Internal server error occur. Please contact administrator');
+            //this.toasterService.pop('error', res.description || 'Internal server error occur. Please contact administrator');
+            return Observable.throw(res.description || 'You have not access to the selected page');
         } else if (err.status == 0) { 
             this.storageService.remove();
             return Observable.throw(res.description || 'Connection to the server failed');
         } else if (err.status == 400) {
-            this.toasterService.pop('error', res.description || 'Internal server error occur. Please contact administrator');
+            //this.toasterService.pop('error', res.description || 'Internal server error occur. Please contact administrator');
+            return Observable.throw(res.description || 'Internal server error occur. Please contact administrator');
         } else if (err.status == 409) {
-            this.toasterService.pop('error', res.description || 'Internal server error occur. Please contact administrator');
+            //this.toasterService.pop('error', res.description || 'Internal server error occur. Please contact administrator');
+            return Observable.throw(res.description || 'Internal server error occur. Please contact administrator');
         } else {
             return Observable.throw(res.description || 'Connection to the server failed');
         }

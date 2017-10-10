@@ -175,7 +175,9 @@ namespace RemsNG.Dao
 
         public async Task<bool> Remove(UserRole userRole)
         {
-            db.UserRoles.Remove(userRole);
+            var r = await db.UserRoles.FirstOrDefaultAsync(x => x.userid == userRole.userid && x.roleid == userRole.roleid);
+
+            db.UserRoles.Remove(r);
 
             int count = await db.SaveChangesAsync();
             if (count > 0)

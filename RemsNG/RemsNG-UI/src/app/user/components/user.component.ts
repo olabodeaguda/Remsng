@@ -89,7 +89,7 @@ export class UserComponent implements OnInit {
             jQuery(this.assignlgdaModal.nativeElement).modal('show');
         } else if (eventType === this.appSettings.assignRole) {
             this.profileModel = data;
-            this.getCurrentUserDomain(this.profileModel.username);
+            this.getCurrentUserRole(this.profileModel.id);
             this.getAllDomainRole(this.profileModel.username, true);
         } else if (eventType === this.appSettings.profileMode) {
             this.profileModel = data;
@@ -99,8 +99,8 @@ export class UserComponent implements OnInit {
         this.profileModel.eventType = eventType;
     }
 
-    getCurrentUserDomain(username: string) {
-        this.roleservice.getAllDomainRoles(username).subscribe(response => {
+    getCurrentUserRole(id: string) {
+        /*this.roleservice.getAllDomainRoles(username).subscribe(response => {
             const roles: RoleModel[] = Object.assign([], response.json());   
             if (roles.length > 0) {
                 this.assignRoleModel.currentRole = roles[0];
@@ -110,7 +110,23 @@ export class UserComponent implements OnInit {
             }
         }, error => {
 
+        })*/
+
+
+        this.roleservice.getUserRole(id).subscribe(response => {            
+            const resp = Object.assign(new ResponseModel(),response.json());
+            const roles = Object.assign([], resp.data);
+
+            if (roles.length > 0) {
+                this.assignRoleModel.currentRole = roles[0];
+            } else{
+                
+                this.assignRoleModel.currentRole.roleName = 'Anonymous';
+            }
+
+        }, error => {
         })
+
     }
 
     getProfile() {

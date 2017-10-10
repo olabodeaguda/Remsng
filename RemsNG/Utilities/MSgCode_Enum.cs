@@ -24,5 +24,6 @@ namespace RemsNG.Utilities
         public static string INVALID_PARAMETER_PASSED = "15";
         public static string INACTIVE_USER = "16";
         public static string FORBIDDEN = "17";
+        public static string DATABASE_ERROR = "18";
     }
 }

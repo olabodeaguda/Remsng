@@ -60,19 +60,19 @@ namespace RemsNG.Services
                 options.Audience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)];
                 options.TokenValidationParameters = tokenValidationParameters();
                 options.IncludeErrorDetails = true;
-                options.Events = new JwtBearerEvents
-                {
-                    OnAuthenticationFailed = context =>
-                    {
-                        Response response = new Response();
-                        ExceptionTranslator ex = new ExceptionTranslator(loggerFactory);
-                        ex.Translate(context.HttpContext, context.Exception, response);
-                        var result = JsonConvert.SerializeObject(response);
-                        Exception except = context.Exception;
-                        context.Fail(result);
-                        return Task.FromException(except);
-                    }
-                };
+                //options.Events = new JwtBearerEvents
+                //{
+                //    OnAuthenticationFailed = context =>
+                //    {
+                //        Response response = new Response();
+                //        ExceptionTranslator ex = new ExceptionTranslator(loggerFactory);
+                //        ex.Translate(context.HttpContext, context.Exception, response);
+                //        var result = JsonConvert.SerializeObject(response);
+                //        Exception except = context.Exception;
+                //        context.Fail(result);
+                //        return Task.FromException(except);
+                //    }
+                //};
 
             });
 

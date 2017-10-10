@@ -52,6 +52,12 @@ namespace RemsNG.Utilities
                 response.code = MsgCode_Enum.NOTFOUND;
                 context.Response.StatusCode = (int)HttpStatusCode.Conflict;
             }
+            else if(exception.GetType() == typeof(InvalidOperationException))
+            {
+                response.description = "Database error";
+                response.code = MsgCode_Enum.DATABASE_ERROR;
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            }
             else
             {
                 response.description = exception.Message;

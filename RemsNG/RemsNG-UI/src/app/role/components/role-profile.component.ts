@@ -37,9 +37,9 @@ export class RoleProfileComponent implements OnInit {
     }
 
     getCurrentUserDomain(id: string) {
-        this.roleService.getUserRole(id).subscribe(response => {
-            const resp = response.json();
-            const roles: RoleModel[] = Object.assign([], resp.data);
+        this.roleService.getUserRole(id).subscribe(response => {            
+            const resp = Object.assign(new ResponseModel(),response.json());
+            const roles = Object.assign([], resp.data);
             this.roles = roles;
 
         }, error => {
@@ -51,15 +51,17 @@ export class RoleProfileComponent implements OnInit {
         this.roleService.removeRole(this.profileModel.id,this.role.id)
         .subscribe(response=>{
             this.isLoading = false;
-            const resp = <ResponseModel>response.json();
+            console.log(response);
+            const resp = Object.assign(new ResponseModel(),response.json());
             if(resp.code == '00'){
                 this.getCurrentUserDomain(this.profileModel.id);
-                jQuery(this.removeRoleModal.nativeElement).modal('hide');                
+                jQuery(this.removeRoleModal.nativeElement).modal('hide');  
+                this.toasterService.pop('success','Success',resp.description);              
             }
         }, error=>{
             this.isLoading = false;
+            jQuery(this.removeRoleModal.nativeElement).modal('hide');
             this.toasterService.pop('error','Error',error);
-        })
-        
+        })        
     }
 }

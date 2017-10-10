@@ -73,11 +73,11 @@ export class RoleService {
         }).catch(error => this.dataService.handleError(error));
     }
 
-    getUserRole(userId: string) {
+    getUserRole(userId: string) : Observable<Response>{
         return this.dataService.get('role/currentrole/' + userId).catch(error => this.dataService.handleError(error));
     }
 
-    removeRole(userId: string, roleId: string) {
+    removeRole(userId: string, roleId: string): Observable<Response> {
         return this.dataService.post('role/remove', {
             userId: userId,
             roleId: roleId
