@@ -12,5 +12,8 @@ namespace RemsNG.ORM
 
         public User user { get; set; }
         public Lgda lcda { get; set; }
+
+
+        public virtual ICollection<Role> roles { get; set; }
     }
 }

@@ -1,21 +1,22 @@
 <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" #removeRole>
-        <div class="modal-dialog modal-sm" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Remove Role</h4>
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Remove Role</h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div class="box-body">
+                    You about to remove role
+                    <b>{{role?.roleName}}</b>.Are you sure ?
                 </div>
-                <div class="modal-body clearfix">
-                    <div class="box-body">
-                        You about to remove role <b>{{role?.roleName}}</b>.Are you sure ?
-                    </div>
-                    <div class="box-footer">
-                        <button [ladda]="isLoading" type="button" class="btn btn-danger" (click)="roleAction()">Remove</button>                        
-                    </div>
+                <div class="box-footer">
+                    <button [ladda]="isLoading" type="button" class="btn btn-danger" (click)="roleAction()">Remove</button>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
 <div class="box box-primary">
     <div class="box-header with-border">
@@ -24,18 +25,23 @@
     <div class="box-body" style="height: 298px;">
         <div class="row">
             <div class="col-md-11">
-                <div class="form-inline">
-                    <div class="form-group">
-                        <label for="roleId">Select Role</label>
-                        <select name="roleId" class="form-control" [(ngModel)]="role">
-                            <option *ngFor="let data of roles;" [ngValue]="data">{{data.roleName}}-({{data.domainName}})</option>
-                        </select>
-                        <button class="btn btn-danger" (click)="loadRemoveModal()">
-                            <i class="fa fa-remove"></i>
-                        </button>
-                    </div>
+                <div class="form-group">
+                    <label for="roleId">Select Domain</label>
+                    <select name="roleId" class="form-control" [(ngModel)]="role">
+                        <option *ngFor="let data of roles;" [ngValue]="data">{{data.lcdaName}}</option>
+                    </select>
                 </div>
+                <div class="form-group">
+                    <label for="roleId">Select Role</label>
+                    <select name="roleId" class="form-control" [(ngModel)]="role">
+                        <option *ngFor="let data of roles;" [ngValue]="data">{{data.roleName}}-({{data.domainName}})</option>
+                    </select>
+                </div>
+                <button class="btn btn-danger" (click)="loadRemoveModal()">
+                    <i class="fa fa-remove"></i>
+                </button>
             </div>
         </div>
     </div>
+</div>
 </div>

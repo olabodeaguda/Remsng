@@ -43,10 +43,10 @@ namespace RemsNG.Dao
         public async Task<List<Lgda>> ActiveLCDAByDomainId(Guid domainId)
         {
             return await db.lgdas.Where(x => x.domainId == domainId && x.lcdaStatus == UserStatus.ACTIVE.ToString()).ToListAsync();
-            
+
         }
 
-        public async Task<UserLcda> userDomainRoleId(Guid lgdaId, Guid userId)
+        public async Task<UserLcda> UserLcdaByIds(Guid lgdaId, Guid userId)
         {
             return await db.UserLcdas.FirstOrDefaultAsync(x => x.userId == userId && x.lgdaId == lgdaId);
         }
@@ -119,6 +119,16 @@ namespace RemsNG.Dao
             }
 
             return false;
+        }
+
+        public async Task<List<Lgda>> UserDomainByUserId(Guid id)
+        {
+            return await db.lgdas.FromSql("sp_getUserLCDAByuserId @p0", new object[] { id }).ToListAsync();
+        }
+
+        public async Task<List<UserLcda>> UserRoleDomainbyUserId(Guid id)
+        {
+            return await db.UserLcdas.Include("role").Where(x => x.userId == id).ToListAsync();
         }
     }
 }

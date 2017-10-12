@@ -1,18 +1,15 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RemsNG.Utilities;
 using System;
+using Xunit;
 
 namespace RemsNgUitTest
 {
-    [TestClass]
     public class UnitTest1
     {
-        [TestCategory("Utility")]
-        [TestMethod]
-        public void TestMethod1()
+       
+        [Fact]
+        public void Test1()
         {
-            //string ty = EncryptDecryptUtils.HashText("olabode");
-           // Console.WriteLine(ty);
+
         }
     }
 }

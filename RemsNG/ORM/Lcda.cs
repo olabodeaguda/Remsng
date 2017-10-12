@@ -13,5 +13,6 @@ namespace RemsNG.ORM
         public string lcdaCode { get; set; }
         public Guid addressId { get; set; }
         public string lcdaStatus { get; set; }
+        public virtual ICollection<UserLcda> userlcdas { get; set; }
     }
 }

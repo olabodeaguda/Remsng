@@ -9,7 +9,6 @@ CREATE TABLE tbl_userlcda
 )
 GO
 
-
 IF EXISTS(SELECT *
           FROM sys.objects
           WHERE object_id = OBJECT_ID(N'sp_getUserLCDAByUsername') AND type IN (N'P', N'PC'))
@@ -26,3 +25,21 @@ IF EXISTS(SELECT *
 		where tbl_users.username = @username
   END
   GO
+
+  IF EXISTS(SELECT *
+          FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_getUserLCDAByuserId') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_getUserLCDAByuserId
+  GO
+  CREATE PROCEDURE sp_getUserLCDAByuserId(
+	@id uniqueidentifier
+  )
+  AS
+  BEGIN
+		select tbl_lcda.* from tbl_lcda
+		inner join tbl_userlcda on tbl_userlcda.lgdaid = tbl_lcda.id
+		where tbl_userlcda.userid = @id
+  END
+  GO
+
+

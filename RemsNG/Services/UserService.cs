@@ -42,7 +42,7 @@ namespace RemsNG.Services
             String domainName = "";
             RoleExtension role = null;
             string permissions = string.Empty;
-
+            List<Claim> claimLst = new List<Claim>();
             if (user.username.ToLower() != "mos-admin")
             {
                 List<Lgda> uls = await lcdaDao.getLcdaByUsername(user.username);
@@ -61,8 +61,7 @@ namespace RemsNG.Services
                 if (role != null)
                 {
                     List<Permission> permissionlst = await permissionDao.byRoleId(role.id);
-                    List<string> pl = permissionlst.Select(x => x.permissionName).ToList();
-                    permissions = string.Join(",", pl);
+                    claimLst.AddRange(permissionlst.Select(x => new Claim(ClaimTypes.Role, x.permissionName)));
                 }
             }
             else
@@ -73,19 +72,20 @@ namespace RemsNG.Services
             int logTime = int.TryParse(jwtOptions.logOutTIme, out logTime) ? logTime : 30;
 
             var tokenHandler = new JwtSecurityTokenHandler();
+
+            claimLst.AddRange(new List<Claim>()
+                {
+                     new Claim(ClaimTypes.NameIdentifier, user.username),
+                            new Claim(ClaimTypes.Name, $"{user.surname} {user.firstname} {user.lastname}"),
+                            new Claim("Domain",JsonConvert.SerializeObject(lcdaId)),
+                            new Claim("identity",EncryptDecryptUtils.ToHexString(user.id.ToString()))
+                });
+
             var jwt = new SecurityTokenDescriptor
             {
                 Issuer = jwtOptions.Issuer,
                 Audience = jwtOptions.Audience,
-                Subject = new ClaimsIdentity(new Claim[]
-                        {
-                            new Claim(ClaimTypes.NameIdentifier, user.username),
-                            new Claim(ClaimTypes.Name, $"{user.surname} {user.firstname} {user.lastname}"),
-                            new Claim(ClaimTypes.Role, role != null? role.roleName:string.Empty),
-                            new Claim("Domain",JsonConvert.SerializeObject(lcdaId)),
-                            new Claim("identity",EncryptDecryptUtils.ToHexString(user.id.ToString())),
-                            new Claim("permission",permissions)
-                        }),
+                Subject = new ClaimsIdentity(claimLst),
                 Expires = DateTime.UtcNow.AddMinutes(logTime),
                 NotBefore = DateTime.UtcNow,
                 SigningCredentials = jwtOptions.SigningCredentials,

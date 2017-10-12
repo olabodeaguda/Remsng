@@ -18,6 +18,8 @@ namespace RemsNG.Services.Interfaces
         Task<bool> Changetatus(Guid id, string lcdastatus);
         Task<Lgda> byLCDACode(string lcdaCode);
         Task<List<Lgda>> byUsername(string username);
-        Task<UserLcda> userDomainRoleId(Guid lgdaId, Guid userId);
+        Task<UserLcda> UserLcdaByIds(Guid lgdaId, Guid userId);
+        Task<List<Lgda>> UserDomainByUserId(Guid id);
+        Task<List<UserLcda>> UserRoleDomainbyUserId(Guid id);
     }
 }

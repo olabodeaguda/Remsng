@@ -9,6 +9,7 @@ using System.Security.Claims;
 using RemsNG.Services.Interfaces;
 using RemsNG.ORM;
 using RemsNG.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RemsNG.Controllers
 {
@@ -16,11 +17,13 @@ namespace RemsNG.Controllers
     public class LcdaController : Controller
     {
         private ILcdaService lcdaService;
-        public LcdaController(ILcdaService _lcdaService)
+        private IUserService userservice;
+        public LcdaController(ILcdaService _lcdaService, IUserService _userservice)
         {
             this.lcdaService = _lcdaService;
+            this.userservice = _userservice;
         }
-        
+
         [Route("byusername/{username}")]
         public async Task<IActionResult> LCDAByusername(string username)
         {
@@ -250,7 +253,7 @@ namespace RemsNG.Controllers
         [Route("changestatus")]
         [RemsRequirementAttribute("CHANGE_LCDA_STATUS")]
         [HttpPost]
-        public async Task<IActionResult> ChangeStatu([FromBody] Lgda lcda)
+        public async Task<IActionResult> ChangeStatus([FromBody] Lgda lcda)
         {
             if (string.IsNullOrEmpty(lcda.lcdaStatus))
             {
@@ -296,5 +299,23 @@ namespace RemsNG.Controllers
             }
         }
 
+        [Authorize]
+        [HttpGet]
+        [Route("userdomain/{id}")]
+        public async Task<object> UserDomains([FromRoute] Guid id)
+        {
+            User user = await userservice.Get(id);
+            if (user == null)
+            {
+                return NotFound(new Response()
+                {
+                    code = MsgCode_Enum.NOTFOUND,
+                    description = "User not found"
+                });
+            }
+
+
+            return await lcdaService.UserDomainByUserId(id);
+        }
     }
 }

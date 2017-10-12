@@ -63,9 +63,31 @@ namespace RemsNG.Services
             return await lcdaDao.Update(lcda);
         }
 
-        public async Task<UserLcda> userDomainRoleId(Guid lgdaId, Guid userId)
+        public async Task<List<Lgda>> UserDomainByUserId(Guid id)
         {
-            return await lcdaDao.userDomainRoleId(lgdaId, userId);
+            return await lcdaDao.UserDomainByUserId(id);
+        }
+
+        public async Task<UserLcda> UserLcdaByIds(Guid lgdaId, Guid userId)
+        {
+            return await lcdaDao.UserLcdaByIds(lgdaId, userId);
+        }
+
+        //public async Task<object> UserRoleDomainbyUserId(Guid id)
+        //{
+        //    List<Lgda> lgdas = await UserDomainByUserId(id);
+        //    foreach (var item in lgdas)
+        //    {
+
+        //    }
+        //    return null;
+        //}
+
+        public async Task<List<UserLcda>> UserRoleDomainbyUserId(Guid id)
+        {
+            List<UserLcda> lst = await lcdaDao.UserRoleDomainbyUserId(id);
+
+            return lst;
         }
     }
 }

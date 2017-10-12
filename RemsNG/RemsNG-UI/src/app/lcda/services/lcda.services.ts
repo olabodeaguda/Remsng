@@ -58,4 +58,7 @@ export class LcdaService {
         return this.dataService.get('lcda/'+id).catch(error => this.dataService.handleError(error));
     }
 
+    getLcdaByuserId(userid:string){
+        return this.dataService.get('lcda/userdomain/'+userid).catch(error => this.dataService.handleError(Error));
+    }
 }
