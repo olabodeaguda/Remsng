@@ -20,7 +20,7 @@ namespace RemsNG.Dao
 
         public async Task<Response> Add(Sector sector)
         {
-            DbResponse dbResponse = await db.DbResponses.FromSql("sp_createSector @p0", new object[] {
+            DbResponse dbResponse = await db.DbResponses.FromSql("sp_createSector @p0, @p1, @p2", new object[] {
                 sector.sectorName,
                 sector.lcdaId,
                 sector.createdBy
@@ -45,7 +45,7 @@ namespace RemsNG.Dao
 
         public async Task<Response> Update(Sector sector)
         {
-            DbResponse dbResponse = await db.DbResponses.FromSql("sp_updateSector @p0", new object[] {
+            DbResponse dbResponse = await db.DbResponses.FromSql("sp_updateSector @p0, @p1, @p2", new object[] {
                 sector.id,
                 sector.sectorName,
                 sector.lastmodifiedby

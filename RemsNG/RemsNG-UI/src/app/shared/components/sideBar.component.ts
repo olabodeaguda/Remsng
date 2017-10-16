@@ -12,6 +12,9 @@ export class SideBarComponent implements OnInit {
     userModel: UserModel;
     constructor(private storageService: StorageService) {
         this.userModel = storageService.get();
+        if(this.userModel === null){            
+        this.userModel = new UserModel();
+        }
         storageService.usermodelEmit.subscribe((x) => {
             this.userModel = x;
         });

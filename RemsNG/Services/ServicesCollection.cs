@@ -111,6 +111,7 @@ namespace RemsNG.Services
             services.AddTransient<IPermission, PermissionService>();
             services.AddTransient<IContactService, ContactService>();
             services.AddTransient<IStreetService, StreetService>();
+            services.AddTransient<ISectorService, SectorService>();
         }
 
         public static IConfigurationSection jwtAppSettingOptions

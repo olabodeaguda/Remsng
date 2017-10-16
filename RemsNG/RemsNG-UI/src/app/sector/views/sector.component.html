@@ -1,13 +1,84 @@
-<div class="wrapper hold-transition skin-blue fixed sidebar-mini">
-        <app-hd></app-hd>
-        <app-sbar></app-sbar>
-        <div class="content-wrapper">
-            <section class="content-header">
-                <h1>
-                    Sector Management
-                    <small>Manage
-                        <b> {{lcdaModel?.lcdaName}}</b> sector  .</small>
-                </h1>
-            </section>
+<div class="modal fade" role="dialog" id="addModal" #addModal>
+    <div class=" modal-dialog ">
+        <div class="modal-content " style="width:500px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">{{sectorModel.eventType}} Sector</h4>
+            </div>
+            <form role="form">
+                <div class="modal-body clearfix ">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Fill in the details</h3>
+                        </div>
+                        <div class="form-group">
+                            <label for="permissionId">Sector Name</label>
+                            <input name="sectorName" type="text" class="form-control" [(ngModel)]="sectorModel.sectorName" />
+                        </div>
+                        <div class="box-footer">
+                            <button [ladda]="sectorModel.isLoading" type="submit" class="btn btn-primary" (click)="actions()">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
+</div>
+
+<div class="wrapper hold-transition skin-blue fixed sidebar-mini">
+    <app-hd></app-hd>
+    <app-sbar></app-sbar>
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>
+                Sector Management
+                <small>Manage
+                    <b> {{lcdaModel?.lcdaName}}</b> sector .</small>
+            </h1>
+        </section>
+
+        <section class="content" style="border-style:thin">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h3 class="box-title">Sector List</h3>
+                        </div>
+                        <div class="box-body">
+                            <p>
+                                <button class="btn btn-primary" (click)="open('ADD',null)">
+                                    <i class="fa fa-plus"></i> Add</button>
+                            </p>
+                            <table id="example2" class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="width:120px;"></th>
+                                        <th>Sector Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let data of sectors; let i=index">
+                                        <td>
+                                            <a>
+                                                <i class="fa fa-remove" (click)="open('REMOVE',data)"></i>
+                                            </a>|
+                                            <a>
+                                                <i class="fa fa-edit" (click)="open('EDIT',data)"></i>
+                                            </a>
+                                        </td>
+                                        <td>{{data.sectorName}}</td>
+                                    </tr>
+                                    <tr *ngIf="sectors.length < 1">
+                                        <td style="width:100%" colspan="5">No record !!!</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<ft></ft>
+<div class="loading" *ngIf="isLoading"></div>

@@ -94,7 +94,7 @@ namespace RemsNG.Controllers
 
             sector.lastmodifiedby = User.Identity.Name;
 
-            Response response = await sectorService.Add(sector);
+            Response response = await sectorService.Update(sector);
             return Ok(response);
         }
     }
