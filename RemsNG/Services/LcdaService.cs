@@ -6,16 +6,19 @@ using System.Threading.Tasks;
 using RemsNG.Models;
 using RemsNG.ORM;
 using RemsNG.Dao;
+using Microsoft.Extensions.Logging;
 
 namespace RemsNG.Services
 {
     public class LcdaService : ILcdaService
     {
         private readonly LcdaDao lcdaDao;
+        private readonly RoleDao roleDao;
 
-        public LcdaService(RemsDbContext _db)
+        public LcdaService(RemsDbContext _db, ILoggerFactory loggerFactory)
         {
-            lcdaDao = new LcdaDao(_db);
+            lcdaDao = new LcdaDao(_db,loggerFactory);
+            roleDao = new RoleDao(_db, loggerFactory);
         }
 
         public async Task<List<Lgda>> ActiveLCDAByDomainId(Guid domainId)
@@ -73,21 +76,21 @@ namespace RemsNG.Services
             return await lcdaDao.UserLcdaByIds(lgdaId, userId);
         }
 
-        //public async Task<object> UserRoleDomainbyUserId(Guid id)
-        //{
-        //    List<Lgda> lgdas = await UserDomainByUserId(id);
-        //    foreach (var item in lgdas)
-        //    {
-
-        //    }
-        //    return null;
-        //}
-
-        public async Task<List<UserLcda>> UserRoleDomainbyUserId(Guid id)
+        public async Task<List<Lgda>> UserRoleDomainbyUserId(Guid id)
         {
-            List<UserLcda> lst = await lcdaDao.UserRoleDomainbyUserId(id);
+            List<Lgda> lst = await lcdaDao.UserDomainByUserId(id);
 
             return lst;
+        }
+
+        public async Task<List<Lgda>> UnAssignUserDomainByUserId(Guid userid)
+        {
+            return await lcdaDao.unAssignUserDomainByUserId(userid);
+        }
+
+        public async Task<bool> RemoveUserFromLCDA(UserLcda userLcda)
+        {
+            return await lcdaDao.RemoveUserFromLCDA(userLcda);
         }
     }
 }

@@ -63,8 +63,8 @@ IF EXISTS(SELECT *
   GO
   create procedure sp_updateRole
   (	
-		@id uniqueidentifier,
 		@roleName varchar(100),
+		@id uniqueidentifier,
 		@domainId uniqueidentifier
   )
   as
@@ -72,7 +72,7 @@ IF EXISTS(SELECT *
 	declare @msg varchar(250);
 	declare @success bit = 0;
 
-	if exists(select * from tbl_role where roleName=@rolename and domainId=@domainId)
+	if exists(select * from tbl_role where roleName=@rolename and domainId=@domainId and id <> @id)
 	begin
 		set @msg = 'Role already exist';
 		set @success = 0;
@@ -87,7 +87,7 @@ IF EXISTS(SELECT *
 			set @success = 1;
 		END
 	end
-	select @msg as msg,@success as success;
+	select NEWID() as id, @msg as msg,@success as success;
 end
 GO
   IF EXISTS(SELECT *
@@ -236,5 +236,132 @@ IF EXISTS(SELECT *
 		where tbl_users.id = @id and tbl_role.domainId = @domainId
   END
 GO
+ IF EXISTS(SELECT *
+          FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_roleByDomainId') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_roleByDomainId
+  GO
+  create procedure sp_roleByDomainId
+(
+	@domainId uniqueidentifier
+)
+as
+begin
+	select tbl_role.*,tbl_lcda.lcdaName as domainName from tbl_role 
+	inner join tbl_lcda on tbl_lcda.id = tbl_role.domainId where tbl_role.domainId=@domainId
+end
+GO
+ IF EXISTS(SELECT *
+          FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_roleById') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_roleById
+  GO
+  create procedure sp_roleById
+(
+	@id uniqueidentifier
+)
+as
+begin
+	select tbl_role.*,tbl_lcda.lcdaName as domainName from tbl_role 
+	inner join tbl_lcda on tbl_lcda.id = tbl_role.domainId where tbl_role.id=@id
+end
+GO
+ IF EXISTS(SELECT *
+          FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_roleByRoleName') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_roleByRoleName
+  GO
+  create procedure sp_roleByRoleName
+(
+	@roleName varchar(100)
+)
+as
+begin
+	select tbl_role.*,tbl_lcda.lcdaName as domainName from tbl_role 
+	inner join tbl_lcda on tbl_lcda.id = tbl_role.domainId where tbl_role.roleName = @roleName;
+end
+GO
+ IF EXISTS(SELECT *
+          FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_updateRole') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_updateRole
+  GO
+  create procedure sp_updateRole
+(
+	@roleName varchar(100),
+	@id uniqueidentifier
+)
+as
+begin
+declare @msg varchar;
+declare @success bit = 0;
 
+	Update tbl_role set roleName = @roleName where id=@id;
+	if @@ROWCOUNT > 0
+	begin
+		set @msg = 'Update was successful';
+		set @success = 1;
+	end
+	else
+	begin
+		set @msg = 'Update was not successful';
+		set @success = 0;
+	end
+	select NEWID() as id, @msg as msg, @success as success
+end
 
+ IF EXISTS(SELECT *
+          FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_updateRoleStatus') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_updateRoleStatus
+  GO
+  create procedure sp_updateRoleStatus
+(
+	@roleStatus varchar(100),
+	@id uniqueidentifier
+)
+as
+begin
+declare @msg varchar;
+declare @success bit = 0;
+
+	Update tbl_role set roleStatus = @roleStatus where id=@id;
+	if @@ROWCOUNT > 0
+	begin
+		set @msg = 'Update was successful';
+		set @success = 1;
+	end
+	else
+	begin
+		set @msg = 'Update was not successful';
+		set @success = 0;
+	end
+	select NEWID() as id, @msg as msg, @success as success
+end
+GO
+ IF EXISTS(SELECT *
+          FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_getRolesByDomainIdPaginated') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_getRolesByDomainIdPaginated
+  GO
+CREATE PROCEDURE sp_getRolesByDomainIdPaginated
+(	
+	@pageSize int,
+	@pageNum int,
+	@domainId uniqueidentifier
+)
+AS
+BEGIN
+IF @pageSize = 0 or @pageSize>100
+            SET @pageSize = 100;
+        IF @pageNum = 0
+            SET @pageNum = 1;
+	select tbl_role.*,tbl_lcda.lcdaName as domainName from tbl_role
+	inner join tbl_lcda on tbl_lcda.id = tbl_role.domainId
+	where tbl_role.domainId = @domainId
+	ORDER BY tbl_role.roleName desc
+                 OFFSET @PageSize * (@PageNum - 1) ROWS
+                 FETCH NEXT @PageSize ROWS ONLY;
+
+END
+GO

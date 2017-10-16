@@ -42,4 +42,17 @@ IF EXISTS(SELECT *
   END
   GO
 
+IF EXISTS(SELECT *
+          FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_unAssignUserDomainByuserId') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_unAssignUserDomainByuserId
+  GO
+  create procedure sp_unAssignUserDomainByuserId
+(
+	@userId uniqueidentifier
+)
+as
+begin
+	select * from tbl_lcda where id not in(select lgdaid from tbl_userlcda where tbl_userlcda.userid = @userId)
+end
 

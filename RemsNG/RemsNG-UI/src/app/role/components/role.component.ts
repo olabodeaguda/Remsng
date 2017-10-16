@@ -81,6 +81,7 @@ export class RoleComponent implements OnInit {
                 error => {
                     this.roleModel.isLoading = false;
                     jQuery(this.addModal.nativeElement).modal('hide');
+                    this.toasterService.pop('error', 'error', error);
                 });
         } else if(this.roleModel.eventType === this.appSettings.editMode) {
             this.roleModel.isLoading = true;
@@ -90,6 +91,7 @@ export class RoleComponent implements OnInit {
             }, error => {
                 this.roleModel.isLoading = false;
                 jQuery(this.addModal.nativeElement).modal('hide');
+                this.toasterService.pop('error', 'error', error);
             })
         } else if(this.roleModel.eventType === this.appSettings.changeStatusMode) {
             this.roleModel.isLoading = true;
@@ -100,6 +102,7 @@ export class RoleComponent implements OnInit {
             }, error =>{
                 this.roleModel.isLoading = false
                 jQuery(this.addModal.nativeElement).modal('hide');
+                this.toasterService.pop('error', 'error', error);
             });
         }
     }

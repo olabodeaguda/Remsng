@@ -17,5 +17,7 @@ namespace RemsNG.Services.Interfaces
         Task<Domain> ByDomainId(Guid domainId);
         Task<bool> UpdateDomain(Domain domain);
         Task<bool> ChangeDomain(Guid domainId, string domainStatus);
+        Task<List<Domain>> GetUserDomainByUsernameId(Guid id);
+        Task<Domain> DomainbyLCDAId(Guid lcdaId);
     }
 }

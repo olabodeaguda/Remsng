@@ -9,6 +9,7 @@ using RemsNG.Services;
 using RemsNG.ORM;
 using RemsNG.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using RemsNG.Security;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -86,7 +87,7 @@ namespace RemsNG.Controllers
             }
             else
             {
-                return new HttpMessageResult(new Response()
+                return new  HttpMessageResult(new Response()
                 {
                     code = MsgCode_Enum.FAIL,
                     description = "An error occur while trying to create contact"

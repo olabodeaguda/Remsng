@@ -22,6 +22,10 @@ export class LoginComponent {
     }
 
     signIn() {
+        if(this.loginModel.username !== this.loginModel.validatedUsername){
+            this.loginModel = new LoginModel();
+            return;
+        }
         this.loginModel.isLoading = true;
         this.loginService.SignIn(this.loginModel).subscribe(response => {
             setTimeout(() => {
@@ -73,6 +77,7 @@ export class LoginComponent {
                 const result = Object.assign(new ResponseModel(), response.json());
                 if (result.code === '00') {
                     this.loginModel.isUsernameValid = true;
+                    this.loginModel.validatedUsername = this.loginModel.username;
                     if (result.data.length > 1) {
                         this.loginModel.domainIds = result.data;
                     }else if (result.data.length == 1) {

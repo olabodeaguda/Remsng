@@ -9,6 +9,7 @@ using System.Security.Claims;
 using RemsNG.Models;
 using RemsNG.ORM;
 using Microsoft.AspNetCore.Authorization;
+using RemsNG.Security;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -30,6 +31,14 @@ namespace RemsNG.Controllers
         [HttpGet]
         public async Task<object> Get([FromHeader] string pageSize, [FromHeader] string pageNum)
         {
+            if (string.IsNullOrEmpty(pageSize))
+            {
+                pageSize = "50";
+            }
+            if (string.IsNullOrEmpty(pageNum))
+            {
+                pageNum = "1";
+            }
             var hasClaim = User.Claims.Any(x => x.Type == ClaimTypes.NameIdentifier && x.Value.ToLower() == "mos-admin");
             if (hasClaim)
             {
@@ -62,7 +71,11 @@ namespace RemsNG.Controllers
                     }, 403);
                 }
 
-                return roleservice.GetUserDomainRoleByUsername(username, domainId);
+                return await roleservice.Paginated(new PageModel()
+                {
+                    PageNum = int.Parse(pageNum),
+                    PageSize = int.Parse(pageSize)
+                }, domainId);
             }
         }
 
@@ -271,9 +284,9 @@ namespace RemsNG.Controllers
                     description = "Selected role is not active"
                 });
             }
-            List<RoleExtension> roleex = await roleservice.AllDomainRolesByDomainId(userRole.userid, role.domainId);
+            RoleExtension roleex = await roleservice.UserDomainRolesByDomainId(userRole.userid, role.domainId);
 
-            if (roleex.Count > 0)
+            if (roleex != null)
             {
                 return BadRequest(new Response()
                 {
@@ -413,7 +426,7 @@ namespace RemsNG.Controllers
         }
 
         [Route("{id}")]
-        [RemsRequirementAttribute("GET_ROLES")]
+        [Authorize]
         [HttpGet]
         public async Task<object> Get([FromRoute] Guid id)
         {
@@ -429,7 +442,7 @@ namespace RemsNG.Controllers
             return role;
         }
 
-        [RemsRequirementAttribute("GET_ROLES")]
+        [Authorize]
         [HttpGet]
         [Route("currentrole/{id}")]
         public async Task<object> CurrentUserRole([FromRoute] Guid id)
@@ -459,7 +472,38 @@ namespace RemsNG.Controllers
             return Ok(response);
         }
 
-        [RemsRequirementAttribute("GET_REMOVE")]
+        [Authorize]
+        [HttpGet]
+        [Route("currentuserdomainrole/{domainId}/{userId}")]
+        public async Task<object> CurrentUserRole([FromRoute] Guid domainId, [FromRoute] Guid userId)
+        {
+            if (domainId == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Domain is required"
+                });
+            }
+            else if (userId == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "User is required"
+                });
+            }
+
+            RoleExtension roleExtension = await roleservice.UserDomainRolesByDomainId(userId, domainId);
+
+            return Ok(new Response()
+            {
+                code = MsgCode_Enum.SUCCESS,
+                data = roleExtension
+            });
+        }
+
+        [RemsRequirementAttribute("REMOVE_ROLE")]
         [HttpPost]
         [Route("remove")]
         public async Task<object> RemoveRole([FromBody] UserRole userRole)
@@ -490,6 +534,23 @@ namespace RemsNG.Controllers
                 code = MsgCode_Enum.FAIL,
                 description = ""
             }, 409);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("domainroles/{domainId}")]
+        public async Task<object> DomainRoles(Guid domainId)
+        {
+            if (domainId == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Bad request"
+                });
+            }
+
+            return await roleservice.ByDomainId(domainId);
         }
     }
 }

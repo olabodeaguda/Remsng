@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using RemsNG.Exceptions;
 using RemsNG.Models;
 using RemsNG.ORM;
@@ -11,8 +12,10 @@ namespace RemsNG.Dao
 {
     public class RoleDao : AbstractDao
     {
-        public RoleDao(RemsDbContext _db) : base(_db)
+        private readonly ILogger logger;
+        public RoleDao(RemsDbContext _db, ILoggerFactory loggerFactory) : base(_db)
         {
+            this.logger = loggerFactory.CreateLogger("Role Dao");
         }
 
         public async Task<RoleExtension> GetUserDomainRoleByUsername(string username, Guid domainId)
@@ -35,6 +38,18 @@ namespace RemsNG.Dao
             });
         }
 
+        public async Task<object> Paginated(Models.PageModel pageModel, Guid domainId)
+        {
+            List<RoleExtension> AllRole = db.RoleExtensions.FromSql("sp_getRolesByDomainIdPaginated @p0, @p1, @p2", new object[] { pageModel.PageSize, pageModel.PageNum, domainId }).ToList();
+
+            var totalCount = await db.Roles.Where(x => x.domainId == domainId).CountAsync();
+            return new
+            {
+                data = AllRole,
+                totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
+            };
+        }
+
         public async Task<bool> Add(Role role)
         {
             DbResponse dbResponse = await db.DbResponses.FromSql("sp_createRole @p0,@p1, @p2",
@@ -44,6 +59,7 @@ namespace RemsNG.Dao
             {
                 return true;
             }
+            logger.LogError(dbResponse.msg, new object[] { role.roleName, role.id });
             return false;
         }
 
@@ -65,35 +81,30 @@ namespace RemsNG.Dao
             return false;
         }
 
-        public async Task<Role> GetByName(string rolename)
+        public async Task<RoleExtension> GetByName(string rolename)
         {
-            return await db.Roles.FirstOrDefaultAsync(x => x.roleName == rolename);
+            return await db.RoleExtensions.FromSql("sp_roleByRoleName @p0", new object[] { rolename }).FirstOrDefaultAsync();
         }
 
         public async Task<RoleExtension> GetById(Guid id)
         {
-            Role role = await db.Roles.Include("lgda").FirstOrDefaultAsync(x => x.id == id);
-
-            if (role != null)
-            {
-                RoleExtension roleExtension = new RoleExtension()
-                {
-                    domainId = role.domainId,
-                    id = role.id,
-                    roleName = role.roleName,
-                    roleStatus = role.roleStatus
-                };
-                roleExtension.domainName = role.lgda.lcdaName;
-
-                return roleExtension;
-            }
-
-            return null;
+            return await db.RoleExtensions.FromSql("sp_roleById @p0", new object[] { id }).FirstOrDefaultAsync();
         }
 
         public async Task<bool> Update(Role role)
         {
-            var r = await db.Roles.FindAsync(new object[] { role.id });
+            DbResponse dbResponse = await db.DbResponses.FromSql("sp_updateRole @p0, @p1, @p2", new object[] { role.roleName, role.id, role.domainId }).FirstOrDefaultAsync();
+            if (dbResponse.success)
+            {
+                return true;
+            }
+            logger.LogError(dbResponse.msg, new object[] { role.roleName, role.id });
+            return false;
+        }
+
+        public async Task<bool> UpdateStatus(Role role)
+        {
+            var r = await GetById(role.id);
 
             if (r == null)
             {
@@ -101,39 +112,18 @@ namespace RemsNG.Dao
             }
 
             r.roleName = role.roleName;
-            int count = await db.SaveChangesAsync();
-
-            if (count > 0)
+            DbResponse dbResponse = await db.DbResponses.FromSql("sp_updateRoleStatus", new object[] { role.roleStatus, role.id }).FirstOrDefaultAsync();
+            if (dbResponse.success)
             {
                 return true;
             }
-
+            logger.LogError(dbResponse.msg, new object[] { role.roleName, role.id });
             return false;
         }
 
-        public async Task<bool> UpdateStatus(Role role)
+        public async Task<List<RoleExtension>> ByDomainId(Guid domainId)
         {
-            var r = await db.Roles.FindAsync(new object[] { role.id });
-
-            if (r == null)
-            {
-                throw new NotFoundException($"{role.roleName} was not found");
-            }
-
-            r.roleStatus = role.roleStatus;
-            int count = await db.SaveChangesAsync();
-
-            if (count > 0)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public async Task<List<Role>> ByDomainId(Guid domainId)
-        {
-            return await db.Roles.Where(x => x.domainId == domainId).ToListAsync();
+            return await db.RoleExtensions.FromSql("sp_roleByDomainId @p0", new object[] { domainId }).ToListAsync();
         }
 
         public async Task<List<RoleExtension>> AllRoleByUserId(Guid id)
@@ -151,9 +141,9 @@ namespace RemsNG.Dao
             return await db.RoleExtensions.FromSql("sp_getDomainRolesByUsername @p0", new object[] { username }).ToListAsync();
         }
 
-        public async Task<List<RoleExtension>> AllDomainRolesByDomainId(Guid userid, Guid domainid)
+        public async Task<RoleExtension> UserDomainRolesByDomainId(Guid userid, Guid domainid)
         {
-            return await db.RoleExtensions.FromSql("sp_getUserDomainRolesByDomainId @p0, @p1", new object[] { userid, domainid }).ToListAsync();
+            return await db.RoleExtensions.FromSql("sp_getUserDomainRolesByDomainId @p0, @p1", new object[] { userid, domainid }).FirstOrDefaultAsync();
         }
 
         public async Task<bool> AssignRoleToUserAsync(UserRole userRole)
@@ -186,5 +176,6 @@ namespace RemsNG.Dao
             }
             return false;
         }
+
     }
 }

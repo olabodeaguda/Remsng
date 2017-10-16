@@ -53,7 +53,6 @@ export class DomainComponent implements OnInit {
             this.alertMsg(this.appSettings.warning, 'Domain Name is required!!!');
             return;
         }
-        console.log(this.domainModel);
 
         if (this.domainModel.eventType === this.appSettings.addMode) {
             this.domainService.add(this.domainModel).subscribe(response => {
@@ -81,7 +80,8 @@ export class DomainComponent implements OnInit {
                 } else {
                     this.alertMsg(this.appSettings.danger, resp.description || 'An error occur, please try again or contact administrator');
                 }
-            }, error => {
+            }, error => {                
+                this.getDomain();
                 this.domainModel.isLoading = false;
                 this.alertMsg(this.appSettings.danger, error || 'An error occur, please try again or contact administrator');
             });
@@ -98,6 +98,7 @@ export class DomainComponent implements OnInit {
                     this.alertMsg(this.appSettings.danger, resp.description || 'An error occur, please try again or contact administrator');
                 }
             }, error => {
+                this.getDomain();
                 this.domainModel.isLoading = false;
                 this.alertMsg(this.appSettings.danger, error || 'An error occur, please try again or contact administrator');
             });

@@ -63,30 +63,27 @@ export class DataService {
         return Object.assign(new ResponseModel(), result);
     }
 
-    handleError(err: any) {
-        console.log(err);      
+    handleError(err: any) {  
+        console.log(err);
         const res = Object.assign(new ResponseModel(), err._body);
         if (err.status === 404) {
             return Observable.throw(res.description || 'Not found exception');
         } else if (err.status === 401) {
             return Observable.throw(res.description || 'You have no access to the selected page');
-        } else if (err.status === 403) {
-            this.toasterService.pop('error', res.description || 'You have no access to the selected page');           
+        } else if (err.status === 403) {         
             if (res.code === '09' || res.code == '10' || res.code === '11') {
+                this.toasterService.pop('error', res.description || 'You have no access to the selected page');  
                 this.storageService.remove();
             }
             return Observable.throw(res.description || 'You have not access to the selected page');
         } else if (err.status == 500) {            
-            //this.toasterService.pop('error', res.description || 'Internal server error occur. Please contact administrator');
             return Observable.throw(res.description || 'You have not access to the selected page');
         } else if (err.status == 0) { 
             this.storageService.remove();
             return Observable.throw(res.description || 'Connection to the server failed');
         } else if (err.status == 400) {
-            //this.toasterService.pop('error', res.description || 'Internal server error occur. Please contact administrator');
             return Observable.throw(res.description || 'Internal server error occur. Please contact administrator');
         } else if (err.status == 409) {
-            //this.toasterService.pop('error', res.description || 'Internal server error occur. Please contact administrator');
             return Observable.throw(res.description || 'Internal server error occur. Please contact administrator');
         } else {
             return Observable.throw(res.description || 'Connection to the server failed');

@@ -83,4 +83,12 @@ export class RoleService {
             roleId: roleId
         }).catch(error => this.dataService.handleError(error));
     }
+
+    roleByDomainId(domainId: string): Observable<Response> {
+        return this.dataService.get('role/domainroles/'+domainId).catch(error => this.dataService.handleError(error));
+    }
+
+    roleByDomainIdUserId(domainId: string,userId: string): Observable<Response> {
+        return this.dataService.get('role/currentuserdomainrole/'+domainId+"/"+userId).catch(error => this.dataService.handleError(error));
+    }
 }

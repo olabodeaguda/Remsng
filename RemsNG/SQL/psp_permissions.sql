@@ -98,6 +98,18 @@ IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'CHANGE_STATUS
 INSERT INTO tbl_permission(id,permissionName) values(newid(),'CHANGE_STATUS');
 
 GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'GET_WARD')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'GET_WARD');
+
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'UPDATE_WARD')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'UPDATE_WARD');
+
+GO
+IF NOT EXISTS(SELECT * FROM tbl_permission where permissionName = 'ADD_WARD')
+INSERT INTO tbl_permission(id,permissionName) values(newid(),'ADD_WARD');
+
+GO
 IF EXISTS(SELECT *
           FROM sys.objects
           WHERE object_id = OBJECT_ID(N'sp_getRolePermission') AND type IN (N'P', N'PC'))
@@ -157,7 +169,7 @@ CREATE PROCEDURE sp_getPermissionNotInRole
 AS
 BEGIN
 	select tbl_permission.* from tbl_permission 
-	where id not in(select permissionId from tbl_rolePermission where roleId = @roleId);
+	where id not in(select permissionId from tbl_rolePermission where roleId = @roleId) order by tbl_permission.permissionName;
 END
 GO
 

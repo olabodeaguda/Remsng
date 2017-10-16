@@ -7,4 +7,5 @@ export class AssignRoleModel {
     msg: string = '';
     isLoading: boolean = false;
     currentRole: RoleModel = new RoleModel();
+    domainId: string = ''
 }

@@ -15,6 +15,5 @@ namespace RemsNG.Utilities
                 return Enum.GetNames(typeof(UserStatus)).Cast<string>().ToList();
             }
         }
-        
     }
 }

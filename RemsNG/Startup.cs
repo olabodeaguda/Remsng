@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using RemsNG.Exceptions;
 using RemsNG.Models;
 using RemsNG.ORM;
+using RemsNG.Security;
 using RemsNG.Services;
 using RemsNG.Utilities;
 using System.IO;

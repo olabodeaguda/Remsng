@@ -8,6 +8,8 @@ using RemsNG.Services.Interfaces;
 using System.Security.Claims;
 using RemsNG.Models;
 using RemsNG.ORM;
+using RemsNG.Security;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,7 +27,8 @@ namespace RemsNG.Controllers
         }
 
         [Route("all")]
-        [RemsRequirementAttribute("GET_WARD")]
+        // [RemsRequirementAttribute("GET_WARD")]
+        [Authorize]
         [HttpGet]
         public async Task<object> All()
         {
@@ -53,7 +56,8 @@ namespace RemsNG.Controllers
         }
 
         [Route("paginated")]
-        [RemsRequirementAttribute("GET_WARD")]
+        [Authorize]
+        // [RemsRequirementAttribute("GET_WARD")]
         [HttpGet]
         public async Task<object> Get([FromHeader] string pageSize, [FromHeader] string pageNum, [FromHeader] string lcdaId)
         {
@@ -107,6 +111,22 @@ namespace RemsNG.Controllers
             return new object[] { };
         }
 
+        [Authorize]
+        [HttpGet("{id}")]
+        public async Task<object> Get(Guid id)
+        {
+            if (id == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "bad request"
+                });
+            }
+            return await wardService.GetWard(id);
+        }
+
+        [RemsRequirementAttribute("ADD_WARD")]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]Ward ward)
         {

@@ -6,15 +6,16 @@ using System.Threading.Tasks;
 using RemsNG.ORM;
 using RemsNG.Dao;
 using RemsNG.Models;
+using Microsoft.Extensions.Logging;
 
 namespace RemsNG.Services
 {
     public class RoleService : IRoleService
     {
         RoleDao roleDao;
-        public RoleService(RemsDbContext _db)
+        public RoleService(RemsDbContext _db, ILoggerFactory loggerFactory)
         {
-            roleDao = new RoleDao(_db);
+            roleDao = new RoleDao(_db,loggerFactory);
         }
 
         public async Task<bool> Add(Role role)
@@ -27,9 +28,9 @@ namespace RemsNG.Services
             return await roleDao.Add(role);
         }
 
-        public async Task<List<RoleExtension>> AllDomainRolesByDomainId(Guid userid, Guid domainid)
+        public async Task<RoleExtension> UserDomainRolesByDomainId(Guid userid, Guid domainid)
         {
-            return await roleDao.AllDomainRolesByDomainId(userid, domainid);
+            return await roleDao.UserDomainRolesByDomainId(userid, domainid);
         }
 
         public async Task<List<RoleExtension>> AllDomainRolesByUsername(string username)
@@ -52,7 +53,7 @@ namespace RemsNG.Services
             return await roleDao.AssignRoleToUserAsync(userRole);
         }
 
-        public async Task<List<Role>> ByDomainId(Guid domainId)
+        public async Task<List<RoleExtension>> ByDomainId(Guid domainId)
         {
             return await roleDao.ByDomainId(domainId);
         }
@@ -62,7 +63,7 @@ namespace RemsNG.Services
             return await roleDao.GetById(id);
         }
 
-        public async Task<Role> GetByName(string rolename)
+        public async Task<RoleExtension> GetByName(string rolename)
         {
             return await roleDao.GetByName(rolename);
         }
@@ -97,6 +98,9 @@ namespace RemsNG.Services
             return await roleDao.UpdateStatus(role);
         }
 
-
+        public async Task<object> Paginated(PageModel pageModel, Guid domainId)
+        {
+            return await roleDao.Paginated(pageModel, domainId);
+        }
     }
 }

@@ -48,6 +48,4 @@ export class DomainService {
             id: domainModel.id
         }).catch(error => this.dataService.handleError(error));
     }
-
-
 }

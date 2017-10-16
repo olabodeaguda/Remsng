@@ -10,11 +10,13 @@ using RemsNG.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using RemsNG.Security;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace RemsNG.Controllers
 {
+    [Authorize]
     [Route("api/v1/domain")]
     public class DomainController : Controller
     {
@@ -62,19 +64,32 @@ namespace RemsNG.Controllers
             });
         }
 
-        [Route("activeDomain")]
-        [RemsRequirementAttribute("GET_ACTIVE_DOMAIN")]
+        [Route("activeDomain")]        
         public async Task<object> Get()
         {
-            return await this.domainService.ActiveDomains();
+            if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
+            {
+                return await this.domainService.ActiveDomains();
+            }
+            else
+            {
+                Guid userid = ClaimExtension.UserId(User.Claims.ToArray());
+                if (userid == Guid.Empty)
+                {
+                    return BadRequest(new Response()
+                    {
+                        code = MsgCode_Enum.INTERNAL_ERROR,
+                        description = "Please logout and login again else contact your administrator"
+                    });
+                }
+                return await domainService.GetUserDomainByUsernameId(userid);
+            }
         }
 
         [Route("all")]
-        [RemsRequirementAttribute("GET_DOMAIN")]
         public async Task<object> Get([FromHeader] string pageSize, [FromHeader] string pageNum)
         {
-            var hasClaim = User.Claims.Any(x => x.Type == ClaimTypes.NameIdentifier && x.Value.ToLower() == "mos-admin");
-            if (hasClaim)
+            if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
             {
                 pageSize = string.IsNullOrEmpty(pageSize) ? "1" : pageSize;
                 pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
@@ -82,23 +97,25 @@ namespace RemsNG.Controllers
             }
             else
             {
-                var domainId = User.Claims.FirstOrDefault(x => x.Type == "Domain");
-                if (domainId != null)
+                var domainId = ClaimExtension.GetDomainId(User.Claims.ToArray());
+                if (domainId != default(Guid))
                 {
-                    Guid dId = Guid.Empty;
-                    bool v = Guid.TryParse(domainId.Value, out dId);
-                    if (v)
+                    Domain d = await domainService.DomainbyLCDAId(domainId);
+                    return new
                     {
-                        Domain d = await domainService.ByDomainId(dId);
-                        return new[] { d };
-                    }
+                        data = new List<object>() { d },
+                        totalPageCount = 1
+                    };
                 }
             }
-            return new object[] { };
+            return new
+            {
+                data = new List<object>() { },
+                totalPageCount = 1
+            };
         }
-
+        [RemsRequirementAttribute("MOS-ADMIN")]
         [Route("create")]
-        [RemsRequirementAttribute("CREATE_DOMAIN")]
         public async Task<IActionResult> Post([FromBody] Domain domain)
         {
             if (string.IsNullOrEmpty(domain.domainCode))
@@ -202,9 +219,8 @@ namespace RemsNG.Controllers
         }
 
         //approval
-
+        [RemsRequirementAttribute("MOS-ADMIN")]
         [Route("changestatus")]
-        [RemsRequirementAttribute("CHANGE_STATUS")]
         [HttpPost]
         public async Task<IActionResult> ChangeStatus([FromBody] Domain domain)
         {
@@ -252,8 +268,8 @@ namespace RemsNG.Controllers
             }
         }
 
+        [RemsRequirementAttribute("MOS-ADMIN")]
         [Route("currentdomain")]
-        [Authorize]
         [HttpGet]
         public async Task<IActionResult> CurrentDomain()
         {

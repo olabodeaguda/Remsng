@@ -93,26 +93,13 @@ export class UserComponent implements OnInit {
             this.getAllDomainRole(this.profileModel.username, true);
         } else if (eventType === this.appSettings.profileMode) {
             this.profileModel = data;
-            const val = btoa(this.profileModel.id);
-            this.router.navigate(['user', val])
+           // const val = btoa(this.profileModel.id);
+            this.router.navigate(['user', this.profileModel.id])
         }
         this.profileModel.eventType = eventType;
     }
 
     getCurrentUserRole(id: string) {
-        /*this.roleservice.getAllDomainRoles(username).subscribe(response => {
-            const roles: RoleModel[] = Object.assign([], response.json());   
-            if (roles.length > 0) {
-                this.assignRoleModel.currentRole = roles[0];
-            } else{
-                
-                this.assignRoleModel.currentRole.roleName = 'Anonymous';
-            }
-        }, error => {
-
-        })*/
-
-
         this.roleservice.getUserRole(id).subscribe(response => {            
             const resp = Object.assign(new ResponseModel(),response.json());
             const roles = Object.assign([], resp.data);
@@ -126,7 +113,6 @@ export class UserComponent implements OnInit {
 
         }, error => {
         })
-
     }
 
     getProfile() {

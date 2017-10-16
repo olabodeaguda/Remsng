@@ -27,6 +27,8 @@ namespace RemsNG.ORM
         public DbSet<DbResponse> DbResponses { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<ContactDetail> ContactDetails { get; set; }
+        public DbSet<Street> Streets { get; set; }
+        public DbSet<Sector> Sectors { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,6 +43,8 @@ namespace RemsNG.ORM
             modelBuilder.Entity<Ward>().ToTable("tbl_ward");
             modelBuilder.Entity<UserRole>().ToTable("tbl_userRole").HasKey(x => new { x.roleid, x.userid });
             modelBuilder.Entity<ContactDetail>().ToTable("tbl_contactDetail");
+            modelBuilder.Entity<Street>().ToTable("tbl_street");
+            modelBuilder.Entity<Sector>().ToTable("tbl_sector");
         }
     }
 }

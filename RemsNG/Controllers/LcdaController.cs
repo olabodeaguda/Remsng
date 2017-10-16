@@ -10,6 +10,7 @@ using RemsNG.Services.Interfaces;
 using RemsNG.ORM;
 using RemsNG.Exceptions;
 using Microsoft.AspNetCore.Authorization;
+using RemsNG.Security;
 
 namespace RemsNG.Controllers
 {
@@ -18,10 +19,13 @@ namespace RemsNG.Controllers
     {
         private ILcdaService lcdaService;
         private IUserService userservice;
-        public LcdaController(ILcdaService _lcdaService, IUserService _userservice)
+        private IRoleService roleService;
+        public LcdaController(ILcdaService _lcdaService,
+            IUserService _userservice, IRoleService _roleService)
         {
             this.lcdaService = _lcdaService;
             this.userservice = _userservice;
+            this.roleService = _roleService;
         }
 
         [Route("byusername/{username}")]
@@ -61,16 +65,29 @@ namespace RemsNG.Controllers
             });
         }
 
+        [Authorize]
         [Route("total")]
-        [RemsRequirementAttribute("GET_LCDA")]
         [HttpGet]
         public async Task<object> All()
         {
-            return await lcdaService.All();
+            if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
+            {
+                return await lcdaService.All();
+            }
+            else
+            {
+                Guid currentDomain = ClaimExtension.GetDomainId(User.Claims.ToArray());
+                if(currentDomain == Guid.Empty)
+                {
+                    return new List<Lgda>();
+                }
+
+                return await lcdaService.UserDomainByUserId(currentDomain);
+            }
         }
 
         [Route("{id}")]
-        [RemsRequirementAttribute("GET_LCDA")]
+        [Authorize]
         [HttpGet]
         public async Task<object> Get([FromRoute] Guid id)
         {
@@ -92,7 +109,6 @@ namespace RemsNG.Controllers
         }
 
         [Route("all")]
-        [RemsRequirementAttribute("GET_LCDA")]
         [HttpGet]
         public async Task<object> Get([FromHeader] string pageSize, [FromHeader] string pageNum)
         {
@@ -112,8 +128,14 @@ namespace RemsNG.Controllers
                     bool v = Guid.TryParse(domainId.Value, out dId);
                     if (v)
                     {
-                        List<Lgda> cd = await lcdaService.ActiveLCDAByDomainId(dId);
-                        return cd;
+                        Lgda lgda = await lcdaService.Get(dId);
+                        List<Lgda> cd = new List<Lgda>();
+                        cd.Add(lgda);
+                        return new
+                        {
+                            data = cd,
+                            totalPageCount = 1
+                        }; 
                     }
                 }
             }
@@ -314,8 +336,101 @@ namespace RemsNG.Controllers
                 });
             }
 
-
             return await lcdaService.UserDomainByUserId(id);
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("userroledomain/{id}")]
+        public async Task<object> UserRoleDomains([FromRoute] Guid id)
+        {
+            User user = await userservice.Get(id);
+            if (user == null)
+            {
+                return NotFound(new Response()
+                {
+                    code = MsgCode_Enum.NOTFOUND,
+                    description = "User not found"
+                });
+            }
+
+            return await lcdaService.UserRoleDomainbyUserId(id);
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("unassignlcda/{id}")]
+        public async Task<object> LcdaNotInUser([FromRoute] Guid id)
+        {
+            if (id == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Wrong request"
+                });
+            }
+
+            var result = await lcdaService.UnAssignUserDomainByUserId(id);
+            return Ok(new Response()
+            {
+                data = result,
+                code = MsgCode_Enum.SUCCESS,
+            });
+        }
+
+        [RemsRequirementAttribute("REMOVE_USER_FROM LCDA")]
+        [HttpPost]
+        [Route("removeuserfromdomain")]
+        public async Task<object> RemoveUserFromDomain([FromBody] UserLcda userLcda)
+        {
+            if (userLcda.userId == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "User is required"
+                });
+            }
+            else if (userLcda.lgdaId == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "LCDA is required"
+                });
+            }
+
+            RoleExtension roleExtension = await roleService.UserDomainRolesByDomainId(userLcda.userId, userLcda.lgdaId);
+            if (roleExtension != null)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "User can't be remove from the selected role. User exist in a role"
+                });
+            }
+
+            // remove
+
+            bool result = await lcdaService.RemoveUserFromLCDA(userLcda);
+            if (result)
+            {
+                return Ok(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = "Request was successful"
+                });
+            }
+            else
+            {
+                return new HttpMessageResult(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Request failed"
+                }, 409);
+            }
+
         }
     }
 }

@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using RemsNG.Models;
 using RemsNG.ORM;
+using RemsNG.Security;
 using RemsNG.Services.Interfaces;
 using RemsNG.Utilities;
 using System;
@@ -36,11 +37,9 @@ namespace RemsNG.Services
         public static void Initialize(IServiceCollection services, IConfigurationRoot config, ILoggerFactory loggerFactory)
         {
             Configuration = config;
-            //services.AddCors(options =>
-            //{
-            //    options.AddPolicy("AllowSpecificOrigin",
-            //        builder => builder.WithOrigins("http://localhost:4200"));
-            //});
+
+            var builderException = services.AddMvc();
+
             services.Configure<JwtIssuerOptions>(options =>
             {
                 options.Issuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
@@ -60,19 +59,22 @@ namespace RemsNG.Services
                 options.Audience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)];
                 options.TokenValidationParameters = tokenValidationParameters();
                 options.IncludeErrorDetails = true;
-                //options.Events = new JwtBearerEvents
-                //{
-                //    OnAuthenticationFailed = context =>
-                //    {
-                //        Response response = new Response();
-                //        ExceptionTranslator ex = new ExceptionTranslator(loggerFactory);
-                //        ex.Translate(context.HttpContext, context.Exception, response);
-                //        var result = JsonConvert.SerializeObject(response);
-                //        Exception except = context.Exception;
-                //        context.Fail(result);
-                //        return Task.FromException(except);
-                //    }
-                //};
+                options.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        Response response = new Response();
+                        Exception except = context.Exception;
+
+                        //ExceptionTranslator ex = new ExceptionTranslator(loggerFactory);
+                        //ex.Translate(context.HttpContext, context.Exception, response);
+                        //var result = JsonConvert.SerializeObject(response);
+                        //Exception except = context.Exception;
+                        //context.Fail(result);
+
+                        return Task.FromException(except);
+                    }
+                };
 
             });
 
@@ -94,8 +96,12 @@ namespace RemsNG.Services
             }));
 
             services.Configure<MvcOptions>(
-                options => { options.Filters.Add(new CorsAuthorizationFilterFactory("CorsPolicy")); });
-
+                options =>
+                {
+                    options.Filters.Add(new CorsAuthorizationFilterFactory("CorsPolicy"));
+                    options.Filters.Add(new GlobalExceptionFilter(loggerFactory));
+                });
+            //builderException.AddMvcOptions(o => { o.Filters.Add(new GlobalExceptionFilter(loggerFactory)); });
             services.AddDbContext<RemsDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IDomainService, DomainService>();
@@ -104,6 +110,7 @@ namespace RemsNG.Services
             services.AddTransient<IRoleService, RoleService>();
             services.AddTransient<IPermission, PermissionService>();
             services.AddTransient<IContactService, ContactService>();
+            services.AddTransient<IStreetService, StreetService>();
         }
 
         public static IConfigurationSection jwtAppSettingOptions

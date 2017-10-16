@@ -255,4 +255,27 @@ IF EXISTS(SELECT *
 	select @msg as msg,@success as success;
   END
   GO
-
+   IF EXISTS(SELECT *
+          FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_domainUsers') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_domainUsers
+  GO
+  create procedure sp_domainUsers(
+	@domainId uniqueidentifier,
+	@pageNum int,
+	@pageSize int
+  )
+  as
+  begin
+		IF @pageSize = 0 or @pageSize>100
+            SET @pageSize = 100;
+        IF @pageNum = 0
+            SET @pageNum = 1;
+		select tbl_users.* from tbl_users 
+		inner join tbl_userlcda on tbl_userlcda.userid = tbl_users.id
+		where tbl_userlcda.lgdaid = @domainId
+		ORDER BY tbl_users.username desc
+                 OFFSET @PageSize * (@PageNum - 1) ROWS
+                 FETCH NEXT @PageSize ROWS ONLY;
+  end
+  GO

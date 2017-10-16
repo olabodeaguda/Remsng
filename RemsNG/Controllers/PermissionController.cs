@@ -7,11 +7,11 @@ using RemsNG.Services.Interfaces;
 using RemsNG.Utilities;
 using RemsNG.ORM;
 using RemsNG.Models;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using Microsoft.AspNetCore.Authorization;
 
 namespace RemsNG.Controllers
 {
+    [Authorize]
     [Route("api/v1/permission")]
     public class PermissionController : Controller
     {
@@ -22,8 +22,7 @@ namespace RemsNG.Controllers
             permissionService = _permissionService;
             roleservice = _roleservice;
         }
-
-        [RemsRequirementAttribute("GET_PERMISSIONS")]
+        
         [HttpGet]
         public async Task<object> Get()
         {
@@ -31,7 +30,6 @@ namespace RemsNG.Controllers
         }
 
         [Route("byRoleid/{id}")]
-        [RemsRequirementAttribute("GET_PERMISSIONS")]
         [HttpGet]
         public async Task<object> GetByRoleId([FromRoute]Guid id, [FromHeader] string pageSize, [FromHeader] string pageNum)
         {
@@ -68,7 +66,6 @@ namespace RemsNG.Controllers
         }
 
         [Route("permissionnotinrole/{id}")]
-        [RemsRequirementAttribute("GET_PERMISSIONS")]
         [HttpGet]
         public async Task<object> GetPermissionNotInRole([FromRoute] Guid id)
         {

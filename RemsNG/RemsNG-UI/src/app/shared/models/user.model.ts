@@ -6,4 +6,5 @@ export class UserModel {
     diplayImage: string = '';
     domainName: string = '';
     role:string='';
+    id:string='';
 }

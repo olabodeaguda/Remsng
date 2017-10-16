@@ -32,7 +32,7 @@
                         
                         <li class="user-footer">
                             <div class="pull-left">
-                                <a href="javascript:;" class="btn btn-default btn-flat">Profile</a>
+                                <a [routerLink]="['/user',userModel.id]" class="btn btn-default btn-flat" >Profile</a>
                             </div>
                             <div class="pull-right">
                                 <a href="javascript:;" class="btn btn-default btn-flat" (click)="logout()">Sign out</a>

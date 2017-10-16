@@ -12,6 +12,7 @@ using RemsNG.ORM;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using RemsNG.Exceptions;
+using RemsNG.Security;
 
 namespace RemsNG.Controllers
 {

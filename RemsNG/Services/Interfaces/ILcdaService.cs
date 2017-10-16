@@ -20,6 +20,8 @@ namespace RemsNG.Services.Interfaces
         Task<List<Lgda>> byUsername(string username);
         Task<UserLcda> UserLcdaByIds(Guid lgdaId, Guid userId);
         Task<List<Lgda>> UserDomainByUserId(Guid id);
-        Task<List<UserLcda>> UserRoleDomainbyUserId(Guid id);
+        Task<List<Lgda>> UserRoleDomainbyUserId(Guid id);
+        Task<List<Lgda>> UnAssignUserDomainByUserId(Guid userid);
+        Task<bool> RemoveUserFromLCDA(UserLcda userLcda);
     }
 }

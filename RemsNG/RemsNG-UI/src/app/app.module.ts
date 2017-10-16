@@ -19,6 +19,8 @@ import { LCDAModule } from './lcda/lcda.module';
 import { WardModule } from './ward/ward.module';
 import { UserModule } from './user/user.module';
 import { RoleModule } from './role/role.module';
+import { StreetModule } from "./street/street.module";
+import { ItemModule } from "./items/item.module";
 
 
 const appRoutes: Routes = [
@@ -35,9 +37,9 @@ const appRoutes: Routes = [
         DashBoardModule,
         FormsModule,
         DomainModule,
-        WardModule, UserModule,
+        WardModule, UserModule,StreetModule,
         ToasterModule, LCDAModule, RoleModule,
-        BrowserAnimationsModule,
+        BrowserAnimationsModule,ItemModule,
         LaddaModule.forRoot({
             style: 'zoom-in',
             spinnerSize: 25,

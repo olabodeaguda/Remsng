@@ -24,8 +24,8 @@ export class UserProfileComponent implements OnInit{
 
     initializePage() {
         this.activeRoute.params.subscribe((param: any) => {
-            const val = atob(param['id']);
-            this.profileModel.id = val;
+            //const val = atob(param['id']);
+            this.profileModel.id = param['id'];
             this.getProfile(this.profileModel.id);
         });
     }

@@ -25,5 +25,6 @@ namespace RemsNG.Utilities
         public static string INACTIVE_USER = "16";
         public static string FORBIDDEN = "17";
         public static string DATABASE_ERROR = "18";
+        public static string INTERNAL_ERROR = "19";
     }
 }

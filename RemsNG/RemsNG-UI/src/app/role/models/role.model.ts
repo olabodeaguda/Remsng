@@ -1,6 +1,6 @@
 export class RoleModel {
     id: string = '';
-    roleName: string = '';
+    roleName: string = 'Nil';
     roleStatus: string = '';
     domainId: string = '';
     isErrMsg: boolean = false;

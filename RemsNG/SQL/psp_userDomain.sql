@@ -69,10 +69,27 @@ IF EXISTS(SELECT *
   AS
   BEGIN
 		select tbl_domain.* from tbl_domain
-		inner join tbl_userdomain on tbl_userdomain.domainid = tbl_domain.id
-		inner join tbl_users on tbl_users.id = tbl_userdomain.userid
-		where tbl_users.username = @username
+		inner join tbl_lcda on tbl_lcda.domainId = tbl_domain.id
+		inner join tbl_userlcda on tbl_userlcda.lgdaid = tbl_lcda.id
+		inner join tbl_users on tbl_users.id = tbl_userlcda.userid
+		where tbl_users.username =  @username
   END
   GO
-  
+   IF EXISTS(SELECT *
+          FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_getUserDomainByUserId') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_getUserDomainByUserId
+  GO
+  CREATE PROCEDURE sp_getUserDomainByUserId(
+  @userid uniqueidentifier
+  )
+  AS
+  BEGIN
+		select tbl_domain.* from tbl_domain
+		inner join tbl_lcda on tbl_lcda.domainId = tbl_domain.id
+		inner join tbl_userlcda on tbl_userlcda.lgdaid = tbl_lcda.id
+		inner join tbl_users on tbl_users.id = tbl_userlcda.userid
+		where tbl_users.username =  @userid and tbl_domain.domainStatus = 'Active'
+  END
+  GO
   

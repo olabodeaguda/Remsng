@@ -12,9 +12,9 @@ namespace RemsNG.ORM
         public string roleName { get; set; }
 
         [ForeignKey("lgda")]
-        public Guid domainId { get; set; }
+        public Nullable<Guid> domainId { get; set; }
         public string roleStatus { get; set; }
 
-        public Lgda lgda { get; set; }
+        public virtual Lgda lgda { get; set; }
     }
 }

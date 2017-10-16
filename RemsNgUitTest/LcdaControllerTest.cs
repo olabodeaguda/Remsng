@@ -11,7 +11,6 @@ namespace RemsNgUitTest
     {
         public void UserDomainsTest()
         {
-           
         }
     }
 }

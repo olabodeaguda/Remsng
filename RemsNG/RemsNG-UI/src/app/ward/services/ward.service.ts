@@ -45,4 +45,9 @@ export class WardService {
             id: wardModel.id
         }).catch(error => this.dataService.handleError(error));
      }
+
+     byId(id: string): Observable<Response>{
+         return this.dataService.get('ward/'+id).catch(x=> this.dataService.handleError(x));
+     }
+
 }

@@ -8,5 +8,7 @@ namespace RemsNG.ORM
         public Guid wardId { get; set; }
         public string streetName { get; set; }
         public int numberOfHouse { get; set; }
+        public string streetDescription { get; set; }
+        public string streetStatus { get; set; }
     }
 }

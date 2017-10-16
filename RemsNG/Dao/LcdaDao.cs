@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using RemsNG.Exceptions;
 using RemsNG.Models;
 using RemsNG.ORM;
@@ -12,8 +13,10 @@ namespace RemsNG.Dao
 {
     public class LcdaDao : AbstractDao
     {
-        public LcdaDao(RemsDbContext _db) : base(_db)
+        private readonly ILogger logger;
+        public LcdaDao(RemsDbContext _db, ILoggerFactory loggerFactory) : base(_db)
         {
+            this.logger = loggerFactory.CreateLogger("LCDA Dao");
         }
 
         public async Task<Lgda> Get(Guid id)
@@ -129,6 +132,23 @@ namespace RemsNG.Dao
         public async Task<List<UserLcda>> UserRoleDomainbyUserId(Guid id)
         {
             return await db.UserLcdas.Include("role").Where(x => x.userId == id).ToListAsync();
+        }
+
+        public async Task<List<Lgda>>  unAssignUserDomainByUserId(Guid userid)
+        {
+            return await db.lgdas.FromSql("sp_unAssignUserDomainByuserId @p0", new object[] { userid }).ToListAsync();
+        }
+
+        public async Task<bool> RemoveUserFromLCDA(UserLcda userLcda)
+        {
+            DbResponse dbResponse = await db.DbResponses.FromSql("sp_removeUserFromLCDA @p0, @p1", new object[] { userLcda.userId, userLcda.lgdaId}).FirstOrDefaultAsync();
+            if (dbResponse.success)
+            {
+                return true;
+            }
+
+            logger.LogError(dbResponse.msg, userLcda); //new object[] { userLcda.userId, userLcda.lgdaId });
+            return false;
         }
     }
 }

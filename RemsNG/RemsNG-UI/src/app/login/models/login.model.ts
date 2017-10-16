@@ -1,6 +1,5 @@
 export class LoginModel {
-    constructor() {
-    }
+    validatedUsername: string = '';
     username: string = '';
     pwd: string = '';
     isUsernameValid: boolean = false;

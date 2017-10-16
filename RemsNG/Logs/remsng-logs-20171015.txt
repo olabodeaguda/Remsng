@@ -1,0 +1,6 @@
+2017-10-15T13:15:35.4217054+01:00  [ERR] GlobalExceptionFilter (76c5463f)
+2017-10-15T13:16:21.2356703+01:00  [ERR] GlobalExceptionFilter (76c5463f)
+2017-10-15T14:14:33.8874026+01:00  [ERR] GlobalExceptionFilter (76c5463f)
+2017-10-15T18:30:33.6004321+01:00  [ERR] GlobalExceptionFilter (76c5463f)
+2017-10-15T18:33:58.8169752+01:00  [ERR] GlobalExceptionFilter (76c5463f)
+2017-10-15T19:17:08.7690608+01:00  [ERR] GlobalExceptionFilter (76c5463f)

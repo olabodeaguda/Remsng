@@ -13,6 +13,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using RemsNG.Utilities;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 
 namespace RemsNG.Services
 {
@@ -26,12 +27,12 @@ namespace RemsNG.Services
         private readonly UserDao userDao;
         private readonly PermissionDao permissionDao;
         public UserService(RemsDbContext _db,
-            IOptions<JwtIssuerOptions> _jwtOptions)
+            IOptions<JwtIssuerOptions> _jwtOptions, ILoggerFactory loggerFactory)
         {
             loginDao = new LoginDao(_db);
             domainDao = new DomainDao(_db);
-            roleDao = new RoleDao(_db);
-            lcdaDao = new LcdaDao(_db);
+            roleDao = new RoleDao(_db, loggerFactory);
+            lcdaDao = new LcdaDao(_db, loggerFactory);
             userDao = new UserDao(_db);
             permissionDao = new PermissionDao(_db);
             jwtOptions = _jwtOptions.Value;
@@ -45,23 +46,17 @@ namespace RemsNG.Services
             List<Claim> claimLst = new List<Claim>();
             if (user.username.ToLower() != "mos-admin")
             {
-                List<Lgda> uls = await lcdaDao.getLcdaByUsername(user.username);
-                if (uls.Count > 0)
-                {
-                    var selectedDomain = uls.FirstOrDefault();
-                    lcdaId = selectedDomain.id;
-                    if (selectedDomain != null)
-                    {
-                        Lgda ld = await lcdaDao.Get(lcdaId);
-                        domainName = ld.lcdaName;
-                    }
-                }
+                Lgda ld = await lcdaDao.Get(lcdaId);
 
-                role = await roleDao.GetUserDomainRoleByUsername(user.username, lcdaId);
-                if (role != null)
+                if (ld != null)
                 {
-                    List<Permission> permissionlst = await permissionDao.byRoleId(role.id);
-                    claimLst.AddRange(permissionlst.Select(x => new Claim(ClaimTypes.Role, x.permissionName)));
+                    domainName = ld.lcdaName;
+                    role = await roleDao.GetUserDomainRoleByUsername(user.username, lcdaId);
+                    if (role != null)
+                    {
+                        List<Permission> permissionlst = await permissionDao.byRoleId(role.id);
+                        claimLst.AddRange(permissionlst.Select(x => new Claim(ClaimTypes.Role, x.permissionName)));
+                    }
                 }
             }
             else
@@ -77,7 +72,7 @@ namespace RemsNG.Services
                 {
                      new Claim(ClaimTypes.NameIdentifier, user.username),
                             new Claim(ClaimTypes.Name, $"{user.surname} {user.firstname} {user.lastname}"),
-                            new Claim("Domain",JsonConvert.SerializeObject(lcdaId)),
+                            new Claim("Domain",lcdaId.ToString()),
                             new Claim("identity",EncryptDecryptUtils.ToHexString(user.id.ToString()))
                 });
 
@@ -101,7 +96,8 @@ namespace RemsNG.Services
                 fullname = $"{user.surname} {user.firstname} {user.lastname}",
                 userStatus = user.userStatus,
                 domainName = domainName,
-                role = role?.roleName
+                role = role?.roleName,
+                id=user.id
             };
         }
 

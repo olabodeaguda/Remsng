@@ -6,6 +6,8 @@ import { LaddaModule } from 'angular2-ladda';
 import { LcdaComponent } from './components/lcda.component';
 import { LcdaService } from './services/lcda.services';
 import { SharedModule } from '../shared/shared.module';
+import { ItemModule } from "../items/item.module";
+import { SectorModule } from "../sector/sector.module";
 
 const appRoutes: Routes = [
     { path: 'lcda', component: LcdaComponent }
@@ -16,8 +18,8 @@ const appRoutes: Routes = [
       BrowserModule,
       LaddaModule,
       FormsModule,
-      ReactiveFormsModule,
-      SharedModule,
+      ReactiveFormsModule,ItemModule,
+      SharedModule,SectorModule,
       RouterModule.forChild(appRoutes)
     ],
     declarations: [

@@ -1,3 +1,23 @@
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" #removeDomain>
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Remove Domain</h4>
+                </div>
+                <div class="modal-body clearfix">
+                    <div class="box-body">
+                       <p> You about to remove  {{profileModel.surname}} {{profileModel.firstname}} {{profileModel.lastname}} from domain
+                        <b>{{selectedDomain?.lcdaName}}</b>.Are you sure ?</p>
+                    </div>
+                    <div class="box-footer">
+                        <button [ladda]="selectedDomain.isLoading" type="button" class="btn btn-danger" (click)="roleAction('REMOVE_DOMAIN')">Remove</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" #removeRole>
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
@@ -11,7 +31,75 @@
                     <b>{{role?.roleName}}</b>.Are you sure ?
                 </div>
                 <div class="box-footer">
-                    <button [ladda]="isLoading" type="button" class="btn btn-danger" (click)="roleAction()">Remove</button>
+                    <button [ladda]="role.isLoading" type="button" class="btn btn-danger" (click)="roleAction('REMOVE_ROLE')">Remove</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" #assignrolemodal>
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Assign Role to
+                    <b style="font-size: 14px;">{{profileModel.surname}} {{profileModel.firstname}} {{profileModel.lastname}}</b>
+                </h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div class="box-body">
+                    <div class="form-group" *ngIf="lgdas.length > 1">
+                        <label for="roleId">Select Domain</label>
+                        <select name="roleId" class="form-control" [(ngModel)]="assignRoleModel.domainId" 
+                        (ngModelChange)="domainSelectedChange($event, 'ALL_DOMAINROLE')" >
+                        
+                            <option *ngFor="let data of lgdas;" [ngValue]="data.id">{{data.lcdaName}}</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="roleId">Select Role</label>
+                        <select name="roleId" class="form-control" [(ngModel)]="assignRoleModel.roleId">
+                            <option *ngFor="let data of roles;" [ngValue]="data.id">{{data.roleName}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <button [ladda]="assignRoleModel.isLoading" type="submit" class="btn btn-success" (click)="action('ASSIGN_ROLE')">Submit</button>
+                    <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" #assignlgda>
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Assign LCDA to
+                    <b style="font-size: 14px;">{{profileModel.surname}} {{profileModel.firstname}} {{profileModel.lastname}}</b>
+                </h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div [ngClass]="assigndomainmodel.errClass" *ngIf="assigndomainmodel.isErrMsg">
+                    {{assigndomainmodel.msg}}
+                </div>
+                <div class="box-body">
+                    <div class="form-group ">
+                        <label for="lgdaId">Select LGDA</label>
+                        <select name="lgdaId" class="form-control" [(ngModel)]="assigndomainmodel.lgdaId">
+                            <option *ngFor="let data of unassignDomainArray;" [ngValue]="data.id">{{data.lcdaName}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <button [ladda]="assigndomainmodel.isLoading" type="submit" class="btn btn-success" 
+                    (click)="action('ASSIGN_LGDA')">Submit</button>
+                    <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -20,28 +108,42 @@
 
 <div class="box box-primary">
     <div class="box-header with-border">
-        <h3 class="box-title">User Current Role</h3>
+        <h3 class="box-title">User Domain</h3>
     </div>
     <div class="box-body" style="height: 298px;">
         <div class="row">
             <div class="col-md-11">
                 <div class="form-group">
+                    <button class="btn btn-primary" (click)="open('ASSIGN_LGDA')">Assign Domain</button>
+                    <button class="btn btn-primary" (click)="open('ASSIGN_ROLE')">Assign Role</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
                     <label for="roleId">Select Domain</label>
-                    <select name="roleId" class="form-control" [(ngModel)]="role">
-                        <option *ngFor="let data of roles;" [ngValue]="data">{{data.lcdaName}}</option>
-                    </select>
+                    <div class="form-inline">
+                        <select style="width:70% !important;" name="roleId" class="form-control" [(ngModel)]="selectedDomain"
+                         (ngModelChange)="domainSelectedChange($event,'ALLUSER_DOMAINROLE')">
+                            <option *ngFor="let data of lgdas;" [ngValue]="data">{{data.lcdaName}}</option>
+                        </select>
+                        <button class="btn btn-danger" (click)="loadRemoveModal('REMOVE_DOMAIN')">
+                            <i class="fa fa-remove"></i> Remove Domain
+                        </button>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="roleId">Select Role</label>
-                    <select name="roleId" class="form-control" [(ngModel)]="role">
-                        <option *ngFor="let data of roles;" [ngValue]="data">{{data.roleName}}-({{data.domainName}})</option>
-                    </select>
+                    <label for="roleId">Current Role</label>
+                    <div class="form-inline">
+                        <input style="width:70% !important;" type="text" disabled="disabled" [(ngModel)]="selectRole.roleName" class="form-control" />
+                        <button class="btn btn-danger" (click)="loadRemoveModal('REMOVE_ROLE')">
+                            <i class="fa fa-remove"></i> Remove Role
+                        </button>
+                    </div>
                 </div>
-                <button class="btn btn-danger" (click)="loadRemoveModal()">
-                    <i class="fa fa-remove"></i>
-                </button>
             </div>
         </div>
     </div>
 </div>
-</div>
+<div class="loading" *ngIf="isLoading"></div>

@@ -55,9 +55,19 @@ namespace RemsNG.Dao
             });
         }
 
+        public async Task<List<Domain>> GetUserDomainByUsernameId(Guid id)
+        {
+            return await  db.Domains.FromSql("sp_getUserDomainByUserId @p0", new object[] { id }).ToListAsync();
+        }
+
         public async Task<Domain> byDomainId(Guid id)
         {
             return await db.Domains.FirstOrDefaultAsync(x => x.id == id);
+        }
+
+        public async Task<Domain> DomainbyLCDAId(Guid lcdaId)
+        {
+            return await db.Set<Domain>().FromSql("sp_domainbyLCDAId @p0",new object[] { lcdaId}).FirstOrDefaultAsync();
         }
 
         public async Task<Domain> byDomainCode(string domainCode)

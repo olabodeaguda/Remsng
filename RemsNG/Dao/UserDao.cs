@@ -109,16 +109,17 @@ namespace RemsNG.Dao
 
         public async Task<object> Paginated(Models.PageModel pageModel, Guid lcdaId)
         {
-            return await Task.Run(() =>
+            var results = await db.Users.FromSql("sp_domainUsers @p0, @p1, @p2", new object[] {
+                     lcdaId,
+                     pageModel.PageNum,
+                     pageModel.PageSize
+                }).ToListAsync();
+            var totalCount = await db.UserLcdas.Where(x => x.lgdaId == lcdaId).CountAsync();
+            return new
             {
-                var results = db.Users.Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToList();
-                var totalCount = db.Users.Count();
-                return new
-                {
-                    data = results,
-                    totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
-                };
-            });
+                data = results,
+                totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
+            };
         }
 
         public async Task<bool> ChangePwd(Guid id, string newPwd)
