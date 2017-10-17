@@ -41,6 +41,11 @@ namespace RemsNG.Services
             return await contactDao.Remove(contactDetail);
         }
 
+        public void sample(ref int x)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<bool> Update(ContactDetail contactDetail)
         {
             return await contactDao.Update(contactDetail);

@@ -91,7 +91,7 @@ namespace RemsNG.Controllers
         {
             if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
             {
-                pageSize = string.IsNullOrEmpty(pageSize) ? "1" : pageSize;
+                pageSize = string.IsNullOrEmpty(pageSize) ? "20" : pageSize;
                 pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
                 return await domainService.Paginated(new PageModel() { PageNum = int.Parse(pageNum), PageSize = int.Parse(pageSize) });
             }

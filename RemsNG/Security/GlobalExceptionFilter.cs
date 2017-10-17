@@ -13,6 +13,7 @@ namespace RemsNG.Security
     public class GlobalExceptionFilter : IExceptionFilter, IDisposable
     {
         private readonly ILogger _logger;
+        private ILoggerFactory loggerFactory;
 
         public GlobalExceptionFilter(ILoggerFactory logger)
         {
@@ -26,21 +27,20 @@ namespace RemsNG.Security
 
         public void Dispose()
         {
-            
+
         }
 
         public void OnException(ExceptionContext context)
         {
-            var response = new Response()
-            {
-                 description = context.Exception.Message,
-                 code = MsgCode_Enum.FAIL
-            };
+            var response = new Response();
+
+            ExceptionTranslator exceptionTranslator = new ExceptionTranslator(loggerFactory);
+            exceptionTranslator.Translate(context.HttpContext, context.Exception, response);
 
             context.Result = new ObjectResult(response)
             {
-                StatusCode = 500,
-                 DeclaredType = typeof(Response)
+                StatusCode = context.HttpContext.Response.StatusCode,
+                DeclaredType = typeof(Response)
             };
 
             this._logger.LogError("GlobalExceptionFilter", context.Exception);

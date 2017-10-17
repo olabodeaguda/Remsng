@@ -14,5 +14,6 @@ namespace RemsNG.Services.Interfaces
         Task<ContactDetail> ByContactValue(ContactDetail contactDetail);
         Task<ContactDetail> ById(Guid id);
         Task<bool> Remove(ContactDetail contactDetail);
+        void sample(ref int x);
     }
 }
