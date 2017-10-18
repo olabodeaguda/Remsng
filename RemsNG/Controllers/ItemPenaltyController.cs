@@ -14,7 +14,7 @@ using RemsNG.ORM;
 namespace RemsNG.Controllers
 {
     [Authorize]
-    [Route("api/itempenalty")]
+    [Route("api/v1/itempenalty")]
     public class ItemPenaltyController : Controller
     {
         private IItemPenaltyService itemPenaltyService;

@@ -113,6 +113,8 @@ namespace RemsNG.Services
             services.AddTransient<IStreetService, StreetService>();
             services.AddTransient<ISectorService, SectorService>();
             services.AddTransient<IItemService, ItemService>();
+            services.AddTransient<IItemPenaltyService, ItemPenaltyService>();
+            services.AddTransient<ITaxpayerCategoryService, TaxpayerCategoryService>();
         }
 
         public static IConfigurationSection jwtAppSettingOptions

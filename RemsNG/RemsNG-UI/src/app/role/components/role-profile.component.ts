@@ -126,21 +126,29 @@ export class RoleProfileComponent implements OnInit {
                 this.toasterService.pop('error', 'Error', 'Zero roles have been assign to this user');
                 return;
             }
+            else if(this.lgdas.length === 1){
+                const dId = this.lgdas[0].id;
+                this.GetRoleByDomainId(dId);
+            }
             this.assignRoleModel = new AssignRoleModel();
             jQuery(this.assignrolemodal.nativeElement).modal('show');
         }
     }
 
+    GetRoleByDomainId(domainId: string){
+        this.roleservice.roleByDomainId(domainId).subscribe(response => {
+            this.isLoading = false;
+            this.roles = Object.assign([], response.json());
+            this.assignRoleModel.roleId = null;
+        }, error => {
+            this.isLoading = false;
+        });
+    }
+
     domainSelectedChange(element: any, fromType: string) {
         this.isLoading = true;
         if (fromType === 'ALL_DOMAINROLE') {
-            this.roleservice.roleByDomainId(element).subscribe(response => {
-                this.isLoading = false;
-                this.roles = Object.assign([], response.json());
-                this.assignRoleModel.roleId = null;
-            }, error => {
-                this.isLoading = false;
-            });
+           this.GetRoleByDomainId(element);
         } else if (fromType === 'ALLUSER_DOMAINROLE') {
             this.selectedDomain = element;
             // get role assign to users in this domain
@@ -211,8 +219,7 @@ export class RoleProfileComponent implements OnInit {
                     if (result.code === '00') {
                         this.toasterService.pop('success', 'Success', result.description);
                         this.assignRoleModel = new AssignRoleModel();
-
-
+                        this.selectedDomain = new LcdaModel();
 
                         jQuery(this.assignrolemodal.nativeElement).modal('hide');
                     } else {

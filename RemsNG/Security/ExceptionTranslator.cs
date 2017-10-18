@@ -17,12 +17,13 @@ namespace RemsNG.Security
         private ILogger logger;
         public ExceptionTranslator(ILoggerFactory loggerFactory)
         {
-            logger = loggerFactory.CreateLogger("ExceptionTranslator");
+            if (loggerFactory != null)
+                logger = loggerFactory.CreateLogger("ExceptionTranslator");
         }
         public void Translate(HttpContext context, Exception exception, Response response)
         {
-             context.Response.ContentType = "application/json";
-            
+            context.Response.ContentType = "application/json";
+
             if (exception.GetType() == typeof(SecurityTokenValidationException) || exception.GetType() == typeof(UserValidationException))
             {
                 response.description = "Invalid token";
@@ -53,7 +54,7 @@ namespace RemsNG.Security
                 response.code = MsgCode_Enum.NOTFOUND;
                 context.Response.StatusCode = (int)HttpStatusCode.Conflict;
             }
-            else if(exception.GetType() == typeof(InvalidOperationException))
+            else if (exception.GetType() == typeof(InvalidOperationException))
             {
                 response.description = "An Internal error occur, Try again or contact administrator ";
                 response.code = MsgCode_Enum.INTERNAL_ERROR;

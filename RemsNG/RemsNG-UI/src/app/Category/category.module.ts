@@ -3,15 +3,12 @@ import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { BrowserModule} from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
 import { LaddaModule } from 'angular2-ladda';
-import { LcdaComponent } from './components/lcda.component';
-import { LcdaService } from './services/lcda.services';
 import { SharedModule } from '../shared/shared.module';
-import { ItemModule } from "../items/item.module";
-import { SectorModule } from "../sector/sector.module";
-import { CategoryModule } from "../Category/category.module";
+import { CategoryComponent } from "./components/category.component";
+import { CategoryService } from "./services/category.service";
 
 const appRoutes: Routes = [
-    { path: 'lcda', component: LcdaComponent }
+    { path: 'category/:id', component: CategoryComponent }
  ];
 
 @NgModule({
@@ -19,19 +16,18 @@ const appRoutes: Routes = [
       BrowserModule,
       LaddaModule,
       FormsModule,
-      ReactiveFormsModule,ItemModule,CategoryModule,
-      SharedModule,SectorModule,
+      ReactiveFormsModule,
+      SharedModule,
       RouterModule.forChild(appRoutes)
     ],
     declarations: [
-        LcdaComponent
+        CategoryComponent
     ],
-    providers: [ LcdaService],
+    providers: [ CategoryService],
     exports: [
-        LcdaComponent
+        CategoryComponent
     ]
   })
 
-export class LCDAModule {
-
+export class CategoryModule {
 }

@@ -31,6 +31,7 @@ namespace RemsNG.ORM
         public DbSet<Sector> Sectors { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<ItemPenalty> ItemPenalties { get; set; }
+        public DbSet<TaxpayerCategory> TaxPayersCategories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -48,6 +49,7 @@ namespace RemsNG.ORM
             modelBuilder.Entity<Street>().ToTable("tbl_street");
             modelBuilder.Entity<Sector>().ToTable("tbl_sector");
             modelBuilder.Entity<ItemPenalty>().ToTable("tbl_itempenalty");
+            modelBuilder.Entity<TaxpayerCategory>().ToTable("tbl_taxpayerCategory");
         }
     }
 }

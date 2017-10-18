@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace RemsNG.Controllers
 {
     [Authorize]
-    [Route("api/item")]
+    [Route("api/v1/item")]
     public class ItemController : Controller
     {
         IItemService itemService;

@@ -21,6 +21,7 @@ import { UserModule } from './user/user.module';
 import { RoleModule } from './role/role.module';
 import { StreetModule } from "./street/street.module";
 import { ItemModule } from "./items/item.module";
+import { CategoryModule } from "./Category/category.module";
 
 
 const appRoutes: Routes = [
@@ -37,7 +38,7 @@ const appRoutes: Routes = [
         DashBoardModule,
         FormsModule,
         DomainModule,
-        WardModule, UserModule,StreetModule,
+        WardModule, UserModule,StreetModule,CategoryModule,
         ToasterModule, LCDAModule, RoleModule,
         BrowserAnimationsModule,ItemModule,
         LaddaModule.forRoot({
