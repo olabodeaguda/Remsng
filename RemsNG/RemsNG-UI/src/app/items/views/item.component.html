@@ -97,7 +97,7 @@
                                             <a>|
                                                 <i class="fa fa-trash" (click)="open('CHANGE_STATUS',data)"></i>
                                             </a>
-                                            <a href="javascript:;">| Item Penalties
+                                            <a [routerLink]="['/itempenalty',data.id]">| Item Penalties
                                             </a>
                                         </td>
                                         <td>{{data.itemDescription}}</td>

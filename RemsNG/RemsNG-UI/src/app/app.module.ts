@@ -22,6 +22,7 @@ import { RoleModule } from './role/role.module';
 import { StreetModule } from "./street/street.module";
 import { ItemModule } from "./items/item.module";
 import { CategoryModule } from "./Category/category.module";
+import { ItemPenaltyModule } from "./item-penalty/itempenalty.module";
 
 
 const appRoutes: Routes = [
@@ -39,7 +40,7 @@ const appRoutes: Routes = [
         FormsModule,
         DomainModule,
         WardModule, UserModule,StreetModule,CategoryModule,
-        ToasterModule, LCDAModule, RoleModule,
+        ToasterModule, LCDAModule, RoleModule,ItemPenaltyModule,
         BrowserAnimationsModule,ItemModule,
         LaddaModule.forRoot({
             style: 'zoom-in',

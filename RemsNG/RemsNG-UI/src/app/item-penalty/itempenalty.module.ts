@@ -4,12 +4,11 @@ import { BrowserModule} from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
 import { LaddaModule } from 'angular2-ladda';
 import { SharedModule } from '../shared/shared.module';
-import { ItemService } from "./services/item.service";
-import { ItemComponent } from "./components/item.component";
-import { ItemPenaltyModule } from "../item-penalty/itempenalty.module";
+import { ItemPenaltyService } from "./services/item-penalty.service";
+import { ItemPenaltyComponent } from "./components/item-penalty.component";
 
 const appRoutes: Routes = [
-    { path: 'item/:id', component: ItemComponent }
+    { path: 'itempenalty/:id', component: ItemPenaltyComponent }
  ];
 
 @NgModule({
@@ -18,18 +17,18 @@ const appRoutes: Routes = [
       LaddaModule,
       FormsModule,
       ReactiveFormsModule,
-      SharedModule,ItemPenaltyModule,
+      SharedModule,
       RouterModule.forChild(appRoutes)
     ],
     declarations: [
-        ItemComponent
+        ItemPenaltyComponent
     ],
-    providers: [ ItemService],
+    providers: [ ItemPenaltyService],
     exports: [
-        ItemComponent
+        ItemPenaltyComponent
     ]
   })
 
-export class ItemModule {
+export class ItemPenaltyModule {
 
 }
