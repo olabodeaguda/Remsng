@@ -99,7 +99,7 @@ namespace RemsNG.Services
                 options =>
                 {
                     options.Filters.Add(new CorsAuthorizationFilterFactory("CorsPolicy"));
-                    options.Filters.Add(new GlobalExceptionFilter(loggerFactory));
+                    options.Filters.Add(new GlobalExceptionFilter());
                 });
             //builderException.AddMvcOptions(o => { o.Filters.Add(new GlobalExceptionFilter(loggerFactory)); });
             services.AddDbContext<RemsDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));

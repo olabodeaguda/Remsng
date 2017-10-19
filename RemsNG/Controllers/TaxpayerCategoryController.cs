@@ -108,7 +108,7 @@ namespace RemsNG.Controllers
         [HttpPut]
         public async Task<object> Put([FromBody]TaxpayerCategory taxpayerCategory)
         {
-            var r = await taxpayerCategoryService.GetByNameAndLcdaId(taxpayerCategory.lcdaId, taxpayerCategory.taxpayerCategoryName);
+            var r = await taxpayerCategoryService.GetById(taxpayerCategory.id);
             if (r == null)
             {
                 return NotFound(new Response()

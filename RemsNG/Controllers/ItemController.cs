@@ -102,6 +102,7 @@ namespace RemsNG.Controllers
 
             item.createdBy = User.Identity.Name;
             item.id = Guid.NewGuid();
+            item.itemStatus = UserStatus.ACTIVE.ToString();
 
             Response response = await itemService.Add(item);
 
@@ -111,6 +112,7 @@ namespace RemsNG.Controllers
         [HttpPut("{id}")]
         public async Task<object> Put(Guid id, [FromBody]Item item)
         {
+            var tu = itemService.GetItemByIdAsync(item.id);
             if (id == default(Guid))
             {
                 return BadRequest(new Response()
@@ -148,6 +150,8 @@ namespace RemsNG.Controllers
         [HttpPost]
         public async Task<object> ChangeStatus([FromBody] Item item)
         {
+
+
             if (item.id == default(Guid))
             {
                 return BadRequest(new Response()
@@ -156,12 +160,12 @@ namespace RemsNG.Controllers
                     description = "Select item is corrupt. Please reload page and try again else contact administrator"
                 });
             }
-            else if (string.IsNullOrEmpty(item.itemDescription))
+            else if (string.IsNullOrEmpty(item.itemStatus))
             {
                 return BadRequest(new Response()
                 {
                     code = MsgCode_Enum.FAIL,
-                    description = "item Description is required"
+                    description = "Item status is required"
                 });
             }
 

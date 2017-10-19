@@ -19,8 +19,8 @@ export class StorageService {
         }
         const usermodel: UserModel = new UserModel();
         usermodel.fullname = 'Anonymous';
-        this.usermodelEmit.emit(usermodel);
-        this.router.navigateByUrl('/login');
+        this.usermodelEmit.emit(usermodel);        
+        window.location.replace('/login');        
     }
     Save(usermodel: UserModel) {
         const val: string = localStorage.getItem(this.appsettings.tk);

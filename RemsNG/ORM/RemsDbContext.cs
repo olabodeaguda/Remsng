@@ -50,6 +50,7 @@ namespace RemsNG.ORM
             modelBuilder.Entity<Sector>().ToTable("tbl_sector");
             modelBuilder.Entity<ItemPenalty>().ToTable("tbl_itempenalty");
             modelBuilder.Entity<TaxpayerCategory>().ToTable("tbl_taxpayerCategory");
+            modelBuilder.Entity<Item>().ToTable("tbl_item");
         }
     }
 }

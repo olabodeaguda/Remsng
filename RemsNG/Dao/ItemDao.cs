@@ -18,7 +18,7 @@ namespace RemsNG.Dao
 
         public async Task<Response> Add(Item item)
         {
-            var r = db.Items.FirstOrDefaultAsync(x => x.itemDescription.ToLower() == item.itemDescription.ToLower()
+            var r = await db.Items.FirstOrDefaultAsync(x => x.itemDescription.ToLower() == item.itemDescription.ToLower()
             && item.lcdaId == x.lcdaId);
             if (r != null)
             {

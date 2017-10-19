@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
+using RemsNG.Exceptions;
 using RemsNG.Models;
 using RemsNG.Utilities;
 using System;
@@ -12,17 +13,8 @@ namespace RemsNG.Security
 {
     public class GlobalExceptionFilter : IExceptionFilter, IDisposable
     {
-        private readonly ILogger _logger;
-        private ILoggerFactory loggerFactory;
-
-        public GlobalExceptionFilter(ILoggerFactory logger)
+        public GlobalExceptionFilter()
         {
-            if (logger == null)
-            {
-                throw new ArgumentNullException(nameof(logger));
-            }
-
-            this._logger = logger.CreateLogger("Global Exception Filter");
         }
 
         public void Dispose()
@@ -34,16 +26,7 @@ namespace RemsNG.Security
         {
             var response = new Response();
 
-            ExceptionTranslator exceptionTranslator = new ExceptionTranslator(loggerFactory);
-            exceptionTranslator.Translate(context.HttpContext, context.Exception, response);
-
-            context.Result = new ObjectResult(response)
-            {
-                StatusCode = context.HttpContext.Response.StatusCode,
-                DeclaredType = typeof(Response)
-            };
-
-            this._logger.LogError("GlobalExceptionFilter", context.Exception);
+            throw new GlobalExceptionHandler(context.Exception.Message);
         }
     }
 }
