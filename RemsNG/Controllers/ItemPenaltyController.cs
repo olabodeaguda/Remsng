@@ -113,11 +113,13 @@ namespace RemsNG.Controllers
                 });
             }
 
+            itemPenalty.createdBy = User.Identity.Name;
+            itemPenalty.dateCreated = DateTime.Now;
+            itemPenalty.penaltyStatus = UserStatus.ACTIVE.ToString();
             Response response = await itemPenaltyService.Add(itemPenalty);
 
             return Ok(response);
         }
-
 
         [HttpPut]
         public async Task<object> Put([FromBody]ItemPenalty itemPenalty)

@@ -150,8 +150,6 @@ namespace RemsNG.Controllers
         [HttpPost]
         public async Task<object> ChangeStatus([FromBody] Item item)
         {
-
-
             if (item.id == default(Guid))
             {
                 return BadRequest(new Response()

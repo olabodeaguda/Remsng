@@ -18,10 +18,9 @@ namespace RemsNG.Dao
 
         public async Task<Response> Add(ItemPenalty item)
         {
-            var r = db.ItemPenalties.FirstOrDefaultAsync(x => x.duration == item.duration);
+            var r = await db.ItemPenalties.FirstOrDefaultAsync(x => x.duration == item.duration && item.itemId == x.itemId);
             if (r != null)
             {
-
                 throw new DuplicateException($"Penalty for duration {item.duration} already exist");
             }
 
@@ -81,13 +80,13 @@ namespace RemsNG.Dao
 
         public async Task<Response> UpdateStatus(ItemPenalty item)
         {
-            var r = await db.Items.FindAsync(new object[] { item.id });
+            var r = await db.ItemPenalties.FindAsync(new object[] { item.id });
             if (r == null)
             {
                 throw new NotFoundException($"Penalty does not exist");
             }
 
-            r.itemStatus = item.penaltyStatus;
+            r.penaltyStatus = item.penaltyStatus;
             r.lastmodifiedby = item.lastmodifiedby;
             r.lastModifiedDate = DateTime.Now;
 
