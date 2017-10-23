@@ -131,3 +131,21 @@ begin
 		select newid() as id,@msg as msg,@success as success
 end
 go
+
+IF EXISTS(SELECT *
+          FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_streetbyLcda') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_streetbyLcda
+GO
+create PROCEDURE sp_streetbyLcda
+(
+	@lcdaId uniqueidentifier
+)
+AS
+BEGIN
+	select tbl_street.* from tbl_street
+	inner join tbl_ward on tbl_ward.id = tbl_street.wardId
+	where tbl_ward.lcdaId = @lcdaId
+	order by tbl_street.streetName
+END
+

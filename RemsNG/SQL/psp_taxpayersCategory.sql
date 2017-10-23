@@ -5,8 +5,8 @@ IF NOT EXISTS(SELECT *
 CREATE TABLE tbl_taxpayerCategory
 (
 	id uniqueidentifier,
-	taxpayerCategoryName varchar(100) not null,
-	lcdaId uniqueidentifier not null foreign key references tbl_lcda(id),
+	taxpayerCategoryName varchar(100) not null PRIMARY KEY,
+	lcdaId uniqueidentifier not null unique,
 	createdBy varchar(100) not null,
 	dateCreated datetime not null default getDate(),
 	lastmodifiedby varchar(100),

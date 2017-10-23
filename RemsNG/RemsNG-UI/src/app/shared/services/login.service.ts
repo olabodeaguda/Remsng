@@ -10,7 +10,7 @@ export class LoginService {
     }
 
     GetUserDomain(username: string): Observable<Response> {
-        return this.dataService.get('lcda/byusername/' + username).catch(err => this.dataService.handleError(err));
+        return this.dataService.getWithoutHeader('lcda/byusername/' + username).catch(err => this.dataService.handleError(err));
     }
 
     SignIn(loginModel: LoginModel): Observable<Response> {
@@ -26,6 +26,6 @@ export class LoginService {
                 domainId: loginModel.domainId
            })));
         }
-        return this.dataService.post('user', {}).catch(err => this.dataService.handleError(err));
+        return this.dataService.postWithoutHeader('user', {}).catch(err => this.dataService.handleError(err));
     }
 }

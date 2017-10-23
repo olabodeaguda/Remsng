@@ -13,4 +13,6 @@ export class ProfileModel {
     isLoading: boolean = false;
     gender: string = '';
     isDisabled: boolean = true;
+    lcdaId: string = '';
+    msgFrom:string = '';
 }

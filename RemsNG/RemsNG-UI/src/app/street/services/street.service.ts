@@ -39,5 +39,10 @@ export class StreetService{
     changeStatus(streetmodel:StreetModel){
         return this.dataService.delete('street/'+streetmodel.id+"/"+streetmodel.streetStatus).catch(x=> this.dataService.handleError(x));
     }
+
+    bylcda(lcdaId: string)
+    {
+        return this.dataService.get('street/bylcda/'+lcdaId).catch(x=> this.dataService.handleError(x));
+    }
     
 }

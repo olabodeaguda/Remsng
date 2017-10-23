@@ -5,10 +5,11 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">{{streetModel.streetStatus === 'ACTIVE'?'Deactivate':'Approve'}} Street</h4>
             </div>
-            <div class="modal-body clearfix">               
+            <div class="modal-body clearfix">
                 <div class="box-body">
                     You are about to
-                    <b> {{streetModel.streetStatus === 'ACTIVE'?'deactivate':'approve'}}</b> {{streetModel.streetName}}. Are you sure?
+                    <b> {{streetModel.streetStatus === 'ACTIVE'?'deactivate':'approve'}}</b> {{streetModel.streetName}}. Are
+                    you sure?
                 </div>
                 <div class="box-footer">
                     <button [ladda]="streetModel.isLoading" type="submit" class="btn btn-success" (click)="actions()">Submit</button>
@@ -110,7 +111,7 @@
                                                             {{data.streetStatus === 'ACTIVE'?'Deactivate':'Approve'}}</a>
                                                     </li>
                                                     <li>
-                                                        <a (click)="open('ADD_TAXPAYERS',data)">
+                                                        <a [routerLink]="['/taxpayers',data.id]">
                                                             <i class="fa fa-user"></i>
                                                             TaxPayers</a>
                                                     </li>
@@ -124,7 +125,7 @@
                                         <td>{{data.streetStatus}}</td>
                                     </tr>
                                     <tr *ngIf="streetModels.length < 1">
-                                        <td style="width:100%" colspan="5">No record !!!</td>
+                                        <td style="width:100%" colspan="6">No record !!!</td>
                                     </tr>
                                 </tbody>
                                 <tfoot>

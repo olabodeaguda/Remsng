@@ -38,15 +38,15 @@ namespace RemsNG.Controllers
                 });
             }
 
-            User user = await userService.Get(id);
-            if (user == null)
-            {
-                return NotFound(new Response()
-                {
-                    code = MsgCode_Enum.NOTFOUND,
-                    description = "User not found"
-                });
-            }
+            //User user = await userService.Get(id);
+            //if (user == null)
+            //{
+            //    return NotFound(new Response()
+            //    {
+            //        code = MsgCode_Enum.NOTFOUND,
+            //        description = "User not found"
+            //    });
+            //}
 
             return await contactService.ByOwnerId(id);
         }

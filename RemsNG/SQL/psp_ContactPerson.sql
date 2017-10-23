@@ -1,7 +1,7 @@
 ﻿
 IF NOT EXISTS(SELECT *
               FROM sys.objects
-              WHERE object_id = OBJECT_ID(N'tbl_taxPayers') AND type IN (N'U'))
+              WHERE object_id = OBJECT_ID(N'tbl_contactPerson') AND type IN (N'U'))
 CREATE TABLE tbl_contactPerson
 (
 	id uniqueidentifier not null primary key,

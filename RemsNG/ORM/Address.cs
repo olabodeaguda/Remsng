@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RemsNG.ORM
 {
@@ -9,9 +7,10 @@ namespace RemsNG.ORM
     {
         public Guid id { get; set; }
         public string addressnumber { get; set; }
-        public Guid streetId { get; set; }
+        public Guid streetId { get; set; } // add index
+        public Guid ownerId { get; set; }
+        public Guid lcdaid { get; set; }
 
-
-        public Domain Domains { get; set; }
+        public string streetName { get; set; }
     }
 }

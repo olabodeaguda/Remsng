@@ -32,6 +32,11 @@ namespace RemsNG.ORM
         public DbSet<Item> Items { get; set; }
         public DbSet<ItemPenalty> ItemPenalties { get; set; }
         public DbSet<TaxpayerCategory> TaxPayersCategories { get; set; }
+        public DbSet<Taxpayer> Taxpayers { get; set; }
+        public DbSet<TaxpayerExtension> TaxpayerExtensions { get; set; }
+        public DbSet<Company> Companies { get; set; }
+        public DbSet<CompanyExt> CompanyExts { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -51,6 +56,8 @@ namespace RemsNG.ORM
             modelBuilder.Entity<ItemPenalty>().ToTable("tbl_itempenalty");
             modelBuilder.Entity<TaxpayerCategory>().ToTable("tbl_taxpayerCategory");
             modelBuilder.Entity<Item>().ToTable("tbl_item");
+            modelBuilder.Entity<Taxpayer>().ToTable("tbl_taxPayer");
+            modelBuilder.Entity<Company>().ToTable("tbl_company");
         }
     }
 }

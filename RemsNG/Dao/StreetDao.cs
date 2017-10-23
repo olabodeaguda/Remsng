@@ -126,5 +126,10 @@ namespace RemsNG.Dao
         {
             return await db.Streets.Where(x => x.wardId == wardId).CountAsync();
         }
+
+        public async Task<List<Street>> ByLcda(Guid lcdaId)
+        {
+            return await db.Streets.FromSql("sp_streetbyLcda @p0",new object[] { lcdaId }).ToListAsync();
+        }
     }
 }

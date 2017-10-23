@@ -101,7 +101,7 @@ namespace RemsNG.Services
                     options.Filters.Add(new CorsAuthorizationFilterFactory("CorsPolicy"));
                     options.Filters.Add(new GlobalExceptionFilter());
                 });
-            //builderException.AddMvcOptions(o => { o.Filters.Add(new GlobalExceptionFilter(loggerFactory)); });
+
             services.AddDbContext<RemsDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IDomainService, DomainService>();
@@ -115,6 +115,9 @@ namespace RemsNG.Services
             services.AddTransient<IItemService, ItemService>();
             services.AddTransient<IItemPenaltyService, ItemPenaltyService>();
             services.AddTransient<ITaxpayerCategoryService, TaxpayerCategoryService>();
+            services.AddTransient<ITaxpayerService, TaxpayerService>();
+            services.AddTransient<ICompany, CompanyService>();
+            services.AddTransient<IAddress, AddressService>(); 
         }
 
         public static IConfigurationSection jwtAppSettingOptions

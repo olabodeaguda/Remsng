@@ -59,7 +59,6 @@ export class WardComponent implements OnInit {
             const result = Object.assign(new ResponseModel(), response.json());
             if (result.code == '00') {
                 this.lgda = Object.assign(new LcdaModel(), result.data);
-                console.log(this.lgda);
                 this.getWard();
             }
         }, error => {

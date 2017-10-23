@@ -7,6 +7,7 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { SharedModule } from '../shared/shared.module';
 import { StreetComponent } from "./components/street.component";
 import { StreetService } from "./services/street.service";
+import { TaxPayersModule } from "../taxpayers/taxpayer.module";
 
 const appRoutes: Routes = [
     { path: 'street/:id', component: StreetComponent }
@@ -24,7 +25,7 @@ const appRoutes: Routes = [
     declarations: [
         StreetComponent
     ],
-    providers: [ StreetService],
+    providers: [ StreetService,TaxPayersModule],
     exports: [
         StreetComponent
     ]

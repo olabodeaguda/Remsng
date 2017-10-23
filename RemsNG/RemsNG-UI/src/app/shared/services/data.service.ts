@@ -27,34 +27,51 @@ export class DataService {
         this.headers.append(key, value);
     }
 
-    initialize() {
+    addBearer(){
         const tk: UserModel = this.storageService.get();
         if (tk !== null) {
             this.addToHeader('Authorization', 'Bearer ' + tk.tk);
         }
+    }
 
+    initialize() {
         this.options = new RequestOptions({
             responseType: ResponseContentType.Json,
             headers: this.headers
         });
     }
 
+    getWithoutHeader(url): Observable<Response> {
+        this.initialize();
+        return this.http.get(this.appConfig.BASE_URL + url, this.options);
+    }
+    
     get(url): Observable<Response> {
+        this.addBearer();
         this.initialize();
         return this.http.get(this.appConfig.BASE_URL + url, this.options);
     }
 
     post(url, body): Observable<Response> {
+        this.addBearer();
+        this.initialize();
+        return this.http.post(this.appConfig.BASE_URL + url, body, this.options);
+    }
+
+    
+    postWithoutHeader(url, body): Observable<Response> {
         this.initialize();
         return this.http.post(this.appConfig.BASE_URL + url, body, this.options);
     }
 
     put(url, body): Observable<Response> {
+        this.addBearer();
         this.initialize();
         return this.http.put(this.appConfig.BASE_URL + url, body, this.options);
     }
 
     delete(url): Observable<Response> {
+        this.addBearer();
         this.initialize();
         return this.http.delete(this.appConfig.BASE_URL + url, this.options);
     }
@@ -78,7 +95,7 @@ export class DataService {
         } else if (err.status == 500) {            
             return Observable.throw(res.description || 'You have not access to the selected page');
         } else if (err.status == 0) { 
-            this.storageService.remove();
+          //  this.storageService.remove();
             return Observable.throw(res.description || 'Connection to the server failed');
         } else if (err.status == 400) {
             return Observable.throw(res.description || 'Internal server error occur. Please contact administrator');

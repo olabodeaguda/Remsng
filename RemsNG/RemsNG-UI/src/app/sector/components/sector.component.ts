@@ -36,6 +36,7 @@ export class SectorComponent implements OnInit {
             this.getLcda(param["id"]);
         });
     }
+    
     getLcda(lcdaId: string) {
         this.isLoading = true;
         this.lcdaService.getLCdaById(lcdaId).subscribe(response => {

@@ -5,7 +5,7 @@ IF NOT EXISTS(SELECT *
 			CREATE TABLE tbl_contactDetail
 			(
 				id uniqueidentifier primary key,
-				ownerId uniqueidentifier foreign key references tbl_users(id),
+				ownerId uniqueidentifier not null,
 				contactValue varchar(100),
 				contactType varchar(100),
 				createdBy varchar(100) not null,

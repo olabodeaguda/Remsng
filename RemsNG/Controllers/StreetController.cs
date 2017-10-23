@@ -60,6 +60,13 @@ namespace RemsNG.Controllers
             return await streetService.ByWard(wardId);
         }
 
+        [Route("bylcda/{lcdaId}")]
+        [HttpGet]
+        public async Task<object> GetStreetBylcdaId(Guid lcdaId)
+        {
+            return await streetService.ByLcda(lcdaId);
+        }
+
         [HttpGet("{id}")]
         public async Task<object> Get(Guid id)
         {
@@ -155,5 +162,8 @@ namespace RemsNG.Controllers
             Response response = await streetService.ChangeStatus(id, status);
             return Ok(response);
         }
+
+
+
     }
 }

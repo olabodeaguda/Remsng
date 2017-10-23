@@ -14,11 +14,13 @@ namespace RemsNG.Services
     {
         private readonly LcdaDao lcdaDao;
         private readonly RoleDao roleDao;
+        private readonly TaxpayerDao taxpayerDao;
 
         public LcdaService(RemsDbContext _db, ILoggerFactory loggerFactory)
         {
             lcdaDao = new LcdaDao(_db,loggerFactory);
             roleDao = new RoleDao(_db, loggerFactory);
+            taxpayerDao = new TaxpayerDao(_db);
         }
 
         public async Task<List<Lgda>> ActiveLCDAByDomainId(Guid domainId)

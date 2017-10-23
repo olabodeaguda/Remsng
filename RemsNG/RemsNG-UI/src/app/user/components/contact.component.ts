@@ -1,4 +1,4 @@
-import { Component, Input, ElementRef, ViewChild, OnInit } from '@angular/core';
+import { Component, Input, ElementRef, ViewChild, OnInit, OnChanges, SimpleChanges, SimpleChange } from '@angular/core';
 import { ProfileModel } from "../models/profile.model";
 import { ContactModel } from "../models/contact.model";
 import { AppSettings } from "../../shared/models/app.settings";
@@ -14,8 +14,19 @@ declare var jQuery: any;
     templateUrl: '../views/contact.component.html'
 })
 
-export class ContactComponent implements OnInit {
-    @Input() profileModel: ProfileModel;
+export class ContactComponent implements OnChanges {
+    
+    private _profileModel: ProfileModel;
+  
+    @Input() set profileModel(value: ProfileModel){
+        this._profileModel = value;
+        this.getStreet(value.lcdaId);
+    }
+
+    get profileModel():ProfileModel{
+        return this._profileModel;
+    }
+
     contactModel: ContactModel;
     contactLst = [];
     @ViewChild('addModal') addModal: ElementRef;
@@ -26,8 +37,9 @@ export class ContactComponent implements OnInit {
         private contactService: ContactService) {
         this.contactModel = new ContactModel();
     }
-    ngOnInit() {
-        this.getContact();
+   
+    ngOnChanges(changes: SimpleChanges): void {
+        this.getContact(this._profileModel);
     }
 
     open(eventType: string, data: any) {
@@ -46,16 +58,20 @@ export class ContactComponent implements OnInit {
         this.contactModel.eventType = eventType;
     }
 
-    getContact() {
-        if (this.profileModel.id.length < 1) {
+    getContact(pf: ProfileModel) {
+        if (pf.id.length < 1) {
             return
         }
-        this.contactService.getContactsDetails(this.profileModel.id).subscribe(response => {
+        this.contactService.getContactsDetails(pf.id).subscribe(response => {
             this.contactLst = response.json();
         }, error => {
             this.toasterService.pop('error', 'Error', error);
         })
 
+    }
+
+    getStreet(lcdaId: string){
+        // console.log('in street '+lcdaId);
     }
 
     contactAction() {
@@ -83,7 +99,7 @@ export class ContactComponent implements OnInit {
                 const result: ResponseModel = Object.assign(new ResponseModel(), response.json());
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'Success', 'contact have been added');
-                    this.getContact();
+                    this.getContact(this.profileModel);
                 }
                 jQuery(this.addModal.nativeElement).modal('hide');
             }, error => {
@@ -97,7 +113,7 @@ export class ContactComponent implements OnInit {
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'Success', 'Updated was successful');
                     jQuery(this.addModal.nativeElement).modal('hide');
-                    this.getContact();
+                    this.getContact(this.profileModel);
                 }
                 jQuery(this.addModal.nativeElement).modal('hide');
             }, error => {
@@ -110,7 +126,7 @@ export class ContactComponent implements OnInit {
                 const result: ResponseModel = Object.assign(new ResponseModel(), response.json());
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'Success', result.description);
-                    this.getContact();
+                    this.getContact(this.profileModel);
                 }
                 jQuery(this.removeContact.nativeElement).modal('hide');
             }, error => {

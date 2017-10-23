@@ -23,6 +23,8 @@ import { StreetModule } from "./street/street.module";
 import { ItemModule } from "./items/item.module";
 import { CategoryModule } from "./Category/category.module";
 import { ItemPenaltyModule } from "./item-penalty/itempenalty.module";
+import { TaxPayersModule } from "./taxpayers/taxpayer.module";
+import { CompanyModule } from "./company/company.module";
 
 
 const appRoutes: Routes = [
@@ -41,7 +43,7 @@ const appRoutes: Routes = [
         DomainModule,
         WardModule, UserModule,StreetModule,CategoryModule,
         ToasterModule, LCDAModule, RoleModule,ItemPenaltyModule,
-        BrowserAnimationsModule,ItemModule,
+        BrowserAnimationsModule,ItemModule,TaxPayersModule,CompanyModule,
         LaddaModule.forRoot({
             style: 'zoom-in',
             spinnerSize: 25,

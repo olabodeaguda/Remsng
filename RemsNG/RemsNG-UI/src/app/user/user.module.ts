@@ -12,6 +12,8 @@ import { ContactComponent } from "./components/contact.component";
 import { AddContactComponent } from "./components/add-contact.component";
 import { ContactService } from "./services/contact.service";
 import { RoleModule } from "../role/role.module";
+import { AddressComponent } from "./components/address.component";
+import { AddressService } from "./services/address.service";
 
 const appRoutes: Routes = [
     { path: 'users', component: UserComponent },
@@ -28,12 +30,12 @@ const appRoutes: Routes = [
       RouterModule.forChild(appRoutes)
     ],
     declarations: [
-        UserComponent, UserProfileComponent,
+        UserComponent, UserProfileComponent,AddressComponent,
         ProfileComponent,ContactComponent,AddContactComponent
     ],
-    providers: [ UserService, ContactService],
+    providers: [ UserService, ContactService, AddressService],
     exports: [
-        UserComponent, UserProfileComponent, 
+        UserComponent, UserProfileComponent, AddressComponent,
         ProfileComponent, ContactComponent,AddContactComponent
     ]
   })

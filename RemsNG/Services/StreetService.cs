@@ -27,6 +27,11 @@ namespace RemsNG.Services
             return await streetDao.ById(streetId);
         }
 
+        public async Task<List<Street>> ByLcda(Guid lcdaId)
+        {
+            return await streetDao.ByLcda(lcdaId);
+        }
+
         public async Task<List<Street>> ByWard(Guid wardId)
         {
             return await streetDao.ByWard(wardId);

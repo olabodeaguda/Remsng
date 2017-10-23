@@ -10,6 +10,7 @@ import { ItemModule } from "../items/item.module";
 import { SectorModule } from "../sector/sector.module";
 import { CategoryModule } from "../Category/category.module";
 import { ItemPenaltyModule } from "../item-penalty/itempenalty.module";
+import { CompanyModule } from "../company/company.module";
 
 const appRoutes: Routes = [
     { path: 'lcda', component: LcdaComponent }
@@ -21,7 +22,7 @@ const appRoutes: Routes = [
       LaddaModule,
       FormsModule,
       ReactiveFormsModule,ItemModule,CategoryModule,
-      SharedModule,SectorModule,ItemPenaltyModule,
+      SharedModule,SectorModule,ItemPenaltyModule,CompanyModule,
       RouterModule.forChild(appRoutes)
     ],
     declarations: [
