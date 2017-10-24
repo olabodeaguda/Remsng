@@ -9,4 +9,11 @@ export class TaxpayerModel{
     createdBy: string = '';
     lastmodifiedby: string = '';
     lastModifiedDate: string = '';
+    streetNumber: string = '';
+    eventType:string = '';
+    isLoading:boolean = false;
+    isConfirmCompany:boolean = true;
+    surname: string ='';
+    firstname: string ='';
+    lastname: string ='';
 }

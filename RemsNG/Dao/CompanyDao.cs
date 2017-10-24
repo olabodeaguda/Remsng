@@ -128,5 +128,9 @@ namespace RemsNG.Dao
             };
         }
 
+        public async Task<List<Company>> ByStretId(Guid streetId)
+        {
+            return await db.Set<Company>().FromSql("sp_companyBystreetId @p0", new object[] { streetId }).ToListAsync();
+        }
     }
 }

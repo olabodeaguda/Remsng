@@ -37,6 +37,11 @@ namespace RemsNG.Services
             return await companyDao.ByLcda(lcdaId, pageModel);
         }
 
+        public async Task<List<Company>> ByStretId(Guid streetId)
+        {
+            return await companyDao.ByStretId(streetId);
+        }
+
         public async Task<Response> Update(Company company)
         {
             return await companyDao.Update(company);

@@ -34,7 +34,7 @@ namespace RemsNG.Security
             }
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+        public static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             Response response = new Response();
             ExceptionTranslator ex = new ExceptionTranslator(logger);

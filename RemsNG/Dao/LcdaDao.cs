@@ -150,5 +150,13 @@ namespace RemsNG.Dao
             logger.LogError(dbResponse.msg, userLcda); //new object[] { userLcda.userId, userLcda.lgdaId });
             return false;
         }
+
+        public async Task<Lgda> ByStreet(Guid streetId)
+        {
+            string query = $"select distinct tbl_lcda.* from tbl_lcda " +
+                $"inner join tbl_ward on tbl_ward.lcdaId = tbl_lcda.id  " +
+                $"inner join tbl_street on tbl_street.wardId = tbl_ward.id where tbl_street.id= '{streetId}'";
+            return await db.lgdas.FromSql(query).FirstOrDefaultAsync();
+        }
     }
 }

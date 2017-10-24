@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using RemsNG.Exceptions;
 using RemsNG.Models;
@@ -14,6 +15,8 @@ using RemsNG.ORM;
 using RemsNG.Security;
 using RemsNG.Services;
 using RemsNG.Utilities;
+using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -21,7 +24,7 @@ namespace RemsNG
 {
     public class Startup
     {
-//        private readonly ILogger _logger;
+        //        private readonly ILogger _logger;
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -57,26 +60,38 @@ namespace RemsNG
 
             app.Use(async (context, next) =>
             {
-                if (!context.User.Identity.IsAuthenticated)
-                {
-                    var result = await context.AuthenticateAsync(JwtBearerDefaults.AuthenticationScheme);
-                    if (result?.Principal != null)
-                    {
-                        context.User = result.Principal;
-                    }
-                }
-
-                await next.Invoke();
-            });
-
-            app.Use(async (context, next) =>
-            {
-                await next();
-                if (context.Response.StatusCode == 404 && !Path.HasExtension(context.Request.Path.Value)
+                if ((context.Response.StatusCode == 404 || !Path.HasExtension(context.Request.Path.Value))
                 && !context.Request.Path.Value.StartsWith("/api/"))
                 {
                     context.Request.Path = "/";
-                    await next();
+                }
+                else if (!context.User.Identity.IsAuthenticated)
+                {
+                    string token = context.Request.Headers["Authorization"];
+                    if (token != null)
+                    {
+                        try
+                        {
+                            token = token.Replace("Bearer ", "");
+                            SecurityToken validatedToken;
+                            JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+                            context.User = handler.ValidateToken(token, ServicesCollection.tokenValidationParameters(), out validatedToken);
+                            await next.Invoke();
+                            //var result = await context.AuthenticateAsync(JwtBearerDefaults.AuthenticationScheme);
+                            //if (result?.Principal != null)
+                            //{
+                            //    context.User = result.Principal;
+                            //}
+                        }
+                        catch (Exception ex)
+                        {
+                            await ErrorHandlingMiddleware.HandleExceptionAsync(context, ex);
+                        }
+                    }
+                    else
+                    {
+                        await next.Invoke();
+                    }
                 }
             });
 
@@ -93,6 +108,7 @@ namespace RemsNG
                         await context.Response.WriteAsync(result);
                     });
             });
+
 
             app.UseMiddleware(typeof(ErrorHandlingMiddleware));
             app.UseDefaultFiles();

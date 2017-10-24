@@ -17,6 +17,25 @@ CREATE TABLE tbl_company
 	lastModifiedDate [datetime] NULL
 )
 GO
+IF EXISTS(SELECT *
+          FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_companyBystreetId') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_companyBystreetId
+GO
+create procedure sp_companyBystreetId
+(
+	@streetId uniqueidentifier
+)
+as
+begin
+	
+	select distinct tbl_company.* from tbl_company
+inner join tbl_address on tbl_address.ownerId = tbl_company.id
+inner join tbl_street on tbl_street.id = tbl_address.streetId
+	where tbl_street.id = @streetId
 
+end
+
+GO
 
 

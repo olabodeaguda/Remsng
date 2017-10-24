@@ -15,6 +15,10 @@
                             <label for="permissionId">Sector Name</label>
                             <input name="sectorName" type="text" class="form-control" [(ngModel)]="sectorModel.sectorName" />
                         </div>
+                        <div class="form-group">
+                            <label for="prefix">Sector Prefix</label>
+                            <input name="prefix" type="text" class="form-control" [(ngModel)]="sectorModel.prefix" />
+                        </div>
                         <div class="box-footer">
                             <button [ladda]="sectorModel.isLoading" type="submit" class="btn btn-primary" (click)="actions()">Submit</button>
                         </div>
@@ -35,6 +39,11 @@
                 <small>Manage
                     <b> {{lcdaModel?.lcdaName}}</b> sector .</small>
             </h1>
+            <ol class="breadcrumb">
+                <li><a href="javascript:;"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li><a [routerLink]="['/lcda']">LCDA</a></li>
+                <li class="active">Sectors</li>
+              </ol>
         </section>
 
         <section class="content" style="border-style:thin">
@@ -54,6 +63,7 @@
                                     <tr>
                                         <th style="width:120px;"></th>
                                         <th>Sector Name</th>
+                                        <th>Prefix</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -64,6 +74,7 @@
                                             </a>
                                         </td>
                                         <td>{{data.sectorName}}</td>
+                                        <td>{{data.prefix}}</td>
                                     </tr>
                                     <tr *ngIf="sectors.length < 1">
                                         <td style="width:100%" colspan="5">No record !!!</td>

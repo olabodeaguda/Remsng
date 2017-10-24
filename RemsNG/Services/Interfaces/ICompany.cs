@@ -15,5 +15,6 @@ namespace RemsNG.Services.Interfaces
         Task<Company> ById(Guid id);
         Task<List<CompanyExt>> ByLcda(Guid lcdaId);
         Task<object> ByLcda(Guid lcdaId, PageModel pageModel);
+        Task<List<Company>> ByStretId(Guid streetId);
     }
 }

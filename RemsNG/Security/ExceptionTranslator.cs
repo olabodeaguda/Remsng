@@ -60,11 +60,18 @@ namespace RemsNG.Security
                 response.code = MsgCode_Enum.INTERNAL_ERROR;
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             }
-            if (exception.GetType() == typeof(DuplicateException))
+            else if (exception.GetType() == typeof(DuplicateException))
             {
                 response.description = exception.Message;
                 response.code = MsgCode_Enum.DUPLICATE;
                 context.Response.StatusCode = (int)HttpStatusCode.Conflict;
+            }
+
+            else if (exception.GetType() == typeof(DuplicateCompanyException))
+            {
+                response.description = exception.Message;
+                response.code = MsgCode_Enum.DUPLICATE_COMPANY;
+                context.Response.StatusCode = (int)HttpStatusCode.OK;
             }
             else
             {

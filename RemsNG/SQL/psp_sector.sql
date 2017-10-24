@@ -10,7 +10,8 @@ CREATE TABLE tbl_sector
 	createdBy varchar(100) not null,
 	dateCreated datetime not null default getDate(),
 	lastmodifiedby varchar(100),
-	lastModifiedDate datetime
+	lastModifiedDate datetime,
+	prefix varchar(50)
 )
 GO
 
@@ -24,7 +25,9 @@ create procedure sp_createSector
 (
 	@sectorName varchar(100),
 	@lcdaId uniqueidentifier,
-	@createdBy varchar(100))
+	@createdBy varchar(100),
+	@prefix varchar(20)
+	)
 as
 begin
 declare @msg varchar(250);
@@ -41,7 +44,7 @@ declare @success bit;
 	end
 	else
 	begin
-		insert into tbl_sector(id,sectorName,lcdaId,createdBy) values(NEWID(), @sectorName,@lcdaId,@createdBy);
+		insert into tbl_sector(id,sectorName,lcdaId,createdBy,prefix) values(NEWID(), @sectorName,@lcdaId,@createdBy,@prefix);
 		if @@ROWCOUNT > 0
 		begin
 			set @msg = 'Sector has been added successfully';
@@ -66,7 +69,9 @@ create procedure sp_updateSector
 (
 	@id uniqueidentifier,
 	@sectorName varchar(100),
-	@lastmodifiedBy varchar(100))
+	@lastmodifiedBy varchar(100),
+	@prefix varchar(20)
+	)
 as
 begin
 	declare @msg varchar(250);
@@ -78,7 +83,7 @@ begin
 	end
 	else
 	begin
-		update tbl_sector set sectorName=@sectorName,lastmodifiedby=@lastmodifiedBy, lastModifiedDate=GETDATE() where id=@id;
+		update tbl_sector set sectorName=@sectorName,lastmodifiedby=@lastmodifiedBy, lastModifiedDate=GETDATE(), prefix=@prefix where id=@id;
 		if @@ROWCOUNT > 0
 		begin
 			set @msg = 'Sector has been updated successfully';

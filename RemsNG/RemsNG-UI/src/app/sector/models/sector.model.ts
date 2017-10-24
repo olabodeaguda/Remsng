@@ -4,4 +4,5 @@ export class SectorModel{
     lcdaId: string = '';
     eventType: string = '';
     isLoading:boolean = false;
+    prefix: string = '';
 }

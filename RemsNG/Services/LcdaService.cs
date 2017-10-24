@@ -94,5 +94,10 @@ namespace RemsNG.Services
         {
             return await lcdaDao.RemoveUserFromLCDA(userLcda);
         }
+
+        public async Task<Lgda> ByStreet(Guid streetId)
+        {
+            return await lcdaDao.ByStreet(streetId);
+        }
     }
 }

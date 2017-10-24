@@ -40,6 +40,7 @@ IF EXISTS(SELECT *
 GO
 create PROCEDURE sp_addAddress
 (
+	@id uniqueidentifier,
 	@addressnumber varchar(100),
 	@streetId uniqueidentifier,
 	@ownerId uniqueidentifier,
@@ -51,7 +52,7 @@ BEGIN
 		declare @msg varchar(200);
 		declare @success bit;
 
-		if exists(select * from tbl_address where addressnumber = @addressnumber and streetId = @streetId)
+		if exists(select * from tbl_address where addressnumber = @addressnumber and streetId = @streetId and ownerId=@ownerId)
 		begin
 			set @msg = 'Address already exist';
 			set @success = 0;
@@ -59,11 +60,11 @@ BEGIN
 		else
 		begin
 			insert into tbl_address(id,addressnumber,streetId,createdBy,ownerId,dateCreated,lcdaid) 
-			values(NEWID(),@addressnumber,@streetId,@createdBy,@ownerId,GETDATE(),@lcdaId);
+			values(@id,@addressnumber,@streetId,@createdBy,@ownerId,GETDATE(),@lcdaId);
 			
 			if @@ROWCOUNT > 0
 			begin
-				set @msg = 'Address has been added success';
+				set @msg = 'Address has been added successfully';
 				set @success = 1;
 			end
 		end

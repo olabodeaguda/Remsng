@@ -18,7 +18,8 @@ export class SectorService {
     add(sector: SectorModel) {
         return this.dataservice.post('sector/', {
             lcdaId: sector.lcdaId,
-            sectorName: sector.sectorName
+            sectorName: sector.sectorName,
+            prefix: sector.prefix
         }).catch(x => this.dataservice.handleError(x));
     }
 
@@ -26,7 +27,8 @@ export class SectorService {
         return this.dataservice.put('sector/' + sector.id, {
             lcdaId: sector.lcdaId,
             sectorName: sector.sectorName,
-            id: sector.id
+            id: sector.id,
+            prefix: sector.prefix
         }).catch(x => this.dataservice.handleError(x));
     }
 }

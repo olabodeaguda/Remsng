@@ -66,16 +66,15 @@ namespace RemsNG.Services
                         Response response = new Response();
                         Exception except = context.Exception;
 
-                        //ExceptionTranslator ex = new ExceptionTranslator(loggerFactory);
-                        //ex.Translate(context.HttpContext, context.Exception, response);
-                        //var result = JsonConvert.SerializeObject(response);
-                        //Exception except = context.Exception;
-                        //context.Fail(result);
+                        ExceptionTranslator ex = new ExceptionTranslator(loggerFactory);
+                        ex.Translate(context.HttpContext, context.Exception, response);
+                        var result = JsonConvert.SerializeObject(response);
 
-                        return Task.FromException(except);
+                        context.Fail(result);
+
+                        return Task.FromException(except);// CompletedTask;
                     }
                 };
-
             });
 
             services.AddAuthorization(auth =>
@@ -99,7 +98,7 @@ namespace RemsNG.Services
                 options =>
                 {
                     options.Filters.Add(new CorsAuthorizationFilterFactory("CorsPolicy"));
-                    options.Filters.Add(new GlobalExceptionFilter());
+                    //options.Filters.Add(new GlobalExceptionFilter());
                 });
 
             services.AddDbContext<RemsDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -117,7 +116,7 @@ namespace RemsNG.Services
             services.AddTransient<ITaxpayerCategoryService, TaxpayerCategoryService>();
             services.AddTransient<ITaxpayerService, TaxpayerService>();
             services.AddTransient<ICompany, CompanyService>();
-            services.AddTransient<IAddress, AddressService>(); 
+            services.AddTransient<IAddress, AddressService>();
         }
 
         public static IConfigurationSection jwtAppSettingOptions

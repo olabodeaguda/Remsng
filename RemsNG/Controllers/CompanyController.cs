@@ -28,7 +28,32 @@ namespace RemsNG.Controllers
         [HttpGet]
         public async Task<object> Bylcda([FromRoute] Guid id)
         {
+            if (id == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                     code = MsgCode_Enum.FAIL,
+                      description = "Bad Request"
+                });
+            }
+
             return await companyService.ByLcda(id);
+        }
+
+        [Route("bystreet/{id}")]
+        [HttpGet]
+        public async Task<object> ByStreet([FromRoute] Guid id)
+        {
+            if (id == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Bad Request"
+                });
+            }
+
+            return await companyService.ByStretId(id);
         }
 
         [Route("bylcdapaging/{id}")]

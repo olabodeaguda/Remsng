@@ -1,3 +1,52 @@
+<div class="modal fade" role="dialog" id="addModal" #addModal>
+    <div class=" modal-dialog ">
+        <div class="modal-content " style="width:500px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">{{taxpayerModel.eventType}} Taxpayer</h4>
+            </div>
+            <form role="form">
+                <div class="modal-body clearfix ">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Fill in the details</h3>
+                        </div>
+                        <div class="form-group">
+                            <label for="surname">Surname</label>
+                            <input name="surname" type="text" class="form-control" [(ngModel)]="taxpayerModel.surname" />
+                        </div>  
+                        <div class="form-group">
+                            <label for="firstname">First Name</label>
+                            <input name="firstname" type="text" class="form-control" [(ngModel)]="taxpayerModel.firstname" />
+                        </div>  
+                        <div class="form-group">
+                            <label for="lastname">Last Name</label>
+                            <input name="lastname" type="text" class="form-control" [(ngModel)]="taxpayerModel.lastname" />
+                        </div>  
+                        <div class="form-group">
+                            <label for="streetNumber">Address Number</label>
+                            <input name="streetNumber" type="text" class="form-control" [(ngModel)]="taxpayerModel.streetNumber" />
+                        </div>                                             
+
+                        <div class="form-group">
+                            <label for="companyId">Select Company</label>
+                            <select id="companyId" name="lcdaId" class="form-control" [(ngModel)]="taxpayerModel.companyId">
+                                <option *ngFor="let data of companies;" [ngValue]="data.id">{{data.companyName}}</option>
+                            </select>
+                        </div>
+                        <div class="box-footer">
+                            <button [ladda]="taxpayerModel.isLoading" type="submit" class="btn btn-primary" (click)="actions()">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
 <div class="wrapper hold-transition skin-blue fixed sidebar-mini">
     <app-hd></app-hd>
     <app-sbar></app-sbar>
@@ -8,6 +57,11 @@
                 <small>Manage
                     <b> {{streetModel?.streetName}}</b>.</small>
             </h1>
+            <ol class="breadcrumb">
+                <li><a href="javascript:;"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li><a [routerLink]="['/street',streetModel.wardId]">Streets</a></li>
+                <li class="active">Taxpayers</li>
+              </ol>
         </section>
 
         <section class="content" style="border-style:thin">
@@ -27,7 +81,9 @@
                                     <tr>
                                         <th style="width:120px;"></th>
                                         <th style="width:50px;"></th>
+                                        <th>Taxpayers name</th>
                                         <th>company Name</th>
+                                        <th>Street Description</th>
                                         <th>Status</th>
                                         <th>Last Modified by</th>
                                         <th>Last Modified Date</th>
@@ -56,10 +112,12 @@
                                             </div>
                                         </td>
                                         <td>{{(pageModel.pageSize*(pageModel.pageNum - 1))+(i+1)}}</td>
+                                        <td>{{data.surname}} {{data.firstname}} {{data.lastname}}</td>
                                         <td>{{data.companyName}}</td>
+                                        <td>{{data.streetNumber}}, {{streetModel?.streetName}}</td>
                                         <td>{{data.taxpayerStatus}}</td>
-                                        <td>{{data.lastmodifiedby.length > 1? data.lastmodifiedby: data.createdBy}}</td>
-                                        <td>{{data.lastModifiedDate.length === '' ?data.lastModifiedDate :data.dateCreated}}</td>
+                                        <td>{{data.lastmodifiedby?.length > 1? data.lastmodifiedby: data.createdBy}}</td>
+                                        <td>{{(data.lastModifiedDate?.length === '' ?data.lastModifiedDate :data.dateCreated)| date}}</td>
                                     </tr>
                                     <tr *ngIf="taxpayers.length < 1">
                                         <td style="width:100%" colspan="6">No record !!!</td>

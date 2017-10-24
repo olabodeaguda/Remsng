@@ -82,6 +82,11 @@
                 <small>Manage
                     <b> {{item?.itemDescription}} </b> Penalty Items.</small>
             </h1>
+            <ol class="breadcrumb">
+                <li><a href="javascript:;"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li><a [routerLink]="['/item',item.lcdaId]">Items</a></li>
+                <li class="active">Item penalties</li>
+              </ol>
         </section>
 
         <section class="content" style="border-style:thin">

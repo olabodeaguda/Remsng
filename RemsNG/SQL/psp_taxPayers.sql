@@ -12,7 +12,10 @@ IF NOT EXISTS(SELECT *
 				dateCreated datetime default getDate(),
 				lastmodifiedby varchar(100),
 				lastModifiedDate datetime,
-				taxpayerStatus varchar(50)
+				taxpayerStatus varchar(50),
+				surname varchar(100),
+				firstname varchar(100),
+				lastname varchar(100)
 			  )
 			  GO
 
@@ -24,30 +27,28 @@ IF EXISTS(SELECT *
 GO
 create procedure sp_addTaxpayer
 (
+	@id uniqueidentifier,
 	@companyId varchar(200),
 	@streetId uniqueidentifier,
 	@addressId uniqueidentifier,
-	@categoryId uniqueidentifier,
-	@createdBy varchar(100)
+	@createdBy varchar(100),
+	@surname varchar(100),
+	@firstname varchar(100),
+	@lastname varchar(100)
 )
 as
 begin
 	declare @msg varchar(100);
 	declare @success bit;
-	if not exists(select * from tbl_address where id=@addressId)
-	begin
-		set @msg = 'Address does not exist';
-		set @success = 0;
-	end
-	else if not exists(select * from tbl_street where id = @streetId)
+	if not exists(select * from tbl_street where id = @streetId)
 	begin
 		set @msg = 'Street does not exist';
 		set @success = 0;
 	end
 	else
-	begin
-		insert into tbl_taxPayer(id,companyId,addressId,createdby,streetId) 
-		values(newid(),@companyId,@addressId,@createdBy,@streetId)
+	begin	
+		insert into tbl_taxPayer(id,companyId,addressId,createdby,streetId,surname,firstname,lastname) 
+		values(@id,@companyId,@addressId,@createdBy,@streetId,@surname,@firstname,@lastname)
 
 		if @@Rowcount > 0
 		begin
@@ -71,7 +72,14 @@ create procedure sp_TaxpayerById
 )
 as
 begin
-	select top 1 tbl_taxPayer.*,tbl_company.companyName as companyName from tbl_taxPayer 
+	declare @count int;
+
+	(select @count = Count(*) from tbl_taxPayer 
+	inner join tbl_address on tbl_address.ownerId = tbl_taxPayer.id
+	inner join tbl_company on tbl_company.id = tbl_taxPayer.companyId);
+
+	select tbl_taxPayer.*,tbl_company.companyName as companyName, tbl_Address.addressnumber as streetNumber,@count as totalSize from tbl_taxPayer 
+	inner join tbl_address on tbl_address.ownerId = tbl_taxPayer.id
 	inner join tbl_company on tbl_company.id = tbl_taxPayer.companyId
 	where tbl_taxPayer.id = @id
 
@@ -89,7 +97,8 @@ create procedure sp_TaxpayerByStreetId
 )
 as
 begin
-	select top 1 tbl_taxPayer.*,tbl_company.companyName as companyName from tbl_taxPayer 
+	select tbl_taxPayer.*,tbl_company.companyName as companyName,@count as totalSize,tbl_Address.addressnumber as streetNumber from tbl_taxPayer 
+	inner join tbl_address on tbl_address.id = ownerId.tbl_taxPayer.id
 	inner join tbl_company on tbl_company.id = tbl_taxPayer.companyId
 	where tbl_taxPayer.streetId = @streetId
 
@@ -109,13 +118,18 @@ create procedure sp_TaxpayerByStreetIdPaginated
 )
 as
 begin
+
+declare @count int;
+select @count = count(*) from tbl_taxPayer 
+	inner join tbl_company on tbl_company.id = tbl_taxPayer.companyId
+	where tbl_taxPayer.streetId = @streetId;
+
 IF @pageSize = 0 or @pageSize>100
             SET @pageSize = 100;
         IF @pageNum = 0
             SET @pageNum = 1;
-	select tbl_taxPayer.*,tbl_company.companyName as companyName,(select count(*) from tbl_taxPayer 
-	inner join tbl_company on tbl_company.id = tbl_taxPayer.companyId
-	where tbl_taxPayer.streetId = @streetId) as totalSize from tbl_taxPayer 
+	select tbl_taxPayer.*,tbl_company.companyName as companyName, tbl_Address.addressnumber as streetNumber,@count as totalSize from tbl_taxPayer 
+	inner join tbl_address on tbl_address.ownerId = tbl_taxPayer.id
 	inner join tbl_company on tbl_company.id = tbl_taxPayer.companyId
 	where tbl_taxPayer.streetId = @streetId
 	ORDER BY tbl_company.companyName desc
@@ -153,7 +167,10 @@ create procedure sp_updateTaxpayer
 	@companyId uniqueidentifier,
 	@streetId uniqueidentifier,
 	@addressId uniqueidentifier,
-	@lastmodifiedby varchar(100)
+	@lastmodifiedby varchar(100),
+	@surname varchar(100),
+	@firstname varchar(100),
+	@lastname varchar(100)	
 )
 as
 begin
@@ -164,15 +181,10 @@ begin
 		set @msg = 'Company does not exist';
 		set @success = 0;
 	end
-	else if exists(select * from  tbl_taxPayer where companyId=@companyId and id <> @id and streetId = @streetId)
-	begin
-		set @msg = 'Company already exist on the selected street';
-		set @success = 0;
-	end
 	else
 	begin
 		update tbl_taxPayer set companyId=@companyId,addressId=@addressId,lastmodifiedby=@lastmodifiedby,
-		streetId=@streetId,lastModifiedDate=getDate() where id=@id	
+		streetId=@streetId,lastModifiedDate=getDate(),surname=@surname, firstname=@firstname, lastname=@lastname where id=@id	
 
 		if @@Rowcount > 0
 		begin
@@ -256,13 +268,13 @@ IF @pageSize = 0 or @pageSize>100
 
 declare @count int;
 
-
-
-	select tbl_taxPayer.*,tbl_company.companyName as companyName,(select count(*) from tbl_taxPayer 
+(select @count = count(*) from tbl_taxPayer 
 	inner join tbl_company on tbl_company.id = tbl_taxPayer.companyId
 	inner join tbl_street on tbl_street.id = tbl_taxPayer.streetId
 	inner join tbl_ward on tbl_ward.id = tbl_street.wardId
-	where tbl_ward.lcdaId = @lcdaId) as totalSize from tbl_taxPayer 
+	where tbl_ward.lcdaId = @lcdaId)
+
+	select tbl_taxPayer.*,tbl_company.companyName as companyName, @count as totalSize from tbl_taxPayer 
 	inner join tbl_company on tbl_company.id = tbl_taxPayer.companyId
 	inner join tbl_street on tbl_street.id = tbl_taxPayer.streetId
 	inner join tbl_ward on tbl_ward.id = tbl_street.wardId

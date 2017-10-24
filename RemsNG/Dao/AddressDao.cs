@@ -19,7 +19,8 @@ namespace RemsNG.Dao
         public async Task<Response> Add(Address address)
         {
             DbResponse dbResponse = await db.Set<DbResponse>()
-                .FromSql("sp_addAddress @p0,@p1,@p2,@p3,@p4", new object[] {
+                .FromSql("sp_addAddress @p0,@p1,@p2,@p3,@p4, @p5", new object[] {
+                    address.id,
                     address.addressnumber,
                     address.streetId,
                     address.ownerId,

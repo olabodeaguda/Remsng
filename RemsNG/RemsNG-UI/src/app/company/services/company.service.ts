@@ -38,4 +38,8 @@ export class CompanyService {
         return this.dataservice.get('company/'+id).catch(x=> this.dataservice.handleError(x));
     }
 
+    byStreetId(id: string){
+        return this.dataservice.get('company/bystreet/'+id).catch(x=> this.dataservice.handleError(x));
+    }
+
 }

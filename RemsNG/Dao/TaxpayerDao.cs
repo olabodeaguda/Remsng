@@ -19,17 +19,21 @@ namespace RemsNG.Dao
 
         public async Task<Response> Create(Taxpayer taxpayer, bool confirmCompany)
         {
-            var r = db.Taxpayers.FirstOrDefaultAsync(x => x.streetId == taxpayer.streetId && x.companyId == taxpayer.companyId);
+            var r = await Get(taxpayer.streetId, taxpayer.companyId);
             if (r != null && confirmCompany)
             {
-                throw new DuplicateException("Company already exist on the street");
+                throw new DuplicateCompanyException("Company already exist on the street");
             }
 
-            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addTaxpayer", new object[] {
+            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addTaxpayer @p0,@p1,@p2,@p3,@p4", new object[] {
+                    taxpayer.id,
                     taxpayer.companyId,
                     taxpayer.streetId,
-                    taxpayer.addressId,
-                    taxpayer.createdBy
+                    taxpayer.addressId == null?Guid.Empty:taxpayer.addressId,
+                    taxpayer.createdBy,
+                    taxpayer.surname,
+                    taxpayer.firstname,
+                    taxpayer.lastname
             }).FirstOrDefaultAsync();
 
             if (dbResponse.success)
@@ -48,6 +52,11 @@ namespace RemsNG.Dao
                     description = "An error occur when creating the taxpayer. Please try again or inform your admnistrator for assitance"
                 };
             }
+        }
+
+        public async Task<object> Get(Guid streetId, Guid companyId)
+        {
+            return await db.Taxpayers.FromSql($"select tbl_taxPayer.*,'-1' as streetNumber from tbl_taxPayer where streetId = {streetId} and companyId={companyId}").FirstOrDefaultAsync();
         }
 
         public async Task<TaxpayerExtension> ById(Guid id)
@@ -83,12 +92,15 @@ namespace RemsNG.Dao
 
         public async Task<Response> Update(Taxpayer taxpayer)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_updateTaxpayer @p0,@p1,@p2,@p3,@p4", new object[] {
+            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_updateTaxpayer @p0,@p1,@p2,@p3,@p4,@p5,@p6,@p7", new object[] {
                     taxpayer.id,
                     taxpayer.companyId,
                     taxpayer.streetId,
                     taxpayer.addressId,
-                    taxpayer.lastmodifiedby
+                    taxpayer.lastmodifiedby,
+                    taxpayer.surname,
+                    taxpayer.firstname,
+                    taxpayer.lastname
             }).FirstOrDefaultAsync();
             Response response = new Response();
             response.description = dbResponse.msg;

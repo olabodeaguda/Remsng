@@ -66,6 +66,11 @@
                 <small>Manage
                     <b> {{lcdaModel?.lcdaName}}</b> Items.</small>
             </h1>
+            <ol class="breadcrumb">
+                <li><a href="javascript:;"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li><a [routerLink]="['/lcda']">LCDA</a></li>
+                <li class="active">Items</li>
+              </ol>
         </section>
 
         <section class="content" style="border-style:thin">

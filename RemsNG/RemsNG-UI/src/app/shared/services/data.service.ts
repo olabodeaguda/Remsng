@@ -85,12 +85,16 @@ export class DataService {
         if (err.status === 404) {
             return Observable.throw(res.description || 'Not found exception');
         } else if (err.status === 401) {
-            return Observable.throw(res.description || 'You have no access to the selected page');
-        } else if (err.status === 403) {         
             if (res.code === '09' || res.code == '10' || res.code === '11') {
                 this.toasterService.pop('error', res.description || 'You have no access to the selected page');  
                 this.storageService.remove();
             }
+            return Observable.throw(res.description || 'You have no access to the selected page');
+        } else if (err.status === 403) {   
+            if (res.code === '09' || res.code == '10' || res.code === '11') {
+                this.toasterService.pop('error', res.description || 'You have no access to the selected page');  
+                this.storageService.remove();
+            }                
             return Observable.throw(res.description || 'You have not access to the selected page');
         } else if (err.status == 500) {            
             return Observable.throw(res.description || 'You have not access to the selected page');

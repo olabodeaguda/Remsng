@@ -13,7 +13,7 @@ export class StorageService {
     remove() {
         const val = localStorage.getItem(this.appsettings.tk);
         if (val === null) {
-            return;
+            window.location.replace('/login');
         } else {
             localStorage.removeItem(this.appsettings.tk);
         }

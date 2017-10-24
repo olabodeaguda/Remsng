@@ -26,5 +26,6 @@ namespace RemsNG.Utilities
         public static string FORBIDDEN = "17";
         public static string DATABASE_ERROR = "18";
         public static string INTERNAL_ERROR = "19";
+        public static string DUPLICATE_COMPANY = "20";
     }
 }
