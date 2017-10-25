@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Hangfire;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -100,7 +101,7 @@ namespace RemsNG.Services
                     options.Filters.Add(new CorsAuthorizationFilterFactory("CorsPolicy"));
                     //options.Filters.Add(new GlobalExceptionFilter());
                 });
-
+            services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
             services.AddDbContext<RemsDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IDomainService, DomainService>();

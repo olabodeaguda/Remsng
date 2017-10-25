@@ -25,6 +25,8 @@ import { CategoryModule } from "./Category/category.module";
 import { ItemPenaltyModule } from "./item-penalty/itempenalty.module";
 import { TaxPayersModule } from "./taxpayers/taxpayer.module";
 import { CompanyModule } from "./company/company.module";
+import { DemandNoticeModule } from "./demand-notice/demand-notice.module";
+import { CompanyItemModule } from "./companyitems/companyitem.module";
 
 
 const appRoutes: Routes = [
@@ -42,8 +44,9 @@ const appRoutes: Routes = [
         FormsModule,
         DomainModule,
         WardModule, UserModule,StreetModule,CategoryModule,
-        ToasterModule, LCDAModule, RoleModule,ItemPenaltyModule,
+        ToasterModule, LCDAModule, RoleModule,ItemPenaltyModule,CompanyItemModule,
         BrowserAnimationsModule,ItemModule,TaxPayersModule,CompanyModule,
+        DemandNoticeModule,
         LaddaModule.forRoot({
             style: 'zoom-in',
             spinnerSize: 25,

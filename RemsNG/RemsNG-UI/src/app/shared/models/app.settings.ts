@@ -24,18 +24,30 @@ export class AppSettings {
 
     public domainStatus: string[] = ['ACTIVE', 'NOT_ACTIVE'];
 
-    validatEmail(value: string){
+    validatEmail(value: string) {
         const reg = new RegExp(this.emailPattern);
         return reg.test(value);
     }
 
-    validatePhoneNumber(value: string){    //2347039555295
-        const reg2:string = '^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{3,9}$';
+    validatePhoneNumber(value: string) {    //2347039555295
+        const reg2: string = '^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{3,9}$';
         const reg4 = new RegExp(reg2);
-        if(reg4.test(value)){
+        if (reg4.test(value)) {
             return true;
         }
         return false;
     }
-   
+
+    getYearList() {
+        const initalNum: number = 2017;
+        const nm: number = new Date().getFullYear();
+        let s: number[] = [];
+
+        for (let i: number = nm; i >= initalNum; i--) {
+            s.push(i);
+        }
+        return s;
+    }
+
+
 }

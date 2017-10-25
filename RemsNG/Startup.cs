@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using Hangfire;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -58,6 +59,9 @@ namespace RemsNG
             DbInitializer.Initialize(dbContext);
             app.UseCors("CorsPolicy");
 
+            app.UseHangfireServer();
+            app.UseHangfireDashboard();
+
             app.Use(async (context, next) =>
             {
                 if ((context.Response.StatusCode == 404 || !Path.HasExtension(context.Request.Path.Value))
@@ -76,12 +80,7 @@ namespace RemsNG
                             SecurityToken validatedToken;
                             JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
                             context.User = handler.ValidateToken(token, ServicesCollection.tokenValidationParameters(), out validatedToken);
-                            await next.Invoke();
-                            //var result = await context.AuthenticateAsync(JwtBearerDefaults.AuthenticationScheme);
-                            //if (result?.Principal != null)
-                            //{
-                            //    context.User = result.Principal;
-                            //}
+                            await next.Invoke();                         
                         }
                         catch (Exception ex)
                         {

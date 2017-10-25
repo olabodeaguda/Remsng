@@ -1,0 +1,123 @@
+<div class="wrapper hold-transition skin-blue fixed sidebar-mini">
+
+    <app-hd></app-hd>
+
+    <app-sbar></app-sbar>
+
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>
+                Demand Notice
+                <small>Manage Demand Notice.</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="javascript:;">
+                        <i class="fa fa-dashboard"></i> Home</a>
+                </li>
+                <li class="active">Demand Notice</li>
+            </ol>
+        </section>
+
+        <section class="content" style="border-style:thin">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h3 class="box-title">Demand Notice List</h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="form-group col-md-3">
+                                        <label for="wardId">Select Ward</label>
+                                        <select name="wardId" class="form-control" [(ngModel)]="searchModel.wardId">
+                                            <option *ngFor="let data of wardLst;" [ngValue]="data.id">{{data.wardName}}</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group col-md-3">
+                                        <label for="streetId">Select Street</label>
+                                        <select name="streetId" class="form-control" [(ngModel)]="searchModel.streetId">
+                                            <option *ngFor="let data of streetLst;" [ngValue]="data.id">{{data.streetName}}</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="dateYear">Select Year</label>
+                                        <select name="dateYear" class="form-control" [(ngModel)]="searchModel.dateYear">
+                                            <option *ngFor="let data of yrLst;" [ngValue]="data">{{data}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="form-group col-md-6">
+                                        <label for="streetId">Taxpayers Name</label>
+                                        <input class="form-control" type="text" [(ngModel)]="searchModel.searchByName" />
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="form-group col-sm-3" style="margin-left:13px;">
+                                        <button type="submit" class="btn btn-primary" (click)="action()">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <table class="table table-bordered table-hover">
+                                        <thead>
+                                            <th style="width:120px;"></th>
+                                            <th>XXXX</th>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let data of demandNoticeLst; let i=index">
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr *ngIf="demandNoticeLst.length < 1">
+                                                <td style="width:100%" colspan="6">No record !!!</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="5">
+                                                    <nav *ngIf="demandNoticeLst.length > 0">
+                                                        <ul class="pagination">
+                                                            <li>
+                                                                <a aria-label="Previous" (click)="previous()">
+                                                                    <span aria-hidden="true">Previous</span>
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a aria-label="Next" (click)="next()">
+                                                                    <span aria-hidden="true">Next </span>
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}} </span>
+                                                            </li>
+                                                        </ul>
+                                                    </nav>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <ft></ft>
+    <div class="loading" *ngIf="isLoading"></div>
