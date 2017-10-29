@@ -1,105 +1,115 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
-import { Http, Response, Headers, RequestOptions, ResponseContentType } from '@angular/http';
 import { Router } from '@angular/router';
 import { ToasterService } from 'angular2-toaster';
 import { AppSettings } from '../models/app.settings';
 import { ResponseModel } from '../models/response.model';
 import { StorageService } from './storage.service';
 import { UserModel } from '../models/user.model';
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { Headers, RequestOptions, ResponseContentType } from '@angular/http';
 
 @Injectable()
 export class DataService {
 
-    public headers: Headers;
     public options: RequestOptions;
+    public map: Map<string, string> = new Map<string, string>();
 
-    constructor(private http: Http, private router: Router,
+    constructor(private http: HttpClient, private router: Router,
         private appConfig: AppSettings, private toasterService: ToasterService,
         private storageService: StorageService) {
-        this.headers = new Headers({});
     }
 
     addToHeader(key: string, value: string) {
-        if (this.headers.get(key) != null) {
-            this.headers.delete(key);
+        if (this.map.get(key) != null) {
+            this.map.delete(key);
         }
-        this.headers.append(key, value);
+        
+        this.map.set(key, value);
     }
 
-    addBearer(){
+    addBearer() {
         const tk: UserModel = this.storageService.get();
+        this.addToHeader('Access-Control-Expose-Headers', '\"*\"');
         if (tk !== null) {
             this.addToHeader('Authorization', 'Bearer ' + tk.tk);
         }
     }
 
-    initialize() {
-        this.options = new RequestOptions({
-            responseType: ResponseContentType.Json,
-            headers: this.headers
+    getHeader() {
+        let headerObj = {};
+        this.map.forEach((v: string, k: string) => {
+            headerObj[k] = v;
         });
+        return headerObj; 
     }
 
     getWithoutHeader(url): Observable<Response> {
-        this.initialize();
-        return this.http.get(this.appConfig.BASE_URL + url, this.options);
+        return this.http.get(this.appConfig.BASE_URL + url, {
+            headers: new HttpHeaders(this.getHeader())
+        });
     }
-    
+
     get(url): Observable<Response> {
         this.addBearer();
-        this.initialize();
-        return this.http.get(this.appConfig.BASE_URL + url, this.options);
+        return this.http.get(this.appConfig.BASE_URL + url, {
+            headers: new HttpHeaders(this.getHeader())
+        });
     }
 
     post(url, body): Observable<Response> {
         this.addBearer();
-        this.initialize();
-        return this.http.post(this.appConfig.BASE_URL + url, body, this.options);
+        return this.http.post(this.appConfig.BASE_URL + url, body, {
+            headers: new HttpHeaders(this.getHeader())
+        });
     }
 
-    
+
     postWithoutHeader(url, body): Observable<Response> {
-        this.initialize();
-        return this.http.post(this.appConfig.BASE_URL + url, body, this.options);
+        return this.http.post(this.appConfig.BASE_URL + url, body, {
+            headers: new HttpHeaders(this.getHeader())
+        });
     }
 
     put(url, body): Observable<Response> {
         this.addBearer();
-        this.initialize();
-        return this.http.put(this.appConfig.BASE_URL + url, body, this.options);
+        return this.http.put(this.appConfig.BASE_URL + url, body, {
+            headers: new HttpHeaders(this.getHeader())
+        });
     }
 
     delete(url): Observable<Response> {
         this.addBearer();
-        this.initialize();
-        return this.http.delete(this.appConfig.BASE_URL + url, this.options);
+        return this.http.delete(this.appConfig.BASE_URL + url, {
+            headers: new HttpHeaders(this.getHeader())
+        });
     }
 
     translateResponse(result: any): ResponseModel {
         return Object.assign(new ResponseModel(), result);
     }
 
-    handleError(err: any) {  
-        const res = Object.assign(new ResponseModel(), err._body);
+    handleError(err: any) {
+        console.log(err.error);
+        const res = Object.assign(new ResponseModel(), err.error);
         if (err.status === 404) {
             return Observable.throw(res.description || 'Not found exception');
         } else if (err.status === 401) {
             if (res.code === '09' || res.code == '10' || res.code === '11') {
-                this.toasterService.pop('error', res.description || 'You have no access to the selected page');  
+                this.toasterService.pop('error', res.description || 'You have no access to the selected page');
                 this.storageService.remove();
             }
             return Observable.throw(res.description || 'You have no access to the selected page');
-        } else if (err.status === 403) {   
+        } else if (err.status === 403) {
             if (res.code === '09' || res.code == '10' || res.code === '11') {
-                this.toasterService.pop('error', res.description || 'You have no access to the selected page');  
+                this.toasterService.pop('error', res.description || 'You have no access to the selected page');
                 this.storageService.remove();
-            }                
+            }
             return Observable.throw(res.description || 'You have not access to the selected page');
-        } else if (err.status == 500) {            
+        } else if (err.status == 500) {
             return Observable.throw(res.description || 'You have not access to the selected page');
-        } else if (err.status == 0) { 
-          //  this.storageService.remove();
+        } else if (err.status == 0) {
+            //  this.storageService.remove();
             return Observable.throw(res.description || 'Connection to the server failed');
         } else if (err.status == 400) {
             return Observable.throw(res.description || 'Internal server error occur. Please contact administrator');
@@ -109,4 +119,6 @@ export class DataService {
             return Observable.throw(res.description || 'Connection to the server failed');
         }
     }
+
+
 }

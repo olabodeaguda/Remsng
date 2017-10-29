@@ -56,7 +56,7 @@ export class WardComponent implements OnInit {
     getLcda(id: string) {
         this.lcdaService.getLCdaById(id).subscribe(response => {
 
-            const result = Object.assign(new ResponseModel(), response.json());
+            const result = Object.assign(new ResponseModel(), response);
             if (result.code == '00') {
                 this.lgda = Object.assign(new LcdaModel(), result.data);
                 this.getWard();
@@ -70,7 +70,7 @@ export class WardComponent implements OnInit {
         this.isLoading = true;
 
         this.wardService.getWard(this.pageModel,this.lgda.id).subscribe(response => {
-            const result = response.json();
+            const result = response;
             const resultScheme = { data: [], totalPageCount: 0 };
             const responseD = Object.assign(resultScheme, result);
             if (responseD.data.length > 0) {
@@ -98,7 +98,7 @@ export class WardComponent implements OnInit {
         if (this.wardModel.eventType === this.appSettings.addMode) {
             this.wardService.addWard(this.wardModel).subscribe(response => {
                 this.wardModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'Success', result.description);
                     jQuery(this.addModal.nativeElement).modal('hide');
@@ -116,7 +116,7 @@ export class WardComponent implements OnInit {
         } else if (this.wardModel.eventType === this.appSettings.editMode) {
             this.wardModel.isLoading = false;
             this.wardService.editWard(this.wardModel).subscribe(response => {
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'Success', result.description);
                     jQuery(this.addModal.nativeElement).modal('hide');
@@ -135,7 +135,7 @@ export class WardComponent implements OnInit {
             this.wardModel.wardStatus = this.wardModel.wardStatus === 'ACTIVE' ? 'NOT_ACTIVE' : 'ACTIVE';
             this.wardService.changeStatusWard(this.wardModel).subscribe(response => {
                 this.wardModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'Success', result.description);
                     jQuery(this.changestatusModal.nativeElement).modal('hide');

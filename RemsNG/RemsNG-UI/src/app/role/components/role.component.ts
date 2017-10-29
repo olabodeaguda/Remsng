@@ -38,7 +38,7 @@ export class RoleComponent implements OnInit {
         this.roleService.getRoles(this.pageModel).subscribe(response => {
             this.isLoading = false;
             const resultSchema = { data: [], totalPageCount: 0 };
-            const result = Object.assign(resultSchema, response.json());
+            const result = Object.assign(resultSchema, response);
             this.pageModel.totalPageCount = result.totalPageCount;
             this.roleLst = result.data;
         },
@@ -52,7 +52,7 @@ export class RoleComponent implements OnInit {
         this.domainservice.CurrentDomain().subscribe(response => {
             this.roleModel.isLoading = false;
             const resultSchema = { isMosAdmin: false, domains: [] }
-            const res = Object.assign(new ResponseModel(), response.json());
+            const res = Object.assign(new ResponseModel(), response);
             const result = Object.assign(resultSchema, res.data);
             if (result.isMosAdmin) {
                 this.domainLst = result.domains;
@@ -69,7 +69,7 @@ export class RoleComponent implements OnInit {
             this.roleModel.isLoading = true;
             this.roleService.add(this.roleModel).subscribe(response => {
                 this.roleModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if(result.code === "00") {
                     jQuery(this.addModal.nativeElement).modal('hide');
                     this.toasterService.pop('success', 'Success',result.description);
@@ -138,7 +138,7 @@ export class RoleComponent implements OnInit {
     }
 
     notifyUI(response: Response){
-        const result = Object.assign(new ResponseModel(), response.json());
+        const result = Object.assign(new ResponseModel(), response);
         if(result.code === "00") {
             this.toasterService.pop('success', 'Success',result.description);
             this.getRoles();

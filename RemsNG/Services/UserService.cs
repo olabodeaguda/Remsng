@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using RemsNG.Utilities;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
+using RemsNG.Security;
 
 namespace RemsNG.Services
 {
@@ -97,8 +98,41 @@ namespace RemsNG.Services
                 userStatus = user.userStatus,
                 domainName = domainName,
                 role = role?.roleName,
-                id=user.id
+                id = user.id
             };
+        }
+
+        public string GetToken(Claim[] claim)
+        {
+            List<Claim> claimLst = new List<Claim>();
+
+            int logTime = int.TryParse(jwtOptions.logOutTIme, out logTime) ? logTime : 30;
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            claimLst.AddRange(new List<Claim>()
+                {
+                     new Claim(ClaimTypes.NameIdentifier, ClaimExtension.GetUsername(claim)),
+                            new Claim(ClaimTypes.Name, ClaimExtension.GetName(claim)),
+                            new Claim("Domain",ClaimExtension.GetDomainId(claim).ToString()),
+                            new Claim("identity",ClaimExtension.GetHexId(claim))
+                });
+
+            claimLst.AddRange(claim.Where(x => x.Type == ClaimTypes.Role));
+
+            var jwt = new SecurityTokenDescriptor
+            {
+                Issuer = jwtOptions.Issuer,
+                Audience = jwtOptions.Audience,
+                Subject = new ClaimsIdentity(claimLst),
+                Expires = DateTime.UtcNow.AddMinutes(logTime),
+                NotBefore = DateTime.UtcNow,
+                SigningCredentials = jwtOptions.SigningCredentials,
+                IssuedAt = DateTime.UtcNow,
+
+            };
+
+            return new JwtSecurityTokenHandler().WriteToken(tokenHandler.CreateToken(jwt));
         }
 
         public async Task<User> GetUserByUsername(string username)

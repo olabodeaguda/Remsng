@@ -38,7 +38,7 @@ export class CompanyProfileComponent implements OnInit{
 
     getCompany(coyId: string){
         this.companyservice.ById(coyId).subscribe(response=>{
-            this.companyModel = Object.assign(new CompanyModel(),response.json());          
+            this.companyModel = Object.assign(new CompanyModel(),response);          
             this.getLcda();
         },error=>{
             this.toasterService.pop('error','Error',error);
@@ -52,7 +52,7 @@ export class CompanyProfileComponent implements OnInit{
         this.isLoading = true;
         this.lcdaservice.getLCdaById(this.companyModel.lcdaId).subscribe(response => {
             this.isLoading = false;
-            const objSchema = Object.assign(new ResponseModel(), response.json());
+            const objSchema = Object.assign(new ResponseModel(), response);
             if (objSchema.code == '00') {
                 this.lcdaModel = objSchema.data;
             }

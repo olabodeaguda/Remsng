@@ -42,7 +42,7 @@ export class CoyMiniProfileComponent implements OnChanges {
         this.sectorService.getSectorByLcdaId(this.companyModel.lcdaId)
             .subscribe(response => {
                 this.isLoading = false;
-                this.sectors = response.json();
+                this.sectors = response;
             }, error => {
                 this.isLoading = false;
                 this.toasterService.pop('error', 'Error', error);
@@ -57,7 +57,7 @@ export class CoyMiniProfileComponent implements OnChanges {
         this.isLoading = true;
         this.categoryservice.getAll(this.companyModel.lcdaId).subscribe(response => {
             this.isLoading = false;
-            this.categories = response.json();
+            this.categories = response;
         }, error => {
             this.isLoading = false;
             this.toasterService.pop('error', 'Error', error);
@@ -66,7 +66,7 @@ export class CoyMiniProfileComponent implements OnChanges {
 
     getCompany(coyId: string,isToggle: boolean) {
         this.companyservice.ById(coyId).subscribe(response => {
-            this.companyModel = Object.assign(new CompanyModel(), response.json());
+            this.companyModel = Object.assign(new CompanyModel(), response);
             if(isToggle){
                 this.toggle();
             }
@@ -105,7 +105,7 @@ export class CoyMiniProfileComponent implements OnChanges {
         if (this.companyModel.eventType === 'EDIT' || this.companyModel.eventType === 'CANCEL') {
             this.companyservice.update(this.companyModel).subscribe(response => {
                 this.companyModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'Success', result.description);
                     this.getCompany(this.companyModel.id, true);                    

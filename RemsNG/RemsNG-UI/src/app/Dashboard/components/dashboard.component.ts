@@ -15,15 +15,15 @@ export class DashboardComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.loadScript('../assets/dist/js/adminlte.min.js');
+       // this.loadScript('../assets/dist/js/adminlte.min.js');
     }
 
     public loadScript(url) {
-        console.log('preparing to load...');
-        const node = document.createElement('script');
-        node.src = url;
-        node.type = 'text/javascript';
-        document.getElementsByTagName('head')[0].appendChild(node);
+        // console.log('preparing to load...');
+        // const node = document.createElement('script');
+        // node.src = url;
+        // node.type = 'text/javascript';
+        // document.getElementsByTagName('head')[0].appendChild(node);
      }
 
 }

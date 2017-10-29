@@ -42,7 +42,7 @@ export class StreetComponent implements OnInit {
         this.wardService.byId(id).subscribe(response => {
             this.isLoading = false;
             if (response.status === 200) {
-                this.wardmodel = Object.assign(new WardModel(), response.json());
+                this.wardmodel = Object.assign(new WardModel(), response);
                 this.getStreet();
             }
             else {
@@ -62,7 +62,7 @@ export class StreetComponent implements OnInit {
         this.streetservice.byWardIdpaginated(this.wardmodel.id, this.pageModel).subscribe(response => {
             this.isLoading = false;
             const objSchema = { data: [], totalPageCount: 0 };
-            const result = Object.assign(objSchema, response.json());
+            const result = Object.assign(objSchema, response);
             if(result.data.length > 0){
                 this.streetModels = Object.assign([], result.data)
                 this.pageModel.totalPageCount = (objSchema.totalPageCount % this.pageModel.pageSize > 0 ? 1 : 0) + Math.floor(objSchema.totalPageCount / this.pageModel.pageSize);
@@ -115,7 +115,7 @@ export class StreetComponent implements OnInit {
         if (this.streetModel.eventType === 'ADD') {
             this.streetservice.add(this.streetModel).subscribe(response => {
                 this.streetModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code == '00') {
                     this.getStreet();
                     this.toasterService.pop('success', 'Success', result.description);
@@ -128,7 +128,7 @@ export class StreetComponent implements OnInit {
         } else if (this.streetModel.eventType === 'EDIT') {
             this.streetservice.update(this.streetModel).subscribe(response => {
                 this.streetModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code == '00') {
                     this.getStreet();
                     this.toasterService.pop('success', 'Success', result.description);
@@ -143,7 +143,7 @@ export class StreetComponent implements OnInit {
             this.streetModel.streetStatus = this.streetModel.streetStatus === 'ACTIVE'?'NOT_ACTIVE':'ACTIVE';
             this.streetservice.changeStatus(this.streetModel).subscribe(response => {
                 this.streetModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code == '00') {
                     this.getStreet();
                     this.toasterService.pop('success', 'Success', result.description);

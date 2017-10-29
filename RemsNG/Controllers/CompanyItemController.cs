@@ -8,8 +8,6 @@ using RemsNG.Utilities;
 using RemsNG.Services.Interfaces;
 using RemsNG.ORM;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace RemsNG.Controllers
 {
     [Route("api/v1/companyitem")]
@@ -21,8 +19,8 @@ namespace RemsNG.Controllers
             companyItemService = _companyItemService;
         }
 
-        [HttpGet("bycompany/{id}")]
-        public async Task<object> ByCompany(Guid id)
+        [HttpGet("bytaxpayer/{id}")]
+        public async Task<object> ByCompany([FromRoute]Guid id, [FromHeader] string pageNum, [FromHeader] string pageSize)
         {
             if (id == default(Guid))
             {
@@ -33,7 +31,14 @@ namespace RemsNG.Controllers
                 });
             }
 
-            return await companyItemService.ByCompany(id);
+            pageSize = string.IsNullOrEmpty(pageSize) ? "20" : pageSize;
+            pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
+
+            return await companyItemService.ByTaxpayerpaginated(id, new PageModel()
+            {
+                PageNum = int.Parse(pageNum),
+                PageSize = int.Parse(pageSize)
+            });
         }
 
         [HttpGet("{id}")]
@@ -45,7 +50,7 @@ namespace RemsNG.Controllers
         [HttpPost]
         public async Task<object> Post([FromBody] CompanyItem companyItem)
         {
-            if (companyItem.companyId == default(Guid))
+            if (companyItem.taxpayerId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -89,7 +94,7 @@ namespace RemsNG.Controllers
         [HttpPut]
         public async Task<object> Put([FromBody]CompanyItem companyItem)
         {
-            if (companyItem.companyId == default(Guid))
+            if (companyItem.taxpayerId == default(Guid))
             {
                 return BadRequest(new Response()
                 {

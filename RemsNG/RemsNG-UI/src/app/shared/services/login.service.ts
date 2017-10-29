@@ -2,6 +2,7 @@ import { DataService } from './data.service';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
 import { LoginModel } from '../../login/models/login.model';
+import { HttpResponse } from "@angular/common/http";
 
 @Injectable()
 export class LoginService {
@@ -9,7 +10,7 @@ export class LoginService {
     constructor(private dataService: DataService) {
     }
 
-    GetUserDomain(username: string): Observable<Response> {
+    GetUserDomain(username: string) {
         return this.dataService.getWithoutHeader('lcda/byusername/' + username).catch(err => this.dataService.handleError(err));
     }
 

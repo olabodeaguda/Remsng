@@ -8,6 +8,7 @@ import { PageModel } from "../../shared/models/page.model";
 import { TaxpayerService } from "../services/taxpayer.service";
 import { CompanyService } from "../../company/services/company.service";
 import { ResponseModel } from "../../shared/models/response.model";
+import { ItemService } from "../../items/services/item.service";
 declare var jQuery: any;
 
 @Component({
@@ -30,7 +31,8 @@ export class TaxPayerComponent implements OnInit {
         private streetservice: StreetService,
         private taxpayerservice: TaxpayerService,
         private companyservice: CompanyService,
-        private toasterService: ToasterService) {
+        private toasterService: ToasterService,
+        private itemservice: ItemService) {
         this.taxpayerModel = new TaxpayerModel();
         this.streetModel = new StreetModel();
         this.pageModel = new PageModel();
@@ -54,7 +56,7 @@ export class TaxPayerComponent implements OnInit {
         this.isLoading = true;
         this.streetservice.byId(streetId).subscribe(response => {
             this.isLoading = false;
-            this.streetModel = Object.assign(new StreetModel(), response.json());
+            this.streetModel = Object.assign(new StreetModel(), response);
             this.getTaxpayersBystreet();
             this.getCompanies();
         }, error => {
@@ -66,7 +68,7 @@ export class TaxPayerComponent implements OnInit {
         this.isLoading = true;
         this.companyservice.byStreetId(this.streetModel.id).subscribe(response => {
             this.isLoading = false;
-            this.companies = Object.assign([], response.json());
+            this.companies = Object.assign([], response);
         }, error => {
             this.isLoading = false;
             this.toasterService.pop('error', 'Error', error);
@@ -82,7 +84,7 @@ export class TaxPayerComponent implements OnInit {
         this.taxpayerservice.byStreet(this.streetModel.id, this.pageModel).subscribe(response => {
             this.isLoading = false;
             const objSchema = { data: [], totalPageCount: 1 }
-            const result = Object.assign(objSchema, response.json());
+            const result = Object.assign(objSchema, response);
             this.taxpayers = result.data;
             this.pageModel.totalPageCount = result.totalPageCount;
         }, error => {
@@ -95,7 +97,7 @@ export class TaxPayerComponent implements OnInit {
             this.taxpayerModel = new TaxpayerModel();
             this.taxpayerModel.streetId = this.streetModel.id;
             jQuery(this.addModal.nativeElement).modal('show');
-        } else if(eventType == 'EDIT') {
+        } else if (eventType == 'EDIT') {
             this.taxpayerModel = data;
             console.log(data);
             jQuery(this.addModal.nativeElement).modal('show');
@@ -119,10 +121,10 @@ export class TaxPayerComponent implements OnInit {
         if (this.taxpayerModel.eventType == 'ADD') {
             this.taxpayerservice.add(this.taxpayerModel).subscribe(response => {
                 this.taxpayerModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.getTaxpayersBystreet();
-                    this.toasterService.pop('success','SUCCESS',result.description);
+                    this.toasterService.pop('success', 'SUCCESS', result.description);
                     jQuery(this.addModal.nativeElement).modal('hide');
                 } else if (result.code == '20') {
                     const res: boolean = confirm(result.description + '. Are you sure');
@@ -136,14 +138,14 @@ export class TaxPayerComponent implements OnInit {
                 this.taxpayerModel.isLoading = false;
                 this.toasterService.pop('error', 'Error', error);
             });
-        } else if(this.taxpayerModel.eventType == 'EDIT'){
+        } else if (this.taxpayerModel.eventType == 'EDIT') {
             this.taxpayerservice.update(this.taxpayerModel).subscribe(response => {
                 this.taxpayerModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
-                    this.toasterService.pop('success','SUCCESS',result.description);
+                    this.toasterService.pop('success', 'SUCCESS', result.description);
                     jQuery(this.addModal.nativeElement).modal('hide');
-                } 
+                }
             }, error => {
                 jQuery(this.addModal.nativeElement).modal('hide');
                 this.taxpayerModel.isLoading = false;

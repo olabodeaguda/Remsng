@@ -67,7 +67,7 @@ export class PermissionComponent implements OnInit {
         this.permissionService.getPermissionByROleId(this.roleModel.id, this.pageModel).subscribe(response => {
             this.isLoading = false;
             const objSchema = { data: [], totalCount: 0 };
-            const result = Object.assign(objSchema, response.json());
+            const result = Object.assign(objSchema, response);
             this.permissionLst = result.data;
             this.pageModel.totalPageCount = (objSchema.totalCount % this.pageModel.pageSize > 0 ? 1 : 0) + Math.floor(objSchema.totalCount / this.pageModel.pageSize);
         }, error => {
@@ -79,7 +79,7 @@ export class PermissionComponent implements OnInit {
         this.isLoading = true;
         this.permissionService.getPermissionNotInRole(this.roleModel.id).subscribe(response => {
             this.isLoading = false;
-            this.permissionDistinct = response.json();
+            this.permissionDistinct = response;
         }, error => {
             this.isLoading = false;
         });
@@ -90,7 +90,7 @@ export class PermissionComponent implements OnInit {
         this.isLoading = true;
         this.roleService.get(id).subscribe(response => {
             this.isLoading = false;
-            this.roleModel = Object.assign(new RoleModel(), response.json());
+            this.roleModel = Object.assign(new RoleModel(), response);
             this.getPermissionByRoleId();
             this.getPermissionNotInRole();
         }, error => {
@@ -144,7 +144,7 @@ export class PermissionComponent implements OnInit {
     }
 
     notifyUI(response: Response) {
-        const result = Object.assign(new ResponseModel(), response.json());
+        const result = Object.assign(new ResponseModel(), response);
         if (result.code === "00") {
             this.toasterService.pop('success', 'Success', result.description);
             this.getPermissionByRoleId();

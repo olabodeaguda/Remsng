@@ -9,7 +9,7 @@ import { ComponentItemComponent } from "./components/company-item.component";
 import { ComponentItemService } from "./services/company-item.service";
 
 const appRoutes: Routes = [
-    { path: 'companyitem/:id', component: ComponentItemComponent }
+    { path: 'companyitem/:streetid/:txid', component: ComponentItemComponent }
  ];
 
 @NgModule({

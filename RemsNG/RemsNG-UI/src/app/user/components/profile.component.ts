@@ -35,7 +35,7 @@ export class ProfileComponent {
         this.isLoading = true;
         this.userService.update(this.profileModel).subscribe(response => {
             this.isLoading = false;
-            const respD = Object.assign(new ResponseModel(), response.json());
+            const respD = Object.assign(new ResponseModel(), response);
             if(respD.code == '00'){
                 this.toasterService.pop('success','Success',respD.description)
                 this.toggle();

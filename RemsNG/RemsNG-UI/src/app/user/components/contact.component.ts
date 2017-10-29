@@ -63,7 +63,7 @@ export class ContactComponent implements OnChanges {
             return
         }
         this.contactService.getContactsDetails(pf.id).subscribe(response => {
-            this.contactLst = response.json();
+            this.contactLst = response;
         }, error => {
             this.toasterService.pop('error', 'Error', error);
         })
@@ -96,7 +96,7 @@ export class ContactComponent implements OnChanges {
         if (this.contactModel.eventType === this.appSettings.addMode) {
             this.contactService.addContact(this.contactModel).subscribe(response => {
                 this.contactModel.isLoading = false;
-                const result: ResponseModel = Object.assign(new ResponseModel(), response.json());
+                const result: ResponseModel = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'Success', 'contact have been added');
                     this.getContact(this.profileModel);
@@ -109,7 +109,7 @@ export class ContactComponent implements OnChanges {
         } else if (this.contactModel.eventType === this.appSettings.editMode) {
             this.contactService.update(this.contactModel).subscribe(response => {
                 this.contactModel.isLoading = false;
-                const result: ResponseModel = Object.assign(new ResponseModel(), response.json());
+                const result: ResponseModel = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'Success', 'Updated was successful');
                     jQuery(this.addModal.nativeElement).modal('hide');
@@ -123,7 +123,7 @@ export class ContactComponent implements OnChanges {
         } else if (this.contactModel.eventType === this.appSettings.removeMode) {
             this.contactService.remove(this.contactModel.id).subscribe(response => {
                 this.contactModel.isLoading = false;
-                const result: ResponseModel = Object.assign(new ResponseModel(), response.json());
+                const result: ResponseModel = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'Success', result.description);
                     this.getContact(this.profileModel);

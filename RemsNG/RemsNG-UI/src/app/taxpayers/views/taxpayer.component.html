@@ -83,7 +83,6 @@
                                         <th style="width:50px;"></th>
                                         <th>Taxpayers name</th>
                                         <th>company Name</th>
-                                        <th>Street Description</th>
                                         <th>Status</th>
                                         <th>Last Modified by</th>
                                         <th>Last Modified Date</th>
@@ -108,19 +107,23 @@
                                                             <i class="fa fa-user"></i>
                                                             Profile</a>
                                                     </li>
+                                                    <li>
+                                                        <a [routerLink]="['/companyitem',streetModel.id,data.id]">
+                                                            <i class="fa fa-user"></i>
+                                                            Items</a>
+                                                    </li>
                                                 </ul>
                                             </div>
                                         </td>
                                         <td>{{(pageModel.pageSize*(pageModel.pageNum - 1))+(i+1)}}</td>
                                         <td>{{data.surname}} {{data.firstname}} {{data.lastname}}</td>
                                         <td>{{data.companyName}}</td>
-                                        <td>{{data.streetNumber}}, {{streetModel?.streetName}}</td>
                                         <td>{{data.taxpayerStatus}}</td>
                                         <td>{{data.lastmodifiedby?.length > 1? data.lastmodifiedby: data.createdBy}}</td>
                                         <td>{{(data.lastModifiedDate?.length === '' ?data.lastModifiedDate :data.dateCreated)| date}}</td>
                                     </tr>
                                     <tr *ngIf="taxpayers.length < 1">
-                                        <td style="width:100%" colspan="6">No record !!!</td>
+                                        <td style="width:100%" colspan="9">No record !!!</td>
                                     </tr>
                                 </tbody>
                                 <tfoot>

@@ -9,7 +9,6 @@ using RemsNG.Utilities;
 using RemsNG.ORM;
 using Microsoft.AspNetCore.Authorization;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace RemsNG.Controllers
 {
@@ -36,6 +35,22 @@ namespace RemsNG.Controllers
                 });
             }
             return Ok(await itemService.ListByLcdaId(lcdaId));
+        }
+
+        [Route("byTaxpayer/{tyId}")]
+        [HttpGet]
+        public async Task<object> ByTaxpayer([FromRoute] Guid tyId)
+        {
+            if (tyId == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Bad Request"
+                });
+            }
+
+            return Ok(await itemService.GetByTaxPayersId(tyId));
         }
 
         [Route("bylcdapaginated/{lcdaId}")]

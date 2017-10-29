@@ -32,7 +32,7 @@ export class UserProfileComponent implements OnInit{
 
     getProfile(id:string){      
         this.userService.get(id).subscribe(response=>{
-            const result = response.json();
+            const result = response;
             if(result.code === '00'){
                 this.profileModel = result.data;
                 this.profileModel.eventType = 'Edit';

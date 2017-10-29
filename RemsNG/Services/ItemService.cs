@@ -17,9 +17,15 @@ namespace RemsNG.Services
         {
             itemDao = new ItemDao(remsDb);
         }
+
         public async Task<Response> Add(Item item)
         {
             return await itemDao.Add(item);
+        }
+
+        public async Task<object> GetByTaxPayersId(Guid taxpayersId)
+        {
+            return await itemDao.GetByTaxPayersId(taxpayersId);
         }
 
         public async Task<object> GetItemByIdAsync(Guid id)

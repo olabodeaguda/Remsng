@@ -68,7 +68,7 @@ export class RoleProfileComponent implements OnInit {
 
     getCurrentUserDomain() {
         this.lcdaservice.getLcdaByuserId(this.profileModel.id).subscribe(response => {
-            const resp = Object.assign(new ResponseModel(), response.json());
+            const resp = Object.assign(new ResponseModel(), response);
             this.lgdas = Object.assign([], resp);
         }, error => {
             this.toasterService.pop('error', 'Error', error);
@@ -81,7 +81,7 @@ export class RoleProfileComponent implements OnInit {
             this.roleservice.removeRole(this.profileModel.id, this.selectRole.id)
                 .subscribe(response => {
                     this.role.isLoading = false;
-                    const resp = Object.assign(new ResponseModel(), response.json());
+                    const resp = Object.assign(new ResponseModel(), response);
                     if (resp.code == '00') {
                         this.getCurrentUserDomain();
                         this.selectRole = new RoleModel();
@@ -98,7 +98,7 @@ export class RoleProfileComponent implements OnInit {
             this.lcdaservice.removeUserFromLCDA(this.selectedDomain.id, this.profileModel.id)
                 .subscribe(responnse => {
                     this.selectedDomain.isLoading = false;
-                    const result = Object.assign(new ResponseModel(), responnse.json());
+                    const result = Object.assign(new ResponseModel(), responnse);
                     if (result.code == '00') {
                         this.getCurrentUserDomain();
                         this.toasterService.pop('success', 'Success', result.description);
@@ -138,7 +138,7 @@ export class RoleProfileComponent implements OnInit {
     GetRoleByDomainId(domainId: string){
         this.roleservice.roleByDomainId(domainId).subscribe(response => {
             this.isLoading = false;
-            this.roles = Object.assign([], response.json());
+            this.roles = Object.assign([], response);
             this.assignRoleModel.roleId = null;
         }, error => {
             this.isLoading = false;
@@ -156,7 +156,7 @@ export class RoleProfileComponent implements OnInit {
                 response => {
                     this.isLoading = false;
                     const schema = { code: '', data: new RoleModel() };
-                    const resp = Object.assign(schema, response.json());
+                    const resp = Object.assign(schema, response);
                     if (resp.code === '00') {                        
                         if(resp.data !== null){
                             this.selectRole = resp.data;         
@@ -175,7 +175,7 @@ export class RoleProfileComponent implements OnInit {
         this.isLoading = true;
         this.lcdaservice.unAssignedDomainToUserbyUserId(this.profileModel.id).subscribe(response => {
             this.isLoading = false;
-            const result = Object.assign(new ResponseModel(), response.json());
+            const result = Object.assign(new ResponseModel(), response);
             if (result.code === "00") {
                 this.unassignDomainArray = result.data;
                 jQuery(this.assignlgdaModal.nativeElement).modal('show');
@@ -194,7 +194,7 @@ export class RoleProfileComponent implements OnInit {
             this.assigndomainmodel.userId = this.profileModel.id;
             this.lcdaservice.assignLGDAToUser(this.assigndomainmodel).subscribe(response => {
                 this.profileModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.getCurrentUserDomain();
                     this.toasterService.pop('success', 'Success', result.description);
@@ -215,7 +215,7 @@ export class RoleProfileComponent implements OnInit {
             this.roleservice.assignRoleTouser(this.assignRoleModel).subscribe(
                 response => {
                     this.assignRoleModel.isLoading = false;
-                    const result = Object.assign(new ResponseModel(), response.json());
+                    const result = Object.assign(new ResponseModel(), response);
                     if (result.code === '00') {
                         this.toasterService.pop('success', 'Success', result.description);
                         this.assignRoleModel = new AssignRoleModel();

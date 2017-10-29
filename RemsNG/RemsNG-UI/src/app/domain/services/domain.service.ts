@@ -10,19 +10,19 @@ export class DomainService {
     constructor(private dataService: DataService) {
     }
 
-    all(pageModel: PageModel): Observable<Response> {
+    all(pageModel: PageModel) {
         this.dataService.addToHeader('pageSize', pageModel.pageSize.toString());
         this.dataService.addToHeader('pageNum', pageModel.pageNum.toString());
        return this.dataService.get('domain/all').catch(
             error => this.dataService.handleError(error));
     }
 
-    CurrentDomain(): Observable<Response> {
+    CurrentDomain() {
        return this.dataService.get('domain/currentdomain').catch(
             error => this.dataService.handleError(error));
     }
 
-    activeDomains(): Observable<Response> {
+    activeDomains(){
        return this.dataService.get('domain/activeDomain').catch(
             error => this.dataService.handleError(error));
     }

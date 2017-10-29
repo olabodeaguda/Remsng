@@ -137,7 +137,7 @@ export class UserComponent implements OnInit {
     getAllDomainRole(username: string, loadview: boolean) {
         this.isLoading = true;
         this.roleservice.getAllDomainRoles(username).subscribe(response => {
-            this.roles = Object.assign([], response.json());
+            this.roles = Object.assign([], response);
             this.isLoading = false;
         },
             error => {
@@ -174,7 +174,7 @@ export class UserComponent implements OnInit {
         if (this.profileModel.eventType === this.appSettings.addMode) {
             this.userService.add(this.profileModel).subscribe(response => {
                 this.profileModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'Success', result.description);
                     jQuery(this.addModal.nativeElement).modal('hide');
@@ -192,7 +192,7 @@ export class UserComponent implements OnInit {
         } else if (this.profileModel.eventType === this.appSettings.editMode) {
             this.profileModel.isLoading = false;
             this.userService.update(this.profileModel).subscribe(response => {
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'Success', result.description);
                     jQuery(this.addModal.nativeElement).modal('hide');
@@ -211,7 +211,7 @@ export class UserComponent implements OnInit {
             this.profileModel.userStatus = this.profileModel.userStatus === 'ACTIVE' ? 'NOT_ACTIVE' : 'ACTIVE';
             this.userService.changeStatus(this.profileModel).subscribe(response => {
                 this.profileModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'Success', result.description);
                     jQuery(this.changestatusModal.nativeElement).modal('hide');
@@ -231,7 +231,7 @@ export class UserComponent implements OnInit {
         } else if (this.profileModel.eventType === this.appSettings.changePwdMode) {
             this.userService.changePwd(this.profileModel, this.changePwd).subscribe(response => {
                 this.profileModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'Success', result.description);
                     this.changePwd = new ChangePasswordModel();
@@ -252,7 +252,7 @@ export class UserComponent implements OnInit {
             this.assigndomainmodel.userId = this.profileModel.id;
             this.lcdaService.assignLGDAToUser(this.assigndomainmodel).subscribe(response => {
                 this.profileModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'Success', result.description);
                     this.assigndomainmodel = new AssignDomainModel();
@@ -271,7 +271,7 @@ export class UserComponent implements OnInit {
             this.roleservice.assignRoleTouser(this.assignRoleModel).subscribe(
                 response => {
                     this.assignRoleModel.isLoading = false;
-                    const result = Object.assign(new ResponseModel(), response.json());
+                    const result = Object.assign(new ResponseModel(), response);
                     if (result.code === '00') {
                         this.toasterService.pop('success', 'Success', result.description);
                         this.assignRoleModel = new AssignRoleModel();

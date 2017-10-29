@@ -41,4 +41,8 @@ export class ItemService {
         }).catch(x => this.dataservice.handleError(x));
     }
 
+    itemByTaxpayers(taxpayerId: string) {
+        return this.dataservice.get('item/byTaxpayer/' + taxpayerId).catch(x => this.dataservice.handleError(x));
+    }
+
 }

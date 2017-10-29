@@ -48,6 +48,28 @@ namespace RemsNG.Security
             return string.Empty;
         }
 
+        public static string GetName(Claim[] claim)
+        {
+            var username = claim.FirstOrDefault(x => x.Type == ClaimTypes.Name);
+            if (username != null)
+            {
+                return username.Value;
+            }
+
+            return string.Empty;
+        }
+
+        public static string GetHexId(Claim[] claim)
+        {
+            var username = claim.FirstOrDefault(x => x.Type == "identity");
+            if (username != null)
+            {
+                return username.Value;
+            }
+
+            return string.Empty;
+        }
+
         public static Guid GetDomainId(Claim[] claim)
         {
             var domainId = claim.FirstOrDefault(x => x.Type == "Domain");
@@ -79,7 +101,6 @@ namespace RemsNG.Security
             }
             return Guid.Empty;
         }
-
-
+        
     }
 }

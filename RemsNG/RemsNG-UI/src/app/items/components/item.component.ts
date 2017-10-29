@@ -64,7 +64,7 @@ export class ItemComponent implements OnInit {
         this.isLoading = true;
         this.lcdaService.getLCdaById(lcdaId).subscribe(response => {
             this.isLoading = false;
-            const objSchema = Object.assign(new ResponseModel(), response.json());
+            const objSchema = Object.assign(new ResponseModel(), response);
             if (objSchema.code == '00') {
                 this.lcdaModel = objSchema.data;
                 this.getItems();
@@ -81,7 +81,7 @@ export class ItemComponent implements OnInit {
 
     actions() {
         if (this.itemmodel.itemDescription.length < 1) {
-            this.toasterService.pop('error', 'Error', 'Item discription is required');
+            this.toasterService.pop('error', 'Error', 'Item description is required');
             return;
         }
 
@@ -89,13 +89,13 @@ export class ItemComponent implements OnInit {
         if (this.itemmodel.eventType === 'ADD') {
             this.itemService.add(this.itemmodel).subscribe(response => {
                 this.itemmodel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code == '00') {
                     jQuery(this.addModal.nativeElement).modal('hide');
                     this.getItems();
                 } else {
                     this.getItems();
-                    this.toasterService.pop('error', 'Error', result.discription);
+                    this.toasterService.pop('error', 'Error', result.description);
                 }
             }, error => {
                 this.itemmodel.isLoading = false;
@@ -104,13 +104,13 @@ export class ItemComponent implements OnInit {
         } else if (this.itemmodel.eventType === 'EDIT') {
             this.itemService.update(this.itemmodel).subscribe(response => {
                 this.itemmodel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code == '00') {
                     jQuery(this.addModal.nativeElement).modal('hide');
                     this.getItems();
                 } else {
                     this.getItems();
-                    this.toasterService.pop('error', 'Error', result.discription);
+                    this.toasterService.pop('error', 'Error', result.description);
                 }
             }, error => {
                 this.itemmodel.isLoading = false;
@@ -131,14 +131,14 @@ export class ItemComponent implements OnInit {
             this.itemmodel.itemStatus = this.currentstatus;
             this.itemService.changeStatus(this.itemmodel).subscribe(response => {
                 this.itemmodel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code == '00') {
                     this.currentstatus = '';
                     jQuery(this.changeModal.nativeElement).modal('hide');
                     this.getItems();
                 } else {
                     this.getItems();
-                    this.toasterService.pop('error', 'Error', result.discription);
+                    this.toasterService.pop('error', 'Error', result.desciption);
                 }
             }, error => {
                 this.itemmodel.isLoading = false;
@@ -157,7 +157,7 @@ export class ItemComponent implements OnInit {
         this.itemService.getByLcdaId(this.lcdaModel.id, this.pageModel)
             .subscribe(response => {
                 const objSchema = { data: [], totalPageCount: 1 };
-                const result = Object.assign(objSchema, response.json());
+                const result = Object.assign(objSchema, response);
                 this.items = result.data;
                 this.pageModel.totalPageCount = result.totalPageCount;
                 this.isLoading = false;

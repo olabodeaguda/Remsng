@@ -38,7 +38,7 @@ export class AddressComponent implements OnChanges, OnInit {
     getAddresses() {
         this.addressService.byOwnerId(this.profileModel.id, this.profileModel.lcdaId)
             .subscribe(response => {
-                this.addresses = Object.assign([], response.json());
+                this.addresses = Object.assign([], response);
             }, error => {
                 this.toasterService.pop('error', 'Error', error);
             })
@@ -50,7 +50,7 @@ export class AddressComponent implements OnChanges, OnInit {
         }
         this.streetservice.bylcda(this.profileModel.lcdaId).subscribe(
             response => {
-                this.streets = Object.assign([], response.json());
+                this.streets = Object.assign([], response);
             }, error => {
 
             }
@@ -93,7 +93,7 @@ export class AddressComponent implements OnChanges, OnInit {
         if (this.addressModel.eventType == 'ADD') {
             this.addressService.add(this.addressModel).subscribe(response => {
                 this.addressModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.getAddresses();
                     jQuery(this.addModal.nativeElement).modal('hide');
@@ -107,7 +107,7 @@ export class AddressComponent implements OnChanges, OnInit {
         } else if(this.addressModel.eventType === 'EDIT'){
             this.addressService.update(this.addressModel).subscribe(response => {
                 this.addressModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.getAddresses();
                     jQuery(this.addModal.nativeElement).modal('hide');
@@ -121,7 +121,7 @@ export class AddressComponent implements OnChanges, OnInit {
         } else if(this.addressModel.eventType === 'REMOVE'){
             this.addressService.remove(this.addressModel.id).subscribe(response => {
                 this.addressModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.getAddresses();
                     jQuery(this.removeAddressModal.nativeElement).modal('hide');

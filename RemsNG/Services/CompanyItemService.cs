@@ -22,9 +22,9 @@ namespace RemsNG.Services
             return await companyItemDao.Add(companyItem);
         }
 
-        public async Task<List<CompanyItemExt>> ByCompany(Guid companyId)
+        public async Task<List<CompanyItemExt>> ByTaxpayer(Guid taxpayerId)
         {
-            return await companyItemDao.ByCompany(companyId);
+            return await companyItemDao.ByTaxpayer(taxpayerId);
         }
 
         public async Task<CompanyItemExt> ById(Guid id)
@@ -40,6 +40,11 @@ namespace RemsNG.Services
         public async Task<Response> UpdateStatus(Guid id, string companystatus)
         {
             return await companyItemDao.UpdateStatus(id, companystatus);
+        }
+
+        public async Task<object> ByTaxpayerpaginated(Guid id, PageModel pageModel)
+        {
+            return await companyItemDao.ByTaxpayerpaginated(id, pageModel);
         }
     }
 }

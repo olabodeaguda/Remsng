@@ -9,7 +9,7 @@ import { DashBoardModule } from './Dashboard/dashboard.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from './shared/shared.module';
 import { LaddaModule } from 'angular2-ladda';
-import {ToasterModule, ToasterService} from 'angular2-toaster';
+import { ToasterModule, ToasterService } from 'angular2-toaster';
 import { AppSettings } from './shared/models/app.settings';
 import { DataService } from './shared/services/data.service';
 import { StorageService } from './shared/services/storage.service';
@@ -27,11 +27,13 @@ import { TaxPayersModule } from "./taxpayers/taxpayer.module";
 import { CompanyModule } from "./company/company.module";
 import { DemandNoticeModule } from "./demand-notice/demand-notice.module";
 import { CompanyItemModule } from "./companyitems/companyitem.module";
-
+import { HTTP_INTERCEPTORS } from "@angular/common/http";
+import { GlobalInterceptorService } from "./shared/services/global-interceptor.service";
+import {HttpClientModule} from '@angular/common/http';
 
 const appRoutes: Routes = [
     { path: '', component: LoginComponent }
- ];
+];
 
 @NgModule({
     declarations: [
@@ -42,10 +44,10 @@ const appRoutes: Routes = [
         LoginModule,
         DashBoardModule,
         FormsModule,
-        DomainModule,
-        WardModule, UserModule,StreetModule,CategoryModule,
-        ToasterModule, LCDAModule, RoleModule,ItemPenaltyModule,CompanyItemModule,
-        BrowserAnimationsModule,ItemModule,TaxPayersModule,CompanyModule,
+        DomainModule,HttpClientModule,
+        WardModule, UserModule, StreetModule, CategoryModule,
+        ToasterModule, LCDAModule, RoleModule, ItemPenaltyModule, CompanyItemModule,
+        BrowserAnimationsModule, ItemModule, TaxPayersModule, CompanyModule,
         DemandNoticeModule,
         LaddaModule.forRoot({
             style: 'zoom-in',
@@ -55,9 +57,13 @@ const appRoutes: Routes = [
         }),
         ReactiveFormsModule,
         SharedModule,
-        RouterModule.forRoot(appRoutes, {useHash: true})
+        RouterModule.forRoot(appRoutes, { useHash: true })
     ],
-    providers: [ToasterService, AppSettings, DataService, StorageService],
+    providers: [ToasterService, AppSettings, DataService, StorageService, {
+        provide: HTTP_INTERCEPTORS,
+        useClass: GlobalInterceptorService,
+        multi: true,
+    }],
     bootstrap: [AppComponent],
     exports: []
 })

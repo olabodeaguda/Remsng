@@ -22,6 +22,13 @@ export class StorageService {
         this.usermodelEmit.emit(usermodel);        
         window.location.replace('/login');        
     }
+    
+    updateToken(tk:string){
+        let um:UserModel = this.get();
+        um.tk = tk;
+        this.Save(um);
+    }
+
     Save(usermodel: UserModel) {
         const val: string = localStorage.getItem(this.appsettings.tk);
         if (val != null) {

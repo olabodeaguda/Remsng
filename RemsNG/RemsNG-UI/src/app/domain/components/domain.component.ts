@@ -57,7 +57,7 @@ export class DomainComponent implements OnInit {
         if (this.domainModel.eventType === this.appSettings.addMode) {
             this.domainService.add(this.domainModel).subscribe(response => {
                 this.domainModel.isLoading = false;
-                const resp = Object.assign(new ResponseModel(), response.json());
+                const resp = Object.assign(new ResponseModel(), response);
                 if (resp.code === '00') {
                     this.domainModel = new DomainModel();
                     jQuery(this.addModal.nativeElement).modal('hide');
@@ -72,7 +72,7 @@ export class DomainComponent implements OnInit {
         } else if (this.domainModel.eventType === this.appSettings.editMode) {
             this.domainService.edit(this.domainModel).subscribe(response => {
                 this.domainModel.isLoading = false;
-                const resp = Object.assign(new ResponseModel(), response.json());
+                const resp = Object.assign(new ResponseModel(), response);
                 if (resp.code === '00') {
                     this.domainModel = new DomainModel();
                     jQuery(this.addModal.nativeElement).modal('hide');
@@ -89,7 +89,7 @@ export class DomainComponent implements OnInit {
             this.domainModel.domainStatus = this.domainModel.domainStatus === 'ACTIVE' ? 'NOT_ACTIVE' : 'ACTIVE';
             this.domainService.changeStatus(this.domainModel).subscribe(response => {
                 this.domainModel.isLoading = false;
-                const resp = Object.assign(new ResponseModel(), response.json());
+                const resp = Object.assign(new ResponseModel(), response);
                 if (resp.code === '00') {
                     this.domainModel = new DomainModel();
                     jQuery(this.changestatusModal.nativeElement).modal('hide');
@@ -120,7 +120,7 @@ export class DomainComponent implements OnInit {
         this.isLoading = true;
         this.domainService.all(this.pageModel).subscribe(response => {
             this.isLoading = false;
-            const result = response.json();
+            const result = response;
             const resultScheme = { data: [], totalPageCount: 0 };
             const responseD = Object.assign(resultScheme, result);
             if (responseD.data.length > 0) {

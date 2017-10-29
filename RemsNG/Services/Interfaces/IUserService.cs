@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace RemsNG.Services.Interfaces
@@ -12,6 +13,7 @@ namespace RemsNG.Services.Interfaces
         Task<User> GetUserByUsername(string username);
         Task<User> ByEmail(string email);
         Task<object> GetToken(User user, Guid domainId);
+        string GetToken(Claim[] claim);
         Task<bool> Create(User user);
         Task<bool> AddAndAssignLGDA(User user, UserLcda userLcda);
         Task<object> Paginated(Models.PageModel pageModel, Guid lcdaId);

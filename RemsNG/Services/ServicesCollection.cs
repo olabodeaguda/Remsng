@@ -92,6 +92,7 @@ namespace RemsNG.Services
                   .AllowAnyMethod() //<--this allows preflight headers required for POST
                   .AllowAnyHeader() //<--accepts headers 
                   .AllowCredentials() //<--lets your app send auth credentials
+                  .WithExposedHeaders("new-t")
                   .WithOrigins(corsUrls.ToArray()); //<--this is the important line
             }));
 
@@ -118,6 +119,7 @@ namespace RemsNG.Services
             services.AddTransient<ITaxpayerService, TaxpayerService>();
             services.AddTransient<ICompany, CompanyService>();
             services.AddTransient<IAddress, AddressService>();
+            services.AddTransient<ICompanyItemService, CompanyItemService>();
         }
 
         public static IConfigurationSection jwtAppSettingOptions

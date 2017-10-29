@@ -15,5 +15,6 @@ namespace RemsNG.Services.Interfaces
         Task<object> ListByLcdaId(Guid lcdaId, PageModel pageModel);
         Task<object> ListByLcdaId(Guid lcdaId);
         Task<object> GetItemByIdAsync(Guid id);
+        Task<object> GetByTaxPayersId(Guid taxpayersId);
     }
 }

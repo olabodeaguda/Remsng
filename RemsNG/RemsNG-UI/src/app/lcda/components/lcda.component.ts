@@ -33,7 +33,7 @@ export class LcdaComponent implements OnInit {
     ngOnInit() {
         this.getLcda();
         this.domainService.activeDomains().subscribe(response => {
-            this.domainList = response.json();
+            this.domainList = response;
         }, error => {
         });
     }
@@ -42,7 +42,7 @@ export class LcdaComponent implements OnInit {
         this.isLoading = true;
 
         this.lcdaService.getLcda(this.pageModel).subscribe(response => {
-            const result = response.json();
+            const result = response;
             const resultScheme = { data: [], totalPageCount: 0 };
             const responseD = Object.assign(resultScheme, result);
             if (responseD.data.length > 0) {
@@ -87,7 +87,7 @@ export class LcdaComponent implements OnInit {
         if (this.lcdaModel.eventType === this.appSettings.addMode) {
             this.lcdaService.addLCDA(this.lcdaModel).subscribe(response => {
                 this.lcdaModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'Success', result.description);
                     jQuery(this.addModal.nativeElement).modal('hide');
@@ -105,7 +105,7 @@ export class LcdaComponent implements OnInit {
         } else if (this.lcdaModel.eventType === this.appSettings.editMode) {
             this.lcdaModel.isLoading = false;
             this.lcdaService.editLCDA(this.lcdaModel).subscribe(response => {
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'Success', result.description);
                     jQuery(this.addModal.nativeElement).modal('hide');
@@ -124,7 +124,7 @@ export class LcdaComponent implements OnInit {
             this.lcdaModel.lcdaStatus = this.lcdaModel.lcdaStatus === 'ACTIVE' ? 'NOT_ACTIVE' : 'ACTIVE';
             this.lcdaService.changeStatusLCDA(this.lcdaModel).subscribe(response => {
                 this.lcdaModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'Success', result.description);
                     jQuery(this.changestatusModal.nativeElement).modal('hide');

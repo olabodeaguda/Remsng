@@ -22,7 +22,7 @@ namespace RemsNG.Dao
             && item.lcdaId == x.lcdaId);
             if (r != null)
             {
-                
+
                 throw new DuplicateException($"{item.itemDescription} already exist");
             }
 
@@ -111,7 +111,7 @@ namespace RemsNG.Dao
 
         public async Task<object> ListByLcdaId(Guid lcdaId, PageModel pageModel)
         {
-            var results = await db.Items.Where(x=>x.lcdaId==lcdaId).Skip((pageModel.PageNum - 1) * pageModel.PageSize)
+            var results = await db.Items.Where(x => x.lcdaId == lcdaId).Skip((pageModel.PageNum - 1) * pageModel.PageSize)
                 .Take(pageModel.PageSize).ToListAsync();
             var totalCount = await db.Items.Where(x => x.lcdaId == lcdaId).CountAsync();
             return new
@@ -130,6 +130,11 @@ namespace RemsNG.Dao
         public async Task<object> GetItemByIdAsync(Guid id)
         {
             return await db.Items.FirstOrDefaultAsync(x => x.id == id);
+        }
+
+        public async Task<object> GetByTaxPayersId(Guid taxpayersId)
+        {
+            return await db.Items.FromSql("sp_itemByTaxpayersid @p0", new object[] { taxpayersId }).ToListAsync();
         }
     }
 }

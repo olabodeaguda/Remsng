@@ -12,7 +12,8 @@ namespace RemsNG.Services.Interfaces
         Task<Response> Add(CompanyItem companyItem);
         Task<Response> Update(CompanyItem companyItem);
         Task<Response> UpdateStatus(Guid id, string companystatus);
-        Task<List<CompanyItemExt>> ByCompany(Guid companyId);
+        Task<List<CompanyItemExt>> ByTaxpayer(Guid companyId);
         Task<CompanyItemExt> ById(Guid id);
+        Task<object> ByTaxpayerpaginated(Guid id, PageModel pageModel);
     }
 }

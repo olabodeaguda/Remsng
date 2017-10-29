@@ -6,6 +6,7 @@ import { DomainComponent } from './components/domain.component';
 import { SharedModule } from '../shared/shared.module';
 import { DomainService } from './services/domain.service';
 import { LaddaModule } from 'angular2-ladda';
+import { AppModule } from "../app.module";
 
 const appRoutes: Routes = [
     { path: 'domain', component: DomainComponent }

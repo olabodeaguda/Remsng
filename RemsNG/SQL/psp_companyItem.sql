@@ -5,7 +5,7 @@ IF NOT EXISTS(SELECT *
 CREATE TABLE tbl_companyItem
 (
 	id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
-	companyId UNIQUEIDENTIFIER not null foreign key references tbl_company(id),
+	taxpayerId UNIQUEIDENTIFIER not null foreign key references tbl_taxPayer(id),
 	itemId uniqueidentifier not null foreign key references tbl_item(id),
 	amount decimal(8,2) not null default 0.0,
 	billingYear int not null,		
@@ -25,7 +25,7 @@ GO
 create procedure sp_createCompanyItem
 (
 	@id uniqueidentifier,
-	@companyid uniqueidentifier,
+	@taxpayerId uniqueidentifier,
 	@itemId uniqueidentifier,
 	@amount decimal,
 	@billingYear int,
@@ -37,15 +37,15 @@ begin
 	declare @msg varchar(200);
 	declare @success bit;
 
-	if exists(select * from tbl_companyItem where companyId=@companyid and itemId= @itemId)
+	if exists(select * from tbl_companyItem where taxpayerId=@taxpayerId and itemId= @itemId)
 	begin
 		set @msg = 'Item already exist';
 		set @success = 0;
 	end
 	else
 	begin
-		insert into tbl_companyItem(id,companyId,itemId,amount,billingYear,createdBy,dateCreated,companyStatus) 
-		values(@id,@companyid,@itemId,@amount,@billingYear,@createdBy,GETDATE(),@companyStatus);
+		insert into tbl_companyItem(id,taxpayerId,itemId,amount,billingYear,createdBy,dateCreated,companyStatus) 
+		values(@id,@taxpayerId,@itemId,@amount,@billingYear,@createdBy,GETDATE(),@companyStatus);
 
 		if @@ROWCOUNT > 0
 		begin
@@ -70,7 +70,7 @@ GO
 create procedure sp_updateCompanyItem
 (
 	@id uniqueidentifier,
-	@companyid uniqueidentifier,
+	@taxpayerId uniqueidentifier,
 	@itemId uniqueidentifier,
 	@amount decimal,
 	@billingYear int,
@@ -88,7 +88,7 @@ begin
 	end
 	else
 	begin
-		update tbl_companyItem set companyId=@companyid, itemId = @itemId, amount = @amount,
+		update tbl_companyItem set taxpayerId=@taxpayerId, itemId = @itemId, amount = @amount,
 		billingYear=@billingYear, createdBy = @createdBy where id=@id;
 
 		if @@ROWCOUNT > 0
@@ -102,7 +102,7 @@ begin
 			set @success = 0;
 		end
 	end
-
+	select NEWID() as id, @msg as msg,@success as success;
 end
 GO
 
@@ -141,25 +141,30 @@ begin
 			set @success = 0;
 		end
 	end
+	select NEWID() as id, @msg as msg,@success as success;
 end
 GO
 IF EXISTS(SELECT *
           FROM sys.objects
-          WHERE object_id = OBJECT_ID(N'sp_companyItemByCompanyId') AND type IN (N'P', N'PC'))
-  DROP PROCEDURE sp_companyItemByCompanyId
+          WHERE object_id = OBJECT_ID(N'sp_companyItemByTaxpayerId') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_companyItemByTaxpayerId
 GO
-create procedure sp_companyItemByCompanyId
+create procedure sp_companyItemByTaxpayerId
 (
-	@companyId uniqueidentifier
+	@taxpayerId uniqueidentifier
 )
 as
 begin
-	select tbl_companyItem.*,tbl_company.companyName, tbl_item.itemDescription as itemName from tbl_companyItem 
-	inner join tbl_company on tbl_company.id = tbl_companyItem.id
+declare @count int;
+set @count = 0;
+
+	select tbl_companyItem.*,tbl_taxPayer.surname,tbl_taxPayer.firstname,tbl_taxPayer.lastname, tbl_item.itemDescription as itemName,@count as totalSize from tbl_companyItem 
+	inner join tbl_taxPayer on tbl_taxPayer.id = tbl_companyItem.taxpayerId
 	inner join tbl_item on tbl_item.id = tbl_companyItem.itemId
-	where tbl_companyItem.companyId = @companyId
+	where tbl_companyItem.taxpayerId = @taxpayerId
 end
 GO
+
 IF EXISTS(SELECT *
           FROM sys.objects
           WHERE object_id = OBJECT_ID(N'sp_companyItemById') AND type IN (N'P', N'PC'))
@@ -171,10 +176,103 @@ create procedure sp_companyItemById
 )
 as
 begin
-	select tbl_companyItem.*,tbl_company.companyName, tbl_item.itemDescription as itemName from tbl_companyItem 
-	inner join tbl_company on tbl_company.id = tbl_companyItem.id
+declare @count int;
+set @count = 0;
+
+	select tbl_companyItem.*,tbl_taxPayer.surname,tbl_taxPayer.firstname,tbl_taxPayer.lastname, tbl_item.itemDescription as itemName, @count as totalSize from tbl_companyItem 
+	inner join tbl_taxPayer on tbl_taxPayer.id = tbl_companyItem.taxpayerId
 	inner join tbl_item on tbl_item.id = tbl_companyItem.itemId
 	where tbl_companyItem.id = @id
 end
 
 GO
+IF EXISTS(SELECT *
+          FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_companyItemByTaxpayerIdPaginated') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_companyItemByTaxpayerIdPaginated
+GO
+create procedure sp_companyItemByTaxpayerIdPaginated
+(
+	@taxpayerId uniqueidentifier,
+	@pageNum int,
+	@pageSize int
+)
+as
+begin
+IF @pageSize = 0 or @pageSize>100
+            SET @pageSize = 100;
+        IF @pageNum = 0
+            SET @pageNum = 1;
+
+	declare @count int;
+	select @count = count(*) from tbl_companyItem 
+	inner join tbl_taxPayer on tbl_taxPayer.id = tbl_companyItem.taxpayerId
+	inner join tbl_item on tbl_item.id = tbl_companyItem.itemId
+	where tbl_companyItem.taxpayerId = @taxpayerId;
+
+
+	select tbl_companyItem.*,tbl_taxPayer.surname,tbl_taxPayer.firstname,tbl_taxPayer.lastname, 
+	tbl_item.itemDescription as itemName,@count as totalSize from tbl_companyItem 
+	inner join tbl_taxPayer on tbl_taxPayer.id = tbl_companyItem.taxpayerId
+	inner join tbl_item on tbl_item.id = tbl_companyItem.itemId
+	where tbl_companyItem.taxpayerId = @taxpayerId 
+	ORDER BY tbl_companyItem.dateCreated desc
+                 OFFSET @PageSize * (@PageNum - 1) ROWS
+                 FETCH NEXT @PageSize ROWS ONLY;
+end
+GO
+IF EXISTS(SELECT *
+          FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_itemByTaxpayersid') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_itemByTaxpayersid
+GO
+create procedure sp_itemByTaxpayersid
+(
+	@taxpayerId uniqueidentifier
+)
+as
+begin
+	select distinct tbl_item.* from tbl_taxPayer
+	inner join tbl_company on tbl_company.id = tbl_taxPayer.companyId
+	inner join tbl_item on tbl_item.lcdaId = tbl_company.lcdaId
+	where tbl_taxPayer.id = @taxpayerId and tbl_item.id not in(select itemid from tbl_companyItem where taxpayerId = @taxpayerId)
+
+end
+GO
+IF EXISTS(SELECT *
+          FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_companyItemByTaxpayerIdPaginated') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_companyItemByTaxpayerIdPaginated
+GO
+create procedure sp_companyItemByTaxpayerIdPaginated
+(
+	@taxpayerId uniqueidentifier,
+	@pageNum int,
+	@pageSize int
+)
+as
+begin
+IF @pageSize = 0 or @pageSize>100
+            SET @pageSize = 100;
+        IF @pageNum = 0
+            SET @pageNum = 1;
+
+	declare @count int;
+	select @count = count(*) from tbl_companyItem 
+	inner join tbl_taxPayer on tbl_taxPayer.id = tbl_companyItem.taxpayerId
+	inner join tbl_item on tbl_item.id = tbl_companyItem.itemId
+	where tbl_companyItem.taxpayerId = @taxpayerId;
+
+
+	select distinct tbl_companyItem.*,tbl_taxPayer.surname,tbl_taxPayer.firstname,tbl_taxPayer.lastname, 
+	tbl_item.itemDescription as itemName,@count as totalSize from tbl_companyItem 
+	inner join tbl_taxPayer on tbl_taxPayer.id = tbl_companyItem.taxpayerId
+	inner join tbl_item on tbl_item.id = tbl_companyItem.itemId
+	where tbl_companyItem.taxpayerId = @taxpayerId 
+	ORDER BY tbl_companyItem.dateCreated desc
+                 OFFSET @PageSize * (@PageNum - 1) ROWS
+                 FETCH NEXT @PageSize ROWS ONLY;
+end
+GO
+
+

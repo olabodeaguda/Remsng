@@ -41,7 +41,7 @@ export class SectorComponent implements OnInit {
         this.isLoading = true;
         this.lcdaService.getLCdaById(lcdaId).subscribe(response => {
             this.isLoading = false;
-            const objSchema = Object.assign(new ResponseModel(), response.json());
+            const objSchema = Object.assign(new ResponseModel(), response);
             if (objSchema.code == '00') {
                 this.lcdaModel = objSchema.data;
                 this.getSectors();
@@ -61,7 +61,7 @@ export class SectorComponent implements OnInit {
         this.sectorService.getSectorByLcdaId(this.lcdaModel.id)
             .subscribe(response => {
                 this.isLoading = false;
-                this.sectors = response.json();
+                this.sectors = response;
             }, error => {
                 this.isLoading = false;
                 this.toasterService.pop('error', 'Error', error);
@@ -91,7 +91,7 @@ export class SectorComponent implements OnInit {
             this.sectorModel.isLoading = true;
             this.sectorService.add(this.sectorModel).subscribe(response => {
                 this.sectorModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'Success', result.description);
                     this.getSectors();
@@ -105,7 +105,7 @@ export class SectorComponent implements OnInit {
         } else if (this.sectorModel.eventType === 'EDIT') {
             this.sectorModel.isLoading = true;          
             this.sectorService.update(this.sectorModel).subscribe(response=>{
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'Success', result.description);
                     this.getSectors();

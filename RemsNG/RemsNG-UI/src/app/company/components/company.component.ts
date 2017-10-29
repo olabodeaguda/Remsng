@@ -50,7 +50,7 @@ export class CompanyComponent implements OnInit {
         this.companyservice.byLcda(this.lcdaModel.id, this.pageModel)
             .subscribe(response => {
                 this.isLoading = false;
-                const result = response.json();
+                const result = response;
                 const resultScheme = { data: [], totalPageCount: 0 };
                 const responseD = Object.assign(resultScheme, result);
                 this.companies = responseD.data;
@@ -65,7 +65,7 @@ export class CompanyComponent implements OnInit {
         this.isLoading = true;
         this.lcdaservice.getLCdaById(lcdaId).subscribe(response => {
             this.isLoading = false;
-            const objSchema = Object.assign(new ResponseModel(), response.json());
+            const objSchema = Object.assign(new ResponseModel(), response);
             if (objSchema.code == '00') {
                 this.lcdaModel = objSchema.data;
                 this.getSectorbyLcda();
@@ -87,7 +87,7 @@ export class CompanyComponent implements OnInit {
         this.sectorService.getSectorByLcdaId(this.lcdaModel.id)
             .subscribe(response => {
                 this.isLoading = false;
-                this.sectors = response.json();
+                this.sectors = response;
             }, error => {
                 this.isLoading = false;
                 this.toasterService.pop('error', 'Error', error);
@@ -102,7 +102,7 @@ export class CompanyComponent implements OnInit {
         this.isLoading = true;
         this.categoryservice.getAll(this.lcdaModel.id).subscribe(response => {
             this.isLoading = false;
-            this.categories = response.json();
+            this.categories = response;
         }, error => {
             this.isLoading = false;
             this.toasterService.pop('error', 'Error', error);
@@ -142,7 +142,7 @@ export class CompanyComponent implements OnInit {
         if (this.companyModel.eventType === 'ADD') {
             this.companyservice.add(this.companyModel).subscribe(response => {
                 this.companyModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     jQuery(this.addModal.nativeElement).modal('hide');
                     this.getCompanyByLcda();
@@ -154,7 +154,7 @@ export class CompanyComponent implements OnInit {
         else if(this.companyModel.eventType === 'EDIT'){
             this.companyservice.update(this.companyModel).subscribe(response => {
                 this.companyModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     jQuery(this.addModal.nativeElement).modal('hide');
                     this.getCompanyByLcda();

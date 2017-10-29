@@ -16,14 +16,14 @@ export class LcdaService {
             error => this.dataService.handleError(error));
     }
 
-    getLcda(pageModel: PageModel): Observable<Response> {
+    getLcda(pageModel: PageModel) {
         this.dataService.addToHeader('pageSize', pageModel.pageSize.toString());
         this.dataService.addToHeader('pageNum', pageModel.pageNum.toString());
         return this.dataService.get('lcda/all').catch(
             error => this.dataService.handleError(error));
     }
 
-    addLCDA(lcdaModel: LcdaModel): Observable<Response> {
+    addLCDA(lcdaModel: LcdaModel){
         return this.dataService.post('lcda/create', {
             domainId: lcdaModel.domainId,
             lcdaName: lcdaModel.lcdaName,
@@ -31,7 +31,7 @@ export class LcdaService {
         }).catch(error => this.dataService.handleError(error));
     }
 
-    editLCDA(lcdaModel: LcdaModel): Observable<Response> {
+    editLCDA(lcdaModel: LcdaModel) {
         return this.dataService.post('lcda/update', {
             domainId: lcdaModel.domainId,
             lcdaName: lcdaModel.lcdaName,
@@ -40,14 +40,14 @@ export class LcdaService {
         }).catch(error => this.dataService.handleError(error));
     }
 
-    changeStatusLCDA(lcdaModel: LcdaModel): Observable<Response> {
+    changeStatusLCDA(lcdaModel: LcdaModel) {
         return this.dataService.post('lcda/changestatus', {
             lcdaStatus: lcdaModel.lcdaStatus,
             id: lcdaModel.id
         }).catch(error => this.dataService.handleError(error));
     }
 
-    assignLGDAToUser(assignDomainModel: AssignDomainModel): Observable<Response> {
+    assignLGDAToUser(assignDomainModel: AssignDomainModel) {
         return this.dataService.post('user/assignlgda', {
             userId: assignDomainModel.userId,
             lgdaId: assignDomainModel.lgdaId
@@ -65,7 +65,7 @@ export class LcdaService {
     unAssignedDomainToUserbyUserId(id: string) {
         return this.dataService.get('lcda/unassignlcda/' + id).catch(x => this.dataService.handleError(x));
     }
-    removeUserFromLCDA(lcdaId: string, userId: string): Observable<Response> {
+    removeUserFromLCDA(lcdaId: string, userId: string){
         return this.dataService.post('lcda/removeuserfromdomain', {
             userId: userId,
             lgdaId: lcdaId

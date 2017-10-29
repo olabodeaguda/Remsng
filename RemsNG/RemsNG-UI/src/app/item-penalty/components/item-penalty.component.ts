@@ -41,7 +41,7 @@ export class ItemPenaltyComponent implements OnInit {
         this.isLoading = true;
         this.itemService.byId(itemId).subscribe(response => {
             this.isLoading = false;
-            const result = Object.assign(new ItemModel(), response.json());
+            const result = Object.assign(new ItemModel(), response);
             this.item = result;
             this.getitemspenalty();
         }, error => {
@@ -59,7 +59,7 @@ export class ItemPenaltyComponent implements OnInit {
         this.itempservice.getByitemIdPaginated(this.item.id, this.pageModel)
             .subscribe(response => {
                 const objschema = { data: [], totalPageCount: 1 };
-                const result = Object.assign(objschema, response.json());
+                const result = Object.assign(objschema, response);
                 this.itemPs = result.data;
                 this.pageModel.totalPageCount = result.totalPageCount
             }, error => {
@@ -98,7 +98,7 @@ export class ItemPenaltyComponent implements OnInit {
         if (this.itempModel.eventType === 'ADD') {
             this.itempservice.add(this.itempModel).subscribe(response => {
                 this.itempModel.isLoading = false;
-                const resp = Object.assign(new ResponseModel(), response.json());
+                const resp = Object.assign(new ResponseModel(), response);
                 if (resp.code) {
                     this.toasterService.pop('success', 'Success', resp.description);
                     jQuery(this.addModal.nativeElement).modal('hide');
@@ -114,7 +114,7 @@ export class ItemPenaltyComponent implements OnInit {
         } else if (this.itempModel.eventType === 'EDIT') {
             this.itempservice.edit(this.itempModel).subscribe(response => {
                 this.itempModel.isLoading = false;
-                const resp = Object.assign(new ResponseModel(), response.json());
+                const resp = Object.assign(new ResponseModel(), response);
                 if (resp.code) {
                     this.toasterService.pop('success', 'Success', resp.description);
                     jQuery(this.addModal.nativeElement).modal('hide');
@@ -140,7 +140,7 @@ export class ItemPenaltyComponent implements OnInit {
             }
             this.itempservice.changeStatus(this.itempModel).subscribe(response => {
                 this.itempModel.isLoading = false;
-                const resp = Object.assign(new ResponseModel(), response.json());
+                const resp = Object.assign(new ResponseModel(), response);
                 if (resp.code) {
                     this.toasterService.pop('success', 'Success', resp.description);
                     jQuery(this.changeModal.nativeElement).modal('hide');

@@ -31,7 +31,7 @@ export class LoginComponent {
             setTimeout(() => {
                 this.loginModel.isLoading = false;
             }, 2000);
-            const result = Object.assign(new ResponseModel(), response.json());
+            const result = Object.assign(new ResponseModel(), response);
             if (result.code === '00') {
                 const usermodel: UserModel = Object.assign(new UserModel(), result.data);
                 this.storageService.Save(usermodel);
@@ -74,7 +74,7 @@ export class LoginComponent {
             .subscribe(
             response => {
                 this.loginModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response.json());
+                const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
                     this.loginModel.isUsernameValid = true;
                     this.loginModel.validatedUsername = this.loginModel.username;

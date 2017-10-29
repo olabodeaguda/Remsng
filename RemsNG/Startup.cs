@@ -15,10 +15,13 @@ using RemsNG.Models;
 using RemsNG.ORM;
 using RemsNG.Security;
 using RemsNG.Services;
+using RemsNG.Services.Interfaces;
 using RemsNG.Utilities;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace RemsNG
@@ -51,7 +54,7 @@ namespace RemsNG
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, RemsDbContext dbContext)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, RemsDbContext dbContext, IUserService userService)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -74,13 +77,32 @@ namespace RemsNG
                     string token = context.Request.Headers["Authorization"];
                     if (token != null)
                     {
+                        JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+                        token = token.Replace("Bearer ", "");
                         try
                         {
-                            token = token.Replace("Bearer ", "");
+                            JwtSecurityToken jst = handler.ReadJwtToken(token);
+                            DateTime validTo = jst.ValidTo;
+                            int compareDate = validTo.CompareTo(DateTime.UtcNow);
+                            double times = DateTime.UtcNow.Subtract(validTo).TotalMinutes;
+                            if (compareDate < 0 && times <= 10)
+                            {
+                                // change token
+                                var claims = new List<Claim>(jst.Claims);
+                                string newToken = userService.GetToken(claims.ToArray());
+                                if (!string.IsNullOrEmpty(newToken))
+                                {
+                                    token = newToken;
+                                    //context
+                                    IHeaderDictionary headers = context.Response.Headers;
+                                    headers["Access-Control-Expose-Headers"] = $"\'new-t\'";
+                                    headers["new-t"] = newToken;
+                                }
+                            }
+
                             SecurityToken validatedToken;
-                            JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
                             context.User = handler.ValidateToken(token, ServicesCollection.tokenValidationParameters(), out validatedToken);
-                            await next.Invoke();                         
+                            await next.Invoke();
                         }
                         catch (Exception ex)
                         {
