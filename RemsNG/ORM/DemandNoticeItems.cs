@@ -5,7 +5,12 @@ using System.Threading.Tasks;
 
 namespace RemsNG.ORM
 {
-    public class DemandNoticeItems
+    public class DemandNoticeItems: AbstractModel
     {
+        public Guid id { get; set; }
+        public Guid dn_TaxpayersDetailsId { get; set; }
+        public Guid itemId { get; set; }
+        public string itemName { get; set; }
+        public decimal itemAmount { get; set; }
     }
 }
