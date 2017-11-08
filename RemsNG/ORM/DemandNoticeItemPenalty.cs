@@ -11,6 +11,6 @@ namespace RemsNG.ORM
         public string billingNo { get; set; }
         public decimal amount { get; set; }
         public Guid itemId { get; set; }
-        public string status { get; set; }
+        public string itemPenaltyStatus { get; set; }
     }
 }

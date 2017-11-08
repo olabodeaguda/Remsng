@@ -120,6 +120,7 @@ namespace RemsNG.Services
             services.AddTransient<ICompany, CompanyService>();
             services.AddTransient<IAddress, AddressService>();
             services.AddTransient<ICompanyItemService, CompanyItemService>();
+            services.AddTransient<IDemandNoticeService, DemanNoticeService>();
         }
 
         public static IConfigurationSection jwtAppSettingOptions

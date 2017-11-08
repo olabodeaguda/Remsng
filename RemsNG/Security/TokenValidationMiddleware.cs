@@ -1,8 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using RemsNG.Services;
+using RemsNG.Services.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace RemsNG.Security
@@ -16,12 +22,52 @@ namespace RemsNG.Security
             this.next = next;
         }
 
-        public async Task Invoke(HttpContext context, ILoggerFactory loggerFactory)
+        public async Task Invoke(HttpContext context, ILoggerFactory loggerFactory, IUserService userService)
         {
             logger = loggerFactory;
             try
             {
-                await next(context);
+                if (!context.User.Identity.IsAuthenticated)
+                {
+                    string token = context.Request.Headers["Authorization"];
+                    if (token != null)
+                    {
+                        JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+                        token = token.Replace("Bearer ", "");
+                        try
+                        {
+                            JwtSecurityToken jst = handler.ReadJwtToken(token);
+                            DateTime validTo = jst.ValidTo;
+                            int compareDate = validTo.CompareTo(DateTime.UtcNow);
+                            double times = DateTime.UtcNow.Subtract(validTo).TotalMinutes;
+                            if (compareDate < 0 && times <= 10)
+                            {
+                                // change token
+                                var claims = new List<Claim>(jst.Claims);
+                                string newToken = userService.GetToken(claims.ToArray());
+                                if (!string.IsNullOrEmpty(newToken))
+                                {
+                                    token = newToken;
+                                    IHeaderDictionary headers = context.Response.Headers;
+                                    headers["Access-Control-Expose-Headers"] = $"\'new-t\'";
+                                    headers["new-t"] = newToken;
+                                }
+                            }
+
+                            SecurityToken validatedToken;
+                            context.User = handler.ValidateToken(token, ServicesCollection.tokenValidationParameters(), out validatedToken);
+                            await next(context);
+                        }
+                        catch (Exception ex)
+                        {
+                            await ErrorHandlingMiddleware.HandleExceptionAsync(context, ex);
+                        }
+                    }
+                    else
+                    {
+                        await next(context);
+                    }
+                }
             }
             catch (Exception ex)
             {

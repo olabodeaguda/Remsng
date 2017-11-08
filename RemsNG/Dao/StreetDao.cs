@@ -108,7 +108,7 @@ namespace RemsNG.Dao
 
         public async Task<List<Street>> ByWard(Guid wardId)
         {
-            return await db.Streets.Where(x => x.wardId == wardId).ToListAsync();
+            return await db.Streets.Where(x => x.wardId == wardId).OrderBy(x=>x.streetName).ToListAsync();
         }
 
         public async Task<object> ByWardpaginated(Guid wardId, Models.PageModel pageModel)

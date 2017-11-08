@@ -41,13 +41,8 @@ export class StreetComponent implements OnInit {
         this.isLoading = true;
         this.wardService.byId(id).subscribe(response => {
             this.isLoading = false;
-            if (response.status === 200) {
-                this.wardmodel = Object.assign(new WardModel(), response);
-                this.getStreet();
-            }
-            else {
-                this.wardmodel = new WardModel();
-            }
+            this.wardmodel = Object.assign(new WardModel(), response);
+            this.getStreet();
         }, error => {
             this.toasterService.pop('error', 'Error', error);
         })
@@ -63,10 +58,10 @@ export class StreetComponent implements OnInit {
             this.isLoading = false;
             const objSchema = { data: [], totalPageCount: 0 };
             const result = Object.assign(objSchema, response);
-            if(result.data.length > 0){
+            if (result.data.length > 0) {
                 this.streetModels = Object.assign([], result.data)
                 this.pageModel.totalPageCount = (objSchema.totalPageCount % this.pageModel.pageSize > 0 ? 1 : 0) + Math.floor(objSchema.totalPageCount / this.pageModel.pageSize);
-            } else{                
+            } else {
                 this.pageModel.pageNum -= 1;
             }
         }, error => {
@@ -140,7 +135,7 @@ export class StreetComponent implements OnInit {
                 jQuery(this.addModal.nativeElement).modal('hide');
             })
         } else if (this.streetModel.eventType === 'CHANGE_STATUS') {
-            this.streetModel.streetStatus = this.streetModel.streetStatus === 'ACTIVE'?'NOT_ACTIVE':'ACTIVE';
+            this.streetModel.streetStatus = this.streetModel.streetStatus === 'ACTIVE' ? 'NOT_ACTIVE' : 'ACTIVE';
             this.streetservice.changeStatus(this.streetModel).subscribe(response => {
                 this.streetModel.isLoading = false;
                 const result = Object.assign(new ResponseModel(), response);

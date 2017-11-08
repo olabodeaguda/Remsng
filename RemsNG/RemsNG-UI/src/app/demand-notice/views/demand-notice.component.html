@@ -32,7 +32,7 @@
                                 <div class="col-xs-12">
                                     <div class="form-group col-md-3">
                                         <label for="wardId">Select Ward</label>
-                                        <select name="wardId" class="form-control" [(ngModel)]="searchModel.wardId">
+                                        <select (change)="loadStreets($event.target.value)" name="wardId" class="form-control" [(ngModel)]="searchModel.wardId">
                                             <option *ngFor="let data of wardLst;" [ngValue]="data.id">{{data.wardName}}</option>
                                         </select>
                                     </div>
@@ -51,7 +51,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
+                            <!--<div class="row">
                                 <div class="col-xs-12">
                                     <div class="form-group col-md-6">
                                         <label for="streetId">Taxpayers Name</label>
@@ -59,11 +59,11 @@
                                     </div>
 
                                 </div>
-                            </div>
+                            </div>-->
                             <div class="row">
                                 <div class="form-group">
                                     <div class="form-group col-sm-3" style="margin-left:13px;">                                        
-                                        <button type="submit" class="btn btn-primary" (click)="action()">Run Demand Notice</button>
+                                        <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary" (click)="submitDemandRequest()">Run Demand Notice</button>
                                     </div>
                                 </div>  
                             </div>
@@ -73,13 +73,18 @@
                                     <table class="table table-bordered table-hover">
                                         <thead>
                                             <th style="width:120px;"></th>
-                                            <th>XXXX</th>
+                                            <th>Batch Number</th>
+                                            <th>Billing Year</th>
+                                            <th>Status</th>
+                                            <th>Errors Updates</th>
                                         </thead>
                                         <tbody>
                                             <tr *ngFor="let data of demandNoticeLst; let i=index">
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
+                                                <td><i class="fa fa-eye"></i> | <i class="fa fa-edit"></i></td>
+                                                <td><a href="javascript:;">{{data.batchNo}}</a></td>
+                                                <td>{{data.billingYear}}</td>
+                                                <td>{{data.demandNoticeStatus}}</td>
+                                                <td><a href="javascript:;">Error update</a></td>
                                             </tr>
                                             <tr *ngIf="demandNoticeLst.length < 1">
                                                 <td style="width:100%" colspan="6">No record !!!</td>

@@ -60,11 +60,14 @@ namespace RemsNG.Dao
             });
         }
 
-        public async Task<Ward> GetWard(Guid id) => await db.Wards.FirstOrDefaultAsync(x => x.id == id);
+        public async Task<Ward> GetWard(Guid id)
+        {
+            return await db.Wards.FirstOrDefaultAsync(x => x.id == id);
+        }
         public async Task<Ward> GetWard(string wardName, Guid lgdaid)
             => await db.Wards.Where(x => x.wardName.ToLower() == wardName.ToLower() && x.lcdaId == lgdaid).FirstOrDefaultAsync();
 
-        public async Task<List<Ward>> GetWardByLGDAId(Guid lgdaId) => await db.Wards.Where(x => x.lcdaId == lgdaId).ToListAsync();
+        public async Task<List<Ward>> GetWardByLGDAId(Guid lgdaId) => await db.Wards.Where(x => x.lcdaId == lgdaId).OrderBy(x=>x.wardName).ToListAsync();
 
         public async Task<bool> Update(Ward ward)
         {
@@ -86,7 +89,6 @@ namespace RemsNG.Dao
 
             return false;
         }
-
-       
+        
     }
 }

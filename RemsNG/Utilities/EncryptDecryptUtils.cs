@@ -54,7 +54,8 @@ namespace RemsNG.Utilities
                 bytes[i] = Convert.ToByte(hexString.Substring(i * 2, 2), 16);
             }
 
-            return Encoding.Unicode.GetString(bytes);
+            string t = Encoding.Unicode.GetString(bytes); ;
+            return t;
         }
     }
 }

@@ -59,6 +59,25 @@ namespace RemsNG.Dao
             return await db.Taxpayers.FromSql($"select tbl_taxPayer.*,'-1' as streetNumber from tbl_taxPayer where streetId = {streetId} and companyId={companyId}").FirstOrDefaultAsync();
         }
 
+        public async Task<List<Taxpayer>> Get(DemandNoticeRequest demandNoticeRequest)
+        {
+            if (demandNoticeRequest.streetId != Guid.Empty)
+            {
+                return await db.Taxpayers.FromSql($"select tbl_taxPayer.*,'-1' as streetNumber from tbl_taxPayer " +
+                    $"where streetId = {demandNoticeRequest.streetId} and taxpayerStatus='ACTIVE'").ToListAsync();
+            }
+            else if (demandNoticeRequest.wardId != Guid.Empty)
+            {
+                return await db.Taxpayers.FromSql($"select tbl_taxPayer.*,'-1' as streetNumber from tbl_taxPayer " +
+                    $"where wardId = {demandNoticeRequest.wardId} and taxpayerStatus='ACTIVE'").ToListAsync();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+
         public async Task<TaxpayerExtension> ById(Guid id)
         {
             return await db.Set<TaxpayerExtension>().FromSql("sp_TaxpayerById @p0", new object[] { id }).FirstOrDefaultAsync();
@@ -138,5 +157,6 @@ namespace RemsNG.Dao
             };
         }
 
+       
     }
 }

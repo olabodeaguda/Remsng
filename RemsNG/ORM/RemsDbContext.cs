@@ -38,6 +38,7 @@ namespace RemsNG.ORM
         public DbSet<CompanyExt> CompanyExts { get; set; }
         public DbSet<CompanyItem> companyItems { get; set; }
         public DbSet<CompanyItemExt> companyItemExts { get; set; }
+        public DbSet<DemandNotice> DemandNotices { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -60,6 +61,7 @@ namespace RemsNG.ORM
             modelBuilder.Entity<Taxpayer>().ToTable("tbl_taxPayer");
             modelBuilder.Entity<Company>().ToTable("tbl_company");
             modelBuilder.Entity<CompanyItem>().ToTable("tbl_companyItem");
+            modelBuilder.Entity<DemandNotice>().ToTable("tbl_demandnotice");
         }
     }
 }
