@@ -9,6 +9,7 @@ namespace RemsNG.ORM
     {
         public Guid id { get; set; }
         public Guid dnId { get; set; }
+        public Guid taxpayerId { get; set; }
         public string taxpayersName { get; set; }
         public string billingNumber { get; set; }
         public string addressName { get; set; }

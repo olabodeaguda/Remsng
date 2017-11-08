@@ -5,6 +5,7 @@
 			  (
 				  id uniqueidentifier not null primary key,
 				  dnId uniqueidentifier not null,
+				  taxpayerId uniqueidentifier not null,
 				  taxpayersName varchar(200) not null,
 				  billingNumber varchar(100) not null,
 				  addressName varchar(250) not null,
@@ -60,8 +61,8 @@ create procedure sp_addDemandNoticeTaxpayer
 )
 as
 begin
-insert into tbl_demandNoticeTaxpayers(id,dnId,taxpayersName,billingNumber,addressName,wardName,lcdaName,billingYr,createdBy,dateCreated)
-	select newid(),@dnId,
+insert into tbl_demandNoticeTaxpayers(id,dnId,taxpayerId,taxpayersName,billingNumber,addressName,wardName,lcdaName,billingYr,createdBy,dateCreated)
+	select newid(),@dnId,@taxpayersId,
 	CONCAT(tbl_taxPayer.surname,' ',tbl_taxPayer.firstname,' ',tbl_taxPayer.lastname),
 	dbo.fn_generateBillingNumber(),
 	concat(tbl_address.addressnumber,', ',tbl_street.streetName),
