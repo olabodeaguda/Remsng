@@ -1,4 +1,5 @@
-﻿using RemsNG.Dao;
+﻿using Newtonsoft.Json;
+using RemsNG.Dao;
 using RemsNG.Models;
 using RemsNG.ORM;
 using RemsNG.Services.Interfaces;
@@ -19,17 +20,20 @@ namespace RemsNG.Services
             demandNoticeDao = new DemandNoticeDao(_db);
         }
 
-        public async Task RegisterTaxpayer(DemandNoticeRequest demandNoticeRequest)
+        public async Task RegisterTaxpayer()
         {
             DemandNotice demandNotice = await demandNoticeDao.DequeueDemandNotice();
 
             if (demandNotice != null)
             {
+                DemandNoticeRequest demandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequest>(demandNotice.query);
                 List<Taxpayer> taxpayers = await taxpayerDao.Get(demandNoticeRequest);
+                // get all demandnotice by taxpayer and year in domainnotce taxpayer table
 
                 if (taxpayers.Count > 0)
                 {
-                    //make sure demand notice have not been raised for the taxpayers by year and taxpayersId
+                  //make sure demand notice have not been raised for the taxpayers by year and taxpayersId
+
 
                 }
 

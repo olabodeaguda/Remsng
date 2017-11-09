@@ -8,6 +8,6 @@ namespace RemsNG.Services.Interfaces
 {
     public interface IRunDemandNoticeService
     {
-        Task RegisterTaxpayer(DemandNoticeRequest demandNoticeRequest);
+        Task RegisterTaxpayer();
     }
 }
