@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace RemsNG.ORM
 {
-    public class DemandNoticeTaxpayersDetails : AbstractModel
+    public class DemandNoticeTaxpayersDetail : AbstractModel
     {
         public Guid id { get; set; }
         public Guid dnId { get; set; }
@@ -14,6 +14,7 @@ namespace RemsNG.ORM
         public string billingNumber { get; set; }
         public string addressName { get; set; }
         public string wardName { get; set; }
+        public string lcdaName { get; set; }
         public int billingYr { get; set; }
     }
 }

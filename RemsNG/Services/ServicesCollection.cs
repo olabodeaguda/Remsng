@@ -88,7 +88,7 @@ namespace RemsNG.Services
 
             services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
             {
-                builder
+                builder 
                   .AllowAnyMethod() //<--this allows preflight headers required for POST
                   .AllowAnyHeader() //<--accepts headers 
                   .AllowCredentials() //<--lets your app send auth credentials
@@ -102,8 +102,8 @@ namespace RemsNG.Services
                     options.Filters.Add(new CorsAuthorizationFilterFactory("CorsPolicy"));
                     //options.Filters.Add(new GlobalExceptionFilter());
                 });
-            services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
             services.AddDbContext<RemsDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IDomainService, DomainService>();
             services.AddTransient<ILcdaService, LcdaService>();
@@ -121,6 +121,7 @@ namespace RemsNG.Services
             services.AddTransient<IAddress, AddressService>();
             services.AddTransient<ICompanyItemService, CompanyItemService>();
             services.AddTransient<IDemandNoticeService, DemanNoticeService>();
+            services.AddTransient<IRunDemandNoticeService, RunDemandNoticeService>();
         }
 
         public static IConfigurationSection jwtAppSettingOptions

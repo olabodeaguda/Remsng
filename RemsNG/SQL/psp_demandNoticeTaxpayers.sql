@@ -61,19 +61,42 @@ create procedure sp_addDemandNoticeTaxpayer
 )
 as
 begin
-insert into tbl_demandNoticeTaxpayers(id,dnId,taxpayerId,taxpayersName,billingNumber,addressName,wardName,lcdaName,billingYr,createdBy,dateCreated)
-	select newid(),@dnId,@taxpayersId,
-	CONCAT(tbl_taxPayer.surname,' ',tbl_taxPayer.firstname,' ',tbl_taxPayer.lastname),
-	dbo.fn_generateBillingNumber(),
-	concat(tbl_address.addressnumber,', ',tbl_street.streetName),
-	tbl_ward.wardName,
-	tbl_lcda.lcdaName,@billingYr,@createdBy,GETDATE()
-	 from tbl_taxPayer 
-	inner join tbl_street on tbl_street.id = tbl_taxPayer.streetId
-	inner join tbl_address on tbl_address.id = tbl_taxpayer.addressId
-	inner join tbl_ward on tbl_ward.id = tbl_street.wardId
-	inner join tbl_lcda on tbl_lcda.id = tbl_ward.lcdaId
-	where tbl_taxPayer.id = @taxpayersId;
+	declare @msg varchar(250);
+	declare @success bit;
+
+	if exists(select * from tbl_demandNoticeTaxpayers where taxpayerId = @taxpayerid and billingYr = @billingYr)
+	begin
+		set @msg = 'Taxpayer already exist';
+		set @success = 0;
+	end
+	else
+	begin
+		insert into tbl_demandNoticeTaxpayers(id,dnId,taxpayerId,taxpayersName,billingNumber,addressName,wardName,lcdaName,billingYr,createdBy,dateCreated)
+			select newid(),@dnId,@taxpayersId,
+			CONCAT(tbl_taxPayer.surname,' ',tbl_taxPayer.firstname,' ',tbl_taxPayer.lastname),
+			dbo.fn_generateBillingNumber(),
+			concat(tbl_address.addressnumber,', ',tbl_street.streetName),
+			tbl_ward.wardName,
+			tbl_lcda.lcdaName,@billingYr,@createdBy,GETDATE()
+			 from tbl_taxPayer 
+			inner join tbl_street on tbl_street.id = tbl_taxPayer.streetId
+			inner join tbl_address on tbl_address.id = tbl_taxpayer.addressId
+			inner join tbl_ward on tbl_ward.id = tbl_street.wardId
+			inner join tbl_lcda on tbl_lcda.id = tbl_ward.lcdaId
+			where tbl_taxPayer.id = @taxpayersId;
+
+			if @@Rowcount > 0
+			begin
+				set @msg = 'Demand notice has been raised successfully';
+				set @success = 1;
+			end
+			else
+			begin
+				set @msg = 'Zero record was affected';
+				set @success = 0;
+			end
+	end
+		select newId() as id,@msg as msg,@success as success
 end
 GO
 IF EXISTS(SELECT *

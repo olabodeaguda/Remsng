@@ -150,10 +150,17 @@ namespace RemsNG.Dao
         {
             return await db.DemandNotices.FromSql("sp_getDemandNotice @p0", new object[] { id }).FirstOrDefaultAsync();
         }
-        
+
         public async Task<DemandNotice> DequeueDemandNotice()
         {
-            return await db.DemandNotices.FromSql("sp_dequeueDemandNotice").FirstOrDefaultAsync();
+            try
+            {
+                return await db.DemandNotices.FromSql("sp_dequeueDemandNotice").FirstOrDefaultAsync();
+            }
+            catch (Exception x)
+            {
+                throw;
+            }
         }
     }
 }

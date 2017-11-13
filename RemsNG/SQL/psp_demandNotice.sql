@@ -198,4 +198,18 @@ IF EXISTS(SELECT *
   end
 GO
 
+IF EXISTS(SELECT *
+          FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_dequeueDemandNotice') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_dequeueDemandNotice
+  GO
+
+  create procedure sp_dequeueDemandNotice
+  as
+  begin
+		update top(1) tbl_demandnotice set demandNoticeStatus = 'PROCESSING'
+output inserted.*,-1 as totalSize
+where id in(select top 1 id from tbl_demandnotice where demandNoticeStatus = 'SUBMITTED')
+  end
+GO
 

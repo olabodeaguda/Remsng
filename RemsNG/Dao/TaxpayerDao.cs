@@ -56,20 +56,21 @@ namespace RemsNG.Dao
 
         public async Task<object> Get(Guid streetId, Guid companyId)
         {
-            return await db.Taxpayers.FromSql($"select tbl_taxPayer.*,'-1' as streetNumber from tbl_taxPayer where streetId = {streetId} and companyId={companyId}").FirstOrDefaultAsync();
+            return await db.Taxpayers.FromSql($"select tbl_taxPayer.*,'-1' as streetNumber from tbl_taxPayer where streetId = '{streetId}' and companyId='{companyId}'").FirstOrDefaultAsync();
         }
 
         public async Task<List<Taxpayer>> Get(DemandNoticeRequest demandNoticeRequest)
         {
-            if (demandNoticeRequest.streetId != Guid.Empty)
+            if (demandNoticeRequest.streetId != Guid.Empty && demandNoticeRequest.streetId != null)
             {
                 return await db.Taxpayers.FromSql($"select tbl_taxPayer.*,'-1' as streetNumber from tbl_taxPayer " +
-                    $"where streetId = {demandNoticeRequest.streetId} and taxpayerStatus='ACTIVE'").ToListAsync();
+                    $"where streetId = '{demandNoticeRequest.streetId}' and taxpayerStatus='ACTIVE'").ToListAsync();
             }
-            else if (demandNoticeRequest.wardId != Guid.Empty)
+            else if (demandNoticeRequest.wardId != Guid.Empty && demandNoticeRequest.wardId != null)
             {
-                return await db.Taxpayers.FromSql($"select tbl_taxPayer.*,'-1' as streetNumber from tbl_taxPayer " +
-                    $"where wardId = {demandNoticeRequest.wardId} and taxpayerStatus='ACTIVE'").ToListAsync();
+                string query = $"select tbl_taxPayer.*,'-1' as streetNumber from tbl_taxPayer " +
+                    $"inner join tbl_street on tbl_taxPayer.streetId = tbl_street.id where tbl_street.wardId = '{demandNoticeRequest.wardId}' and taxpayerStatus='ACTIVE'";
+                return await db.Taxpayers.FromSql(query).ToListAsync();
             }
             else
             {
