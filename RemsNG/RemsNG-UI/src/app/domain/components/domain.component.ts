@@ -3,7 +3,6 @@ import { DomainModel } from '../models/domain.model';
 import { DomainService } from '../services/domain.service';
 import { PageModel } from '../../shared/models/page.model';
 import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
-import { NgbModal, ModalDismissReasons, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppSettings } from '../../shared/models/app.settings';
 import { ResponseModel } from '../../shared/models/response.model';
 declare var jQuery: any;

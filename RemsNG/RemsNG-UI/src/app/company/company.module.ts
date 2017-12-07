@@ -3,7 +3,6 @@ import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { BrowserModule} from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
 import { LaddaModule } from 'angular2-ladda';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { LoginService } from '../shared/services/login.service';
 import { SharedModule } from '../shared/shared.module';
 import { StreetModule } from "../street/street.module";
@@ -23,7 +22,6 @@ const appRoutes: Routes = [
       BrowserModule,
       LaddaModule,
       FormsModule, SharedModule,UserModule,
-      NgbModule.forRoot(),
       ReactiveFormsModule,
       RouterModule.forChild(appRoutes)
     ],

@@ -3,7 +3,6 @@ import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { BrowserModule} from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
 import { LaddaModule } from 'angular2-ladda';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { LoginService } from '../shared/services/login.service';
 import { SharedModule } from '../shared/shared.module';
 import { TaxPayerComponent } from "./components/taxpayer.component";
@@ -19,7 +18,6 @@ const appRoutes: Routes = [
       BrowserModule,
       LaddaModule,
       FormsModule, SharedModule,
-      NgbModule.forRoot(),
       ReactiveFormsModule,
       RouterModule.forChild(appRoutes)
     ],

@@ -106,9 +106,10 @@ namespace RemsNG.Services
 
         private async Task RunArrears(DemandNoticeTaxpayersDetail dntd)
         {
+            // check for unpaid arrears  paid or partly paid
+            // change current arrear status to move
+            // create a new arrears with the status unpaid
             //get previous year demand notice
-            // check for unpaid outstanding payment
-
         }
 
         private async Task RunDemandNoticeItem(DemandNoticeTaxpayersDetail dntd)
