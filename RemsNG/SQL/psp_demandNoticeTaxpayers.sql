@@ -45,8 +45,8 @@ IF EXISTS(SELECT *
 			end
 			return @uniquenumber;
 		end
-
 GO
+
 IF EXISTS(SELECT *
           FROM sys.objects
           WHERE object_id = OBJECT_ID(N'sp_addDemandNoticeTaxpayer') AND type IN (N'P', N'PC'))
@@ -63,8 +63,10 @@ as
 begin
 	declare @msg varchar(250);
 	declare @success bit;
+	declare @billingnumber varchar(100);
+	set @billingnumber = dbo.fn_generateBillingNumber();
 
-	if exists(select * from tbl_demandNoticeTaxpayers where taxpayerId = @taxpayerid and billingYr = @billingYr)
+	if exists(select * from tbl_demandNoticeTaxpayers where taxpayerId = @taxpayersId and billingYr = @billingYr)
 	begin
 		set @msg = 'Taxpayer already exist';
 		set @success = 0;
@@ -74,11 +76,11 @@ begin
 		insert into tbl_demandNoticeTaxpayers(id,dnId,taxpayerId,taxpayersName,billingNumber,addressName,wardName,lcdaName,billingYr,createdBy,dateCreated)
 			select newid(),@dnId,@taxpayersId,
 			CONCAT(tbl_taxPayer.surname,' ',tbl_taxPayer.firstname,' ',tbl_taxPayer.lastname),
-			dbo.fn_generateBillingNumber(),
+			@billingnumber,
 			concat(tbl_address.addressnumber,', ',tbl_street.streetName),
 			tbl_ward.wardName,
 			tbl_lcda.lcdaName,@billingYr,@createdBy,GETDATE()
-			 from tbl_taxPayer 
+			 from tbl_taxPayer(nolock) 
 			inner join tbl_street on tbl_street.id = tbl_taxPayer.streetId
 			inner join tbl_address on tbl_address.id = tbl_taxpayer.addressId
 			inner join tbl_ward on tbl_ward.id = tbl_street.wardId
@@ -87,7 +89,7 @@ begin
 
 			if @@Rowcount > 0
 			begin
-				set @msg = 'Demand notice has been raised successfully';
+				set @msg = @billingnumber;
 				set @success = 1;
 			end
 			else
@@ -110,4 +112,6 @@ begin
 	select top 1 * from tbl_demandnotice where demandNoticeStatus = 'SUBMITTED'
 end
 GO
+
+
 

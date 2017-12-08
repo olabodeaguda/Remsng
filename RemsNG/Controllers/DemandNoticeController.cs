@@ -107,7 +107,7 @@ namespace RemsNG.Controllers
                     description = "Billing year is required"
                 });
             }
-
+            demandNoticeRequest.createdBy = User.Identity.Name;
             DemandNotice demandNotice = new DemandNotice();
             demandNotice.lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
             string encr = JsonConvert.SerializeObject(demandNoticeRequest);

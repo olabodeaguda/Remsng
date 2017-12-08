@@ -16,22 +16,11 @@ namespace RemsNG.Dao
         {
         }
 
-        public async Task<List<DemandNoticeTaxpayersDetail>> getTaxpayerId(string[] ids, int billingYr)
+        public async Task<List<DemandNoticeTaxpayersDetail>> getTaxpayerByIds(string[] ids, int billingYr)
         {
             StringBuilder stringBuilder = new StringBuilder();
             string tIds = stringBuilder.AppendJoin(',', ids).ToString();
-            //for (int i = 0; i < ids.Length; i++)
-            //{
-            //    stringBuilder.Append($"'{ids[0]}'");
-            //    stringBuilder.AppendJoin(',', ids);
-            //    //tIds = tIds + $"'{ids[0]}'";
-            //    if (i < (ids.Length - 1))
-            //    {
-            //        //tIds = tIds + ",";
-            //        stringBuilder.Append(",");
-            //    }
-            //}
-
+           
             string query = $"select * from tbl_demandNoticeTaxpayers where taxpayerId in ({tIds}) and billingYr = {billingYr}";
             return await db.Set<DemandNoticeTaxpayersDetail>().FromSql(query).ToListAsync();
         }
@@ -50,7 +39,8 @@ namespace RemsNG.Dao
                 return new Response()
                 {
                     code = MsgCode_Enum.SUCCESS,
-                    description = dbResponse.msg
+                    data = dbResponse.msg,
+                    description = "Taxpayer has been successfully added"
                 };
             }
             else

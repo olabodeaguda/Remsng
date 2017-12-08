@@ -12,6 +12,7 @@ namespace RemsNG.Models
         public Nullable<Guid> streetId { get; set; }
         public string searchByName { get; set; }
         public int dateYear { get; set; }
+        public string createdBy { get; set; }
     }
 }
 

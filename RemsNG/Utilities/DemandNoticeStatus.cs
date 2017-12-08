@@ -15,6 +15,7 @@ namespace RemsNG.Utilities
         PART_PAYMENT,
         COMPLETED,
         COMPLETED_WITH_LEFTOVER,
-        MOVE_TO_ARREARS
+        MOVE_TO_ARREARS,
+        PAID
     }
 }
