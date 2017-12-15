@@ -17,6 +17,11 @@ namespace RemsNG.Services
             dnTaxpayerDao = new DemandNoticeTaxpayersDao(_db);
         }
 
+        public async Task<DemandNoticeTaxpayersDetail> ByBillingNo(string billingNo)
+        {
+            return await dnTaxpayerDao.ByBillingNo(billingNo);
+        }
+
         public async Task<object> GetDNTaxpayerByBatchIdAsync(string batchId, PageModel pageModel)
         {
             return await dnTaxpayerDao.GetDNTaxpayerByBatchIdAsync(batchId, pageModel);

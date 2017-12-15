@@ -12,6 +12,7 @@ namespace RemsNG.Services.Interfaces
         Task<object> GetDNTaxpayerByBatchIdAsync(string batchId, PageModel pageModel);
         Task<List<DemandNoticeTaxpayersDetail>> GetDNTaxpayerByBatchIdAsync(string batchId);
         Task<DemandNoticeTaxpayersDetail> GetSingleTaxpayerAsync(string taxpayerId, int billingYr);
+        Task<DemandNoticeTaxpayersDetail> ByBillingNo(string billingNo);
 
     }
 }

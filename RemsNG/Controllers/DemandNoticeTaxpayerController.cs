@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RemsNG.Services.Interfaces;
 using RemsNG.Exceptions;
+using RemsNG.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,10 +20,24 @@ namespace RemsNG.Controllers
             dnTaxpayer = _dnTaxpayer;
         }
 
-        [HttpGet]
-        public IEnumerable<string> Get()
+        [HttpGet("billingno/{billingno}")]
+        public async Task<object> GetByBillingNumber([FromRoute]string billingno)
         {
-            return new string[] { "value1", "value2" };
+            if (string.IsNullOrEmpty(billingno))
+            {
+                return BadRequest(new Response()
+                {
+                    code = Utilities.MsgCode_Enum.INVALID_PARAMETER_PASSED,
+                    description = "Billing number is required"
+                });
+            }
+            var tu = await dnTaxpayer.ByBillingNo(billingno);
+
+            return Ok(new Response()
+            {
+                code = Utilities.MsgCode_Enum.SUCCESS,
+                data = new object[] { tu }
+            });
         }
 
         // GET api/values/5
@@ -36,7 +51,7 @@ namespace RemsNG.Controllers
             {
                 throw new InvalidCredentialsException("Batch number is required");
             }
-            return await dnTaxpayer.GetDNTaxpayerByBatchIdAsync(batchno,new Models.PageModel()
+            return await dnTaxpayer.GetDNTaxpayerByBatchIdAsync(batchno, new Models.PageModel()
             {
                 PageNum = int.Parse(pageNum),
                 PageSize = int.Parse(pageSize)

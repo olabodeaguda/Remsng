@@ -27,5 +27,6 @@ namespace RemsNG.Services.Interfaces
         Task<Domain> GetDomain(Guid lcdaId);
         Task<Lgda> Get(DemandNoticeRequest dnr);
         Task<Lgda> GetLcdaExtension(Guid lcdaId);
+        Task<Lgda> ByBillingNumber(String billingno);
     }
 }

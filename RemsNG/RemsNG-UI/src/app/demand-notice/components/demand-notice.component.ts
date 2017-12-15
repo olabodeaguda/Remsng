@@ -50,16 +50,15 @@ export class DemandNoticeComponent implements OnInit {
     }
 
     downloadDN(url: string) {
-        this.isLoading = true;
+        this.isLoadingMini = true;
         this.demandnoticeservice.downloadRpt(url).map(response => {
-              this.isLoading = false;
+              this.isLoadingMini = false;
              let blob = response;
              FileSaver.saveAs(blob,url+".zip");
         }, error => {
-            this.isLoading = false;
+            this.isLoadingMini = false;
             this.toasterService.pop('error',"Download Error",error);
         }).subscribe();
-        
     }
 
     submitDemandRequest() {
@@ -113,18 +112,22 @@ export class DemandNoticeComponent implements OnInit {
             }
             this.batchNo = data.batchNo;
             jQuery(this.downloadRequestModal.nativeElement).modal('show');
+
             this.getRaisedRequest(this.batchNo);
+            setInterval(()=>{                
+                this.getRaisedRequest(this.batchNo);
+            },3000);
         }
     }
 
     getRaisedRequest(batchId:string){
-        this.isLoading = true;
+       // this.isLoading = true;
         this.demandnoticeservice.getRaisedRequest(batchId)
         .subscribe(response=>{
-            this.isLoading = false;
+          //  this.isLoading = false;
             this.dowloadRequestList= response;
         },error=>{
-            this.isLoading = false;
+           // this.isLoading = false;
         })
     }
 

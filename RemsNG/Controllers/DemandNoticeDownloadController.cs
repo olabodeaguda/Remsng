@@ -41,9 +41,19 @@ namespace RemsNG.Controllers
         [HttpGet]
         public async Task<object> Get(string billingno)
         {
+            if (string.IsNullOrEmpty(billingno))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.INVALID_PARAMETER_PASSED,
+                    description = "Billing number is required"
+                });
+            }
+
             HttpClient hc = new HttpClient();
             string rootUrl = $"http://{Request.Host}";
-            var htmlContent = await hc.GetStringAsync($"{rootUrl}/templates/dnTemplateWithheader.html");
+            string template = await dnd.LcdaTemlate(billingno);
+            var htmlContent = await hc.GetStringAsync($"{rootUrl}/templates/{template}");
 
             htmlContent = await dnd.PopulateReportHtml(htmlContent, billingno, rootUrl, User.Identity.Name);
             var result = await nodeServices.InvokeAsync<byte[]>("./pdf", htmlContent);
@@ -55,19 +65,21 @@ namespace RemsNG.Controllers
 
         [Authorize]
         // GET: api/values
-        [Route("bulk/{filename}/{batchno}")]
+        [Route("bulk/{batchno}")]
         [HttpGet]
-        public async Task<object> BulkZip(string batchno, string filename)
+        public async Task<object> BulkZip(string batchno)
         {
+            //log zip download by xxx user
+
             HttpClient hc = new HttpClient();
             string rootUrl = $"http://{Request.Host}";
-            var result = await hc.GetByteArrayAsync($"{rootUrl}/zipReports/{filename}");
+            var result = await hc.GetByteArrayAsync($"{rootUrl}/zipReports/{batchno}/{batchno}.zip");
             if (result.Length < 1)
             {
                 return NotFound(new Response()
                 {
                     code = MsgCode_Enum.NOTFOUND,
-                    description = $"{filename} not found"
+                    description = $"{batchno}.zip not found"
                 });
             }
 

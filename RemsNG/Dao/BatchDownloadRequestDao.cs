@@ -44,10 +44,11 @@ namespace RemsNG.Dao
 
         public async Task<Response> UpdateBatchRequest(BatchDemandNoticeModel bdnModel)
         {
-            DbResponse dbResponse = await db.DbResponses.FromSql("sp_updateBatchDownloadRequest @p0,@p1,@p2", new object[] {
+            DbResponse dbResponse = await db.DbResponses.FromSql("sp_updateBatchDownloadRequest @p0,@p1,@p2,@p3", new object[] {
                 bdnModel.id,
                 bdnModel.requestStatus,
-                bdnModel.createdBy
+                bdnModel.createdBy,
+                bdnModel.batchFileName
             }).FirstOrDefaultAsync();
 
             if (dbResponse.success)

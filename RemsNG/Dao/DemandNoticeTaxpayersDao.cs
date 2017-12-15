@@ -109,10 +109,12 @@ namespace RemsNG.Dao
               new object[] { taxpayerId, billingYr }).FirstOrDefaultAsync();
         }
 
-        public async Task<List<DemandNoticeTaxpayersDetail>> GetTaxpayerByBatchNoAsync(string batchno)
+        public async Task<List<DemandNoticeTaxpayersDetail>> GetDNTaxpayerByBatchNoAsync(string batchno)
         {
-            return await db.DemandNoticeTaxpayersDetails.FromSql("sp_getDemandNoticeByBatchNo @p0",
+            return await db.DemandNoticeTaxpayersDetails.FromSql("sp_getDNDemandNoticeByBatchNo @p0",
               new object[] { batchno }).ToListAsync();
         }
+
+
     }
 }

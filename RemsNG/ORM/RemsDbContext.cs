@@ -50,6 +50,8 @@ namespace RemsNG.ORM
         public DbSet<DemandNoticeDownloadHistory> DemandNoticeDownloadHistories { get; set; }
         public DbSet<LcdaBank> LcdaBanks { get; set; }
         public DbSet<BatchDemandNoticeModel> BatchDemanNoticeModels { get; set; }
+        public DbSet<LcdaProperty> LcdaProperties { get; set; }
+        public DbSet<DNAmountDueModel> DNAmountDueModels { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -82,6 +84,7 @@ namespace RemsNG.ORM
             modelBuilder.Entity<DemandNoticeArrears>().ToTable("tbl_demandNoticeArrears");
             modelBuilder.Entity<DemandNoticeDownloadHistory>().ToTable("tbl_DemandNoticeDownloadHistory");
             modelBuilder.Entity<BatchDemandNoticeModel>().ToTable("tbl_batchDownloadRequest");
+            modelBuilder.Entity<LcdaProperty>().ToTable("tbl_LcdaProperty");
         }
     }
 }

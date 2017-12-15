@@ -35,13 +35,15 @@ namespace RemsNG.Services
             set { _Configuration = value; }
         }
 
-        public static void Initialize(IServiceCollection services, IConfigurationRoot config, ILoggerFactory loggerFactory)
+        public static void Initialize(IServiceCollection services, IConfigurationRoot config,
+            ILoggerFactory loggerFactory)
         {
             Configuration = config;
 
             var builderException = services.AddMvc();
 
             services.AddNodeServices();
+           
             services.Configure<JwtIssuerOptions>(options =>
             {
                 options.Issuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
@@ -134,6 +136,8 @@ namespace RemsNG.Services
             services.AddTransient<IDemandNoticeDownloadHistory, DemandNoticeDownloadHistoryService>();
             services.AddTransient<ILcdaBankService, LcdaBankService>();
             services.AddTransient<IBatchDwnRequestService, BatchDwnRequestService>();
+            services.AddTransient<IListPropertyService, ListPropertyService>();
+            services.AddTransient<IDNAmountDueMgtService, DNAmountDueMgtService>();
 
         }
 

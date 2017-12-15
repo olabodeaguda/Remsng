@@ -10,6 +10,13 @@ using System.Threading.Tasks;
 using System.Security.Claims;
 using RemsNG.Utilities;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
+using System.Net.Http;
+using Microsoft.AspNetCore.NodeServices;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
+using Hangfire;
+using System.IO.Compression;
 
 namespace RemsNG.Services
 {
@@ -32,13 +39,29 @@ namespace RemsNG.Services
         private readonly IImageService imageService;
         private readonly IDnDownloadService dnDownloadService;
         private readonly IBatchDwnRequestService batchDwnRequestService;
+        private readonly IDemandNoticeTaxpayerService demandNoticeTaxpayerService;
+        private ITaxpayerService taxpayerService;
+        private IListPropertyService listPropertyService;
+        private IHttpContextAccessor httpContextAccessor;
+        private INodeServices nodeServices;
+        private IHostingEnvironment hostingEnvironment;
+        private IServiceProvider serviceProvider;
         public RunDemandNoticeService(RemsDbContext _db,
             ILoggerFactory loggerFactory, IAddress _address,
             ILcdaService _lcdaService, IStateService _stateService,
             IImageService _imageService,
-            IDnDownloadService _dnDownloadService, IBatchDwnRequestService _batchDwnRequestService)
+            IDnDownloadService _dnDownloadService, IBatchDwnRequestService _batchDwnRequestService,
+            IDemandNoticeTaxpayerService _demandNoticeTaxpayerService
+            , ITaxpayerService _taxpayerService,
+            IListPropertyService _listPropertyService,
+            IHttpContextAccessor _httpContextAccessor,
+            INodeServices _nodeServices, IHostingEnvironment _hostingEnvironment,
+            IServiceProvider _serviceProvider)
         {
             logger = loggerFactory.CreateLogger("Demand Notice Jobs");
+            nodeServices = _nodeServices;
+            hostingEnvironment = _hostingEnvironment;
+            serviceProvider = _serviceProvider;
             taxpayerDao = new TaxpayerDao(_db);
             demandNoticeDao = new DemandNoticeDao(_db);
             demandNoticeTaxpayersDao = new DemandNoticeTaxpayersDao(_db);
@@ -55,6 +78,10 @@ namespace RemsNG.Services
             stateService = _stateService;
             dnDownloadService = _dnDownloadService;
             batchDwnRequestService = _batchDwnRequestService;
+            demandNoticeTaxpayerService = _demandNoticeTaxpayerService;
+            listPropertyService = _listPropertyService;
+            httpContextAccessor = _httpContextAccessor;
+            taxpayerService = _taxpayerService;
         }
 
         public async Task RegisterTaxpayer()
@@ -113,7 +140,7 @@ namespace RemsNG.Services
                                 dntd.domainName = domainName;
                                 dntd.lcdaAddress = await address.AddressByOwnerId(lcda.id);
                                 dntd.lcdaState = await stateService.StateNameByLcda(lcda.id);
-                                dntd.lcdaLogoFileName = await imageService.ImageNameByOwnerIdAsync(lcda.id, 
+                                dntd.lcdaLogoFileName = await imageService.ImageNameByOwnerIdAsync(lcda.id,
                                     ImgTypesEnum.LOGO.ToString());
                                 dntd.revCoodinatorSigFilen = await imageService.ImageNameByOwnerIdAsync(lcda.id,
                                     ImgTypesEnum.REVENUE_COORDINATOR_SIGNATURE.ToString());
@@ -177,16 +204,81 @@ namespace RemsNG.Services
             }
         }
 
+        [DisableConcurrentExecution(5 * 60)]
         public async Task GenerateBulkDemandNotice()
         {
-            BatchDemandNoticeModel bdnm = await batchDwnRequestService.Dequeue();
-
-            if (bdnm != null)
+            BatchDemandNoticeModel bdnm = null;// await batchDwnRequestService.Dequeue();
+            try
             {
+                bdnm = await batchDwnRequestService.Dequeue();
+                if (bdnm != null)
+                {
+                    List<DemandNoticeTaxpayersDetail> lstOfDN = await demandNoticeTaxpayerService.GetDNTaxpayerByBatchNoAsync(bdnm.batchNo);
+                    if (lstOfDN.Count > 0)
+                    {
+                        var firstTaxpayer = lstOfDN[0];
+                        Lgda lgda = await taxpayerService.getLcda(firstTaxpayer.taxpayerId);
+                        string template = await dnDownloadService.LcdaTemlateByLcda(lgda.id);
 
+                        //string rootUrl = $"http://{context.Request.Host}";
+                        string rootUrl = this.hostingEnvironment.WebRootPath;
+                        string rootPath = Path.Combine(this.hostingEnvironment.WebRootPath, "zipReports", bdnm.batchNo);
+                        if (!Directory.Exists(rootPath))
+                        {
+                            Directory.CreateDirectory(rootPath);
+                        }
+
+                        using (FileStream zipToOpen = new FileStream($"{rootPath}/{bdnm.batchNo}.zip", FileMode.Create))
+                        {
+                            using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
+                            {
+                                foreach (var dnt in lstOfDN)
+                                {
+                                    var htmlContent = await File.ReadAllTextAsync($"{rootUrl}/templates/{template}");
+                                    htmlContent = await dnDownloadService.PopulateReportHtml(htmlContent, dnt.billingNumber, rootUrl, bdnm.createdBy);
+                                    var result = await nodeServices.InvokeAsync<byte[]>("./pdf",
+                                        htmlContent);
+
+                                    string filePath = Path.Combine(rootPath, $"{dnt.billingNumber}.pdf");
+                                    using (FileStream fs = System.IO.File.Create(filePath))
+                                    {
+                                        await fs.WriteAsync(result, 0, result.Length);
+                                        fs.Flush();
+                                    }
+                                    archive.CreateEntryFromFile(filePath, $"{dnt.billingNumber}.pdf");
+                                    //ZipArchiveEntry readmeEntry = archive.CreateEntry(filePath);
+                                }
+                            }
+                        }
+
+                        //update request
+                        Response response = await batchDwnRequestService.UpdateBatchRequest(new BatchDemandNoticeModel
+                        {
+                            id = bdnm.id,
+                            batchFileName = $"{bdnm.batchNo}.zip",
+                            requestStatus = "COMPLETED",
+                            createdBy = "APPLICATION"
+
+                        });
+                    }
+                }
+            }
+            catch (Exception x)
+            {
+                if (bdnm != null)
+                {
+                    Response response = await batchDwnRequestService.UpdateBatchRequest(new BatchDemandNoticeModel
+                    {
+                        id = bdnm.id,
+                        batchFileName = $"{bdnm.batchNo}.zip",
+                        requestStatus = "ERROR",
+                        createdBy = "APPLICATION"
+                    }); 
+                }
+                logger.LogError(x.Message);
             }
         }
-        
+
         public async Task TaxpayerPenalty()
         {
             // scan through demandnoticeitem() check the year/penalty duration compare, if passed then create penalty

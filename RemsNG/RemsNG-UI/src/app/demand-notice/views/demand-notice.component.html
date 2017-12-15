@@ -45,7 +45,7 @@
                                     <tr *ngFor="let data of dowloadRequestList; let i=index">
                                         <td>
                                             <a *ngIf="data.requestStatus === 'COMPLETED'"  
-                                            href="javascript:;" (click)="downloadDN(data.batchFileName)">
+                                            href="javascript:;" (click)="downloadDN(data.batchNo)">
                                                     <i class="fa fa-download"></i> Download
                                                    </a>
                                         </td>
@@ -58,6 +58,8 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            
+                            <div class="loading" *ngIf="isLoadingMini"></div>
                         </div>
                     </div>
                 </div>
@@ -128,7 +130,7 @@
                                     <th>Batch Number</th>
                                     <th>Billing Year</th>
                                     <th>Status</th>
-                                    <th>Errors Updates</th>
+                                   <!-- <th>Errors Updates</th>-->
                                 </thead>
                                 <tbody>
                                     <tr *ngFor="let data of demandNoticeLst; let i=index">
@@ -157,9 +159,9 @@
                                         </td>
                                         <td>{{data.billingYear}}</td>
                                         <td>{{data.demandNoticeStatus}}</td>
-                                        <td>
+                                       <!-- <td>
                                             <a href="javascript:;">Error update</a>
-                                        </td>
+                                        </td>-->
                                     </tr>
                                     <tr *ngIf="demandNoticeLst.length < 1">
                                         <td style="width:100%" colspan="6">No record !!!</td>

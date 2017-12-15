@@ -48,8 +48,8 @@ namespace RemsNG
             {
                 loggerFactory = (ILoggerFactory)new LoggerFactory();
             }
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             ServicesCollection.Initialize(services, Configuration, loggerFactory);
-
             services.AddMvc();
         }
 
@@ -58,7 +58,7 @@ namespace RemsNG
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-            loggerFactory.AddConsole();
+            loggerFactory.AddConsole();            
             loggerFactory.AddFile("Logs/remsng-logs-{Date}.txt");
             DbInitializer.Initialize(dbContext);
             app.UseCors("CorsPolicy");

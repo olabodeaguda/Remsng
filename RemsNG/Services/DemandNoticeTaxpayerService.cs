@@ -8,6 +8,7 @@ using RemsNG.Dao;
 using RemsNG.Models;
 using RemsNG.Exceptions;
 using RemsNG.Utilities;
+using System.Text;
 
 namespace RemsNG.Services
 {
@@ -20,9 +21,10 @@ namespace RemsNG.Services
         private ITaxpayerService taxpayerService;
         private readonly IImageService imageService;
         private readonly ILcdaBankService lcdaBankService;
+        private readonly IListPropertyService lpService;
         public DemandNoticeTaxpayerService(RemsDbContext _db,
             IDemandNoticeItemService _dnItemService, ITaxpayerService _taxpayerService,
-             IImageService _imageService, ILcdaBankService _lcdaBankService)
+             IImageService _imageService, ILcdaBankService _lcdaBankService, IListPropertyService _lpService)
         {
             dntDao = new DemandNoticeTaxpayersDao(_db);
             dnItemService = _dnItemService;
@@ -31,6 +33,7 @@ namespace RemsNG.Services
             taxpayerService = _taxpayerService;
             imageService = _imageService;
             lcdaBankService = _lcdaBankService;
+            lpService = _lpService;
         }
         public async Task<DemandNoticeReportModel> ByBillingNo(string billingNo)
         {
@@ -62,9 +65,16 @@ namespace RemsNG.Services
                     taxpayerId = t.taxpayerId
                 };
                 Lgda lgda = await taxpayerService.getLcda(t.taxpayerId);
+                List<LcdaProperty> ls = new List<LcdaProperty>();
                 if (lgda != null)
                 {
-                    dnrm.lcdaId = lgda.id; 
+                    dnrm.lcdaId = lgda.id;
+                    ls = await lpService.ByLcda(lgda.id);
+                }
+                List<LcdaProperty> coucilNum = ls.Where(z => z.propertyKey == "COUNCIL_TREASURER_MOBILE").ToList();
+                if (coucilNum.Count > 0)
+                {
+                     dnrm.councilTreasurerMobile = String.Join(",", coucilNum.Select(x=>x.propertyValue));
                 }
 
                 dnrm.lcdaLogoFileName = await imageService.ImageNameByOwnerIdAsync(lgda.id,
@@ -75,7 +85,7 @@ namespace RemsNG.Services
                     ImgTypesEnum.COUNCIL_TREASURER_SIGNATURE.ToString());
 
                 List<DemandNoticeItem> dnitem = await dnItemService.ByBillingNumber(billingNo);
-                
+
                 dnrm.items = dnitem.Select(x => new DnReportItem()
                 {
                     itemTitle = x.itemName,
@@ -91,6 +101,8 @@ namespace RemsNG.Services
                 var arrears = await dna.ByBillingNumber(billingNo);
                 dnrm.arrears = arrears.Sum(x => (x.totalAmount - x.amountPaid));
 
+
+
                 return dnrm;
             }
             catch (Exception x)
@@ -99,9 +111,9 @@ namespace RemsNG.Services
             }
         }
 
-        public async Task<List<DemandNoticeTaxpayersDetail>> GetTaxpayerByBatchNoAsync(string batchno)
+        public async Task<List<DemandNoticeTaxpayersDetail>> GetDNTaxpayerByBatchNoAsync(string batchno)
         {
-            return await dntDao.GetTaxpayerByBatchNoAsync(batchno);
+            return await dntDao.GetDNTaxpayerByBatchNoAsync(batchno);
         }
 
 

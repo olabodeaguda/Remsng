@@ -5,4 +5,5 @@ export class DemandNoticeSearch {
     searchByName: string = '';
     dateYear: number = 0;
     isLoading: boolean = false;
+    billingNo: string = ''    
 }

@@ -8,5 +8,7 @@ namespace RemsNG.Services.Interfaces
     public interface IDnDownloadService
     {
         Task<string> PopulateReportHtml(string htmlContent, string billingno, string rootUrl, string createdBy);
+        Task<string> LcdaTemlate(string billingno);
+        Task<string> LcdaTemlateByLcda(Guid lcdaId);
     }
 }

@@ -43,7 +43,8 @@ export class DemandNoticeService {
     }
 
     downloadRpt(url:string){
-        return this.datataservice.getBlob('dndownload/single/'+url)       
+        return this.datataservice.getBlob('dndownload/bulk/'+url)       
         .catch(error => this.datataservice.handleError(error));
     }
+
 }

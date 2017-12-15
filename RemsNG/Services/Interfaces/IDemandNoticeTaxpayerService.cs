@@ -10,6 +10,6 @@ namespace RemsNG.Services.Interfaces
     public interface IDemandNoticeTaxpayerService
     {
         Task<DemandNoticeReportModel> ByBillingNo(string billingNo);
-        Task<List<DemandNoticeTaxpayersDetail>> GetTaxpayerByBatchNoAsync(string batchno);
+        Task<List<DemandNoticeTaxpayersDetail>> GetDNTaxpayerByBatchNoAsync(string batchno);
     }
 }

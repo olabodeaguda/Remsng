@@ -1,4 +1,5 @@
-﻿using RemsNG.Models;
+﻿using RemsNG.Exceptions;
+using RemsNG.Models;
 using RemsNG.ORM;
 using RemsNG.Services.Interfaces;
 using RemsNG.Utilities;
@@ -14,12 +15,19 @@ namespace RemsNG.Services
         private readonly IDemandNoticeTaxpayerService dnts;
         private readonly IDemandNoticeCharges chargesService;
         private readonly IDemandNoticeDownloadHistory demandNoticeDownloadHistory;
+        private readonly ILcdaService lcdaService;
+        private IListPropertyService listPropertyService;
         public DnDownloadService(IDemandNoticeTaxpayerService _dnts,
-            IDemandNoticeCharges _chargesService, IDemandNoticeDownloadHistory _demandNoticeDownloadHistory)
+            IDemandNoticeCharges _chargesService, 
+            IDemandNoticeDownloadHistory _demandNoticeDownloadHistory,
+            ILcdaService _lcdaService,
+            IListPropertyService _listPropertyService)
         {
             dnts = _dnts;
             chargesService = _chargesService;
             demandNoticeDownloadHistory = _demandNoticeDownloadHistory;
+            lcdaService = _lcdaService;
+            listPropertyService = _listPropertyService;
         }
 
         public async Task<string> PopulateReportHtml(string htmlContent, string billingno, string rootUrl, string createdBy)
@@ -81,10 +89,37 @@ namespace RemsNG.Services
             dndh.grandTotal = gtotal;
 
             await demandNoticeDownloadHistory.Add(dndh);
-
-            // log amount printed to users
+            
             return htmlContent;
         }
 
+        public async Task<string> LcdaTemlate(string billingno)
+        {
+            Lgda lgda = await lcdaService.ByBillingNumber(billingno);
+            if (lgda == null)
+            {
+                throw new NotFoundException($" {billingno} parent not found");
+            }
+            List<LcdaProperty> lstProperties = await listPropertyService.ByLcda(lgda.id);
+            var allowPayment = lstProperties
+                .FirstOrDefault(x => x.propertyKey == "ALLOW_PAYMENT_SERVICES" && x.propertyStatus == "ACTIVE");
+            var allowHeader = lstProperties
+               .FirstOrDefault(x => x.propertyKey == "ALLOW_HEADER" && x.propertyStatus == "ACTIVE");
+
+            return CommonList.Template((allowPayment == null ? "0" : allowPayment.propertyValue),
+                (allowHeader == null ? "0" : allowHeader.propertyValue));
+        }
+
+        public async Task<string> LcdaTemlateByLcda(Guid lcdaId)
+        {
+            List<LcdaProperty> lstProperties = await listPropertyService.ByLcda(lcdaId);
+            var allowPayment = lstProperties
+                .FirstOrDefault(x => x.propertyKey == "ALLOW_PAYMENT_SERVICES" && x.propertyStatus == "ACTIVE");
+            var allowHeader = lstProperties
+               .FirstOrDefault(x => x.propertyKey == "ALLOW_HEADER" && x.propertyStatus == "ACTIVE");
+
+            return CommonList.Template((allowPayment == null ? "0" : allowPayment.propertyValue),
+                (allowHeader == null ? "0" : allowHeader.propertyValue));
+        }
     }
 }

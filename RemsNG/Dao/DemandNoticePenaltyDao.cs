@@ -96,8 +96,9 @@ namespace RemsNG.Dao
 
         public async Task<List<DemandNoticeItemPenalty>> ByBillingNumber(string billingno)
         {
+            string query = $"select tbl_demandNoticePenalty.*,0 as billingYr from tbl_demandNoticePenalty where billingNo = '{billingno}'";
             List<DemandNoticeItemPenalty> lstdbItem = await db.DemandNoticeItemPenaties
-                .FromSql($"select tbl_demandNoticePenalty.*,0 as billingYr from tbl_demandNoticePenalty where billingNo = '{billingno}'").ToListAsync();
+                .FromSql(query).ToListAsync();
             return lstdbItem;
         }
 

@@ -75,5 +75,29 @@ namespace RemsNG.Utilities
             return duration;
 
         }
+
+        public static string Template(string allowPayment,string allowHeader)
+        {
+            if (allowPayment == "1" && allowHeader == "1")
+            {
+                return "dnTemplatePaymentHeader.html";
+            }
+            else if(allowPayment == "1" && allowHeader == "0")
+            {
+                return "dnTemplatePayment.html";
+            }
+            else if (allowPayment == "0" && allowHeader == "1")
+            {
+                return "dnTemplateHeader.html";
+            }
+            else if (allowPayment == "0" && allowHeader == "0")
+            {
+                return "dnTemplate.html";
+            }
+            else
+            {
+                return "dnTemplate.html";
+            }
+        }
     }
 }

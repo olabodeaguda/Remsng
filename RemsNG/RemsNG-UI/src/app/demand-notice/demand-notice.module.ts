@@ -10,14 +10,16 @@ import { DemandNoticeComponent } from "./components/demand-notice.component";
 import { DemandNoticeTaxpayersComponent } from './components/demand-noticeTaxpayers.component';
 import { DemandNoticeTaxpayerService } from './services/demand-noticeTaxpayer.service';
 import { DemandNoticeIndexComponent } from './components/demand-notice-index.component';
+import { DemandNoticeSearchComponent } from './components/demand-notice-search.component';
 
 const appRoutes: Routes = [
     { path: 'demandnotice', component: DemandNoticeIndexComponent,
         children:[
             { path: '', component: DemandNoticeComponent, pathMatch: 'full' },
-            { path: 'taxpayer/:batchId', component: DemandNoticeTaxpayersComponent, pathMatch: 'full' }
+            { path: 'taxpayer/:batchId', component: DemandNoticeTaxpayersComponent, pathMatch: 'full' },            
+            { path: 'searchtaxpayer', component: DemandNoticeSearchComponent }
         ]
-    }
+    },
  ];
 
 @NgModule({
@@ -32,12 +34,12 @@ const appRoutes: Routes = [
     ],
     declarations: [
         DemandNoticeComponent,DemandNoticeTaxpayersComponent,
-        DemandNoticeIndexComponent
+        DemandNoticeIndexComponent,DemandNoticeSearchComponent
     ],
     providers: [ DemandNoticeService, DemandNoticeTaxpayerService],
     exports: [
         DemandNoticeComponent,DemandNoticeTaxpayersComponent,
-        DemandNoticeIndexComponent
+        DemandNoticeIndexComponent,DemandNoticeSearchComponent
     ]
   })
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,6 +14,12 @@ namespace RemsNG.Models
         public string searchByName { get; set; }
         public int dateYear { get; set; }
         public string createdBy { get; set; }
+
+        [NotMapped]
+        public string streetName { get; set; }
+
+        [NotMapped]
+        public string wardName { get; set; }
     }
 }
 
