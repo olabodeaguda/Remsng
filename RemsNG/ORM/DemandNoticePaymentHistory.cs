@@ -11,6 +11,7 @@ namespace RemsNG.ORM
         public Guid ownerId { get; set; }
         public string billingNumber { get; set; }
         public decimal amount { get; set; }
+        public decimal charges { get; set; }
         public string paymentMode { get; set; }
         public string referenceNumber { get; set; }
         public Guid bankId { get; set; }

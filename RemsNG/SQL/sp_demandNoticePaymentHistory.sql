@@ -14,7 +14,8 @@
 				  createdBy varchar(100) not null,
 				  dateCreated datetime default getDate(),
 				  lastmodifiedby varchar(100),
-				  lastModifiedDate datetime
+				  lastModifiedDate datetime,
+				  paymentStatus varchar(50) default 'COMPLETED'
 			  )
 GO
 
