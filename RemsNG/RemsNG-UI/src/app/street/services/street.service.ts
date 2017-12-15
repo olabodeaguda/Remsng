@@ -14,6 +14,9 @@ export class StreetService{
     }
 
     byWardIdpaginated(wardid: string, pageModel:PageModel){
+        if(pageModel.pageNum === 0){
+            pageModel.pageNum = 1;
+        }
         this.dataService.addToHeader("pageNum", pageModel.pageNum.toString());
         this.dataService.addToHeader("pageSize", pageModel.pageSize.toString());
         return this.dataService.get('street/paginated/'+wardid).catch(x=> this.dataService.handleError(x));

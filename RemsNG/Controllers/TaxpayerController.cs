@@ -9,11 +9,13 @@ using RemsNG.Utilities;
 using RemsNG.ORM;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace RemsNG.Controllers
 {
+    [Authorize]
     [Route("api/v1/taxpayer")]
     public class TaxpayerController : Controller
     {

@@ -17,7 +17,9 @@ namespace RemsNG.Dao
 
         public async Task<Response> AddUnpaidArrearsAsync(DN_ArrearsModel dN_ArrearsModel)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_MovedDemandNoticeArrears @p0, @p1, @p2, @p3, @p4", new object[] {
+            try
+            {
+                DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_MovedDemandNoticeArrears @p0, @p1, @p2, @p3, @p4", new object[] {
                 dN_ArrearsModel.billingNo,
                 dN_ArrearsModel.taxpayerId,
                 dN_ArrearsModel.billingYr,
@@ -25,27 +27,34 @@ namespace RemsNG.Dao
                 dN_ArrearsModel.createdBy
             }).FirstOrDefaultAsync();
 
-            if (dbResponse.success)
-            {
-                return new Response()
+                if (dbResponse.success)
                 {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = dbResponse.msg
-                };
+                    return new Response()
+                    {
+                        code = MsgCode_Enum.SUCCESS,
+                        description = dbResponse.msg
+                    };
+                }
+                else
+                {
+                    return new Response()
+                    {
+                        code = MsgCode_Enum.FAIL,
+                        description = dbResponse.msg
+                    };
+                }
             }
-            else
+            catch (Exception x)
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = dbResponse.msg
-                };
+                throw;
             }
         }
 
         public async Task<Response> AddUnpaidDemandNoticeToArrearsAsync(DN_ArrearsModel dN_ArrearsModel)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_previousDemandNoticeArrears @p0, @p1, @p2, @p3, @p4", new object[] {
+            try
+            {
+                DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_previousDemandNoticeArrears @p0, @p1, @p2, @p3, @p4", new object[] {
                 dN_ArrearsModel.billingNo,
                 dN_ArrearsModel.taxpayerId,
                 dN_ArrearsModel.previousBillingYr,
@@ -53,23 +62,35 @@ namespace RemsNG.Dao
                 dN_ArrearsModel.createdBy
             }).FirstOrDefaultAsync();
 
-            if (dbResponse.success)
-            {
-                return new Response()
+                if (dbResponse.success)
                 {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = dbResponse.msg
-                };
+                    return new Response()
+                    {
+                        code = MsgCode_Enum.SUCCESS,
+                        description = dbResponse.msg
+                    };
+                }
+                else
+                {
+                    return new Response()
+                    {
+                        code = MsgCode_Enum.FAIL,
+                        description = dbResponse.msg
+                    };
+                }
             }
-            else
+            catch (Exception x)
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = dbResponse.msg
-                };
+
+                throw;
             }
         }
 
+        public async Task<List<DemandNoticeArrears>> ByBillingNumber(string billingno)
+        {
+            List<DemandNoticeArrears> lstdbItem = await db.DemandNoticeArrearss
+                .FromSql($"select tbl_demandNoticeArrears.*, 0 as billingYr from tbl_demandNoticeArrears where billingNo = {billingno}").ToListAsync();
+            return lstdbItem;
+        }
     }
 }

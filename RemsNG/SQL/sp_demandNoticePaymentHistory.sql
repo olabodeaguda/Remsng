@@ -7,6 +7,7 @@
 				  ownerId uniqueidentifier not null,
 				  billingNumber varchar(100) not null,
 				  amount decimal(10,2) not null default 0.0,
+				  charges decimal(10,2) not null default 0.0,
 				  paymentMode varchar(150) not null,
 				  referenceNumber varchar(250) not null,
 				  bankId uniqueidentifier not null,

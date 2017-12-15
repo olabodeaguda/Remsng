@@ -212,4 +212,31 @@ output inserted.*,-1 as totalSize
 where id in(select top 1 id from tbl_demandnotice where demandNoticeStatus = 'SUBMITTED')
   end
 GO
+ IF EXISTS(SELECT *
+          FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_demandNoticePaginated') AND type IN (N'P', N'PC'))
+  DROP PROCEDURE sp_demandNoticePaginated
+  GO
+
+  create procedure sp_demandNoticePaginated
+  (
+	@pageNum int,
+	@pageSize int
+  )
+  as
+  begin
+		IF @pageSize = 0 or @pageSize>100
+            SET @pageSize = 100;
+        IF @pageNum = 0
+            SET @pageNum = 1;
+
+		declare @count int;
+		select @count = count(*) from tbl_demandnotice;
+
+		select tbl_demandnotice.*,@count as totalSize from tbl_demandnotice
+		order by dateCreated desc
+		  OFFSET @PageSize * (@PageNum - 1) ROWS
+                 FETCH NEXT @PageSize ROWS ONLY;
+  end
+GO
 

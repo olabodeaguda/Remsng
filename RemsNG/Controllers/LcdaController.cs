@@ -77,7 +77,7 @@ namespace RemsNG.Controllers
             else
             {
                 Guid currentDomain = ClaimExtension.GetDomainId(User.Claims.ToArray());
-                if(currentDomain == Guid.Empty)
+                if (currentDomain == Guid.Empty)
                 {
                     return new List<Lgda>();
                 }
@@ -112,8 +112,7 @@ namespace RemsNG.Controllers
         [HttpGet]
         public async Task<object> Get([FromHeader] string pageSize, [FromHeader] string pageNum)
         {
-            var hasClaim = User.Claims.Any(x => x.Type == ClaimTypes.NameIdentifier && x.Value.ToLower() == "mos-admin");
-            if (hasClaim)
+            if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
             {
                 pageSize = string.IsNullOrEmpty(pageSize) ? "1" : pageSize;
                 pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
@@ -121,22 +120,17 @@ namespace RemsNG.Controllers
             }
             else
             {
-                var domainId = User.Claims.FirstOrDefault(x => x.Type == "Domain");
-                if (domainId != null)
+                var domainId = ClaimExtension.GetDomainId(User.Claims.ToArray());
+                if (domainId != Guid.Empty)
                 {
-                    Guid dId = Guid.Empty;
-                    bool v = Guid.TryParse(domainId.Value, out dId);
-                    if (v)
+                    Lgda lgda = await lcdaService.Get(domainId);
+                    List<Lgda> cd = new List<Lgda>();
+                    cd.Add(lgda);
+                    return new
                     {
-                        Lgda lgda = await lcdaService.Get(dId);
-                        List<Lgda> cd = new List<Lgda>();
-                        cd.Add(lgda);
-                        return new
-                        {
-                            data = cd,
-                            totalPageCount = 1
-                        }; 
-                    }
+                        data = cd,
+                        totalPageCount = 1
+                    };
                 }
             }
             return new object[] { };
@@ -432,6 +426,6 @@ namespace RemsNG.Controllers
             }
 
         }
-        
+
     }
 }

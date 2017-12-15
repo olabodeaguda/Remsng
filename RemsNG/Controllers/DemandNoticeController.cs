@@ -35,7 +35,8 @@ namespace RemsNG.Controllers
         public async Task<object> ByLcda([FromHeader] string pageSize, [FromHeader] string pageNum)
         {
             Guid lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
-            if (lcdaId == default(Guid))
+            bool ismosdmin = ClaimExtension.IsMosAdmin(User.Claims.ToArray());
+            if (lcdaId == default(Guid) && !ismosdmin)
             {
                 return BadRequest(new Response()
                 {
@@ -47,11 +48,22 @@ namespace RemsNG.Controllers
             pageSize = string.IsNullOrEmpty(pageSize) ? "1" : pageSize;
             pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
 
-            return await demandService.ByLcdaId(lcdaId, new PageModel()
+            if (!ismosdmin)
             {
-                PageNum = int.Parse(pageNum),
-                PageSize = int.Parse(pageSize)
-            });
+                return await demandService.ByLcdaId(lcdaId, new PageModel()
+                {
+                    PageNum = int.Parse(pageNum),
+                    PageSize = int.Parse(pageSize)
+                }); 
+            }
+            else
+            {
+                return await demandService.All(new PageModel()
+                {
+                    PageNum = int.Parse(pageNum),
+                    PageSize = int.Parse(pageSize)
+                });
+            }
         }
 
         [HttpGet("{id}")]
@@ -66,7 +78,49 @@ namespace RemsNG.Controllers
                 });
             }
 
-            return await demandService.GetById(id);
+            var result = await demandService.GetById(id);
+            result.query = Utilities.EncryptDecryptUtils.FromHexString(result.query);
+            Response response = new Models.Response();
+            response.data = result;
+            if (result != null)
+            {
+                response.code = MsgCode_Enum.SUCCESS;
+            }
+            else
+            {
+                response.code = MsgCode_Enum.NOTFOUND;
+                response.description = $"Record not found";
+            }
+
+            return response;
+        }
+
+        [HttpGet("batchno/{id}")]
+        public async Task<object> GetByBatchNumber(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Bad request"
+                });
+            }
+            var result = await demandService.GetByBatchId(id);
+            result.query = Utilities.EncryptDecryptUtils.FromHexString(result.query);
+            Response response = new Models.Response();
+            response.data = result;
+            if (result != null)
+            {
+                response.code = MsgCode_Enum.SUCCESS;
+            }
+            else
+            {
+                response.code = MsgCode_Enum.NOTFOUND;
+                response.description = $"{id} not found";
+            }
+
+            return response;
         }
 
         [HttpPost]
@@ -107,6 +161,8 @@ namespace RemsNG.Controllers
                     description = "Billing year is required"
                 });
             }
+
+
             demandNoticeRequest.createdBy = User.Identity.Name;
             DemandNotice demandNotice = new DemandNotice();
             demandNotice.lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());

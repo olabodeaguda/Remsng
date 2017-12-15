@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { DataService } from "../../shared/services/data.service";
 import { PageModel } from "../../shared/models/page.model";
 import { DemandNoticeSearch } from "../models/demand-notice.search";
+import { retry } from 'rxjs/operators/retry';
 
 @Injectable()
 export class DemandNoticeService {
@@ -15,6 +16,10 @@ export class DemandNoticeService {
         return this.datataservice.get('demandnotice/bylcda').catch(error => this.datataservice.handleError(error));
     }
 
+    bybatchId(batchno:string){
+        return this.datataservice.get('demandnotice/batchno/'+batchno).catch(error => this.datataservice.handleError(error));
+    }
+
     add(searchModel: DemandNoticeSearch) {
         let s = {
             wardId: searchModel.wardId,
@@ -25,5 +30,20 @@ export class DemandNoticeService {
         };
 
         return this.datataservice.post('demandnotice', s).catch(x => this.datataservice.handleError(x));
+    }
+
+    adDownloadRequest(batchno: string){
+        return this.datataservice.post('dndownload/'+batchno, {})
+        .catch(x => this.datataservice.handleError(x));
+    }
+
+    getRaisedRequest(batchno:string){
+        return this.datataservice.get('dndownload/'+batchno)
+        .catch(x => this.datataservice.handleError(x));
+    }
+
+    downloadRpt(url:string){
+        return this.datataservice.getBlob('dndownload/single/'+url)       
+        .catch(error => this.datataservice.handleError(error));
     }
 }

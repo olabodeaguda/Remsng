@@ -24,7 +24,7 @@ export class DataService {
         if (this.map.get(key) != null) {
             this.map.delete(key);
         }
-        
+
         this.map.set(key, value);
     }
 
@@ -41,44 +41,56 @@ export class DataService {
         this.map.forEach((v: string, k: string) => {
             headerObj[k] = v;
         });
-        return headerObj; 
+        return headerObj;
     }
 
-    getWithoutHeader(url): Observable<Response> {
+    getWithoutHeader(url): Observable<object> {
         return this.http.get(this.appConfig.BASE_URL + url, {
             headers: new HttpHeaders(this.getHeader())
         });
     }
 
-    get(url): Observable<Response> {
+    get(url): Observable<object> {
         this.addBearer();
         return this.http.get(this.appConfig.BASE_URL + url, {
             headers: new HttpHeaders(this.getHeader())
         });
     }
 
-    post(url, body): Observable<Response> {
+    getBlob(url): Observable<any> {
+        const tk: UserModel = this.storageService.get();
+       
+        const options = {
+            headers: new HttpHeaders({
+                'Authorization': 'Bearer ' + tk.tk
+            })
+            , responseType: 'blob' as 'blob'
+        };
+
+        return this.http.get((this.appConfig.BASE_URL + url), options);
+    }
+
+    post(url, body): Observable<object> {
         this.addBearer();
         return this.http.post(this.appConfig.BASE_URL + url, body, {
             headers: new HttpHeaders(this.getHeader())
         });
     }
 
-
-    postWithoutHeader(url, body): Observable<Response> {
+    postWithoutHeader(url, body): Observable<object> {
         return this.http.post(this.appConfig.BASE_URL + url, body, {
             headers: new HttpHeaders(this.getHeader())
         });
     }
 
-    put(url, body): Observable<Response> {
+    put(url, body): Observable<object> {
         this.addBearer();
         return this.http.put(this.appConfig.BASE_URL + url, body, {
             headers: new HttpHeaders(this.getHeader())
         });
     }
 
-    delete(url): Observable<Response> {
+    delete(url): Observable<object> {
         this.addBearer();
         return this.http.delete(this.appConfig.BASE_URL + url, {
             headers: new HttpHeaders(this.getHeader())

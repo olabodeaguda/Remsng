@@ -15,12 +15,15 @@ namespace RemsNG.Services
         private readonly LcdaDao lcdaDao;
         private readonly RoleDao roleDao;
         private readonly TaxpayerDao taxpayerDao;
-
+        private readonly WardDao wardDao;
+        private readonly StreetDao streetDao;
         public LcdaService(RemsDbContext _db, ILoggerFactory loggerFactory)
         {
             lcdaDao = new LcdaDao(_db,loggerFactory);
             roleDao = new RoleDao(_db, loggerFactory);
             taxpayerDao = new TaxpayerDao(_db);
+            wardDao = new WardDao(_db);
+            streetDao = new StreetDao(_db,loggerFactory);
         }
 
         public async Task<List<Lgda>> ActiveLCDAByDomainId(Guid domainId)
@@ -98,6 +101,43 @@ namespace RemsNG.Services
         public async Task<Lgda> ByStreet(Guid streetId)
         {
             return await lcdaDao.ByStreet(streetId);
+        }
+
+        public async Task<Domain> GetDomain(Guid lcdaId)
+        {
+            return await lcdaDao.GetDomain(lcdaId);
+        }
+
+        public async Task<Lgda> Get(DemandNoticeRequest dnr)
+        {
+            Lgda lgda = null;
+            if (dnr.wardId != null)
+            {
+                Ward ward = await wardDao.GetWard(dnr.wardId.Value);
+                if (ward != null)
+                {
+                    lgda = await lcdaDao.Get(ward.lcdaId);
+                }
+            }
+            else if (dnr.streetId != null)
+            {
+                Street str = await streetDao.ById(dnr.streetId.Value);
+                if (str != null)
+                {
+                    Ward ward = await wardDao.GetWard(str.wardId);
+                    if (ward != null)
+                    {
+                        lgda = await lcdaDao.Get(ward.lcdaId);
+                    }
+                }
+            }
+
+            return lgda;
+        }
+
+        public async Task<Lgda> GetLcdaExtension(Guid lcdaId)
+        {
+            return await lcdaDao.GetLcdaExtension(lcdaId);
         }
     }
 }

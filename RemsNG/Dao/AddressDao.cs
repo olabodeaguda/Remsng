@@ -116,6 +116,11 @@ namespace RemsNG.Dao
             return await db.Addresses.FromSql("sp_lcdaAddressByOwnerId @p0, @p1", new object[] { id, lcdaId }).ToListAsync();
         }
 
+        public async Task<List<Address>> ByOwnersId(Guid id)
+        {
+            return await db.Addresses.FromSql("sp_AddressByOwnerId @p0", new object[] { id }).ToListAsync();
+        }
+
         public async Task<Address> ById(Guid id) => await db.Addresses.FromSql($"select tbl_address.*,'none' as streetName from tbl_address where id = {id} ").FirstOrDefaultAsync();
 
     }

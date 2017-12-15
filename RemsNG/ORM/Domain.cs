@@ -14,5 +14,6 @@ namespace RemsNG.ORM
         public string domainStatus { get; set; }
         public Guid addressId { get; set; }
         public string domainType { get; set; }
+        public Guid? stateId { get; set; }
     }
 }

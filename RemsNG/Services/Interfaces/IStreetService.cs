@@ -17,5 +17,6 @@ namespace RemsNG.Services.Interfaces
         Task<int> ByWardCount(Guid wardId);
         Task<object> ByWardpaginated(Guid wardId, Models.PageModel pageModel);
         Task<List<Street>> ByLcda(Guid lcdaId);
+        Task<Domain> GetDomain(Guid streetId);
     }
 }

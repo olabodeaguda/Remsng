@@ -30,7 +30,8 @@ export class DomainService {
     add(domainModel: DomainModel) {
         return this.dataService.post('domain/create', {
             domainName: domainModel.domainName,
-            domainCode: domainModel.domainCode
+            domainCode: domainModel.domainCode,
+            stateId: domainModel.stateId
         }).catch(error => this.dataService.handleError(error));
     }
 
@@ -38,7 +39,8 @@ export class DomainService {
         return this.dataService.post('domain/update', {
             domainName: domainModel.domainName,
             domainCode: domainModel.domainCode,
-            id: domainModel.id
+            id: domainModel.id,
+            stateId: domainModel.stateId
         }).catch(error => this.dataService.handleError(error));
     }
 

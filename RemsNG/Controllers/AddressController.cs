@@ -27,6 +27,13 @@ namespace RemsNG.Controllers
             return await addressservice.ByOwnersId(id, lcdaId);
         }
 
+        [Route("ownerid/{id}")]
+        [HttpGet]
+        public async Task<object> GetByownerId([FromRoute] Guid id)
+        {
+            return await addressservice.ByOwnersId(id);
+        }
+
         // GET api/values/5
         [HttpGet("{id}")]
         public string Get(int id)

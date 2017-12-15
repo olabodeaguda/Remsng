@@ -23,9 +23,30 @@ namespace RemsNG.Services
             return await addressDao.Add(address);
         }
 
+        public async Task<string> AddressByOwnerId(Guid ownerId)
+        {
+            string address = string.Empty;
+            var addLst = await ByOwnersId(ownerId);
+            if (addLst.Count > 0)
+            {
+                Address d = addLst.FirstOrDefault();
+                if (d != null)
+                {
+                    address = $"{d.addressnumber}, {d.streetName}";
+                }
+            }
+
+            return address;
+        }
+
         public async Task<Address> ById(Guid id)
         {
             return await addressDao.ById(id);
+        }
+
+        public async Task<List<Address>> ByOwnersId(Guid ownerId)
+        {
+            return await addressDao.ByOwnersId(ownerId);
         }
 
         public async Task<List<Address>> ByOwnersId(Guid ownerId, Guid lcdaId)

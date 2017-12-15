@@ -52,6 +52,11 @@ namespace RemsNG.Services
             return await streetDao.ChangeStatus(id, streetStatus);
         }
 
+        public async Task<Domain> GetDomain(Guid streetId)
+        {
+            return await streetDao.GetDomain(streetId);
+        }
+
         public async Task<Response> Update(Street street)
         {
             return await streetDao.Update(street);

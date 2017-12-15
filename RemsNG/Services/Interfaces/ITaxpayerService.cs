@@ -17,5 +17,6 @@ namespace RemsNG.Services.Interfaces
         Task<Response> Update(Taxpayer taxpayer);
         Task<List<TaxpayerExtension>> ByLcdaId(Guid lcdaId);
         Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel);
+        Task<Lgda> getLcda(Guid taxpayerId);
     }
 }

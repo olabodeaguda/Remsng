@@ -25,7 +25,7 @@ namespace RemsNG.Dao
                 throw new DuplicateCompanyException("Company already exist on the street");
             }
 
-            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addTaxpayer @p0,@p1,@p2,@p3,@p4", new object[] {
+            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addTaxpayer @p0,@p1,@p2,@p3,@p4,@p5,@p6,@p7", new object[] {
                     taxpayer.id,
                     taxpayer.companyId,
                     taxpayer.streetId,
@@ -56,7 +56,8 @@ namespace RemsNG.Dao
 
         public async Task<object> Get(Guid streetId, Guid companyId)
         {
-            return await db.Taxpayers.FromSql($"select tbl_taxPayer.*,'-1' as streetNumber from tbl_taxPayer where streetId = '{streetId}' and companyId='{companyId}'").FirstOrDefaultAsync();
+            string query = $"select tbl_taxPayer.*,'-1' as streetNumber from tbl_taxPayer where streetId = '{streetId}' and companyId='{companyId}'";
+            return await db.Taxpayers.FromSql(query).FirstOrDefaultAsync();
         }
 
         public async Task<List<Taxpayer>> Get(DemandNoticeRequest demandNoticeRequest)
@@ -158,6 +159,15 @@ namespace RemsNG.Dao
             };
         }
 
-       
+       public async Task<Lgda> getLcda(Guid taxpayerId)
+        {
+            string query = $"select distinct ld.* from tbl_lcda as ld ";
+            query = query + $"inner join tbl_ward as wd on wd.lcdaId = ld.id ";
+            query = query + $"inner join tbl_street as st on st.wardId = wd.id ";
+            query = query + $"inner join tbl_taxPayer as tp on tp.streetId = st.id ";
+            query = query + $"where tp.id= '{taxpayerId}'";
+
+            return await db.lgdas.FromSql(query).FirstOrDefaultAsync();
+        }
     }
 }

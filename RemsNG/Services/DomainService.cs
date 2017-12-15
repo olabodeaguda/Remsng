@@ -38,7 +38,6 @@ namespace RemsNG.Services
             return await domainDao.byDomainId(domainId);
         }
 
-
         public async Task<List<Domain>> GetDomainByUsername(string username)
         {
             return await domainDao.GetUserDomainByUsername(username);
@@ -68,5 +67,6 @@ namespace RemsNG.Services
         {
             return await domainDao.DomainbyLCDAId(lcdaId);
         }
+       
     }
 }

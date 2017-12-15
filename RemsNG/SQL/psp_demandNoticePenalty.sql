@@ -19,7 +19,6 @@
 			  )
 GO
 
-
 IF EXISTS(SELECT *
           FROM sys.objects
           WHERE object_id = OBJECT_ID(N'sp_moveTaxpayersPenalty') AND type IN (N'P', N'PC'))
@@ -39,7 +38,7 @@ begin
 	
 	select * into #currentItemDemandNotice from tbl_demandNoticePenalty as dnp
 	where dnp.taxpayerId = @taxpayerId 
-	and dnp.itemPenaltyStatus in ('PENDING','PART_PAYMENT');
+	and dnp.itemPenaltyStatus in ('PENDING','PART_PAYMENT') and billingYear < @billingYr;
 
 	insert into tbl_demandNoticePenalty(id,billingNo,taxpayerId,totalAmount, amountPaid,itemId,originatedYear,
 	billingYear,itemPenaltyStatus,createdBy,dateCreated,lastmodifiedby,lastModifiedDate)
@@ -62,3 +61,28 @@ begin
 end
 GO
 
+IF EXISTS(SELECT *
+          FROM sys.objects
+          WHERE object_id = OBJECT_ID(N'sp_penaltyTracker') AND type IN (N'P', N'PC'))
+		  drop procedure sp_penaltyTracker
+GO
+create procedure sp_penaltyTracker
+as
+begin
+	
+	select CONCAT(taxpayerId,billingNo,itemId) as identityV into #penalizeAmount from tbl_demandNoticeItem where 
+	tbl_demandNoticeItem.itemStatus in ('PENDING','PART_PAYMENT');
+
+	;with alreadyPenalized(taxpayerId) as (
+			select taxpayerId from tbl_demandNoticePenalty 
+			where CONCAT(taxpayerId,billingNo,itemId) = (select top 1 identityV from #penalizeAmount)
+	)
+	select distinct tbl_demandNoticeItem.*,tbl_itempenalty.amount as penaltyAmount,tbl_itempenalty.duration from tbl_demandNoticeItem
+	inner join tbl_itempenalty on tbl_itempenalty.itemId = tbl_demandNoticeItem.itemId
+	inner join tbl_demandNotice as dd on dd.id = tbl_demandNoticeItem.dn_taxpayersDetailsId
+	where tbl_itempenalty.penaltyStatus = 'ACTIVE' and tbl_demandNoticeItem.itemStatus in ('PENDING','PART_PAYMENT')
+	and( tbl_demandNoticeItem.taxpayerId not in(select taxpayerId from alreadyPenalized))
+
+end
+
+GO

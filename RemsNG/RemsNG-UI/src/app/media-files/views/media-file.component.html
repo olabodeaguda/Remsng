@@ -1,0 +1,93 @@
+
+<div class="modal fade" role="dialog" id="addModal" #addModal>
+    <div class=" modal-dialog ">
+        <div class="modal-content " style="width:500px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Upload Image</h4>
+            </div>
+            <form role="form">
+                <div class="modal-body clearfix ">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Fill in the details</h3>
+                        </div>
+                       
+                        <div class="box-body">
+                            <div class="form-group">
+                                <label for="imgType">Select Type</label>
+                                <select id="imgType" name="imgType" class="form-control" [(ngModel)]="mediaModel.imgType">
+                                    <option value="none" selected="selected">None</option>
+                                    <option *ngFor="let data of imgTypes;" [ngValue]="data">{{data}}</option>
+                                </select>
+                            </div>
+                            <div class="form-group" >
+                                <input id='fileupload' type="file" accept="image/*"
+                                 (change)="changeListener($event)">
+                            </div>
+                        </div>
+                        <div class="box-footer">
+                            <button [ladda]="mediaModel.isLoading" type="submit" class="btn btn-primary" (click)="addImage()">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="loading" *ngIf="isfileLoading"></div>
+    </div>
+</div>
+
+<div class="wrapper hold-transition skin-blue fixed sidebar-mini">
+    <app-hd></app-hd>
+    <app-sbar></app-sbar>
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>
+                Manage LCDA Images
+                <small>Manage LCDA ({{lgda.lcdaName}}).</small>
+            </h1>
+        </section>
+
+        <section class="content" style="border-style:thin">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h3 class="box-title">Images List</h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <p>
+                                <button class="btn btn-primary" (click)="openAdd()">
+                                    <i class="fa fa-plus"></i> Add/Update</button>
+                            </p>
+                            <table id="example2" class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="width:50px;"></th>
+                                        <th>Image Type</th>
+                                        <th>Views</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let data of imgLst; let i=index">
+                                        <td>{{(i+1)}}</td>
+                                        <td>{{data.imgType}}</td>
+                                        <td><img [src]="sanitize(data.imgFilename)" 
+                                            style="width:50px;height:50px;" /></td>
+                                    </tr>
+                                    <tr *ngIf="imgLst.length < 1">
+                                        <td style="width:100%" colspan="5">No record !!!</td>
+                                    </tr>
+                                </tbody>                                
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+</div>
+<ft></ft>
+<div class="loading" *ngIf="isLoading"></div>

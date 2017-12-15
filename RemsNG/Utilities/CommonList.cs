@@ -45,5 +45,35 @@ namespace RemsNG.Utilities
 
             return batchno;
         }
+
+        public static List<string> CurrentDurations(DateTime dateDuration)
+        {
+            List<string> duration = new List<string>();
+            DateTime currentDate = DateTime.Now;
+            
+            if (currentDate.CompareTo(dateDuration.AddDays(1))>= 1)
+            {
+                duration.Add(DurationEnum.DAILY.ToString());
+            }
+            if(currentDate.CompareTo(dateDuration.AddDays(7)) >= 1)
+            {
+                duration.Add(DurationEnum.WEEKELY.ToString());
+            }
+            if (currentDate.Month > dateDuration.Month)
+            {
+                duration.Add(DurationEnum.MONTHLY.ToString());
+            }
+            if (currentDate.Month > 4)
+            {
+                duration.Add(DurationEnum.QUARTERLY.ToString());
+            }
+            if (currentDate.Month > 10)
+            {
+                duration.Add(DurationEnum.YEARLY.ToString());
+            }
+
+            return duration;
+
+        }
     }
 }

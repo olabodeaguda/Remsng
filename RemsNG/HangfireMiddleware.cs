@@ -24,12 +24,14 @@ namespace RemsNG
 
             try
             {
-                RecurringJob.AddOrUpdate(() => runDemandNoticeService.RegisterTaxpayer(), Cron.MinuteInterval(3));
+                RecurringJob.AddOrUpdate(() => runDemandNoticeService.RegisterTaxpayer(), Cron.MinuteInterval(6));
+                RecurringJob.AddOrUpdate(() => runDemandNoticeService.TaxpayerPenalty(), Cron.MinuteInterval(4));
+                RecurringJob.AddOrUpdate(() => runDemandNoticeService.GenerateBulkDemandNotice(), Cron.MinuteInterval(3));
                 await next(context);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.Message, "Hangfire");
+                logger.LogError(ex.Message, "Scheduler exception");
             }
         }
     }

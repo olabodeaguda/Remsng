@@ -30,6 +30,8 @@ import { CompanyItemModule } from "./companyitems/companyitem.module";
 import { HTTP_INTERCEPTORS } from "@angular/common/http";
 import { GlobalInterceptorService } from "./shared/services/global-interceptor.service";
 import {HttpClientModule} from '@angular/common/http';
+import { MediaFilesModule } from './media-files/media-files.module';
+import { AddressGlobalModule } from './address/AddressGlobal.module';
 
 const appRoutes: Routes = [
     { path: '', component: LoginComponent }
@@ -43,7 +45,7 @@ const appRoutes: Routes = [
         BrowserModule,
         LoginModule,
         DashBoardModule,
-        FormsModule,
+        FormsModule,MediaFilesModule,AddressGlobalModule,
         DomainModule,HttpClientModule,
         WardModule, UserModule, StreetModule, CategoryModule,
         ToasterModule, LCDAModule, RoleModule, ItemPenaltyModule, CompanyItemModule,

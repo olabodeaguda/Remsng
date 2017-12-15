@@ -41,6 +41,15 @@ namespace RemsNG.ORM
         public DbSet<DemandNotice> DemandNotices { get; set; }
         public DbSet<Error> Errors { get; set; }
         public DbSet<DemandNoticeTaxpayersDetail> DemandNoticeTaxpayersDetails { get; set; }
+        public DbSet<DemandNoticeItem> DemandNoticeItems { get; set; }
+        public DbSet<DemandNoticeItemExtension> DemandNoticeItemExtensions { get; set; }
+        public DbSet<State> States { get; set; }
+        public DbSet<Images> Imagess { get; set; }
+        public DbSet<DemandNoticeItemPenalty> DemandNoticeItemPenaties { get; set; }
+        public DbSet<DemandNoticeArrears> DemandNoticeArrearss { get; set; }
+        public DbSet<DemandNoticeDownloadHistory> DemandNoticeDownloadHistories { get; set; }
+        public DbSet<LcdaBank> LcdaBanks { get; set; }
+        public DbSet<BatchDemandNoticeModel> BatchDemanNoticeModels { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -66,6 +75,13 @@ namespace RemsNG.ORM
             modelBuilder.Entity<DemandNotice>().ToTable("tbl_demandnotice");
             modelBuilder.Entity<Error>().ToTable("tbl_error");
             modelBuilder.Entity<DemandNoticeTaxpayersDetail>().ToTable("tbl_demandNoticeTaxpayers");
+            modelBuilder.Entity<DemandNoticeItem>().ToTable("tbl_demandNoticeItem");
+            modelBuilder.Entity<State>().ToTable("tbl_state");
+            modelBuilder.Entity<Images>().ToTable("tbl_images");
+            modelBuilder.Entity<DemandNoticeItemPenalty>().ToTable("tbl_demandNoticePenalty");
+            modelBuilder.Entity<DemandNoticeArrears>().ToTable("tbl_demandNoticeArrears");
+            modelBuilder.Entity<DemandNoticeDownloadHistory>().ToTable("tbl_DemandNoticeDownloadHistory");
+            modelBuilder.Entity<BatchDemandNoticeModel>().ToTable("tbl_batchDownloadRequest");
         }
     }
 }

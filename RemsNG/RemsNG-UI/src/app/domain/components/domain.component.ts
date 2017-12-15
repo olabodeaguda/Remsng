@@ -5,6 +5,7 @@ import { PageModel } from '../../shared/models/page.model';
 import { Validators, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { AppSettings } from '../../shared/models/app.settings';
 import { ResponseModel } from '../../shared/models/response.model';
+import { StateService } from '../../shared/services/state.service';
 declare var jQuery: any;
 
 @Component({
@@ -14,19 +15,33 @@ declare var jQuery: any;
 
 export class DomainComponent implements OnInit {
     domainLst = [];
+    stateLst = [];
     pageModel: PageModel;
     isLoading: boolean = false;
     domainModel: DomainModel;
     @ViewChild('addModal') addModal: ElementRef;
     @ViewChild('changestatus') changestatusModal: ElementRef;
     constructor(private domainService: DomainService,
-        private appSettings: AppSettings) {
+        private appSettings: AppSettings,
+        private stateSrv:StateService) {
         this.pageModel = new PageModel();
         this.domainModel = new DomainModel();
     }
 
     ngOnInit() {
         this.getDomain();
+        this.getStates();
+    }
+
+    getStates(){
+        this.stateSrv.GetStates().subscribe(
+            response=>{
+                this.stateLst = response;
+            },
+            error=>{
+
+            }
+        );
     }
 
     open(eventType: string, data: any) {

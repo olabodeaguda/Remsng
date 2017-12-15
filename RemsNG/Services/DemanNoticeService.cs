@@ -28,6 +28,11 @@ namespace RemsNG.Services
             return await demandNoticeDao.ByLcdaId(lcdaId, pageModel);
         }
 
+        public async Task<object> All(PageModel pageModel)
+        {
+            return await demandNoticeDao.All(pageModel);
+        }
+
         public async Task<DemandNotice> GetById(Guid id)
         {
             return await demandNoticeDao.GetById(id);
@@ -48,6 +53,9 @@ namespace RemsNG.Services
             return await demandNoticeDao.UpdateStatus(demandNotice);
         }
 
-
+        public async Task<DemandNotice> GetByBatchId(string batchId)
+        {
+            return await demandNoticeDao.GetByBatchId(batchId);
+        }
     }
 }

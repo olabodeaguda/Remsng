@@ -15,6 +15,6 @@ namespace RemsNG.ORM
         public DateTime? lastModifiedDate { get; set; }
         public DateTime dateCreated { get; set; }
         public string lastmodifiedBy { get; set; }
-
+        public string lcdaName { get; set; }
     }
 }

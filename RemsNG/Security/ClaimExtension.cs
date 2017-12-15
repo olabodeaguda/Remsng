@@ -11,6 +11,11 @@ namespace RemsNG.Security
     {
         public static bool IsMosAdmin(Claim[] claims)
         {
+            //var nameIdemtify = claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+            //if (string.IsNullOrEmpty(nameIdemtify.Value))
+            //{
+            //    throw For
+            //}
             var hasClaim = claims.Any(x => x.Type == ClaimTypes.NameIdentifier && x.Value.ToLower() == "mos-admin");
 
             if (hasClaim)

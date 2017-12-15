@@ -7,9 +7,17 @@ import { SharedModule } from '../shared/shared.module';
 import { ItemPenaltyModule } from "../item-penalty/itempenalty.module";
 import { DemandNoticeService } from "./services/demand-notice.service";
 import { DemandNoticeComponent } from "./components/demand-notice.component";
+import { DemandNoticeTaxpayersComponent } from './components/demand-noticeTaxpayers.component';
+import { DemandNoticeTaxpayerService } from './services/demand-noticeTaxpayer.service';
+import { DemandNoticeIndexComponent } from './components/demand-notice-index.component';
 
 const appRoutes: Routes = [
-    { path: 'demandnotice', component: DemandNoticeComponent }
+    { path: 'demandnotice', component: DemandNoticeIndexComponent,
+        children:[
+            { path: '', component: DemandNoticeComponent, pathMatch: 'full' },
+            { path: 'taxpayer/:batchId', component: DemandNoticeTaxpayersComponent, pathMatch: 'full' }
+        ]
+    }
  ];
 
 @NgModule({
@@ -23,11 +31,13 @@ const appRoutes: Routes = [
       RouterModule.forChild(appRoutes)
     ],
     declarations: [
-        DemandNoticeComponent
+        DemandNoticeComponent,DemandNoticeTaxpayersComponent,
+        DemandNoticeIndexComponent
     ],
-    providers: [ DemandNoticeService],
+    providers: [ DemandNoticeService, DemandNoticeTaxpayerService],
     exports: [
-        DemandNoticeComponent
+        DemandNoticeComponent,DemandNoticeTaxpayersComponent,
+        DemandNoticeIndexComponent
     ]
   })
 

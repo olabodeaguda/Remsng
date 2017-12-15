@@ -16,6 +16,7 @@ namespace RemsNG.Utilities
         COMPLETED,
         COMPLETED_WITH_LEFTOVER,
         MOVE_TO_ARREARS,
-        PAID
+        PAID,
+        ERROR
     }
 }

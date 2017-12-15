@@ -12,6 +12,15 @@
 				  wardName varchar(150) not null,
 				  lcdaName varchar(250) not null,
 				  billingYr int not null,
+				  domainName varchar(250) not null,
+
+				  lcdaAddress varchar(250) not null,
+				  lcdaState varchar(100) not null,
+				  lcdaLogoFileName varchar(100) not null,
+				  councilTreasurerSigFilen varchar(100) not null,
+				  revCoodinatorSigFilen varchar(100) not null,
+				  councilTreasurerMobile varchar(100) not null,
+
 				  createdBy varchar(100) not null,
 				  dateCreated datetime default getDate(),
 				  lastmodifiedby varchar(100),

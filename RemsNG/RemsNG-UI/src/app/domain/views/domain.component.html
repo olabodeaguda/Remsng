@@ -46,6 +46,14 @@
                                 <label for="domainCode">Domain Code</label>
                                 <input name="domainCode" [(ngModel)]="domainModel.domainCode" type="text" class="form-control" id="domainCode" placeholder="Enter Domain Code">
                             </div>
+
+                            <div class="form-group">
+                                <label for="stateId">State</label>
+                                <select id="stateId" name="stateId" class="form-control" [(ngModel)]="domainModel.stateId">
+                                    <option *ngFor="let data of stateLst;" [ngValue]="data.id">{{data.stateName}}</option>
+                                </select>
+                            </div>
+
                         </div>
                         <div class="box-footer">
                             <button [ladda]="domainModel.isLoading" type="submit" class="btn btn-primary" (click)="addDomain()">Submit</button>
@@ -143,6 +151,6 @@
         </section>
 
     </div>
-
+</div>
     <ft></ft>
     <div class="loading" *ngIf="isLoading"></div>

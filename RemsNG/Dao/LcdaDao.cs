@@ -158,5 +158,19 @@ namespace RemsNG.Dao
                 $"inner join tbl_street on tbl_street.wardId = tbl_ward.id where tbl_street.id= '{streetId}'";
             return await db.lgdas.FromSql(query).FirstOrDefaultAsync();
         }
+
+        public async Task<Domain> GetDomain(Guid lcdaId)
+        {
+            string query = $"select distinct tbl_domain.* from tbl_domain " +
+                $"inner join tbl_lcda on tbl_lcda.domainId = tbl_domain.id " +
+                $" where tbl_lcda.id = '{lcdaId}'";
+
+            return await db.Domains.FromSql(query).FirstOrDefaultAsync();
+        }
+
+       public async Task<Lgda> GetLcdaExtension(Guid lcdaId)
+        {
+            return await db.lgdas.FromSql($"select * from tbl_lcda where id = '{lcdaId}'").FirstOrDefaultAsync();
+        }
     }
 }

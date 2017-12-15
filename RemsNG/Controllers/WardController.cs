@@ -32,23 +32,16 @@ namespace RemsNG.Controllers
         [HttpGet]
         public async Task<object> All()
         {
-            var hasClaim = User.Claims.Any(x => x.Type == ClaimTypes.NameIdentifier && x.Value.ToLower() == "mos-admin");
-
-            if (hasClaim)
+            if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
             {
                 return await wardService.all();
             }
             else
             {
-                var domainId = User.Claims.FirstOrDefault(x => x.Type == "Domain");
-                if (domainId != null)
+                var domainId = ClaimExtension.GetDomainId(User.Claims.ToArray());// User.Claims.FirstOrDefault(x => x.Type == "Domain");
+                if (domainId != Guid.Empty)
                 {
-                    Guid dId = Guid.Empty;
-                    bool v = Guid.TryParse(domainId.Value, out dId);
-                    if (v)
-                    {
-                        return await wardService.GetWardByLGDAId(dId);
-                    }
+                    return await wardService.GetWardByLGDAId(domainId);
                 }
             }
 
@@ -61,54 +54,24 @@ namespace RemsNG.Controllers
         [HttpGet]
         public async Task<object> Get([FromHeader] string pageSize, [FromHeader] string pageNum, [FromHeader] string lcdaId)
         {
-            var hasClaim = User.Claims.Any(x => x.Type == ClaimTypes.NameIdentifier && x.Value.ToLower() == "mos-admin");
             pageSize = string.IsNullOrEmpty(pageSize) ? "1" : pageSize;
             pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
             Guid domainId = Guid.Empty;
             bool v2 = Guid.TryParse(lcdaId, out domainId);
+            if (domainId == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "LCDA is required!!!"
+                });
+            }
 
-            if (hasClaim)
+            return await wardService.Paginated(new PageModel()
             {
-                if (domainId == default(Guid))
-                {
-                    return BadRequest(new Response()
-                    {
-                        code = MsgCode_Enum.WRONG_CREDENTIALS,
-                        description = "LCDA is required!!!"
-                    });
-                }
-                return await wardService.Paginated(new PageModel()
-                {
-                    PageNum = int.Parse(pageNum),
-                    PageSize = int.Parse(pageSize)
-                }, domainId);
-            }
-            else
-            {
-                var domainId2 = User.Claims.FirstOrDefault(x => x.Type == "Domain");
-                if (domainId2 != null)
-                {
-                    Guid dId = Guid.Empty;
-                    bool v = Guid.TryParse(domainId2.Value, out dId);
-                    if (v)
-                    {
-                        if (dId != domainId)
-                        {
-                            return BadRequest(new Response()
-                            {
-                                code = MsgCode_Enum.WRONG_CREDENTIALS,
-                                description = "You are not authorised to the selected LCDA!!!"
-                            });
-                        }
-                        return await wardService.Paginated(new PageModel()
-                        {
-                            PageNum = int.Parse(pageNum),
-                            PageSize = int.Parse(pageSize)
-                        }, dId);
-                    }
-                }
-            }
-            return new object[] { };
+                PageNum = int.Parse(pageNum),
+                PageSize = int.Parse(pageSize)
+            }, domainId);
         }
 
         [Authorize]

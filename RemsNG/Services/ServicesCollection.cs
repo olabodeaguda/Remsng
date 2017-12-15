@@ -41,6 +41,7 @@ namespace RemsNG.Services
 
             var builderException = services.AddMvc();
 
+            services.AddNodeServices();
             services.Configure<JwtIssuerOptions>(options =>
             {
                 options.Issuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
@@ -122,6 +123,18 @@ namespace RemsNG.Services
             services.AddTransient<ICompanyItemService, CompanyItemService>();
             services.AddTransient<IDemandNoticeService, DemanNoticeService>();
             services.AddTransient<IRunDemandNoticeService, RunDemandNoticeService>();
+            services.AddTransient<IDnTaxpayer, DnTaxpayerService>();
+            services.AddTransient<IStateService, StateService>();
+            services.AddTransient<IImageService, ImageService>();
+            services.AddTransient<IDemandNoticeTaxpayerService , DemandNoticeTaxpayerService>();
+            services.AddTransient<IDemandNoticeItemService, DemandNoticeItemService>();
+            services.AddTransient<IDnDownloadService, DnDownloadService>();
+            services.AddTransient<IDemandNoticeCharges, DemandNoticeChargesService>();
+            services.AddTransient<IDemandNoticeCharges, DemandNoticeChargesService>();
+            services.AddTransient<IDemandNoticeDownloadHistory, DemandNoticeDownloadHistoryService>();
+            services.AddTransient<ILcdaBankService, LcdaBankService>();
+            services.AddTransient<IBatchDwnRequestService, BatchDwnRequestService>();
+
         }
 
         public static IConfigurationSection jwtAppSettingOptions

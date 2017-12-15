@@ -136,6 +136,14 @@
                                                         <a [routerLink]="['/company',data.id]">
                                                             <i class="fa fa-cog"></i> Companies </a>
                                                     </li>
+                                                    <li>
+                                                        <a [routerLink]="['/address',data.id,data.id]">
+                                                            <i class="fa fa-cog"></i> Address </a>
+                                                    </li>
+                                                    <li>
+                                                        <a [routerLink]="['/media',data.id]">
+                                                            <i class="fa fa-cog"></i> Images </a>
+                                                    </li>
                                                 </ul>
                                             </div>
 
@@ -179,6 +187,7 @@
             </div>
         </section>
     </div>
+</div>
 
-    <ft></ft>
     <div class="loading" *ngIf="isLoading"></div>
+    <ft></ft>

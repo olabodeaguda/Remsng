@@ -124,7 +124,7 @@ namespace RemsNG.Services
             {
                 Issuer = jwtOptions.Issuer,
                 Audience = jwtOptions.Audience,
-                Subject = new ClaimsIdentity(claimLst),
+                Subject = new ClaimsIdentity(claim),
                 Expires = DateTime.UtcNow.AddMinutes(logTime),
                 NotBefore = DateTime.UtcNow,
                 SigningCredentials = jwtOptions.SigningCredentials,

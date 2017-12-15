@@ -131,5 +131,16 @@ namespace RemsNG.Dao
         {
             return await db.Streets.FromSql("sp_streetbyLcda @p0",new object[] { lcdaId }).ToListAsync();
         }
+
+        public async Task<Domain> GetDomain(Guid streetId)
+        {
+            string query = $"select distinct tbl_domain.* from tbl_domain " +
+                $"inner join tbl_lcda on tbl_lcda.domainId = tbl_domain.id " +
+                $"inner join tbl_ward on tbl_ward.lcdaId = tbl_lcda.id " +
+                $"inner join tbl_street on tbl_street.wardId = tbl_ward.id " +
+                $" where tbl_street.id = '{streetId}'";
+
+            return await db.Domains.FromSql(query).FirstOrDefaultAsync();
+        }
     }
 }

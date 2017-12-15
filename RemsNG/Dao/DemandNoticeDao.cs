@@ -146,9 +146,47 @@ namespace RemsNG.Dao
             };
         }
 
+        public async Task<object> All(PageModel pageModel)
+        {
+            List<DemandNotice> results = await db.DemandNotices.FromSql("sp_demandNoticePaginated @p0,@p1", new object[] { pageModel.PageNum, pageModel.PageSize }).ToListAsync();
+            var totalCount = 0;
+            if (results.Count > 0)
+            {
+                DemandNotice demandNotice = results[0];
+                totalCount = demandNotice.totalSize.HasValue ? demandNotice.totalSize.Value : 1;
+            }
+
+            return new
+            {
+                data = results.Select(x => new DemandNoticeExt()
+                {
+                    batchNo = x.batchNo,
+                    billingYear = x.billingYear,
+                    demandNoticeStatus = x.demandNoticeStatus,
+                    id = x.id,
+                    lcdaId = x.lcdaId,
+                    demandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequest>(EncryptDecryptUtils.FromHexString(x.query))
+                }),
+                totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
+            };
+        }
+
         public async Task<DemandNotice> GetById(Guid id)
         {
             return await db.DemandNotices.FromSql("sp_getDemandNotice @p0", new object[] { id }).FirstOrDefaultAsync();
+        }   
+
+        public async Task<DemandNotice> GetByBatchId(string batchId)
+        {
+            try
+            {
+                return await db.DemandNotices.FromSql("sp_getDemandNoticeByBatchId @p0", new object[] { batchId }).FirstOrDefaultAsync();
+            }
+            catch (Exception x)
+            {
+
+                throw;
+            }
         }
 
         public async Task<DemandNotice> DequeueDemandNotice()
@@ -162,5 +200,6 @@ namespace RemsNG.Dao
                 throw;
             }
         }
+        
     }
 }

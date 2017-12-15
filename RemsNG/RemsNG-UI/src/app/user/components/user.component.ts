@@ -56,7 +56,7 @@ export class UserComponent implements OnInit {
 
     getLcda() {
         this.lcdaService.all().subscribe(response => {
-            this.lcdaLst = response.json();
+            this.lcdaLst = response;
         }, error => { });
     }
 
@@ -119,7 +119,7 @@ export class UserComponent implements OnInit {
         this.isLoading = true;
         this.userService.getProfile(this.pageModel)
             .subscribe(response => {
-                const result = response.json();
+                const result = response;
                 const resultScheme = { data: [], totalPageCount: 0 };
                 const responseD = Object.assign(resultScheme, result);
                 if (responseD.data.length > 0) {

@@ -29,7 +29,12 @@ namespace RemsNG.Services
 
         public async Task<List<Ward>> all()
         {
-            return await wardDao.all();
+            return await wardDao.All();
+        }
+
+        public async Task<Domain> GetDomain(Guid wardId)
+        {
+            return await wardDao.GetDomain(wardId);
         }
 
         public async Task<Ward> GetWard(Guid id)

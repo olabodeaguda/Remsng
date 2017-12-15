@@ -16,5 +16,15 @@ namespace RemsNG.ORM
         public string wardName { get; set; }
         public string lcdaName { get; set; }
         public int billingYr { get; set; }
+        public string domainName { get; set; }
+
+        public string lcdaAddress { get; set; }
+        public string lcdaState { get; set; }
+        public string lcdaLogoFileName { get; set; }
+        public string councilTreasurerSigFilen { get; set; }
+        public string revCoodinatorSigFilen { get; set; }
+        public string councilTreasurerMobile { get; set; }
+
+        public Nullable<int> totalSize { get; set; }
     }
 }

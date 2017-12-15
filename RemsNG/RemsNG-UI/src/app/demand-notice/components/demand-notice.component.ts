@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { DemandNoticeSearch } from "../models/demand-notice.search";
 import { AppSettings } from "../../shared/models/app.settings";
 import { PageModel } from "../../shared/models/page.model";
@@ -7,6 +7,10 @@ import { ResponseModel } from "../../shared/models/response.model";
 import { ToasterService } from "angular2-toaster/angular2-toaster";
 import { WardService } from "../../ward/services/ward.service";
 import { StreetService } from "../../street/services/street.service";
+import { DownloadRequestModel } from '../models/download-request.model';
+import { DemandNoticeTaxpayerService } from '../services/demand-noticeTaxpayer.service';
+declare var jQuery: any;
+import * as FileSaver from 'file-saver'
 
 @Component({
     selector: 'demand-notice',
@@ -22,20 +26,40 @@ export class DemandNoticeComponent implements OnInit {
     demandNoticeLst = [];
     pageModel: PageModel;
     isLoading: boolean = false;
-
+    downloadRequestmodel: DownloadRequestModel;
+    batchNo:string;
+    @ViewChild('downRequestPrompt') downRequestPromptModal: ElementRef;
+    @ViewChild('downloadRequestModal') downloadRequestModal: ElementRef;
+    isLoadingMini: boolean = false;
+    dowloadRequestList = [];
     constructor(private appsettings: AppSettings,
         private demandnoticeservice: DemandNoticeService,
         private toasterService: ToasterService,
         private wardservice: WardService,
-        private streetservice: StreetService) {
+        private streetservice: StreetService,
+        private dtsService: DemandNoticeTaxpayerService) {
         this.searchModel = new DemandNoticeSearch();
         this.pageModel = new PageModel();
+        this.downloadRequestmodel = new DownloadRequestModel();
     }
 
     ngOnInit(): void {
         this.yrLst = this.appsettings.getYearList();
         this.getDemandNotice();
         this.getWards();
+    }
+
+    downloadDN(url: string) {
+        this.isLoading = true;
+        this.demandnoticeservice.downloadRpt(url).map(response => {
+              this.isLoading = false;
+             let blob = response;
+             FileSaver.saveAs(blob,url+".zip");
+        }, error => {
+            this.isLoading = false;
+            this.toasterService.pop('error',"Download Error",error);
+        }).subscribe();
+        
     }
 
     submitDemandRequest() {
@@ -74,6 +98,54 @@ export class DemandNoticeComponent implements OnInit {
             this.isLoading = false;
             this.toasterService.pop('error', 'Error', error);
         });
+    }
+
+    open(target: string,data:any){
+        if(target === 'RAISE_REQUEST'){
+            if(data.batchNo.length <= 0){
+                return;
+            }
+            this.batchNo = data.batchNo;
+            jQuery(this.downRequestPromptModal.nativeElement).modal('show');
+        } else if(target === 'DOWNLOAD_REQUEST'){
+            if(data.batchNo.length <= 0){
+                return;
+            }
+            this.batchNo = data.batchNo;
+            jQuery(this.downloadRequestModal.nativeElement).modal('show');
+            this.getRaisedRequest(this.batchNo);
+        }
+    }
+
+    getRaisedRequest(batchId:string){
+        this.isLoading = true;
+        this.demandnoticeservice.getRaisedRequest(batchId)
+        .subscribe(response=>{
+            this.isLoading = false;
+            this.dowloadRequestList= response;
+        },error=>{
+            this.isLoading = false;
+        })
+    }
+
+    addRaiseRequest(){
+        if(this.batchNo.length <= 0){
+            return;
+        }
+        this.isLoadingMini = true;
+        this.demandnoticeservice.adDownloadRequest(this.batchNo)
+        .subscribe(response=>{
+            this.isLoadingMini = false;
+                if(response.code === '00'){
+                    this.toasterService.pop("success","Sucess",response.description);
+                    jQuery(this.downRequestPromptModal.nativeElement).modal('hide');
+                }else {
+                    this.toasterService.pop("error","Error",response.description);
+                }
+        },error=>{
+            this.isLoadingMini = false;
+            this.toasterService.pop("error","Error",error);
+        })
     }
 
     getStreet(wardId: string) {

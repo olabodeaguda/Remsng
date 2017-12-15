@@ -15,5 +15,7 @@ namespace RemsNG.Services.Interfaces
         Task<Response> UpdateQuery(DemandNotice demandNotice);
         Task<Response> Add(DemandNotice demandNotice);
         Task<DemandNotice> GetById(Guid id);
+        Task<object> All(PageModel pageModel);
+        Task<DemandNotice> GetByBatchId(string batchId);
     }
 }

@@ -17,5 +17,6 @@ namespace RemsNG.Services.Interfaces
         Task<List<Ward>> GetWardByLGDAId(Guid lgdaId);
         Task<bool> Update(Ward ward);
         Task<Ward> GetWard(string wardName, Guid lgdaid);
+        Task<Domain> GetDomain(Guid wardId);
     }
 }

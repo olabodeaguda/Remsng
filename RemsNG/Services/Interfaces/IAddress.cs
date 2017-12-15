@@ -14,5 +14,7 @@ namespace RemsNG.Services.Interfaces
         Task<Response> Remove(Address address);
         Task<List<Address>> ByOwnersId(Guid id, Guid lcdaId);
         Task<Address> ById(Guid id);
+        Task<List<Address>> ByOwnersId(Guid id);
+        Task<string> AddressByOwnerId(Guid ownerId);
     }
 }

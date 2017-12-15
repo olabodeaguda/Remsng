@@ -84,6 +84,7 @@ namespace RemsNG.Dao
             }
             oldDomain.domainName = domain.domainName;
             oldDomain.domainCode = domain.domainCode;
+            oldDomain.stateId = domain.stateId;
 
             int affectedCount = await db.SaveChangesAsync();
             if (affectedCount > 0)
@@ -109,5 +110,7 @@ namespace RemsNG.Dao
             }
             return false;
         }
+
+
     }
 }

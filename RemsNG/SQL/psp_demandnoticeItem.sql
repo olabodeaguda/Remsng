@@ -5,12 +5,18 @@ IF NOT EXISTS(SELECT *
 CREATE TABLE tbl_demandNoticeItem
 (
 	id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
+	billingNo varchar(50) not null,
 	dn_taxpayersDetailsId UNIQUEIDENTIFIER not null foreign key references tbl_demandnotice(id),
 	taxpayerId uniqueidentifier not null,
 	itemId uniqueidentifier not null foreign key references tbl_item(id),
 	itemName varchar(100) not null,
 	itemAmount decimal(8,2) not null default 0.0,
-	itemStatus varchar(100) not null	
+	amountPaid decimal(8,2) not null default 0.0,
+	itemStatus varchar(100) not null,
+	createdBy varchar(100) not null,
+	dateCreated datetime default getDate(),
+	lastmodifiedby varchar(100),
+	lastModifiedDate datetime
 )
 GO
 
@@ -23,15 +29,16 @@ IF EXISTS(SELECT *
   create procedure sp_addTaxpayerDemandNoticeItem(
 	@demandNoticeId uniqueidentifier,
 	@taxpayerId uniqueidentifier,
-	@billinYr int
+	@billinYr int,
+	@createdBy varchar(100)
   )
   as
   begin
 	  declare @msg varchar(100);
 	  declare @success bit;
-		insert into tbl_demandNoticeItem(id,dn_taxpayersDetailsId,taxpayerId,itemId,itemName,itemAmount,itemStatus)
+		insert into tbl_demandNoticeItem(id,dn_taxpayersDetailsId,taxpayerId,itemId,itemName,itemAmount,itemStatus,billingNo,amountPaid,createdBy)
 		select NEWID(),@demandNoticeId,tbl_demandNoticeTaxpayers.taxpayerId,tbl_companyItem.itemId,tbl_item.itemDescription
-		,tbl_companyItem.amount,'PENDING' from tbl_demandNoticeTaxpayers(nolock)
+		,tbl_companyItem.amount,'PENDING',tbl_demandNoticeTaxpayers.billingNumber,0.0,@createdBy from tbl_demandNoticeTaxpayers(nolock)
 		inner join tbl_companyItem on tbl_companyItem.taxpayerId = tbl_demandNoticeTaxpayers.taxpayerId
 		inner join tbl_item on tbl_item.id = tbl_companyItem.itemId
 		 where tbl_demandNoticeTaxpayers.billingYr = @billinYr and 
@@ -50,4 +57,6 @@ IF EXISTS(SELECT *
 
 		 select newid() as id,@msg as msg,@success as success;
   end
+
+GO
 

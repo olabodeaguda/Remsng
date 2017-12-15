@@ -123,6 +123,7 @@ export class ComponentItemComponent implements OnInit {
                 this.companyItem.isLoading = false;
                 const result = Object.assign(new ResponseModel(), response);
                 if (result.code == '00') {
+                    this.getItemByTaxpayerId();
                     this.getCompanyitemsByTaxPayers();
                     jQuery(this.addModal.nativeElement).modal('hide');
                     this.toasterService.pop('success', 'Success', response.description);
@@ -132,12 +133,14 @@ export class ComponentItemComponent implements OnInit {
             }, error => {
                 this.companyItem.isLoading = false
                 jQuery(this.addModal.nativeElement).modal('hide');
+                this.toasterService.pop('error', 'Errror', error);
             })
         } else if (this.companyItem.eventType === 'EDIT') {
             this.companyitemservice.update(this.companyItem).subscribe(response => {
                 this.companyItem.isLoading = false;
                 const result = Object.assign(new ResponseModel(), response);
                 if (result.code == '00') {
+                    this.getItemByTaxpayerId();
                     this.getCompanyitemsByTaxPayers();
                     jQuery(this.addModal.nativeElement).modal('hide');
                     this.toasterService.pop('success', 'Success', result.description);
