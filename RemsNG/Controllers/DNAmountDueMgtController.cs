@@ -7,6 +7,7 @@ using RemsNG.Models;
 using RemsNG.Exceptions;
 using RemsNG.Services.Interfaces;
 using RemsNG.ORM;
+using RemsNG.Security;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -39,14 +40,14 @@ namespace RemsNG.Controllers
             return await amountDueMgtService.ByBillingNo(billingno);
         }
 
-
+        [RemsRequirementAttribute("AMOUNT_DUE")]
         // POST api/values
         [HttpPost]
         public async Task<object> Post([FromBody]DNAmountDueModel value)
         {
             if (value.id == Guid.NewGuid())
             {
-                throw new InvalidCredentialsException("Invalid request identity number is required"); 
+                throw new InvalidCredentialsException("Invalid request, identity number is required"); 
             }
 
             if (value.itemAmount <= 0)

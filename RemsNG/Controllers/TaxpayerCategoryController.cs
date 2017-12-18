@@ -66,6 +66,7 @@ namespace RemsNG.Controllers
             return await taxpayerCategoryService.GetById(id);
         }
 
+        [RemsRequirementAttribute("REGISTER_TAXPAYER")]
         // POST api/values
         [HttpPost]
         public async Task<object> Post([FromBody]TaxpayerCategory taxpayerCategory)

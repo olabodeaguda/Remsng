@@ -7,9 +7,11 @@ using RemsNG.Models;
 using RemsNG.Utilities;
 using RemsNG.Services.Interfaces;
 using RemsNG.ORM;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RemsNG.Controllers
 {
+    [Authorize]
     [Route("api/v1/companyitem")]
     public class CompanyItemController : Controller
     {

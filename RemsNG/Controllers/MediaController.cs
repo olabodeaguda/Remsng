@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using RemsNG.Services.Interfaces;
 using Microsoft.Extensions.Logging;
+using RemsNG.Security;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -36,6 +37,7 @@ namespace RemsNG.Controllers
             return await imageService.ByOwnerId(id);
         }
 
+        [RemsRequirementAttribute("UPLOAD_MEDIA")]
         [HttpPost]
         public async Task<object> Post([FromBody]ImageExtensionModel img)
         {

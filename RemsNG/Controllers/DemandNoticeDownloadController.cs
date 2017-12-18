@@ -13,6 +13,7 @@ using RemsNG.Models;
 using RemsNG.Utilities;
 using RemsNG.ORM;
 using RemsNG.Exceptions;
+using RemsNG.Security;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -40,7 +41,8 @@ namespace RemsNG.Controllers
             paymentHistoryService = _paymentHistoryService;
         }
 
-        [Authorize]
+
+        [RemsRequirementAttribute("SINGLE_DOWNLOAD")]
         [Route("single/{billingno}")]
         [HttpGet]
         public async Task<object> Get(string billingno)
@@ -67,7 +69,7 @@ namespace RemsNG.Controllers
             return new ContentResult();
         }
 
-        [Authorize]
+        [RemsRequirementAttribute("BULK_DOWNLOAD")]
         // GET: api/values
         [Route("bulk/{batchno}")]
         [HttpGet]
@@ -107,8 +109,8 @@ namespace RemsNG.Controllers
 
             return await batchRequestService.ListByBatchNo(batchno);
         }
-
-        [Authorize]
+        
+        [RemsRequirementAttribute("BULK_DOWNLOAD")]
         [HttpPost("{batchno}")]
         public async Task<object> Post(string batchno)
         {
@@ -139,7 +141,7 @@ namespace RemsNG.Controllers
 
         }
 
-        [Authorize]
+        [RemsRequirementAttribute("DOWNLOAD_RECEIPT")]
         [Route("receipt/{id}")]
         public async Task<object> DownloadReciept(Guid id)
         {

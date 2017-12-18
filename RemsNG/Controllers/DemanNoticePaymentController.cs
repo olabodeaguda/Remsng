@@ -8,11 +8,13 @@ using RemsNG.ORM;
 using RemsNG.Models;
 using RemsNG.Exceptions;
 using RemsNG.Utilities;
+using RemsNG.Security;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace RemsNG.Controllers
 {
+    
     [Route("api/v1/payment")]
     public class DemanNoticePaymentController : Controller
     {
@@ -31,7 +33,7 @@ namespace RemsNG.Controllers
         {
             return await dNPaymentHistoryService.ByBillingNumber(billingNumber);
         }
-
+        [RemsRequirementAttribute("REGISTER_PAYMENT")]
         // POST api/values
         [HttpPost]
         public async Task<Response> Post([FromBody]DemandNoticePaymentHistory value)

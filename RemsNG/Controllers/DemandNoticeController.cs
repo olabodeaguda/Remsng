@@ -123,6 +123,7 @@ namespace RemsNG.Controllers
             return response;
         }
 
+        [RemsRequirementAttribute("DEMANDNOTICE_REQUEST")]
         [HttpPost]
         public async Task<object> Post([FromBody]DemandNoticeRequest demandNoticeRequest)
         {

@@ -8,7 +8,7 @@ using RemsNG.Models;
 using RemsNG.Utilities;
 using RemsNG.ORM;
 using Microsoft.AspNetCore.Authorization;
-
+using RemsNG.Security;
 
 namespace RemsNG.Controllers
 {
@@ -94,7 +94,8 @@ namespace RemsNG.Controllers
             }
             return Ok(result);
         }
-        
+
+        [RemsRequirementAttribute("REGISTER_ITEM")]
         [HttpPost]
         public async Task<object> Post([FromBody]Item item)
         {

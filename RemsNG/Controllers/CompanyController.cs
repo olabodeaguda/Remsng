@@ -8,11 +8,13 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using RemsNG.Utilities;
 using RemsNG.Models;
 using RemsNG.ORM;
+using RemsNG.Security;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace RemsNG.Controllers
 {
+    [RemsRequirementAttribute("REGISTER_COMPANY")]
     [Route("api/v1/company")]
     public class CompanyController : Controller
     {
