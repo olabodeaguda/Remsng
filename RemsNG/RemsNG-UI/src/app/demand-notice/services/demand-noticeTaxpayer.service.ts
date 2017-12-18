@@ -31,6 +31,11 @@ export class DemandNoticeTaxpayerService{
         .catch(error => this.dataservice.handleError(error));
     }
 
+    downloadReceipt(url:string){
+        return this.dataservice.getBlob('dndownload/receipt/'+url)       
+        .catch(error => this.dataservice.handleError(error));
+    }
+
     amountDueByBillingNo(billingnumber:string){
         return this.dataservice.get('amountdue/'+billingnumber)
         .catch(error => this.dataservice.handleError(error));
@@ -43,5 +48,6 @@ export class DemandNoticeTaxpayerService{
             category:amountDueModel.category
         }).catch(error => this.dataservice.handleError(error));
     }
+
     
 }

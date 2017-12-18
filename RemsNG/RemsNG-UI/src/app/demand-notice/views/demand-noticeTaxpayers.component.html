@@ -1,93 +1,97 @@
-<section class="content-header">
-    <h1>
-        Demand Notice
-        <small>Manage Demand Notice Taxpayers. Batch Number({{demandNoticeModel.batchNo}})</small>
-    </h1>
-    <ol class="breadcrumb">
-        <li>
-            <a href="javascript:;">
-                <i class="fa fa-dashboard"></i> Home</a>
-        </li>
-        <li>
-            <a [routerLink]="['/demandnotice']">
-                <i class="fa fa-dashboard"></i> Demand Notice</a>
-        </li>
-        <li class="active">Taxpayers</li>
-    </ol>
-</section>
-<section class="content" style="border-style:thin">
-
+<div class="row">
+    <section class="content-header">
+        <h1>
+            Demand Notice
+            <small>Manage Demand Notice Taxpayers. Batch Number({{demandNoticeModel.batchNo}})</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li>
+                <a href="javascript:;">
+                    <i class="fa fa-dashboard"></i> Home</a>
+            </li>
+            <li>
+                <a [routerLink]="['/demandnotice']">
+                    <i class="fa fa-dashboard"></i> Demand Notice</a>
+            </li>
+            <li class="active">Taxpayers</li>
+        </ol>
+    </section>
     <div class="row">
-        <div class="col-xs-12">
-            <table class="table table-bordered table-hover">
-                <thead>
-                    <th style="width:40px;"></th>
-                    <th style="width:40px;"></th>
-                    <th>Billing Number</th>
-                    <th>Taxpayers Name</th>
-                    <th>Billing Year</th>
-                    <th>Address</th>
-                    <th>Ward</th>
-                    <th>LCDA </th>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let data of taxpayersLst; let i=index">
-                        <td>{{i+1}}</td>
-                        <td>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Action
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu">                                
-                                    <li>
-                                           <a href="javascript:;" (click)="downloadDN(data.billingNumber)">
-                                            <i class="fa fa-download"></i> Download Demand notice
-                                           </a>
-                                    </li>
-                                    <li>
-                                        <a href="#">
-                                            <i class="fa fa-edit"></i> Edit </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </td>
-                        <td>{{data.billingNumber}}</td>
-                        <td>{{data.taxpayersName}}</td>
-                        <td>{{data.billingYr}}</td>
-                        <td>{{data.addressName}}</td>
-                        <td>{{data.wardName}}</td>
-                        <td>{{data.lcdaName}}</td>
-                    </tr>
-                    <tr *ngIf="taxpayersLst.length < 1">
-                        <td style="width:100%" colspan="7">No record !!!</td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="5">
-                            <nav *ngIf="pageModel.totalPageCount > 1">
-                                <ul class="pagination">
-                                    <li>
-                                        <a aria-label="Previous" (click)="previous()">
-                                            <span aria-hidden="true">Previous</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a aria-label="Next" (click)="next()">
-                                            <span aria-hidden="true">Next </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}} </span>
-                                    </li>
-                                </ul>
-                            </nav>
-                        </td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
+        <section class="content" style="border-style:thin">
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <th style="width:40px;"></th>
+                            <th style="width:40px;"></th>
+                            <th>Billing Number</th>
+                            <th>Taxpayers Name</th>
+                            <th>Billing Year</th>
+                            <th>Address</th>
+                            <th>Ward</th>
+                            <th>LCDA </th>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let data of taxpayersLst; let i=index">
+                                <td>{{i+1}}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Action
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a href="javascript:;" (click)="downloadDN(data.billingNumber)">
+                                                    <i class="fa fa-download"></i> Download Demand notice
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#">
+                                                    <i class="fa fa-edit"></i> Edit </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                                <td>{{data.billingNumber}}</td>
+                                <td>{{data.taxpayersName}}</td>
+                                <td>{{data.billingYr}}</td>
+                                <td>{{data.addressName}}</td>
+                                <td>{{data.wardName}}</td>
+                                <td>{{data.lcdaName}}</td>
+                            </tr>
+                            <tr *ngIf="taxpayersLst.length < 1">
+                                <td style="width:100%" colspan="7">No record !!!</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="5">
+                                    <nav *ngIf="pageModel.totalPageCount > 1">
+                                        <ul class="pagination">
+                                            <li>
+                                                <a aria-label="Previous" (click)="previous()">
+                                                    <span aria-hidden="true">Previous</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a aria-label="Next" (click)="next()">
+                                                    <span aria-hidden="true">Next </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}} </span>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </section>
     </div>
-</section>
+</div>
 <div class="loading" *ngIf="isLoading"></div>

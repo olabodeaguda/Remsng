@@ -15,5 +15,6 @@ namespace RemsNG.ORM
         public string paymentMode { get; set; }
         public string referenceNumber { get; set; }
         public Guid bankId { get; set; }
+        public string paymentStatus { get; set; }
     }
 }

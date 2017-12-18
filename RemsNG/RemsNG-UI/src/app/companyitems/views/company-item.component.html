@@ -1,24 +1,24 @@
 <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" #changeModal>
-        <div class="modal-dialog modal-sm" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">{{companyItem.companyStatus === 'ACTIVE'?'Deactivate':'Active'}} Item</h4>
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">{{companyItem.companyStatus === 'ACTIVE'?'Deactivate':'Active'}} Item</h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div class="box-body">
+                    You are about to
+                    <b>{{companyItem.companyStatus === 'ACTIVE'?'Deactivate':'Active'}}</b>
+                    {{companyItem.itemName}}. Are you sure?
                 </div>
-                <div class="modal-body clearfix">
-                    <div class="box-body">
-                        You are about to <b>{{companyItem.companyStatus === 'ACTIVE'?'Deactivate':'Active'}}</b> 
-                        {{companyItem.itemName}}. Are you sure?
-                    </div>
-                    <div class="box-footer">
-                            <button [ladda]="companyItem.isLoading" type="submit" class="btn btn-success" 
-                            (click)="actions()">Submit</button>
-                            <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
-                    </div>
+                <div class="box-footer">
+                    <button [ladda]="companyItem.isLoading" type="submit" class="btn btn-success" (click)="actions()">Submit</button>
+                    <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
 
 <div class="modal fade" role="dialog" id="addModal" #addModal>
@@ -65,7 +65,6 @@
 
 <div class="wrapper hold-transition skin-blue fixed sidebar-mini">
     <app-hd></app-hd>
-    <app-sbar></app-sbar>
     <div class="content-wrapper">
         <section class="content-header">
             <h1>
@@ -82,81 +81,82 @@
                 <li class="active">Companies Items</li>
             </ol>
         </section>
-
-        <section class="content" style="border-style:thin">
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="box">
-                        <div class="box-header">
-                            <h3 class="box-title">List of Registered Items</h3>
-                        </div>
-                        <div class="box-body">
-                            <p>
-                                <button class="btn btn-primary" (click)="open('ADD',null)"> Add</button>
-                            </p>
-                            <table class="table table-bordered table-hover">
-                                <thead>
-                                    <tr>
-                                        <th style="width:150px;"></th>
-                                        <th style="width:50px;"></th>
-                                        <th>Taxpayer's Name</th>
-                                        <th>Item Name</th>
-                                        <th>Amount</th>
-                                        <th>Billing Year</th>
-                                        <th>Status</th>
-                                        <th>Last Modified by</th>
-                                        <th>Last Modified Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let data of companyLst; let i=index">
-                                        <td>
-                                            <a href="javascript:;" (click)="open('EDIT',data)">Edit</a>
-                                            <a href="javascript:;" (click)="open('CHANGE_STATUS',data)">| Change Status </a>
-                                        </td>
-                                        <td>{{(pageModel.pageSize*(pageModel.pageNum - 1))+(i+1)}}</td>
-                                        <td>{{data.surname}} {{data.firstname}} {{data.lastname}}</td>
-                                        <td>{{data.itemName}}</td>
-                                        <td>{{data.amount }}</td>
-                                        <td>{{data.billingYear}}</td>
-                                        <td>{{data.companyStatus}}</td>
-                                        <td>{{data.lastmodifiedby !== null ? data.lastmodifiedby: data.createdBy}}</td>
-                                        <td>{{(data.lastModifiedDate !== null ? data.lastModifiedDate :data.dateCreated) | date:
-                                            'dd-MM-yyyy HH:mm:ss'}}</td>
-                                    </tr>
-                                    <tr *ngIf="companyLst.length < 1">
-                                        <td style="width:100%" colspan="9">No record !!!</td>
-                                    </tr>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="9">
-                                            <nav *ngIf="companyLst.length > 0">
-                                                <ul class="pagination">
-                                                    <li>
-                                                        <a aria-label="Previous" (click)="previous()">
-                                                            <span aria-hidden="true">Previous</span>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a aria-label="Next" (click)="next()">
-                                                            <span aria-hidden="true">Next </span>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}} </span>
-                                                    </li>
-                                                </ul>
-                                            </nav>
-                                        </td>
-                                    </tr>
-                                </tfoot>
-                            </table>
+        <div class="row">
+            <section class="content" style="border-style:thin">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="box">
+                            <div class="box-header">
+                                <h3 class="box-title">List of Registered Items</h3>
+                            </div>
+                            <div class="box-body">
+                                <p>
+                                    <button class="btn btn-primary" (click)="open('ADD',null)"> Add</button>
+                                </p>
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:150px;"></th>
+                                            <th style="width:50px;"></th>
+                                            <th>Taxpayer's Name</th>
+                                            <th>Item Name</th>
+                                            <th>Amount</th>
+                                            <th>Billing Year</th>
+                                            <th>Status</th>
+                                            <th>Last Modified by</th>
+                                            <th>Last Modified Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let data of companyLst; let i=index">
+                                            <td>
+                                                <a href="javascript:;" (click)="open('EDIT',data)">Edit</a>
+                                                <a href="javascript:;" (click)="open('CHANGE_STATUS',data)">| Change Status </a>
+                                            </td>
+                                            <td>{{(pageModel.pageSize*(pageModel.pageNum - 1))+(i+1)}}</td>
+                                            <td>{{data.surname}} {{data.firstname}} {{data.lastname}}</td>
+                                            <td>{{data.itemName}}</td>
+                                            <td>{{data.amount }}</td>
+                                            <td>{{data.billingYear}}</td>
+                                            <td>{{data.companyStatus}}</td>
+                                            <td>{{data.lastmodifiedby !== null ? data.lastmodifiedby: data.createdBy}}</td>
+                                            <td>{{(data.lastModifiedDate !== null ? data.lastModifiedDate :data.dateCreated)
+                                                | date: 'dd-MM-yyyy HH:mm:ss'}}</td>
+                                        </tr>
+                                        <tr *ngIf="companyLst.length < 1">
+                                            <td style="width:100%" colspan="9">No record !!!</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="9">
+                                                <nav *ngIf="companyLst.length > 0">
+                                                    <ul class="pagination">
+                                                        <li>
+                                                            <a aria-label="Previous" (click)="previous()">
+                                                                <span aria-hidden="true">Previous</span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a aria-label="Next" (click)="next()">
+                                                                <span aria-hidden="true">Next </span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}} </span>
+                                                        </li>
+                                                    </ul>
+                                                </nav>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
     </div>
 </div>
 <ft></ft>

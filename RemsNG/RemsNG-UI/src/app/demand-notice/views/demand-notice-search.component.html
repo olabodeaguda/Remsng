@@ -1,3 +1,91 @@
+<div class="modal fade" role="dialog" id="paymentListModal" #paymentListModal>
+    <div class=" modal-dialog ">
+        <div class="modal-content " style="width:500px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Receipt for bill Number {{dnpModel.billingNumber}}</h4>
+            </div>
+            <form role="form">
+                <div class="modal-body clearfix ">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Receipt List</h3>
+                        </div>
+                        <div class="box-body">
+                            <div class="row" style="padding:5px;">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>Payment Amount</th>
+                                            <th>Payment Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let data of paymentList; let i=index">
+                                            <td>
+                                                <a href="javascript:;" (click)="downloadReciept(data.id,data.billingNumber)">Download</a>
+                                            </td>
+                                            <td>{{data.amount}}</td>
+                                            <td>{{data.dateCreated| date}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="loading" *ngIf="isLoadingReceipt"></div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" role="dialog" id="paymentModal" #paymentModal>
+    <div class=" modal-dialog ">
+        <div class="modal-content " style="width:500px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Amount due for bill Number {{amountDueModel.billingNumber}}</h4>
+            </div>
+            <form role="form">
+                <div class="modal-body clearfix ">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Make Payment</h3>
+                        </div>
+                        <div class="box-body">
+                            <div class="row" style="padding:5px;">
+                                <div class="form-group">
+                                    <div class="form-group">
+                                        <label for="bankId">Select Bank</label>
+                                        <select id="bankId" name="bankId" class="form-control" [(ngModel)]="dnpModel.bankId">
+                                            <option *ngFor="let data of banks;" [ngValue]="data.id">{{data.bankName}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="referenceNumber">Reference Number</label>
+                                    <input name="referenceNumber" class="form-control" [(ngModel)]="dnpModel.referenceNumber" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="amount">Amount</label>
+                                    <input name="amount" class="form-control" [(ngModel)]="dnpModel.amount" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-footer">
+                            <button [ladda]="isLoadingMini" type="submit" class="btn btn-success" (click)="registerpayment()">Submit</button>
+                            <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" role="dialog" id="addModal" #addModal>
     <div class=" modal-dialog ">
         <div class="modal-content " style="width:500px;">
@@ -32,9 +120,9 @@
                                         <input name="itemAmount" class="form-control" [(ngModel)]="amountDueModel.itemAmount" />
                                     </div>
                                     <div class="form-group col-md-6">
-                                        <label for=""></label><br>
-                                        <button [ladda]="amountDueModel.isLoading" type="submit" 
-                                        class="btn btn-primary" (click)="updateValue()">Submit</button>
+                                        <label for=""></label>
+                                        <br>
+                                        <button [ladda]="amountDueModel.isLoading" type="submit" class="btn btn-primary" (click)="updateValue()">Submit</button>
                                     </div>
                                 </div>
                             </div>
@@ -51,9 +139,11 @@
                                     </thead>
                                     <tbody>
                                         <tr *ngFor="let data of amountDueList; let i=index">
-                                            <td><a href="javascript:;" (click)="selectItems(data)">
-                                                <i class="fa fa-edit"></i>
-                                            </a></td>
+                                            <td>
+                                                <a href="javascript:;" (click)="selectItems(data)">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                            </td>
                                             <td>{{data.category}}</td>
                                             <td>{{data.itemDescription}}</td>
                                             <td>{{data.itemAmount}}</td>
@@ -78,7 +168,6 @@
     </div>
 </div>
 
-
 <section class="content-header">
     <h1>
         Search Taxpayer
@@ -96,117 +185,122 @@
         <li class="active">Taxpayers</li>
     </ol>
 </section>
+<div class="row">
+    <section class="content" style="border-style:thin">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title">Search by Billing Number</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="form-group col-md-3">
+                                    <label for="wardId">Billing Number</label>
+                                    <input name="wardId" class="form-control" [(ngModel)]="searchModel.billingNo" />
 
-<section class="content" style="border-style:thin">
-    <div class="row">
-        <div class="col-xs-12">
-            <div class="box">
-                <div class="box-header">
-                    <h3 class="box-title">Demand Notice List</h3>
-                </div>
-                <!-- /.box-header -->
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group col-md-3">
-                                <label for="wardId">Billing Number</label>
-                                <input name="wardId" class="form-control" [(ngModel)]="searchModel.billingNo" />
-
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group">
-                            <div class="form-group col-sm-3" style="margin-left:13px;">
-                                <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary" (click)="search()">
-                                    Search</button>
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="form-group col-sm-3" style="margin-left:13px;">
+                                    <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary" (click)="search()">
+                                        Search</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <table class="table table-bordered table-hover">
-                                <thead>
-                                    <th style="width:40px;"></th>
-                                    <th style="width:40px;"></th>
-                                    <th>Billing Number</th>
-                                    <th>Taxpayers Name</th>
-                                    <th>Billing Year</th>
-                                    <th>Address</th>
-                                    <th>Ward</th>
-                                    <th>LCDA </th>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let data of taxpayersLst; let i=index">
-                                        <td>{{i+1}}</td>
-                                        <td>
-                                            <div class="btn-group">
-                                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    Action
-                                                    <span class="caret"></span>
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li>
-                                                        <a href="javascript:;" (click)="downloadDN(data.billingNumber)">
-                                                            <i class="fa fa-download"></i> Download Demand notice
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="javascript:;" (click)="openEdit(data.billingNumber)">
-                                                            <i class="fa fa-edit"></i> Edit </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="javascript:;" (click)="openEdit(data.billingNumber)">
-                                                            <i class="fa fa-edit"></i> Make Payment </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="javascript:;" (click)="openEdit(data.billingNumber)">
-                                                            <i class="fa fa-edit"></i> Print Reciept </a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </td>
-                                        <td>{{data.billingNumber}}</td>
-                                        <td>{{data.taxpayersName}}</td>
-                                        <td>{{data.billingYr}}</td>
-                                        <td>{{data.addressName}}</td>
-                                        <td>{{data.wardName}}</td>
-                                        <td>{{data.lcdaName}}</td>
-                                    </tr>
-                                    <tr *ngIf="taxpayersLst.length < 1">
-                                        <td style="width:100%" colspan="8">No record !!!</td>
-                                    </tr>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="8">
-                                            <nav *ngIf="pageModel.totalPageCount > 1">
-                                                <ul class="pagination">
-                                                    <li>
-                                                        <a aria-label="Previous" (click)="previous()">
-                                                            <span aria-hidden="true">Previous</span>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a aria-label="Next" (click)="next()">
-                                                            <span aria-hidden="true">Next </span>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}} </span>
-                                                    </li>
-                                                </ul>
-                                            </nav>
-                                        </td>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <th style="width:40px;"></th>
+                                        <th style="width:40px;"></th>
+                                        <th>Billing Number</th>
+                                        <th>Taxpayers Name</th>
+                                        <th>Billing Year</th>
+                                        <th>Address</th>
+                                        <th>Ward</th>
+                                        <th>LCDA </th>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let data of taxpayersLst; let i=index">
+                                            <td>{{i+1}}</td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        Action
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a href="javascript:;" (click)="downloadDN(data.billingNumber)">
+                                                                <i class="fa fa-download"></i> Download Demand notice
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="javascript:;" (click)="openEdit(data.billingNumber)">
+                                                                <i class="fa fa-edit"></i> Edit </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="javascript:;" (click)="openPayment(data.billingNumber)">
+                                                                <i class="fa fa-money"></i> Make Payment </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="javascript:;" (click)="openReciept(data.billingNumber)">
+                                                                <i class="fa fa-sticky-note-o"></i> Download Reciept </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="javascript:;" (click)="openEdit(data.billingNumber)">
+                                                                <i class="fa fa-download"></i> Download Certificate </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                            <td>{{data.billingNumber}}</td>
+                                            <td>{{data.taxpayersName}}</td>
+                                            <td>{{data.billingYr}}</td>
+                                            <td>{{data.addressName}}</td>
+                                            <td>{{data.wardName}}</td>
+                                            <td>{{data.lcdaName}}</td>
+                                        </tr>
+                                        <tr *ngIf="taxpayersLst.length < 1">
+                                            <td style="width:100%" colspan="8">No record !!!</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="8">
+                                                <nav *ngIf="pageModel.totalPageCount > 1">
+                                                    <ul class="pagination">
+                                                        <li>
+                                                            <a aria-label="Previous" (click)="previous()">
+                                                                <span aria-hidden="true">Previous</span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a aria-label="Next" (click)="next()">
+                                                                <span aria-hidden="true">Next </span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}} </span>
+                                                        </li>
+                                                    </ul>
+                                                </nav>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+</div>
 <div class="loading" *ngIf="isLoading"></div>

@@ -22,9 +22,12 @@ namespace RemsNG.Services
         private readonly IImageService imageService;
         private readonly ILcdaBankService lcdaBankService;
         private readonly IListPropertyService lpService;
+        private readonly IDemandNoticeCharges chargesService;
         public DemandNoticeTaxpayerService(RemsDbContext _db,
             IDemandNoticeItemService _dnItemService, ITaxpayerService _taxpayerService,
-             IImageService _imageService, ILcdaBankService _lcdaBankService, IListPropertyService _lpService)
+             IImageService _imageService, ILcdaBankService _lcdaBankService,
+             IListPropertyService _lpService,
+            IDemandNoticeCharges _chargesService )
         {
             dntDao = new DemandNoticeTaxpayersDao(_db);
             dnItemService = _dnItemService;
@@ -34,7 +37,9 @@ namespace RemsNG.Services
             imageService = _imageService;
             lcdaBankService = _lcdaBankService;
             lpService = _lpService;
+            chargesService = _chargesService;
         }
+
         public async Task<DemandNoticeReportModel> ByBillingNo(string billingNo)
         {
             try
@@ -101,7 +106,24 @@ namespace RemsNG.Services
                 var arrears = await dna.ByBillingNumber(billingNo);
                 dnrm.arrears = arrears.Sum(x => (x.totalAmount - x.amountPaid));
 
-
+                LcdaProperty isEnablePayment = ls.FirstOrDefault(x => 
+                x.propertyKey == "ALLOW_PAYMENT_SERVICES" && x.propertyStatus == "ACTIVE");
+                decimal gtotal = dnrm.items.Sum(x => x.itemAmount) + dnrm.arrears + dnrm.penalty;
+                if (isEnablePayment != null)
+                {
+                    if (isEnablePayment.propertyValue == "1")
+                    {
+                        dnrm.charges = await chargesService.getCharges(gtotal, dnrm.lcdaId);
+                    }
+                    else
+                    {
+                        dnrm.charges = 0;
+                    }
+                }
+                else
+                {
+                    dnrm.charges = 0;
+                }
 
                 return dnrm;
             }
@@ -116,6 +138,9 @@ namespace RemsNG.Services
             return await dntDao.GetDNTaxpayerByBatchNoAsync(batchno);
         }
 
-
+        public async Task<DemandNoticeTaxpayersDetail> TaxpayerMiniByBillingNo(string billingNo)
+        {
+           return await dntDao.ByBillingNo(billingNo);
+        }
     }
 }

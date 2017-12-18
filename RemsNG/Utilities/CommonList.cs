@@ -99,5 +99,18 @@ namespace RemsNG.Utilities
                 return "dnTemplate.html";
             }
         }
+
+        public static string ReceiptTemplate(string allowHeader)
+        {
+
+            if (allowHeader == "1")
+            {
+                return "receiptheader.html";
+            }
+            else
+            {
+                return "receipt.html";
+            }
+        }
     }
 }

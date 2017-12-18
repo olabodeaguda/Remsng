@@ -7,11 +7,12 @@
             </div>
             <div class="modal-body clearfix">
                 <div class="box-body">
-                    You are about to Delete <b>{{categoryModel.taxpayerCategoryName}}</b>. Are you sure?
+                    You are about to Delete
+                    <b>{{categoryModel.taxpayerCategoryName}}</b>. Are you sure?
                 </div>
                 <div class="box-footer">
-                        <button [ladda]="categoryModel.isLoading" type="submit" class="btn btn-success" (click)="action()">Submit</button>
-                        <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
+                    <button [ladda]="categoryModel.isLoading" type="submit" class="btn btn-success" (click)="action()">Submit</button>
+                    <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -47,7 +48,6 @@
 
 <div class="wrapper hold-transition skin-blue fixed sidebar-mini">
     <app-hd></app-hd>
-    <app-sbar></app-sbar>
     <div class="content-wrapper">
         <section class="content-header">
             <h1>
@@ -56,51 +56,57 @@
                     <b> {{lcdaModel?.lcdaName}}</b> categories .</small>
             </h1>
             <ol class="breadcrumb">
-                <li><a href="javascript:;"><i class="fa fa-dashboard"></i> Home</a></li>
-                <li><a [routerLink]="['/lcda']">LCDA</a></li>
+                <li>
+                    <a href="javascript:;">
+                        <i class="fa fa-dashboard"></i> Home</a>
+                </li>
+                <li>
+                    <a [routerLink]="['/lcda']">LCDA</a>
+                </li>
                 <li class="active">Categories</li>
-              </ol>
+            </ol>
         </section>
+        <div class="row">
+            <section class="content" style="border-style:thin">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="box">
+                            <div class="box-header">
+                                <h3 class="box-title">Category List</h3>
+                            </div>
+                            <div class="box-body">
+                                <p>
+                                    <button class="btn btn-primary" (click)="open('ADD',null)">
+                                        <i class="fa fa-plus"></i> Add</button>
 
-        <section class="content" style="border-style:thin">
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="box">
-                        <div class="box-header">
-                            <h3 class="box-title">Category List</h3>
-                        </div>
-                        <div class="box-body">
-                            <p>
-                                <button class="btn btn-primary" (click)="open('ADD',null)">
-                                    <i class="fa fa-plus"></i> Add</button>
-                                  
-                            </p>
-                            <table id="example2" class="table table-bordered table-hover">
-                                <thead>
-                                    <tr>
-                                        <th style="width:120px;"></th>
-                                        <th>Category Name</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let data of categories; let i=index">
-                                        <td>                                           
-                                            <a>
-                                                <i class="fa fa-edit" (click)="open('EDIT',data)"></i>
-                                            </a>
-                                        </td>
-                                        <td>{{data.taxpayerCategoryName}}</td>
-                                    </tr>
-                                    <tr *ngIf="categories.length < 1">
-                                        <td style="width:100%" colspan="5">No record !!!</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                </p>
+                                <table id="example2" class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:120px;"></th>
+                                            <th>Category Name</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let data of categories; let i=index">
+                                            <td>
+                                                <a>
+                                                    <i class="fa fa-edit" (click)="open('EDIT',data)"></i>
+                                                </a>
+                                            </td>
+                                            <td>{{data.taxpayerCategoryName}}</td>
+                                        </tr>
+                                        <tr *ngIf="categories.length < 1">
+                                            <td style="width:100%" colspan="5">No record !!!</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
     </div>
 </div>
 <ft></ft>

@@ -14,5 +14,6 @@ namespace RemsNG.Models
         public decimal penalty { get; set; }
         public decimal arrears { get; set; }
         public Guid lcdaId { get; set; }
+        public decimal charges { get; set; }
     }
 }

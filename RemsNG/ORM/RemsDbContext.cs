@@ -52,6 +52,8 @@ namespace RemsNG.ORM
         public DbSet<BatchDemandNoticeModel> BatchDemanNoticeModels { get; set; }
         public DbSet<LcdaProperty> LcdaProperties { get; set; }
         public DbSet<DNAmountDueModel> DNAmountDueModels { get; set; }
+        public DbSet<DemandNoticePaymentHistory> DemandNoticePaymentHistories { get; set; }
+        public DbSet<Bank> Banks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

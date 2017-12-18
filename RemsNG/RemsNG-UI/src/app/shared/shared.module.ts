@@ -10,6 +10,7 @@ import { HttpModule } from '@angular/http';
 import {ToasterModule, ToasterService} from 'angular2-toaster';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StateService } from './services/state.service';
+import { BankService } from './services/bank.service';
 
 const appRoutes: Routes = [
  ];
@@ -25,7 +26,7 @@ const appRoutes: Routes = [
     declarations: [
         HeaderComponent, SideBarComponent, FooterComponent
     ],
-    providers: [ToasterService,StateService],
+    providers: [ToasterService,StateService,BankService],
     exports: [
         HeaderComponent, SideBarComponent, FooterComponent
     ]

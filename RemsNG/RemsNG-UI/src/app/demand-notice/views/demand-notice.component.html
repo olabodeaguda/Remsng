@@ -81,121 +81,122 @@
         <li class="active">Demand Notice</li>
     </ol>
 </section>
+<div class="row">
+    <section class="content" style="border-style:thin">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title">Demand Notice List</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="form-group col-md-3">
+                                    <label for="wardId">Select Ward</label>
+                                    <select (change)="loadStreets($event.target.value)" name="wardId" class="form-control" [(ngModel)]="searchModel.wardId">
+                                        <option *ngFor="let data of wardLst;" [ngValue]="data.id">{{data.wardName}}({{data.lcdaName}})</option>
+                                    </select>
+                                </div>
 
-<section class="content" style="border-style:thin">
-    <div class="row">
-        <div class="col-xs-12">
-            <div class="box">
-                <div class="box-header">
-                    <h3 class="box-title">Demand Notice List</h3>
-                </div>
-                <!-- /.box-header -->
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group col-md-3">
-                                <label for="wardId">Select Ward</label>
-                                <select (change)="loadStreets($event.target.value)" name="wardId" class="form-control" [(ngModel)]="searchModel.wardId">
-                                    <option *ngFor="let data of wardLst;" [ngValue]="data.id">{{data.wardName}}({{data.lcdaName}})</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group col-md-3">
-                                <label for="streetId">Select Street</label>
-                                <select name="streetId" class="form-control" [(ngModel)]="searchModel.streetId">
-                                    <option *ngFor="let data of streetLst;" [ngValue]="data.id">{{data.streetName}}</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-3">
-                                <label for="dateYear">Select Year</label>
-                                <select name="dateYear" class="form-control" [(ngModel)]="searchModel.dateYear">
-                                    <option *ngFor="let data of yrLst;" [ngValue]="data">{{data}}</option>
-                                </select>
+                                <div class="form-group col-md-3">
+                                    <label for="streetId">Select Street</label>
+                                    <select name="streetId" class="form-control" [(ngModel)]="searchModel.streetId">
+                                        <option *ngFor="let data of streetLst;" [ngValue]="data.id">{{data.streetName}}</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label for="dateYear">Select Year</label>
+                                    <select name="dateYear" class="form-control" [(ngModel)]="searchModel.dateYear">
+                                        <option *ngFor="let data of yrLst;" [ngValue]="data">{{data}}</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group">
-                            <div class="form-group col-sm-3" style="margin-left:13px;">
-                                <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary" (click)="submitDemandRequest()">Run Demand Notice</button>
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="form-group col-sm-3" style="margin-left:13px;">
+                                    <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary" (click)="submitDemandRequest()">Run Demand Notice</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <table class="table table-bordered table-hover">
-                                <thead>
-                                    <th style="width:120px;"></th>
-                                    <th>Batch Number</th>
-                                    <th>Billing Year</th>
-                                    <th>Status</th>
-                                   <!-- <th>Errors Updates</th>-->
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let data of demandNoticeLst; let i=index">
-                                        <td>
-                                            <div class="btn-group">
-                                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    Action
-                                                    <span class="caret"></span>
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li>
-                                                        <a href="javascript:;" (click)="open('RAISE_REQUEST',data)">
-                                                            <i class="fa fa-send"></i>Raise download request
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a (click)="open('DOWNLOAD_REQUEST',data)">
-                                                            <i class="fa fa-download"></i> Download</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <th style="width:120px;"></th>
+                                        <th>Batch Number</th>
+                                        <th>Billing Year</th>
+                                        <th>Status</th>
+                                    <!-- <th>Errors Updates</th>-->
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let data of demandNoticeLst; let i=index">
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        Action
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a href="javascript:;" (click)="open('RAISE_REQUEST',data)">
+                                                                <i class="fa fa-send"></i>Raise download request
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a (click)="open('DOWNLOAD_REQUEST',data)">
+                                                                <i class="fa fa-download"></i> Download</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
 
-                                        </td>
-                                        <td>
-                                            <a [routerLink]="['taxpayer',data.batchNo]">{{data.batchNo}}</a>
-                                        </td>
-                                        <td>{{data.billingYear}}</td>
-                                        <td>{{data.demandNoticeStatus}}</td>
-                                       <!-- <td>
-                                            <a href="javascript:;">Error update</a>
-                                        </td>-->
-                                    </tr>
-                                    <tr *ngIf="demandNoticeLst.length < 1">
-                                        <td style="width:100%" colspan="6">No record !!!</td>
-                                    </tr>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="5">
-                                            <nav *ngIf="demandNoticeLst.length > 0">
-                                                <ul class="pagination">
-                                                    <li>
-                                                        <a aria-label="Previous" (click)="previous()">
-                                                            <span aria-hidden="true">Previous</span>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a aria-label="Next" (click)="next()">
-                                                            <span aria-hidden="true">Next </span>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}} </span>
-                                                    </li>
-                                                </ul>
-                                            </nav>
-                                        </td>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                                            </td>
+                                            <td>
+                                                <a [routerLink]="['taxpayer',data.batchNo]">{{data.batchNo}}</a>
+                                            </td>
+                                            <td>{{data.billingYear}}</td>
+                                            <td>{{data.demandNoticeStatus}}</td>
+                                        <!-- <td>
+                                                <a href="javascript:;">Error update</a>
+                                            </td>-->
+                                        </tr>
+                                        <tr *ngIf="demandNoticeLst.length < 1">
+                                            <td style="width:100%" colspan="6">No record !!!</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="5">
+                                                <nav *ngIf="demandNoticeLst.length > 0">
+                                                    <ul class="pagination">
+                                                        <li>
+                                                            <a aria-label="Previous" (click)="previous()">
+                                                                <span aria-hidden="true">Previous</span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a aria-label="Next" (click)="next()">
+                                                                <span aria-hidden="true">Next </span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}} </span>
+                                                        </li>
+                                                    </ul>
+                                                </nav>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+</div>
 <div class="loading" *ngIf="isLoading"></div>

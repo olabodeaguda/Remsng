@@ -8,6 +8,6 @@ namespace RemsNG.ORM
     public class Bank
     {
         public Guid id { get; set; }
-        public string Name { get; set; }
+        public string bankName { get; set; }
     }
 }

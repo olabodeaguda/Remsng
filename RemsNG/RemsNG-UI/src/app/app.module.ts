@@ -32,9 +32,10 @@ import { GlobalInterceptorService } from "./shared/services/global-interceptor.s
 import {HttpClientModule} from '@angular/common/http';
 import { MediaFilesModule } from './media-files/media-files.module';
 import { AddressGlobalModule } from './address/AddressGlobal.module';
+import { DashboardIndexComponent } from './Dashboard/components/dashboard-index.component';
 
 const appRoutes: Routes = [
-    { path: '', component: LoginComponent }
+    { path: '', component: DashboardIndexComponent }
 ];
 
 @NgModule({

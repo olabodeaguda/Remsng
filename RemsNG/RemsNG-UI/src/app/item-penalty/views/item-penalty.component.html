@@ -14,7 +14,7 @@
                         <div class="form-group ">
                             <label for="itemStatus">Select Status</label>
                             <select name="itemStatus" class="form-control" [(ngModel)]="itempModel.currentstatus">
-                                <option >Select Status</option>
+                                <option>Select Status</option>
                                 <option *ngIf="itempModel.penaltyStatus !== 'ACTIVE'" value="ACTIVE">ACTIVE</option>
                                 <option *ngIf="itempModel.penaltyStatus !== 'NOT_ACTIVE'" value="NOT_ACTIVE">NOT ACTIVE</option>
                             </select>
@@ -58,10 +58,9 @@
                         </div>
                         <div class="checkbox">
                             <label>
-                              <input type="checkbox" [checked]="itempModel.isPercentage" 
-                              (change)="itempModel.isPercentage = !itempModel.isPercentage" > Is Percentage
+                                <input type="checkbox" [checked]="itempModel.isPercentage" (change)="itempModel.isPercentage = !itempModel.isPercentage"> Is Percentage
                             </label>
-                          </div>
+                        </div>
                         <div class="box-footer">
                             <button [ladda]="itempModel.isLoading" type="submit" class="btn btn-primary" (click)="actions()">Submit</button>
                         </div>
@@ -74,7 +73,6 @@
 
 <div class="wrapper hold-transition skin-blue fixed sidebar-mini">
     <app-hd></app-hd>
-    <app-sbar></app-sbar>
     <div class="content-wrapper">
         <section class="content-header">
             <h1>
@@ -83,81 +81,86 @@
                     <b> {{item?.itemDescription}} </b> Penalty Items.</small>
             </h1>
             <ol class="breadcrumb">
-                <li><a href="javascript:;"><i class="fa fa-dashboard"></i> Home</a></li>
-                <li><a [routerLink]="['/item',item.lcdaId]">Items</a></li>
+                <li>
+                    <a href="javascript:;">
+                        <i class="fa fa-dashboard"></i> Home</a>
+                </li>
+                <li>
+                    <a [routerLink]="['/item',item.lcdaId]">Items</a>
+                </li>
                 <li class="active">Item penalties</li>
-              </ol>
+            </ol>
         </section>
-
-        <section class="content" style="border-style:thin">
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="box">
-                        <div class="box-header">
-                            <h3 class="box-title">Penalty List</h3>
-                        </div>
-                        <div class="box-body">
-                            <p>
-                                <button class="btn btn-primary" (click)="open('ADD',null)">
-                                    <i class="fa fa-plus"></i> Add</button>
-                            </p>
-                            <table id="example2" class="table table-bordered table-hover">
-                                <thead>
-                                    <tr>
-                                        <th style="width:220px;"></th>
-                                        <th>Duration</th>
-                                        <th>Amount</th>
-                                        <th>Penalty Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let data of itemPs; let i=index">
-                                        <td>
-                                            <a>
-                                                <i class="fa fa-edit" (click)="open('EDIT',data)"></i>
-                                            </a>
-                                            <a>|
-                                                <i class="fa fa-trash" (click)="open('CHANGE_STATUS',data)"></i>
-                                            </a>
-                                        </td>
-                                        <td>{{data.duration}}</td>
-                                        <td>{{data.amount}} {{data?.isPercentage?'%':'Flat'}}</td>
-                                        <td>{{data.penaltyStatus}}</td>
-                                    </tr>
-                                    <tr *ngIf="itemPs.length < 1">
-                                        <td style="width:100%" colspan="5">No record !!!</td>
-                                    </tr>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="5">
-                                            <nav *ngIf="itemPs.length > 0">
-                                                <ul class="pagination">
-                                                    <li>
-                                                        <a aria-label="Previous" (click)="previous()">
-                                                            <span aria-hidden="true">Previous</span>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a aria-label="Next" (click)="next()">
-                                                            <span aria-hidden="true">Next </span>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}} </span>
-                                                    </li>
-                                                </ul>
-                                            </nav>
-                                        </td>
-                                    </tr>
-                                </tfoot>
-                            </table>
+        <div class="row">
+            <section class="content" style="border-style:thin">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="box">
+                            <div class="box-header">
+                                <h3 class="box-title">Penalty List</h3>
+                            </div>
+                            <div class="box-body">
+                                <p>
+                                    <button class="btn btn-primary" (click)="open('ADD',null)">
+                                        <i class="fa fa-plus"></i> Add</button>
+                                </p>
+                                <table id="example2" class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:220px;"></th>
+                                            <th>Duration</th>
+                                            <th>Amount</th>
+                                            <th>Penalty Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let data of itemPs; let i=index">
+                                            <td>
+                                                <a>
+                                                    <i class="fa fa-edit" (click)="open('EDIT',data)"></i>
+                                                </a>
+                                                <a>|
+                                                    <i class="fa fa-trash" (click)="open('CHANGE_STATUS',data)"></i>
+                                                </a>
+                                            </td>
+                                            <td>{{data.duration}}</td>
+                                            <td>{{data.amount}} {{data?.isPercentage?'%':'Flat'}}</td>
+                                            <td>{{data.penaltyStatus}}</td>
+                                        </tr>
+                                        <tr *ngIf="itemPs.length < 1">
+                                            <td style="width:100%" colspan="5">No record !!!</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="5">
+                                                <nav *ngIf="itemPs.length > 0">
+                                                    <ul class="pagination">
+                                                        <li>
+                                                            <a aria-label="Previous" (click)="previous()">
+                                                                <span aria-hidden="true">Previous</span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a aria-label="Next" (click)="next()">
+                                                                <span aria-hidden="true">Next </span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}} </span>
+                                                        </li>
+                                                    </ul>
+                                                </nav>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
-
+            </section>
+        </div>
     </div>
 </div>
 <div class="loading" *ngIf="isLoading"></div>

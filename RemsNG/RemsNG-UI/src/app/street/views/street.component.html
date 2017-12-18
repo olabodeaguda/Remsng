@@ -58,7 +58,6 @@
 
 <div class="wrapper hold-transition skin-blue fixed sidebar-mini">
     <app-hd></app-hd>
-    <app-sbar></app-sbar>
     <div class="content-wrapper">
         <section class="content-header">
             <h1>
@@ -72,96 +71,97 @@
                 <li class="active">Streets</li>
               </ol>
         </section>
-
-        <section class="content" style="border-style:thin">
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="box">
-                        <div class="box-header">
-                            <h3 class="box-title"> {{wardmodel?.wardName}} Streets List</h3>
-                        </div>
-                        <div class="box-body">
-                            <p>
-                                <button class="btn btn-primary" (click)="open('ADD',null)">
-                                    <i class="fa fa-plus"></i> Add</button>
-                            </p>
-                            <table id="example2" class="table table-bordered table-hover">
-                                <thead>
-                                    <tr>
-                                        <th style="width:120px;"></th>
-                                        <th style="width:50px;"></th>
-                                        <th>Street Name</th>
-                                        <th>Number of Houses</th>
-                                        <th>Street Discription</th>
-                                        <th>Street Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let data of streetModels; let i=index">
-                                        <td>
-                                            <div class="btn-group">
-                                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    Action
-                                                    <span class="caret"></span>
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li>
-                                                        <a href="javascript:;" (click)="open('EDIT',data)">
-                                                            <i class="fa fa-edit"></i>Edit
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a (click)="open('CHANGE_STATUS',data)">
-                                                            <i class="fa fa-cog"></i>
-                                                            {{data.streetStatus === 'ACTIVE'?'Deactivate':'Approve'}}</a>
-                                                    </li>
-                                                    <li>
-                                                        <a [routerLink]="['/taxpayers',data.id]">
-                                                            <i class="fa fa-user"></i>
-                                                            TaxPayers</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </td>
-                                        <td>{{(pageModel.pageSize*(pageModel.pageNum - 1))+(i+1)}}</td>
-                                        <td>{{data.streetName}}</td>
-                                        <td>{{data.numberOfHouse}}</td>
-                                        <td>{{data.streetDescription.length > 0?data.streetDescription:'Nil'}}</td>
-                                        <td>{{data.streetStatus}}</td>
-                                    </tr>
-                                    <tr *ngIf="streetModels.length < 1">
-                                        <td style="width:100%" colspan="6">No record !!!</td>
-                                    </tr>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="5">
-                                            <nav *ngIf="streetModels.length > 0">
-                                                <ul class="pagination">
-                                                    <li>
-                                                        <a aria-label="Previous" (click)="previous()">
-                                                            <span aria-hidden="true">Previous</span>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a aria-label="Next" (click)="next()">
-                                                            <span aria-hidden="true">Next </span>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}} </span>
-                                                    </li>
-                                                </ul>
-                                            </nav>
-                                        </td>
-                                    </tr>
-                                </tfoot>
-                            </table>
+        <div class="row">
+            <section class="content" style="border-style:thin">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="box">
+                            <div class="box-header">
+                                <h3 class="box-title"> {{wardmodel?.wardName}} Streets List</h3>
+                            </div>
+                            <div class="box-body">
+                                <p>
+                                    <button class="btn btn-primary" (click)="open('ADD',null)">
+                                        <i class="fa fa-plus"></i> Add</button>
+                                </p>
+                                <table id="example2" class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:120px;"></th>
+                                            <th style="width:50px;"></th>
+                                            <th>Street Name</th>
+                                            <th>Number of Houses</th>
+                                            <th>Street Discription</th>
+                                            <th>Street Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let data of streetModels; let i=index">
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        Action
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a href="javascript:;" (click)="open('EDIT',data)">
+                                                                <i class="fa fa-edit"></i>Edit
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a (click)="open('CHANGE_STATUS',data)">
+                                                                <i class="fa fa-cog"></i>
+                                                                {{data.streetStatus === 'ACTIVE'?'Deactivate':'Approve'}}</a>
+                                                        </li>
+                                                        <li>
+                                                            <a [routerLink]="['/taxpayers',data.id]">
+                                                                <i class="fa fa-user"></i>
+                                                                TaxPayers</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                            <td>{{(pageModel.pageSize*(pageModel.pageNum - 1))+(i+1)}}</td>
+                                            <td>{{data.streetName}}</td>
+                                            <td>{{data.numberOfHouse}}</td>
+                                            <td>{{data.streetDescription.length > 0?data.streetDescription:'Nil'}}</td>
+                                            <td>{{data.streetStatus}}</td>
+                                        </tr>
+                                        <tr *ngIf="streetModels.length < 1">
+                                            <td style="width:100%" colspan="6">No record !!!</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="5">
+                                                <nav *ngIf="streetModels.length > 0">
+                                                    <ul class="pagination">
+                                                        <li>
+                                                            <a aria-label="Previous" (click)="previous()">
+                                                                <span aria-hidden="true">Previous</span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a aria-label="Next" (click)="next()">
+                                                                <span aria-hidden="true">Next </span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}} </span>
+                                                        </li>
+                                                    </ul>
+                                                </nav>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
     </div>
 </div>
 <ft></ft>

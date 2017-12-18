@@ -11,6 +11,7 @@ import { DemandNoticeTaxpayersComponent } from './components/demand-noticeTaxpay
 import { DemandNoticeTaxpayerService } from './services/demand-noticeTaxpayer.service';
 import { DemandNoticeIndexComponent } from './components/demand-notice-index.component';
 import { DemandNoticeSearchComponent } from './components/demand-notice-search.component';
+import { DemandNoticePaymentService } from './services/demand-notice-payment.service';
 
 const appRoutes: Routes = [
     { path: 'demandnotice', component: DemandNoticeIndexComponent,
@@ -36,7 +37,11 @@ const appRoutes: Routes = [
         DemandNoticeComponent,DemandNoticeTaxpayersComponent,
         DemandNoticeIndexComponent,DemandNoticeSearchComponent
     ],
-    providers: [ DemandNoticeService, DemandNoticeTaxpayerService],
+    providers: [ 
+        DemandNoticeService,
+         DemandNoticeTaxpayerService,
+        DemandNoticePaymentService
+    ],
     exports: [
         DemandNoticeComponent,DemandNoticeTaxpayersComponent,
         DemandNoticeIndexComponent,DemandNoticeSearchComponent

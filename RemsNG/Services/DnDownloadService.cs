@@ -30,6 +30,42 @@ namespace RemsNG.Services
             listPropertyService = _listPropertyService;
         }
 
+        public async Task<string> PopulateReceiptHtml(string htmlContent, string rootUrl,
+            string createdBy, DemandNoticePaymentHistory dnph)
+        {
+            DemandNoticeReportModel dnrp = await dnts.ByBillingNo(dnph.billingNumber);
+            htmlContent = htmlContent.Replace("LOCAL_GOVERNMENT_NAME", dnrp.domainName);
+            htmlContent = htmlContent.Replace("LCDA_NAME", dnrp.lcdaName);
+            htmlContent = htmlContent.Replace("LCDA_ADDRESS", dnrp.lcdaAddress);
+            htmlContent = htmlContent.Replace("LCDA_STATE", dnrp.lcdaState);
+            htmlContent = htmlContent.Replace("LAGOSLOGO", $"{rootUrl}/images/lagoslogo.jpg");
+            htmlContent = htmlContent.Replace("LCDA_LOGO", $"{rootUrl}/images/{dnrp.lcdaLogoFileName}");
+            htmlContent = htmlContent.Replace("BILL_NO", dnrp.billingNumber);
+            htmlContent = htmlContent.Replace("PAYER_NAME", dnrp.taxpayersName);
+            htmlContent = htmlContent.Replace("PAYER_ADDRESS", dnrp.addressName);
+            htmlContent = htmlContent.Replace("CURRENT_DATE", DateTime.Now.ToString("dd-MM-yyyy"));
+            htmlContent = htmlContent.Replace("BILLING_YEAR", dnrp.billingYr.ToString());
+            htmlContent = htmlContent.Replace("WARD_NAME", dnrp.wardName);
+            htmlContent = htmlContent.Replace("TOTAL_AMOUNT", $"{decimal.Round(dnph.amount,2)} naira");
+            htmlContent = htmlContent.Replace("REFERENCE_NUMBER", dnph.referenceNumber);
+            htmlContent = htmlContent.Replace("REFERENCE_NUMBER", dnph.referenceNumber);
+            if (dnph.amount == 0)
+            {
+                htmlContent = htmlContent.Replace("AMOUNT_IN_WORD", "Zero");
+            }
+            else
+            {
+                htmlContent = htmlContent.Replace("AMOUNT_IN_WORD", 
+                    CurrencyWords.ConvertToWords(decimal.Round(dnph.amount, 2).ToString()));
+            }
+
+            string discp = string.Join(',', dnrp.items.Select(x => x.itemTitle));
+
+            htmlContent = htmlContent.Replace("DESCRIPTION", discp);
+
+            return htmlContent;
+        }
+
         public async Task<string> PopulateReportHtml(string htmlContent, string billingno, string rootUrl, string createdBy)
         {
             DemandNoticeReportModel dnrp = await dnts.ByBillingNo(billingno);
@@ -46,6 +82,7 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("CURRENT_DATE", DateTime.Now.ToString("dd-MM-yyyy"));
             htmlContent = htmlContent.Replace("BILLING_YEAR", dnrp.billingYr.ToString());
             htmlContent = htmlContent.Replace("WARD_NAME", dnrp.wardName);
+
             htmlContent = htmlContent.Replace("ITEMLIST", DemandNoticeComponents.HtmlBuildItems(dnrp));
             htmlContent = htmlContent.Replace("BANKLIST", DemandNoticeComponents.HtmlBuildBanks(dnrp));
             htmlContent = htmlContent.Replace("ARREARS_AMMOUNT", decimal.Round(dnrp.arrears, 2).ToString());
@@ -62,13 +99,9 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("TREASURER_MOBILE", string.IsNullOrEmpty(dnrp.councilTreasurerMobile) ? "nil" : dnrp.councilTreasurerMobile);
             decimal gtotal = dnrp.items.Sum(x => x.itemAmount) + dnrp.arrears + dnrp.penalty;
             htmlContent = htmlContent.Replace("GRAND_TOTAL", decimal.Round(gtotal, 2).ToString());
-            decimal charges = 0;
-            if (gtotal > 0)
-            {
-                charges = await chargesService.getCharges(gtotal, dnrp.lcdaId);
-            }
-            htmlContent = htmlContent.Replace("CHARGES", decimal.Round(charges, 2).ToString());
-            decimal finalTotal = gtotal + charges;
+           
+            htmlContent = htmlContent.Replace("CHARGES", decimal.Round(dnrp.charges, 2).ToString());
+            decimal finalTotal = gtotal + dnrp.charges;
             htmlContent = htmlContent.Replace("FINAL_TOTAL", decimal.Round(finalTotal, 2).ToString());
 
 
@@ -83,7 +116,7 @@ namespace RemsNG.Services
             DemandNoticeDownloadHistory dndh = new DemandNoticeDownloadHistory();
             dndh.id = Guid.NewGuid();
             dndh.billingNumber = billingno;
-            dndh.charges = charges;
+            dndh.charges = dnrp.charges;
             dndh.createdBy = createdBy;
             dndh.dateCreated = DateTime.Now;
             dndh.grandTotal = gtotal;
@@ -121,5 +154,20 @@ namespace RemsNG.Services
             return CommonList.Template((allowPayment == null ? "0" : allowPayment.propertyValue),
                 (allowHeader == null ? "0" : allowHeader.propertyValue));
         }
+
+        public async Task<string> ReceiptTemlate(string billingno)
+        {
+            Lgda lgda = await lcdaService.ByBillingNumber(billingno);
+            if (lgda == null)
+            {
+                throw new NotFoundException($" {billingno} parent not found");
+            }
+            List<LcdaProperty> lstProperties = await listPropertyService.ByLcda(lgda.id);
+            var allowHeader = lstProperties
+               .FirstOrDefault(x => x.propertyKey == "ALLOW_HEADER" && x.propertyStatus == "ACTIVE");
+
+            return CommonList.ReceiptTemplate((allowHeader == null ? "0" : allowHeader.propertyValue));
+        }
+
     }
 }

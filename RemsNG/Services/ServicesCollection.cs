@@ -92,18 +92,17 @@ namespace RemsNG.Services
             services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
             {
                 builder 
-                  .AllowAnyMethod() //<--this allows preflight headers required for POST
-                  .AllowAnyHeader() //<--accepts headers 
-                  .AllowCredentials() //<--lets your app send auth credentials
+                  .AllowAnyMethod() 
+                  .AllowAnyHeader()
+                  .AllowCredentials() 
                   .WithExposedHeaders("new-t")
-                  .WithOrigins(corsUrls.ToArray()); //<--this is the important line
+                  .WithOrigins(corsUrls.ToArray());
             }));
 
             services.Configure<MvcOptions>(
                 options =>
                 {
                     options.Filters.Add(new CorsAuthorizationFilterFactory("CorsPolicy"));
-                    //options.Filters.Add(new GlobalExceptionFilter());
                 });
             services.AddDbContext<RemsDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
@@ -138,7 +137,8 @@ namespace RemsNG.Services
             services.AddTransient<IBatchDwnRequestService, BatchDwnRequestService>();
             services.AddTransient<IListPropertyService, ListPropertyService>();
             services.AddTransient<IDNAmountDueMgtService, DNAmountDueMgtService>();
-
+            services.AddTransient<IDNPaymentHistoryService, DNPaymentHistoryService>();
+            services.AddTransient<IBankService, BankService > ();
         }
 
         public static IConfigurationSection jwtAppSettingOptions

@@ -57,7 +57,6 @@
 
 <div class="wrapper hold-transition skin-blue fixed sidebar-mini">
     <app-hd></app-hd>
-    <app-sbar></app-sbar>
     <div class="content-wrapper">
         <section class="content-header">
             <h1>
@@ -66,73 +65,75 @@
                     <b> {{roleModel?.roleName}}({{roleModel?.domainName}})</b> Permission.</small>
             </h1>
         </section>
-
-        <section class="content" style="border-style:thin">
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="box">
-                        <div class="box-header">
-                            <h3 class="box-title">Permission List</h3>
-                        </div>
-                        <!-- /.box-header -->
-                        <div class="box-body">
-                            <p>
-                                <button class="btn btn-primary" (click)="open('ADD',null)">
-                                    <i class="fa fa-plus"></i> Add</button>
-                            </p>
-                            <table id="example2" class="table table-bordered table-hover">
-                                <thead>
-                                    <tr>
-                                        <th style="width:120px;"></th>
-                                        <th style="width:50px;"></th>
-                                        <th>Permission Name</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let data of permissionLst; let i=index">
-                                        <td>
-                                            <a>
-                                                <i class="fa fa-remove" (click)="open('REMOVE',data)"></i>
-                                            </a>
-                                        </td>
-                                        <td>{{(pageModel.pageSize*(pageModel.pageNum - 1))+(i+1)}}</td>
-                                        <td>{{data.permissionName}}</td>
-                                    </tr>
-                                    <tr *ngIf="permissionLst.length < 1">
-                                        <td style="width:100%" colspan="5">No record !!!</td>
-                                    </tr>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="5">
-                                            <nav *ngIf="permissionLst.length > 0">
-                                                <ul class="pagination">
-                                                    <li>
-                                                        <a aria-label="Previous" (click)="previous()">
-                                                            <span aria-hidden="true">Previous</span>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a aria-label="Next" (click)="next()">
-                                                            <span aria-hidden="true">Next </span>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}} </span>
-                                                    </li>
-                                                </ul>
-                                            </nav>
-                                        </td>
-                                    </tr>
-                                </tfoot>
-                            </table>
+        <div class="row">
+            <section class="content" style="border-style:thin">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="box">
+                            <div class="box-header">
+                                <h3 class="box-title">Permission List</h3>
+                            </div>
+                            <!-- /.box-header -->
+                            <div class="box-body">
+                                <p>
+                                    <button class="btn btn-primary" (click)="open('ADD',null)">
+                                        <i class="fa fa-plus"></i> Add</button>
+                                </p>
+                                <table id="example2" class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:120px;"></th>
+                                            <th style="width:50px;"></th>
+                                            <th>Permission Name</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let data of permissionLst; let i=index">
+                                            <td>
+                                                <a>
+                                                    <i class="fa fa-remove" (click)="open('REMOVE',data)"></i>
+                                                </a>
+                                            </td>
+                                            <td>{{(pageModel.pageSize*(pageModel.pageNum - 1))+(i+1)}}</td>
+                                            <td>{{data.permissionName}}</td>
+                                        </tr>
+                                        <tr *ngIf="permissionLst.length < 1">
+                                            <td style="width:100%" colspan="5">No record !!!</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="5">
+                                                <nav *ngIf="permissionLst.length > 0">
+                                                    <ul class="pagination">
+                                                        <li>
+                                                            <a aria-label="Previous" (click)="previous()">
+                                                                <span aria-hidden="true">Previous</span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a aria-label="Next" (click)="next()">
+                                                                <span aria-hidden="true">Next </span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}} </span>
+                                                        </li>
+                                                    </ul>
+                                                </nav>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
     </div>
 
 </div>
+<div style="clear:both;"></div>
 <ft></ft>
 <div class="loading" *ngIf="isLoading"></div>
