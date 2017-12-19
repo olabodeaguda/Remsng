@@ -64,130 +64,133 @@
     </div>
 </div>
 <section class="content">
-<div class="wrapper hold-transition skin-blue fixed sidebar-mini">
-    <app-hd></app-hd>
-    <div class="content-wrapper">
-        <section class="content-header">
-            <h1>
-                LCDA Management
-                <small>Manage and register LCDA.</small>
-            </h1>
-        </section>
-        <div class="row">
-            <section class="content" style="border-style:thin">
+    <div class="wrapper hold-transition skin-blue fixed sidebar-mini">
+        <app-hd></app-hd>
+        <div class="content-wrapper">
+            <section class="content-header">
+                <h1>
+                    LCDA Management
+                    <small>Manage and register LCDA.</small>
+                </h1>
+            </section>
+            <section>
                 <div class="row">
-                    <div class="col-xs-12">
-                        <div class="box">
-                            <div class="box-header">
-                                <h3 class="box-title">LCDA List</h3>
-                            </div>
-                            <!-- /.box-header -->
-                            <div class="box-body">
-                                <p>
-                                    <button class="btn btn-primary" (click)="open('ADD',null)">
-                                        <i class="fa fa-plus"></i> Add</button>
-                                </p>
-                                <table id="example2" class="table table-bordered table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th style="width:120px;"></th>
-                                            <th style="width:50px;"></th>
-                                            <th>LCDA Name</th>
-                                            <th>LCDA Code</th>
-                                            <th>LCDA Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr *ngFor="let data of lcdaLst; let i=index">
-                                            <td>
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                        Action
-                                                        <span class="caret"></span>
-                                                    </button>
-                                                    <ul class="dropdown-menu">
-                                                        <li>
-                                                            <a href="javascript:;" (click)="open('EDIT',data)">
-                                                                <i class="fa fa-edit"></i>Edit
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a (click)="open('CHANGE_STATUS',data)">
-                                                                <i class="fa fa-cog"></i> {{data.lcdaStatus === 'ACTIVE'?'deactivate':'approve'}}</a>
-                                                        </li>
-                                                        <li>
-                                                            <a [routerLink]="['/ward',data.id]">
-                                                                <i class="fa fa-cog"></i> Wards </a>
-                                                        </li>
-                                                        <li>
-                                                            <a [routerLink]="['/item',data.id]">
-                                                                <i class="fa fa-cog"></i> Items </a>
-                                                        </li>
-                                                        <li>
-                                                            <a [routerLink]="['/sector',data.id]">
-                                                                <i class="fa fa-cog"></i> Sector </a>
-                                                        </li>
-                                                        <li>
-                                                            <a [routerLink]="['/category',data.id]">
-                                                                <i class="fa fa-cog"></i> Categories </a>
-                                                        </li>
-                                                        <li>
-                                                            <a [routerLink]="['/company',data.id]">
-                                                                <i class="fa fa-cog"></i> Companies </a>
-                                                        </li>
-                                                        <li>
-                                                            <a [routerLink]="['/address',data.id,data.id]">
-                                                                <i class="fa fa-cog"></i> Address </a>
-                                                        </li>
-                                                        <li>
-                                                            <a [routerLink]="['/media',data.id]">
-                                                                <i class="fa fa-cog"></i> Images </a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
+                    <section class="content" style="border-style:thin">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="box">
+                                    <div class="box-header">
+                                        <h3 class="box-title">LCDA List</h3>
+                                    </div>
+                                    <!-- /.box-header -->
+                                    <div class="box-body">
+                                        <p>
+                                            <button class="btn btn-primary" (click)="open('ADD',null)">
+                                                <i class="fa fa-plus"></i> Add</button>
+                                        </p>
+                                        <table id="example2" class="table table-bordered table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:120px;"></th>
+                                                    <th style="width:50px;"></th>
+                                                    <th>LCDA Name</th>
+                                                    <th>LCDA Code</th>
+                                                    <th>LCDA Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let data of lcdaLst; let i=index">
+                                                    <td>
+                                                        <div class="btn-group">
+                                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                Action
+                                                                <span class="caret"></span>
+                                                            </button>
+                                                            <ul class="dropdown-menu">
+                                                                <li>
+                                                                    <a href="javascript:;" (click)="open('EDIT',data)">
+                                                                        <i class="fa fa-edit"></i>Edit
+                                                                    </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a (click)="open('CHANGE_STATUS',data)">
+                                                                        <i class="fa fa-cog"></i> {{data.lcdaStatus === 'ACTIVE'?'deactivate':'approve'}}</a>
+                                                                </li>
+                                                                <li>
+                                                                    <a [routerLink]="['/ward',data.id]">
+                                                                        <i class="fa fa-cog"></i> Wards </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a [routerLink]="['/item',data.id]">
+                                                                        <i class="fa fa-cog"></i> Items </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a [routerLink]="['/sector',data.id]">
+                                                                        <i class="fa fa-cog"></i> Sector </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a [routerLink]="['/category',data.id]">
+                                                                        <i class="fa fa-cog"></i> Categories </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a [routerLink]="['/company',data.id]">
+                                                                        <i class="fa fa-cog"></i> Companies </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a [routerLink]="['/address',data.id,data.id]">
+                                                                        <i class="fa fa-cog"></i> Address </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a [routerLink]="['/media',data.id]">
+                                                                        <i class="fa fa-cog"></i> Images </a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
 
-                                            </td>
-                                            <td>{{(pageModel.pageSize*(pageModel.pageNum - 1))+(i+1)}}</td>
-                                            <td>{{data.lcdaName}}</td>
-                                            <td>{{data.lcdaCode}}</td>
-                                            <td>{{data.lcdaStatus}}</td>
-                                        </tr>
-                                        <tr *ngIf="lcdaLst.length < 1">
-                                            <td style="width:100%" colspan="5">No record !!!</td>
-                                        </tr>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td colspan="5">
-                                                <nav *ngIf="lcdaLst.length > 0">
-                                                    <ul class="pagination">
-                                                        <li>
-                                                            <a aria-label="Previous" (click)="previous()">
-                                                                <span aria-hidden="true">Previous</span>
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a aria-label="Next" (click)="next()">
-                                                                <span aria-hidden="true">Next </span>
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}} </span>
-                                                        </li>
-                                                    </ul>
-                                                </nav>
-                                            </td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
+                                                    </td>
+                                                    <td>{{(pageModel.pageSize*(pageModel.pageNum - 1))+(i+1)}}</td>
+                                                    <td>{{data.lcdaName}}</td>
+                                                    <td>{{data.lcdaCode}}</td>
+                                                    <td>{{data.lcdaStatus}}</td>
+                                                </tr>
+                                                <tr *ngIf="lcdaLst.length < 1">
+                                                    <td style="width:100%" colspan="5">No record !!!</td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="5">
+                                                        <nav *ngIf="lcdaLst.length > 0">
+                                                            <ul class="pagination">
+                                                                <li>
+                                                                    <a aria-label="Previous" (click)="previous()">
+                                                                        <span aria-hidden="true">Previous</span>
+                                                                    </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a aria-label="Next" (click)="next()">
+                                                                        <span aria-hidden="true">Next </span>
+                                                                    </a>
+                                                                </li>
+                                                                <li>
+                                                                    <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}}
+                                                                        </span>
+                                                                </li>
+                                                            </ul>
+                                                        </nav>
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </section>
                 </div>
             </section>
         </div>
     </div>
-</div>
 </section>
 <section class="content"></section>
 <div class="loading" *ngIf="isLoading"></div>
