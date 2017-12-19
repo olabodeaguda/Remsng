@@ -10,8 +10,8 @@ import { ICarouselConfig, AnimationConfig } from 'angular4-carousel';
 export class DashboardIndexComponent{
 
     public imageSources: string[] = [
-        '../assets/dist/img/landing.jpeg',
-        '../assets/dist/img/landing.jpeg'
+        'assets/dist/img/landing.jpeg',
+        'assets/dist/img/landing.jpeg'
      ];
      
      public config: ICarouselConfig = {

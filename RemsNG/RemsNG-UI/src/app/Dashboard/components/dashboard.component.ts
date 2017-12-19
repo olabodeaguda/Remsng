@@ -15,7 +15,7 @@ export class DashboardComponent implements OnInit {
     }
 
     ngOnInit() {
-       // this.loadScript('../assets/dist/js/adminlte.min.js');
+       // this.loadScript('assets/dist/js/adminlte.min.js');
     }
 
     public loadScript(url) {

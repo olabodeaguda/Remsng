@@ -58,6 +58,7 @@ namespace RemsNG.Dao
             r.itemDescription = item.itemDescription;
             r.lastmodifiedby = item.lastmodifiedby;
             r.lastModifiedDate = DateTime.Now;
+            r.itemCode = item.itemCode;
 
             int count = await db.SaveChangesAsync();
             if (count > 0)

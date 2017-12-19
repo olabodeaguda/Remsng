@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,6 +16,7 @@ namespace RemsNG.ORM
         public DateTime? lastModifiedDate { get; set; }
         public DateTime dateCreated { get; set; }
         public string lastmodifiedBy { get; set; }
+        [NotMapped]
         public string lcdaName { get; set; }
     }
 }

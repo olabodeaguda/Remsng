@@ -5,4 +5,5 @@ export class ItemModel{
     lcdaId: string;
     eventType: string = '';
     isLoading:boolean = false;
+    itemCode: string = '';
 }

@@ -96,6 +96,7 @@
                                 <div class="form-group col-md-3">
                                     <label for="wardId">Select Ward</label>
                                     <select (change)="loadStreets($event.target.value)" name="wardId" class="form-control" [(ngModel)]="searchModel.wardId">
+                                            <option>Select Ward</option>
                                         <option *ngFor="let data of wardLst;" [ngValue]="data.id">{{data.wardName}}({{data.lcdaName}})</option>
                                     </select>
                                 </div>
@@ -103,12 +104,14 @@
                                 <div class="form-group col-md-3">
                                     <label for="streetId">Select Street</label>
                                     <select name="streetId" class="form-control" [(ngModel)]="searchModel.streetId">
+                                            <option>Select Street</option>
                                         <option *ngFor="let data of streetLst;" [ngValue]="data.id">{{data.streetName}}</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-3">
                                     <label for="dateYear">Select Year</label>
                                     <select name="dateYear" class="form-control" [(ngModel)]="searchModel.dateYear">
+                                            <option>Select Year</option>
                                         <option *ngFor="let data of yrLst;" [ngValue]="data">{{data}}</option>
                                     </select>
                                 </div>

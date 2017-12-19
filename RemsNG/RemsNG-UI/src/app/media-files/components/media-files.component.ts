@@ -51,7 +51,7 @@ export class MediaFileComponent implements OnInit {
     }
 
     sanitize(url:string){
-        return this.sanitizer.bypassSecurityTrustUrl( this.appsettings.root_url+"/images/"+url);
+        return this.sanitizer.bypassSecurityTrustUrl( "images/"+url);
     }
 
     getLcda() {

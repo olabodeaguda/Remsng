@@ -37,6 +37,7 @@
                         <div class="form-group">
                             <label for="itemId">Select Item</label>
                             <select id="itemId" name="itemId" class="form-control" [(ngModel)]="companyItem.itemId">
+                                    <option>Select Item</option>
                                 <option *ngFor="let data of items;" [ngValue]="data.id">{{data.itemDescription}}</option>
                             </select>
                         </div>
@@ -49,6 +50,7 @@
                         <div class="form-group">
                             <label for="billingYear">Select Year</label>
                             <select name="billingYear" class="form-control" [(ngModel)]="companyItem.billingYear">
+                                    <option>Select Billing Year</option>
                                 <option *ngFor="let data of yrLst;" [ngValue]="data">{{data}}</option>
                             </select>
                         </div>

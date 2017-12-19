@@ -41,6 +41,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="streetId">Select Street</label>
+                                <option>Select Street</option>
                                 <select id="streetId" name="streetId" class="form-control" [(ngModel)]="addressModel.streetId">
                                     <option *ngFor="let data of streets;" [ngValue]="data.id">{{data.streetName}}</option>
                                 </select>

@@ -46,6 +46,10 @@
                             <label for="itemDescription">Item Discription</label>
                             <input name="itemDescription" type="text" class="form-control" [(ngModel)]="itemmodel.itemDescription" />
                         </div>
+                        <div class="form-group">
+                            <label for="itemCode">Item Code</label>
+                            <input name="itemCode" type="text" class="form-control" [(ngModel)]="itemmodel.itemCode" />
+                        </div>
                         <div class="box-footer">
                             <button [ladda]="itemmodel.isLoading" type="submit" class="btn btn-primary" (click)="actions()">Submit</button>
                         </div>
@@ -89,6 +93,7 @@
                                     <tr>
                                         <th style="width:220px;"></th>
                                         <th>Item Name</th>
+                                        <th>Item Code</th>
                                         <th>Item Status</th>
                                     </tr>
                                 </thead>
@@ -105,6 +110,7 @@
                                             </a>
                                         </td>
                                         <td>{{data.itemDescription}}</td>
+                                        <td>{{data.itemCode}}</td>
                                         <td>{{data.itemStatus}}</td>
                                     </tr>
                                     <tr *ngIf="items.length < 1">

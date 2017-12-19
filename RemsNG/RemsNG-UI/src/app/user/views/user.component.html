@@ -19,6 +19,7 @@
                     <div class="form-group">
                         <label for="roleId">Select Role</label>
                         <select name="roleId" class="form-control" [(ngModel)]="assignRoleModel.roleId">
+                            <option>Select Role</option>
                             <option *ngFor="let data of roles;" [ngValue]="data.id" [hidden]="assignRoleModel.currentRole.roleName === data.roleName">{{data.roleName}}</option>
                         </select>
                     </div>
@@ -49,6 +50,7 @@
                     <div class="form-group">
                         <label for="lgdaId">Select LGDA</label>
                         <select name="lgdaId" class="form-control" [(ngModel)]="assigndomainmodel.lgdaId">
+                                <option>Select LCDA</option>
                             <option *ngFor="let data of lcdaLst;" [ngValue]="data.id">{{data.lcdaName}}</option>
                         </select>
                     </div>

@@ -7,4 +7,5 @@ export class AddressModel{
     street: any = '';
     eventType: string = '';
     isLoading:boolean = false;
+    streetName: string = '';
 }

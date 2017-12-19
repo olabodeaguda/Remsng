@@ -45,8 +45,13 @@ export class DataService {
     }
 
     getWithoutHeader(url): Observable<object> {
+        let headerObj = {
+            'Access-Control-Expose-Headers': '\"*\"',
+            'Content-Type':'application/json'
+        };
+    
         return this.http.get(this.appConfig.BASE_URL + url, {
-            headers: new HttpHeaders(this.getHeader())
+            headers: new HttpHeaders(headerObj)
         });
     }
 
@@ -83,6 +88,12 @@ export class DataService {
         });
     }
 
+    postWithoutHeader1(url, body,hd): Observable<object> {
+        return this.http.post(this.appConfig.BASE_URL + url, body, {
+            headers: new HttpHeaders(hd)
+        });
+    }
+
     put(url, body): Observable<object> {
         this.addBearer();
         return this.http.put(this.appConfig.BASE_URL + url, body, {
@@ -102,7 +113,6 @@ export class DataService {
     }
 
     handleError(err: any) {
-        console.log(err.error);
         const res = Object.assign(new ResponseModel(), err.error);
         if (err.status === 404) {
             return Observable.throw(res.description || 'Not found exception');
@@ -121,7 +131,6 @@ export class DataService {
         } else if (err.status == 500) {
             return Observable.throw(res.description || 'You have not access to the selected page');
         } else if (err.status == 0) {
-            //  this.storageService.remove();
             return Observable.throw(res.description || 'Connection to the server failed');
         } else if (err.status == 400) {
             return Observable.throw(res.description || 'Internal server error occur. Please contact administrator');

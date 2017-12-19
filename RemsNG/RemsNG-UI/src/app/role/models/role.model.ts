@@ -8,4 +8,5 @@ export class RoleModel {
     eventType: string = '';
     errClass: string[] = [];
     isLoading: boolean = false;
+    domainName: string = '';
 }

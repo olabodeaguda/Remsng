@@ -2,6 +2,7 @@
     <label for="contactType" >Contact Type</label>
     <select  name="contactType" class="form-control" 
     [(ngModel)]="contactModel.contactType" (ngModelChange)="onChange($event)">
+    <option>Select Contact Type</option>
             <option value="PHONENUMBER">Phone Number</option>
             <option value="EMAIL">Email</option>
         </select>

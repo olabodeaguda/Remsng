@@ -52,6 +52,7 @@
                             <div class="form-group">
                                 <label for="stateId">State</label>
                                 <select id="stateId" name="stateId" class="form-control" [(ngModel)]="domainModel.stateId">
+                                        <option>Select State</option>
                                     <option *ngFor="let data of stateLst;" [ngValue]="data.id">{{data.stateName}}</option>
                                 </select>
                             </div>

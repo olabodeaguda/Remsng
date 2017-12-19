@@ -19,12 +19,14 @@
                             <div class="form-group">
                                 <label for="sectorId">Select Sector</label>
                                 <select id="sectorId" name="sectorId" class="form-control" [(ngModel)]="companyModel.sectorId">
+                                    <option>Select Sector</option>
                                     <option *ngFor="let data of sectors;" [ngValue]="data.id">{{data.sectorName}}</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="categoryId">Select Category</label>
                                 <select id="categoryId" name="categoryId" class="form-control" [(ngModel)]="companyModel.categoryId">
+                                        <option>Select Catgeory</option>
                                     <option *ngFor="let data of categories;" [ngValue]="data.id">{{data.taxpayerCategoryName}}</option>
                                 </select>
                             </div>

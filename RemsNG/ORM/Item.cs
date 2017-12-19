@@ -14,5 +14,6 @@ namespace RemsNG.ORM
         [DefaultValue("ACTIVE")]
         public string itemStatus { get; set; }
         public Guid lcdaId { get; set; }
+        public string itemCode { get; set; }
     }
 }

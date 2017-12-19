@@ -15,18 +15,37 @@ export class LoginService {
     }
 
     SignIn(loginModel: LoginModel): Observable<Response> {
+        var e = {};
         if (loginModel.domainId === '') {
-            this.dataService.addToHeader('value', btoa(JSON.stringify({
-                 username: loginModel.username,
-                 pwd: loginModel.pwd
-            })));
+            // this.dataService.addToHeader('value', btoa(JSON.stringify({
+            //      username: loginModel.username,
+            //      pwd: loginModel.pwd
+            // })));
+
+            e = {
+                'value': btoa(JSON.stringify({
+                    username: loginModel.username,
+                    pwd: loginModel.pwd
+                })),
+
+            }
         } else {
-            this.dataService.addToHeader('value', btoa(JSON.stringify({
-                username: loginModel.username,
-                pwd: loginModel.pwd,
-                domainId: loginModel.domainId
-           })));
+            //     this.dataService.addToHeader('value', btoa(JSON.stringify({
+            //         username: loginModel.username,
+            //         pwd: loginModel.pwd,
+            //         domainId: loginModel.domainId
+            //    })));
+
+            e = {
+                'value': btoa(JSON.stringify({
+                    username: loginModel.username,
+                    pwd: loginModel.pwd,
+                    domainId: loginModel.domainId
+                })),
+
+            }
         }
-        return this.dataService.postWithoutHeader('user', {}).catch(err => this.dataService.handleError(err));
+
+        return this.dataService.postWithoutHeader1('user', {},e).catch(err => this.dataService.handleError(err));
     }
 }

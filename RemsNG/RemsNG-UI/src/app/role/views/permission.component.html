@@ -40,6 +40,7 @@
                         <div class="form-group">
                             <label for="permissionId">Select Permission</label>
                             <select id="permissionId" name="permissionId" class="form-control" [(ngModel)]="userPerm.permissionId">
+                                    <option>Select Permission</option>
                                 <option *ngFor="let data of permissionDistinct;" [ngValue]="data.id">{{data.permissionName}}</option>
                             </select>
                         </div>

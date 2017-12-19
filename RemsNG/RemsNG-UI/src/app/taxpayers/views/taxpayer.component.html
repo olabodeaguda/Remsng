@@ -31,6 +31,7 @@
                         <div class="form-group">
                             <label for="companyId">Select Company</label>
                             <select id="companyId" name="lcdaId" class="form-control" [(ngModel)]="taxpayerModel.companyId">
+                                    <option>Select Company</option>
                                 <option *ngFor="let data of companies;" [ngValue]="data.id">{{data.companyName}}</option>
                             </select>
                         </div>

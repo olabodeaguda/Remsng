@@ -22,7 +22,8 @@ export class ItemService {
     add(itemmodel: ItemModel) {
         return this.dataservice.post('item', {
             itemDescription: itemmodel.itemDescription,
-            lcdaId: itemmodel.lcdaId
+            lcdaId: itemmodel.lcdaId,
+            itemCode: itemmodel.itemCode
         }).catch(x => this.dataservice.handleError(x));
     }
 
@@ -30,7 +31,8 @@ export class ItemService {
         return this.dataservice.put('item/' + itemmodel.id, {
             id: itemmodel.id,
             itemDescription: itemmodel.itemDescription,
-            lcdaId: itemmodel.lcdaId
+            lcdaId: itemmodel.lcdaId,
+            itemCode: itemmodel.itemCode
         })
     }
 

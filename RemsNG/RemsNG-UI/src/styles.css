@@ -361,3 +361,12 @@
   background-color: whitesmoke;
   color: #1f4d27;
 }
+
+.wrapper {
+  height: 100%;
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 98%;
+  margin: auto;
+}

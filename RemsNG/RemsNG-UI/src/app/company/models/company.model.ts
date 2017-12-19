@@ -9,4 +9,7 @@ export class CompanyModel{
     companyStatus: string = '';
     isLoading: boolean = false;
     eventType: string = '';
+    lastmodifiedby: string = '';
+    lastModifiedDate: string = '';
+    dateCreated: string = '';
 }

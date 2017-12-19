@@ -184,16 +184,16 @@ namespace RemsNG.Controllers
                 });
             }
 
-            List<TaxpayerExtension> coys = await taxpayerService.ByStreetId(value.streetId);
+            //List<TaxpayerExtension> coys = await taxpayerService.ByStreetId(value.streetId);
 
-            if ((coys.Count + 1) > street.numberOfHouse)
-            {
-                return BadRequest(new Response()
-                {
-                    code = MsgCode_Enum.NOTFOUND,
-                    description = $"Registered company have gotten to expected number ({coys.Count})"
-                });
-            }
+            //if ((coys.Count + 1) > street.numberOfHouse)
+            //{
+            //    return BadRequest(new Response()
+            //    {
+            //        code = MsgCode_Enum.NOTFOUND,
+            //        description = $"Registered company have gotten to expected number ({coys.Count})"
+            //    });
+            //}
 
             Lgda lgda = await lcdaService.ByStreet(value.streetId);
 
@@ -285,7 +285,7 @@ namespace RemsNG.Controllers
             }
             int sucessCount = 0;
             if (address.addressnumber != taxpayerExtension.streetNumber || taxpayerExtension.companyId != te.companyId
-                || taxpayerExtension.firstname != te.firstname  ||
+                || taxpayerExtension.firstname != te.firstname ||
                     taxpayerExtension.lastname != te.lastname || taxpayerExtension.surname != te.surname)
             {
                 if (address.addressnumber != taxpayerExtension.streetNumber)

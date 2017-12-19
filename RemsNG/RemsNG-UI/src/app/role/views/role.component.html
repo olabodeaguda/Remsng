@@ -46,6 +46,7 @@
                             <div class="form-group" *ngIf="domainLst.length > 0 && roleModel.eventType !== 'EDIT'">
                                 <label for="domainId">Select Domain</label>
                                 <select id="domainId" name="domainId" class="form-control" [(ngModel)]="roleModel.domainId">
+                                        <option>Select Domain</option>
                                     <option *ngFor="let data of domainLst;" [ngValue]="data.id">{{data.lcdaName}}</option>
                                 </select>
                             </div>

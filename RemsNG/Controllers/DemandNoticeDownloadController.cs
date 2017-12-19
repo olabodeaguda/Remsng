@@ -14,6 +14,8 @@ using RemsNG.Utilities;
 using RemsNG.ORM;
 using RemsNG.Exceptions;
 using RemsNG.Security;
+using System.IO;
+using Microsoft.Extensions.Logging;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -27,18 +29,21 @@ namespace RemsNG.Controllers
         private IHostingEnvironment hostingEnvironment;
         private INodeServices nodeServices;
         private IDnDownloadService dnd;
+        private readonly ILogger logger;
         private readonly IBatchDwnRequestService batchRequestService;
         private IDNPaymentHistoryService paymentHistoryService;
         public DemandNoticeDownloadController(IHostingEnvironment _hostingEnvironment,
             INodeServices _nodeServices, IDnDownloadService _dnd, 
             IBatchDwnRequestService _batchRequestService,
-            IDNPaymentHistoryService _paymentHistoryService)
+            IDNPaymentHistoryService _paymentHistoryService,
+            ILoggerFactory loggerFactory)
         {
             this.hostingEnvironment = _hostingEnvironment;
             nodeServices = _nodeServices;
             dnd = _dnd;
             batchRequestService = _batchRequestService;
             paymentHistoryService = _paymentHistoryService;
+            logger = loggerFactory.CreateLogger("Demand Notice download");
         }
 
 
@@ -56,10 +61,15 @@ namespace RemsNG.Controllers
                 });
             }
 
-            HttpClient hc = new HttpClient();
-            string rootUrl = $"http://{Request.Host}";
+          //  HttpClient hc = new HttpClient();
+           // string rootUrl = $"http://{Request.Host}";
             string template = await dnd.LcdaTemlate(billingno);
-            var htmlContent = await hc.GetStringAsync($"{rootUrl}/templates/{template}");
+            // var htmlContent = await hc.GetStringAsync($"{rootUrl}/templates/{template}");
+
+            logger.LogInformation(Request.Host.ToString());
+            string rootUrl = hostingEnvironment.WebRootPath; //$"http://{Request.Host}";
+            var htmlContent = await System.IO.File.ReadAllTextAsync($"{rootUrl}/templates/{template}");
+
 
             htmlContent = await dnd.PopulateReportHtml(htmlContent, billingno, rootUrl, User.Identity.Name);
             var result = await nodeServices.InvokeAsync<byte[]>("./pdf", htmlContent);
@@ -77,9 +87,11 @@ namespace RemsNG.Controllers
         {
             //log zip download by xxx user
 
-            HttpClient hc = new HttpClient();
-            string rootUrl = $"http://{Request.Host}";
-            var result = await hc.GetByteArrayAsync($"{rootUrl}/zipReports/{batchno}/{batchno}.zip");
+           // HttpClient hc = new HttpClient();
+            string rootUrl = hostingEnvironment.WebRootPath; //$"http://{Request.Host}";
+            
+            var result = await System.IO.File.ReadAllBytesAsync($"{rootUrl}/zipReports/{batchno}/{batchno}.zip");
+            //var result = await hc.GetByteArrayAsync($"{rootUrl}/zipReports/{batchno}/{batchno}.zip");
             if (result.Length < 1)
             {
                 return NotFound(new Response()
@@ -155,9 +167,13 @@ namespace RemsNG.Controllers
                 throw new NotFoundException("Request not found");
             }
             HttpClient hc = new HttpClient();
-            string rootUrl = $"http://{Request.Host}";
+           // string rootUrl = $"http://{Request.Host}";
             string template = await dnd.ReceiptTemlate(dnph.billingNumber);
-            var htmlContent = await hc.GetStringAsync($"{rootUrl}/templates/{template}");
+           // var htmlContent = await hc.GetStringAsync($"{rootUrl}/templates/{template}");
+
+            string rootUrl = hostingEnvironment.WebRootPath; //$"http://{Request.Host}";
+            var htmlContent = await System.IO.File.ReadAllTextAsync($"{rootUrl}/templates/{template}");
+
             htmlContent = await dnd.PopulateReceiptHtml(htmlContent, rootUrl, User.Identity.Name,dnph);
             var result = await nodeServices.InvokeAsync<byte[]>("./pdf", htmlContent);
 

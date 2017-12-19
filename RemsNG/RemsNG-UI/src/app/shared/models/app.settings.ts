@@ -3,9 +3,9 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class AppSettings {
     public tk: string = 'rems';
-    public BASE_URL: string = 'http://localhost:54313/api/v1/';
+    public BASE_URL: string = 'api/v1/';
 
-    public root_url: string = 'http://localhost:54313';
+    public root_url: string = '/';
     // error class
     public success: string = 'alert alert-success';
     public info: string = 'alert alert-info';

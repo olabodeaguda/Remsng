@@ -61,6 +61,7 @@
                                     <div class="form-group">
                                         <label for="bankId">Select Bank</label>
                                         <select id="bankId" name="bankId" class="form-control" [(ngModel)]="dnpModel.bankId">
+                                                <option>Select Bank</option>
                                             <option *ngFor="let data of banks;" [ngValue]="data.id">{{data.bankName}}</option>
                                         </select>
                                     </div>
@@ -185,6 +186,7 @@
         <li class="active">Taxpayers</li>
     </ol>
 </section>
+<section class="content">
 <div class="row">
     <section class="content" style="border-style:thin">
         <div class="row">
@@ -303,4 +305,6 @@
         </div>
     </section>
 </div>
+</section>
+<section class="content"></section>
 <div class="loading" *ngIf="isLoading"></div>
