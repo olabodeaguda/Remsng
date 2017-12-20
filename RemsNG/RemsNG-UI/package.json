@@ -26,11 +26,15 @@
     "angular2-toaster": "^4.0.1",
     "angular4-carousel": "^3.1.8",
     "bootstrap": "^3.3.7",
-    "core-js": "^2.4.1",
+    "classlist.js": "^1.1.20150312",
+    "core-js": "^2.5.3",
+    "es6-shim": "^0.35.3",
+    "intl": "^1.2.5",
     "jquery": "^3.2.1",
     "jquery-ui": "^1.12.1",
     "ngx-bootstrap": "^1.8.1",
     "rxjs": "^5.4.1",
+    "web-animations-js": "^2.3.1",
     "zone.js": "^0.8.14"
   },
   "devDependencies": {
