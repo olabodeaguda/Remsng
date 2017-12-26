@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,6 +19,8 @@ namespace RemsNG.ORM
 
         public string sectorName { get; set; }
         public string categoryName { get; set; }
+
+        //[NotMapped]
         public Nullable<int> totalSize { get; set; }
     }
 }

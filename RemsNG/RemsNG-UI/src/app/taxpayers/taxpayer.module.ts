@@ -8,9 +8,11 @@ import { SharedModule } from '../shared/shared.module';
 import { TaxPayerComponent } from "./components/taxpayer.component";
 import { TaxpayerService } from "./services/taxpayer.service";
 import { StreetModule } from "../street/street.module";
+import { TaxPayerGlobalComponent } from './components/taxpayer-global.component';
 
 const appRoutes: Routes = [
-    { path: 'taxpayers/:id', component: TaxPayerComponent }
+    { path: 'taxpayers/:id', component: TaxPayerComponent },
+    { path: 'taxpayersglobal/:id', component: TaxPayerGlobalComponent }
  ];
 
 @NgModule({
@@ -22,11 +24,11 @@ const appRoutes: Routes = [
       RouterModule.forChild(appRoutes)
     ],
     declarations: [
-        TaxPayerComponent
+        TaxPayerComponent,TaxPayerGlobalComponent
     ],
     providers: [ TaxpayerService],
     exports: [
-        TaxPayerComponent
+        TaxPayerComponent,TaxPayerGlobalComponent
     ]
   })
 

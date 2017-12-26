@@ -16,4 +16,5 @@ export class TaxpayerModel{
     surname: string ='';
     firstname: string ='';
     lastname: string ='';
+    wardId: string = '';
 }

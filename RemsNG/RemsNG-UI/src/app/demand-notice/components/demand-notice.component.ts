@@ -45,7 +45,11 @@ export class DemandNoticeComponent implements OnInit {
 
     ngOnInit(): void {
         this.yrLst = this.appsettings.getYearList();
+
         this.getDemandNotice();
+        setInterval(()=>{                
+            this.getDemandNotice2();
+        },3000);
         this.getWards();
     }
 
@@ -172,6 +176,20 @@ export class DemandNoticeComponent implements OnInit {
             this.isLoading = false;
         }, error => {
             this.isLoading = false;
+            this.toasterService.pop('error', 'Error', error);
+        })
+    }
+
+    getDemandNotice2() {
+        //this.isLoading = true;
+        this.demandnoticeservice.get(this.pageModel).subscribe(response => {
+            const objschema = { data: [], totalPageCount: 0 };
+            const res = Object.assign(objschema, response);
+            this.demandNoticeLst = res.data;
+            this.pageModel.totalPageCount = res.totalPageCount;
+           // this.isLoading = false;
+        }, error => {
+         //   this.isLoading = false;
             this.toasterService.pop('error', 'Error', error);
         })
     }

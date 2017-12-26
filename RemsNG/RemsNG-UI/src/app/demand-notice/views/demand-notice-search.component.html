@@ -19,15 +19,18 @@
                                             <th></th>
                                             <th>Payment Amount</th>
                                             <th>Payment Date</th>
+                                            <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr *ngFor="let data of paymentList; let i=index">
                                             <td>
-                                                <a href="javascript:;" (click)="downloadReciept(data.id,data.billingNumber)">Download</a>
+                                                <a *ngIf="data.paymentStatus === 'APPROVED'" href="javascript:;" 
+                                                (click)="downloadReciept(data.id,data.billingNumber)">Download</a>
                                             </td>
                                             <td>{{data.amount}}</td>
                                             <td>{{data.dateCreated| date}}</td>
+                                            <td>{{data.paymentStatus}}</td>
                                         </tr>
                                     </tbody>
                                 </table>

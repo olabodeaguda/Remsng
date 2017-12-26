@@ -79,113 +79,119 @@
                         <div class="row">
                             <div class="col-xs-12">
                                 <div class="box">
-                                    <div class="box-header">
-                                        <h3 class="box-title">LCDA List</h3>
-                                    </div>
                                     <!-- /.box-header -->
                                     <div class="box-body">
-                                        <p *ngIf="lcdaLst.length > 1">
-                                            <button class="btn btn-primary" (click)="open('ADD',null)">
-                                                <i class="fa fa-plus"></i> Add</button>
-                                        </p>
+                                        <div  *ngIf="lcdaLst.length > 1">
+                                            <div class="box-header">
+                                                <h3 class="box-title">LCDA List</h3>
+                                            </div>
+                                            <p *ngIf="lcdaLst.length > 1">
+                                                <button class="btn btn-primary" (click)="open('ADD',null)">
+                                                    <i class="fa fa-plus"></i> Add</button>
+                                            </p>
 
 
-                                        <table *ngIf="lcdaLst.length > 1" id="example2" class="table table-bordered table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th style="width:120px;"></th>
-                                                    <th style="width:50px;"></th>
-                                                    <th>LCDA Name</th>
-                                                    <th>LCDA Code</th>
-                                                    <th>LCDA Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr *ngFor="let data of lcdaLst; let i=index">
-                                                    <td>
-                                                        <div class="btn-group">
-                                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                                Action
-                                                                <span class="caret"></span>
-                                                            </button>
-                                                            <ul class="dropdown-menu">
-                                                                <li>
-                                                                    <a href="javascript:;" (click)="open('EDIT',data)">
-                                                                        <i class="fa fa-edit"></i>Edit
-                                                                    </a>
-                                                                </li>
-                                                                <li>
-                                                                    <a (click)="open('CHANGE_STATUS',data)">
-                                                                        <i class="fa fa-cog"></i> {{data.lcdaStatus === 'ACTIVE'?'deactivate':'approve'}}</a>
-                                                                </li>
-                                                                <li>
-                                                                    <a [routerLink]="['/ward',data.id]">
-                                                                        <i class="fa fa-cog"></i> Wards </a>
-                                                                </li>
-                                                                <li>
-                                                                    <a [routerLink]="['/item',data.id]">
-                                                                        <i class="fa fa-cog"></i> Items </a>
-                                                                </li>
-                                                                <li>
-                                                                    <a [routerLink]="['/sector',data.id]">
-                                                                        <i class="fa fa-cog"></i> Sector </a>
-                                                                </li>
-                                                                <li>
-                                                                    <a [routerLink]="['/category',data.id]">
-                                                                        <i class="fa fa-cog"></i> Categories </a>
-                                                                </li>
-                                                                <li>
-                                                                    <a [routerLink]="['/company',data.id]">
-                                                                        <i class="fa fa-cog"></i> Companies </a>
-                                                                </li>
-                                                                <li>
-                                                                    <a [routerLink]="['/address',data.id,data.id]">
-                                                                        <i class="fa fa-cog"></i> Address </a>
-                                                                </li>
-                                                                <li>
-                                                                    <a [routerLink]="['/media',data.id]">
-                                                                        <i class="fa fa-cog"></i> Images </a>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
+                                            <table id="example2" class="table table-bordered table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width:120px;"></th>
+                                                        <th style="width:50px;"></th>
+                                                        <th>LCDA Name</th>
+                                                        <th>LCDA Code</th>
+                                                        <th>LCDA Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngFor="let data of lcdaLst; let i=index">
+                                                        <td>
+                                                            <div class="btn-group">
+                                                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                    Action
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu">
+                                                                    <li>
+                                                                        <a href="javascript:;" (click)="open('EDIT',data)">
+                                                                            <i class="fa fa-edit"></i>Edit
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a (click)="open('CHANGE_STATUS',data)">
+                                                                            <i class="fa fa-cog"></i> {{data.lcdaStatus === 'ACTIVE'?'deactivate':'approve'}}</a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a [routerLink]="['/ward',data.id]">
+                                                                            <i class="fa fa-cog"></i> Wards </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a [routerLink]="['/item',data.id]">
+                                                                            <i class="fa fa-cog"></i> Items </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a [routerLink]="['/sector',data.id]">
+                                                                            <i class="fa fa-cog"></i> Sector </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a [routerLink]="['/category',data.id]">
+                                                                            <i class="fa fa-cog"></i> Categories </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a [routerLink]="['/company',data.id]">
+                                                                            <i class="fa fa-cog"></i> Companies </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a [routerLink]="['/address',data.id,data.id]">
+                                                                            <i class="fa fa-cog"></i> Address </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a [routerLink]="['/media',data.id]">
+                                                                            <i class="fa fa-cog"></i> Images </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
 
-                                                    </td>
-                                                    <td>{{(pageModel.pageSize*(pageModel.pageNum - 1))+(i+1)}}</td>
-                                                    <td>{{data.lcdaName}}</td>
-                                                    <td>{{data.lcdaCode}}</td>
-                                                    <td>{{data.lcdaStatus}}</td>
-                                                </tr>
-                                                <tr *ngIf="lcdaLst.length < 1">
-                                                    <td style="width:100%" colspan="5">No record !!!</td>
-                                                </tr>
-                                            </tbody>
-                                            <tfoot>
-                                                <tr>
-                                                    <td colspan="5">
-                                                        <nav *ngIf="lcdaLst.length > 0">
-                                                            <ul class="pagination">
-                                                                <li>
-                                                                    <a aria-label="Previous" (click)="previous()">
-                                                                        <span aria-hidden="true">Previous</span>
-                                                                    </a>
-                                                                </li>
-                                                                <li>
-                                                                    <a aria-label="Next" (click)="next()">
-                                                                        <span aria-hidden="true">Next </span>
-                                                                    </a>
-                                                                </li>
-                                                                <li>
-                                                                    <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}}
-                                                                    </span>
-                                                                </li>
-                                                            </ul>
-                                                        </nav>
-                                                    </td>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
-                                        <div *ngIf="lcdaLst.length === 1" >
-                                            <div class="row" *ngFor="let data of lcdaLst; let i=index" >
+                                                        </td>
+                                                        <td>{{(pageModel.pageSize*(pageModel.pageNum - 1))+(i+1)}}</td>
+                                                        <td>{{data.lcdaName}}</td>
+                                                        <td>{{data.lcdaCode}}</td>
+                                                        <td>{{data.lcdaStatus}}</td>
+                                                    </tr>
+                                                    <tr *ngIf="lcdaLst.length < 1">
+                                                        <td style="width:100%" colspan="5">No record !!!</td>
+                                                    </tr>
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td colspan="5">
+                                                            <nav *ngIf="lcdaLst.length > 0">
+                                                                <ul class="pagination">
+                                                                    <li>
+                                                                        <a aria-label="Previous" (click)="previous()">
+                                                                            <span aria-hidden="true">Previous</span>
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a aria-label="Next" (click)="next()">
+                                                                            <span aria-hidden="true">Next </span>
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}}
+                                                                        </span>
+                                                                    </li>
+                                                                </ul>
+                                                            </nav>
+                                                        </td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+
+                                        <div *ngIf="lcdaLst.length === 1">
+                                            <div class="box-header">
+                                                <h3 class="box-title">{{lcdaLst[0].lcdaName}}</h3>
+                                            </div>
+                                            <div class="row" *ngFor="let data of lcdaLst; let i=index">
                                                 <div class="col-lg-3 col-xs-6">
                                                     <!-- small box -->
                                                     <div class="small-box bg-aqua">
@@ -197,7 +203,7 @@
                                                             <p>Wards</p>
                                                         </div>
                                                         <div class="icon">
-                                                            <i class="ion ion-bag"></i>
+                                                            <i class="fa fa-building-o"></i>
                                                         </div>
                                                         <a [routerLink]="['/ward',data.id]" class="small-box-footer">More info
                                                             <i class="fa fa-arrow-circle-right"></i>
@@ -216,9 +222,9 @@
                                                             <p>Items</p>
                                                         </div>
                                                         <div class="icon">
-                                                            <i class="ion ion-stats-bars"></i>
+                                                            <i class="ion ion-grid"></i>
                                                         </div>
-                                                        <a  [routerLink]="['/item',data.id]" class="small-box-footer">More info
+                                                        <a [routerLink]="['/item',data.id]" class="small-box-footer">More info
                                                             <i class="fa fa-arrow-circle-right"></i>
                                                         </a>
                                                     </div>
@@ -235,7 +241,7 @@
                                                             <p>Sector</p>
                                                         </div>
                                                         <div class="icon">
-                                                            <i class="ion ion-person-add"></i>
+                                                            <i class="ion ion-more"></i>
                                                         </div>
                                                         <a [routerLink]="['/sector',data.id]" class="small-box-footer">More info
                                                             <i class="fa fa-arrow-circle-right"></i>
@@ -254,17 +260,34 @@
                                                             <p>Categories</p>
                                                         </div>
                                                         <div class="icon">
-                                                            <i class="ion ion-pie-graph"></i>
+                                                            <i class="fa fa-clone"></i>
                                                         </div>
-                                                        <a  [routerLink]="['/category',data.id]" class="small-box-footer">More info
+                                                        <a [routerLink]="['/category',data.id]" class="small-box-footer">More info
+                                                            <i class="fa fa-arrow-circle-right"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-lg-3 col-xs-6">
+                                                    <!-- small box -->
+                                                    <div class="small-box bg-red">
+                                                        <div class="inner">
+                                                            <h3></h3>
+                                                            <br/>
+                                                            <br/>
+
+                                                            <p>Taxpayers</p>
+                                                        </div>
+                                                        <div class="icon">
+                                                            <i class="ion ion-person-add"></i>
+                                                        </div>
+                                                        <a [routerLink]="['/taxpayersglobal',data.id]" class="small-box-footer">More info
                                                             <i class="fa fa-arrow-circle-right"></i>
                                                         </a>
                                                     </div>
                                                 </div>
                                                 <!-- ./col -->
-                                            </div>
 
-                                            <div class="row" *ngFor="let data of lcdaLst; let i=index" >
                                                 <div class="col-lg-3 col-xs-6">
                                                     <!-- small box -->
                                                     <div class="small-box bg-green">
@@ -276,9 +299,9 @@
                                                             <p>Companies</p>
                                                         </div>
                                                         <div class="icon">
-                                                            <i class="ion ion-bag"></i>
+                                                            <i class="fa fa-industry"></i>
                                                         </div>
-                                                        <a  [routerLink]="['/company',data.id]" class="small-box-footer">More info
+                                                        <a [routerLink]="['/company',data.id]" class="small-box-footer">More info
                                                             <i class="fa fa-arrow-circle-right"></i>
                                                         </a>
                                                     </div>
@@ -295,9 +318,9 @@
                                                             <p>Address</p>
                                                         </div>
                                                         <div class="icon">
-                                                            <i class="ion ion-stats-bars"></i>
+                                                            <i class="fa fa-address-book"></i>
                                                         </div>
-                                                        <a  [routerLink]="['/address',data.id,data.id]" class="small-box-footer">More info
+                                                        <a [routerLink]="['/address',data.id,data.id]" class="small-box-footer">More info
                                                             <i class="fa fa-arrow-circle-right"></i>
                                                         </a>
                                                     </div>
@@ -314,9 +337,9 @@
                                                             <p>Images</p>
                                                         </div>
                                                         <div class="icon">
-                                                            <i class="ion ion-person-add"></i>
+                                                            <i class="ion ion-image"></i>
                                                         </div>
-                                                        <a  [routerLink]="['/media',data.id]" class="small-box-footer">More info
+                                                        <a [routerLink]="['/media',data.id]" class="small-box-footer">More info
                                                             <i class="fa fa-arrow-circle-right"></i>
                                                         </a>
                                                     </div>

@@ -10,6 +10,7 @@ using RemsNG.ORM;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authorization;
+using RemsNG.Security;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -120,6 +121,28 @@ namespace RemsNG.Controllers
 
             return await taxpayerService.ByStreetId(id, new PageModel() { PageNum = int.Parse(pageNum), PageSize = int.Parse(pageSize) });
         }
+
+
+        [Route("bylcdapaged")]
+        [HttpGet]
+        public async Task<object> ByLcdaPaginated([FromHeader] string pageSize, [FromHeader] string pageNum)
+        {
+            pageSize = string.IsNullOrEmpty(pageSize) ? "20" : pageSize;
+            pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
+
+            Guid id = ClaimExtension.GetDomainId(User.Claims.ToArray());
+            if (id == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Bad request"
+                });
+            }
+
+            return await taxpayerService.ByLcdaId(id, new PageModel() { PageNum = int.Parse(pageNum), PageSize = int.Parse(pageSize) });
+        }
+
 
         [HttpGet("{id}")]
         public async Task<object> Get(Guid id)

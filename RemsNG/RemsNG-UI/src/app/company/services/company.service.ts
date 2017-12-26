@@ -24,6 +24,10 @@ export class CompanyService {
         return this.dataservice.get('company/bylcdapaging/' + id).catch(x => this.dataservice.handleError(x))
     }
 
+    byLgda(id: string) {
+        return this.dataservice.get('company/bylcda/' + id).catch(x => this.dataservice.handleError(x))
+    }
+
     update(companyModel: CompanyModel) {
         return this.dataservice.put('company', {
             id: companyModel.id,

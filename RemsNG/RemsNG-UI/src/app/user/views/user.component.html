@@ -50,7 +50,7 @@
                     <div class="form-group">
                         <label for="lgdaId">Select LGDA</label>
                         <select name="lgdaId" class="form-control" [(ngModel)]="assigndomainmodel.lgdaId">
-                                <option>Select LCDA</option>
+                            <option>Select LCDA</option>
                             <option *ngFor="let data of lcdaLst;" [ngValue]="data.id">{{data.lcdaName}}</option>
                         </select>
                     </div>
@@ -167,119 +167,121 @@
         </div>
     </div>
 </div>
-
-<div class="wrapper hold-transition skin-blue fixed sidebar-mini">
-    <app-hd></app-hd>
-    <div class="content-wrapper">
-        <section class="content-header">
-            <h1>
-                User Management
-                <small>Manage and register Users.</small>
-            </h1>
-        </section>
-        <div class="row">
-            <section class="content" style="border-style:thin">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="box">
-                            <div class="box-header">
-                                <h3 class="box-title">User List</h3>
-                            </div>
-                            <!-- /.box-header -->
-                            <div class="box-body">
-                                <p>
-                                    <button class="btn btn-primary" (click)="open('ADD',null)">
-                                        <i class="fa fa-plus"></i> Add</button>
-                                </p>
-                                <table class="table table-bordered table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th style="width:120px;"></th>
-                                            <th style="width:50px;"></th>
-                                            <th>Email</th>
-                                            <th>Username</th>
-                                            <th>Full Name</th>
-                                            <th>userStatus</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr *ngFor="let data of userLst; let i=index">
-                                            <td>
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                        Action
-                                                        <span class="caret"></span>
-                                                    </button>
-                                                    <ul class="dropdown-menu">
-                                                        <li>
-                                                            <a href="javascript:;" (click)="open('EDIT',data)">
-                                                                <i class="fa fa-edit"></i>Edit
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a (click)="open('CHANGE_STATUS',data)">
-                                                                <i class="fa fa-cog"></i> {{data.userStatus === 'ACTIVE'?'Deactivate':'Approve'}}</a>
-                                                        </li>
-                                                        <li>
-                                                            <a (click)="open('CHANGE_PWD', data)">
-                                                                <i class="fa fa-lock"></i> Change Password</a>
-                                                        </li>
-                                                        <li>
-                                                            <a (click)="open('ASSIGN_LGDA', data)">
-                                                                <i class="fa fa-lock"></i> Assign LGDA</a>
-                                                        </li>
-                                                        <li>
-                                                            <a (click)="open('ASSIGN_ROLE', data)">
-                                                                <i class="fa fa-lock"></i> Assign Role</a>
-                                                        </li>
-                                                        <li>
-                                                            <a (click)="open('PROFILE', data)">
-                                                                <i class="fa fa-lock"></i> Profile</a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                            <td>{{(pageModel.pageSize*(pageModel.pageNum - 1))+(i+1)}}</td>
-                                            <td>{{data.email}}</td>
-                                            <td>{{data.username}}</td>
-                                            <td>{{data.surname}} {{data.firstname}} {{data.lastname}}</td>
-                                            <td>{{data.userStatus}}</td>
-                                        </tr>
-                                        <tr *ngIf="userLst.length < 1">
-                                            <td style="width:100%" colspan="6">No record !!!</td>
-                                        </tr>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td colspan="5">
-                                                <nav *ngIf="userLst.length > 0">
-                                                    <ul class="pagination">
-                                                        <li>
-                                                            <a aria-label="Previous" (click)="previous()">
-                                                                <span aria-hidden="true">Previous</span>
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a aria-label="Next" (click)="next()">
-                                                                <span aria-hidden="true">Next </span>
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}} </span>
-                                                        </li>
-                                                    </ul>
-                                                </nav>
-                                            </td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
+<section>
+    <div class="wrapper hold-transition skin-blue fixed sidebar-mini">
+        <app-hd></app-hd>
+        <div class="content-wrapper">
+            <section class="content-header">
+                <h1>
+                    User Management
+                    <small>Manage and register Users.</small>
+                </h1>
+            </section>
+            <div class="row">
+                <section class="content" style="border-style:thin">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="box">
+                                <div class="box-header">
+                                    <h3 class="box-title">User List</h3>
+                                </div>
+                                <!-- /.box-header -->
+                                <div class="box-body">
+                                    <p>
+                                        <button class="btn btn-primary" (click)="open('ADD',null)">
+                                            <i class="fa fa-plus"></i> Add</button>
+                                    </p>
+                                    <table class="table table-bordered table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:120px;"></th>
+                                                <th style="width:50px;"></th>
+                                                <th>Email</th>
+                                                <th>Username</th>
+                                                <th>Full Name</th>
+                                                <th>userStatus</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let data of userLst; let i=index">
+                                                <td>
+                                                    <div class="btn-group">
+                                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            Action
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li>
+                                                                <a href="javascript:;" (click)="open('EDIT',data)">
+                                                                    <i class="fa fa-edit"></i>Edit
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a (click)="open('CHANGE_STATUS',data)">
+                                                                    <i class="fa fa-cog"></i> {{data.userStatus === 'ACTIVE'?'Deactivate':'Approve'}}</a>
+                                                            </li>
+                                                            <li>
+                                                                <a (click)="open('CHANGE_PWD', data)">
+                                                                    <i class="fa fa-lock"></i> Change Password</a>
+                                                            </li>
+                                                           <!-- <li>
+                                                                <a (click)="open('ASSIGN_LGDA', data)">
+                                                                    <i class="fa fa-lock"></i> Assign LGDA</a>
+                                                            </li>
+                                                            <li>
+                                                                <a (click)="open('ASSIGN_ROLE', data)">
+                                                                    <i class="fa fa-lock"></i> Assign Role</a>
+                                                            </li>-->
+                                                            <li>
+                                                                <a (click)="open('PROFILE', data)">
+                                                                    <i class="fa fa-lock"></i> Profile</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </td>
+                                                <td>{{(pageModel.pageSize*(pageModel.pageNum - 1))+(i+1)}}</td>
+                                                <td>{{data.email}}</td>
+                                                <td>{{data.username}}</td>
+                                                <td>{{data.surname}} {{data.firstname}} {{data.lastname}}</td>
+                                                <td>{{data.userStatus}}</td>
+                                            </tr>
+                                            <tr *ngIf="userLst.length < 1">
+                                                <td style="width:100%" colspan="6">No record !!!</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="5">
+                                                    <nav *ngIf="userLst.length > 0">
+                                                        <ul class="pagination">
+                                                            <li>
+                                                                <a aria-label="Previous" (click)="previous()">
+                                                                    <span aria-hidden="true">Previous</span>
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a aria-label="Next" (click)="next()">
+                                                                    <span aria-hidden="true">Next </span>
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}} </span>
+                                                            </li>
+                                                        </ul>
+                                                    </nav>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </div>
     </div>
-</div>
+</section>
+<section class="content"></section>
 <ft></ft>
 <div class="loading" *ngIf="isLoading"></div>

@@ -107,7 +107,8 @@ namespace RemsNG.Dao
 
         public async Task<Company> ById(Guid id) => await db.Companies.FirstOrDefaultAsync(x => x.id == id);
 
-        public async Task<List<CompanyExt>> ByLcda(Guid lcdaId) => await db.Set<CompanyExt>().FromSql("sp_CompanyBylcdaId  @p0", new object[] { lcdaId }).ToListAsync();
+        public async Task<List<CompanyExt>> ByLcda(Guid lcdaId)
+            => await db.Set<CompanyExt>().FromSql("sp_CompanyBylcdaId  @p0", new object[] { lcdaId }).ToListAsync();
 
         public async Task<object> ByLcda(Guid lcdaId, PageModel pageModel)
         {
