@@ -7,9 +7,11 @@ using RemsNG.Services.Interfaces;
 using RemsNG.ORM;
 using RemsNG.Models;
 using RemsNG.Utilities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RemsNG.Controllers
 {
+    [Authorize]
     [Route("api/v1/address")]
     public class AddressController : Controller
     {

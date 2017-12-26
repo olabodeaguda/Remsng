@@ -8,11 +8,13 @@ using RemsNG.Exceptions;
 using RemsNG.Services.Interfaces;
 using RemsNG.ORM;
 using RemsNG.Security;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace RemsNG.Controllers
 {
+    [Authorize]
     [Route("api/v1/amountdue")]
     public class DNAmountDueMgtController : Controller
     {

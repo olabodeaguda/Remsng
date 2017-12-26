@@ -9,12 +9,13 @@ using RemsNG.Utilities;
 using RemsNG.Models;
 using RemsNG.ORM;
 using RemsNG.Security;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace RemsNG.Controllers
 {
-    [RemsRequirementAttribute("REGISTER_COMPANY")]
+    [Authorize]
     [Route("api/v1/company")]
     public class CompanyController : Controller
     {
@@ -93,6 +94,7 @@ namespace RemsNG.Controllers
             return r;
         }
 
+        [RemsRequirementAttribute("REGISTER_COMPANY")]
         [HttpPost]
         public async Task<object> Post([FromBody]Company value)
         {
@@ -157,6 +159,7 @@ namespace RemsNG.Controllers
 
         }
 
+        [RemsRequirementAttribute("REGISTER_COMPANY")]
         [HttpPut]
         public async Task<object> Put([FromBody]Company value)
         {
@@ -227,6 +230,7 @@ namespace RemsNG.Controllers
             }
         }
 
+        [RemsRequirementAttribute("REGISTER_COMPANY")]
         [Route("updatestatus/{id}/{status}")]
         [HttpPost]
         public async Task<object> UpdateStatus([FromRoute] Guid id, [FromRoute] string status)

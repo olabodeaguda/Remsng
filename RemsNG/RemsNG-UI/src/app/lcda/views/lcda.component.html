@@ -84,11 +84,13 @@
                                     </div>
                                     <!-- /.box-header -->
                                     <div class="box-body">
-                                        <p>
+                                        <p *ngIf="lcdaLst.length > 1">
                                             <button class="btn btn-primary" (click)="open('ADD',null)">
                                                 <i class="fa fa-plus"></i> Add</button>
                                         </p>
-                                        <table id="example2" class="table table-bordered table-hover">
+
+
+                                        <table *ngIf="lcdaLst.length > 1" id="example2" class="table table-bordered table-hover">
                                             <thead>
                                                 <tr>
                                                     <th style="width:120px;"></th>
@@ -174,7 +176,7 @@
                                                                 </li>
                                                                 <li>
                                                                     <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}}
-                                                                        </span>
+                                                                    </span>
                                                                 </li>
                                                             </ul>
                                                         </nav>
@@ -182,6 +184,148 @@
                                                 </tr>
                                             </tfoot>
                                         </table>
+                                        <div *ngIf="lcdaLst.length === 1" >
+                                            <div class="row" *ngFor="let data of lcdaLst; let i=index" >
+                                                <div class="col-lg-3 col-xs-6">
+                                                    <!-- small box -->
+                                                    <div class="small-box bg-aqua">
+                                                        <div class="inner">
+                                                            <h3></h3>
+                                                            <br/>
+                                                            <br/>
+
+                                                            <p>Wards</p>
+                                                        </div>
+                                                        <div class="icon">
+                                                            <i class="ion ion-bag"></i>
+                                                        </div>
+                                                        <a [routerLink]="['/ward',data.id]" class="small-box-footer">More info
+                                                            <i class="fa fa-arrow-circle-right"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <!-- ./col -->
+                                                <div class="col-lg-3 col-xs-6">
+                                                    <!-- small box -->
+                                                    <div class="small-box bg-green">
+                                                        <div class="inner">
+                                                            <h3></h3>
+                                                            <br/>
+                                                            <br/>
+
+                                                            <p>Items</p>
+                                                        </div>
+                                                        <div class="icon">
+                                                            <i class="ion ion-stats-bars"></i>
+                                                        </div>
+                                                        <a  [routerLink]="['/item',data.id]" class="small-box-footer">More info
+                                                            <i class="fa fa-arrow-circle-right"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <!-- ./col -->
+                                                <div class="col-lg-3 col-xs-6">
+                                                    <!-- small box -->
+                                                    <div class="small-box bg-yellow">
+                                                        <div class="inner">
+                                                            <h3></h3>
+                                                            <br/>
+                                                            <br/>
+
+                                                            <p>Sector</p>
+                                                        </div>
+                                                        <div class="icon">
+                                                            <i class="ion ion-person-add"></i>
+                                                        </div>
+                                                        <a [routerLink]="['/sector',data.id]" class="small-box-footer">More info
+                                                            <i class="fa fa-arrow-circle-right"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <!-- ./col -->
+                                                <div class="col-lg-3 col-xs-6">
+                                                    <!-- small box -->
+                                                    <div class="small-box bg-red">
+                                                        <div class="inner">
+                                                            <h3></h3>
+                                                            <br/>
+                                                            <br/>
+
+                                                            <p>Categories</p>
+                                                        </div>
+                                                        <div class="icon">
+                                                            <i class="ion ion-pie-graph"></i>
+                                                        </div>
+                                                        <a  [routerLink]="['/category',data.id]" class="small-box-footer">More info
+                                                            <i class="fa fa-arrow-circle-right"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <!-- ./col -->
+                                            </div>
+
+                                            <div class="row" *ngFor="let data of lcdaLst; let i=index" >
+                                                <div class="col-lg-3 col-xs-6">
+                                                    <!-- small box -->
+                                                    <div class="small-box bg-green">
+                                                        <div class="inner">
+                                                            <h3></h3>
+                                                            <br/>
+                                                            <br/>
+
+                                                            <p>Companies</p>
+                                                        </div>
+                                                        <div class="icon">
+                                                            <i class="ion ion-bag"></i>
+                                                        </div>
+                                                        <a  [routerLink]="['/company',data.id]" class="small-box-footer">More info
+                                                            <i class="fa fa-arrow-circle-right"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <!-- ./col -->
+                                                <div class="col-lg-3 col-xs-6">
+                                                    <!-- small box -->
+                                                    <div class="small-box bg-red">
+                                                        <div class="inner">
+                                                            <h3></h3>
+                                                            <br/>
+                                                            <br/>
+
+                                                            <p>Address</p>
+                                                        </div>
+                                                        <div class="icon">
+                                                            <i class="ion ion-stats-bars"></i>
+                                                        </div>
+                                                        <a  [routerLink]="['/address',data.id,data.id]" class="small-box-footer">More info
+                                                            <i class="fa fa-arrow-circle-right"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <!-- ./col -->
+                                                <div class="col-lg-3 col-xs-6">
+                                                    <!-- small box -->
+                                                    <div class="small-box bg-blue">
+                                                        <div class="inner">
+                                                            <h3></h3>
+                                                            <br/>
+                                                            <br/>
+
+                                                            <p>Images</p>
+                                                        </div>
+                                                        <div class="icon">
+                                                            <i class="ion ion-person-add"></i>
+                                                        </div>
+                                                        <a  [routerLink]="['/media',data.id]" class="small-box-footer">More info
+                                                            <i class="fa fa-arrow-circle-right"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <!-- ./col -->
+
+                                            </div>
+
+                                        </div>
                                     </div>
                                 </div>
                             </div>
