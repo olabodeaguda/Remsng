@@ -118,18 +118,18 @@ export class DataService {
             return Observable.throw(res.description || 'Not found exception');
         } else if (err.status === 401) {
             if (res.code === '09' || res.code == '10' || res.code === '11') {
-                this.toasterService.pop('error', res.description || 'You have no access to the selected page');
+                this.toasterService.pop('error', res.description || 'You have no access to the request');
                 this.storageService.remove();
             }
-            return Observable.throw(res.description || 'You have no access to the selected page');
+            return Observable.throw(res.description || 'You have no access to the request');
         } else if (err.status === 403) {
             if (res.code === '09' || res.code == '10' || res.code === '11') {
-                this.toasterService.pop('error', res.description || 'You have no access to the selected page');
+                this.toasterService.pop('error', res.description || 'You have no access to the request');
                 this.storageService.remove();
             }
-            return Observable.throw(res.description || 'You have not access to the selected page');
+            return Observable.throw(res.description || 'You have not access to the request');
         } else if (err.status == 500) {
-            return Observable.throw(res.description || 'You have not access to the selected page');
+            return Observable.throw(res.description || 'You have not access to the request');
         } else if (err.status == 0) {
             return Observable.throw(res.description || 'Connection to the server failed');
         } else if (err.status == 400) {

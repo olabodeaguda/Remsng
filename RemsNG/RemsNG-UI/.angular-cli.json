@@ -29,12 +29,11 @@
         "styles.css"
       ],
       "scripts": [             
-        "../node_modules/jquery/dist/jquery.js",
         "../assets/bower_components/bootstrap/dist/js/bootstrap.min.js",
         "../assets/bower_components/jquery-slimscroll/jquery.slimscroll.min.js",
         "../assets/bower_components/fastclick/lib/fastclick.js",
         "../assets/dist/js/adminlte.js",
-        "../node_modules/core-js/client/shim.min.js"
+        "../node_modules/jquery/dist/jquery.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {
