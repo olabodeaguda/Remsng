@@ -33,6 +33,7 @@ import {HttpClientModule} from '@angular/common/http';
 import { MediaFilesModule } from './media-files/media-files.module';
 import { AddressGlobalModule } from './address/AddressGlobal.module';
 import { DashboardIndexComponent } from './Dashboard/components/dashboard-index.component';
+import { RecieptModule } from './reciept/reciept.module';
 
 const appRoutes: Routes = [
     { path: '', component: DashboardIndexComponent }
@@ -45,7 +46,7 @@ const appRoutes: Routes = [
     imports: [
         BrowserModule,
         LoginModule,
-        DashBoardModule,
+        DashBoardModule,RecieptModule,
         FormsModule,MediaFilesModule,AddressGlobalModule,
         DomainModule,HttpClientModule,
         WardModule, UserModule, StreetModule, CategoryModule,

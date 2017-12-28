@@ -31,7 +31,7 @@ namespace RemsNG.Services
             return await dnph.UpdateStatusAsync(dnphModel);
         }
 
-       public async Task<List<DemandNoticePaymentHistory>> ByBillingNumber(string billingnumber)
+        public async Task<List<DemandNoticePaymentHistory>> ByBillingNumber(string billingnumber)
         {
             return await dnph.ByBillingNumber(billingnumber);
         }
@@ -39,6 +39,11 @@ namespace RemsNG.Services
         public async Task<DemandNoticePaymentHistory> ById(Guid id)
         {
             return await dnph.ById(id);
+        }
+
+        public async Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel)
+        {
+            return await dnph.ByLcdaId(lcdaId, pageModel);
         }
     }
 }

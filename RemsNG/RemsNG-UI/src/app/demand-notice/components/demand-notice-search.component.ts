@@ -73,8 +73,7 @@ export class DemandNoticeSearchComponent implements OnInit {
             this.isLoadingReceipt = false;
             this.toasterService.pop('error', "Download Error", error);
         }).subscribe();
-    }
-    
+    }    
 
     openPayment(billingno: string) {
         this.dnpModel.billingNumber = billingno;

@@ -14,5 +14,6 @@ namespace RemsNG.Services.Interfaces
         Task<Response> UpdateStatusAsync(DemandNoticePaymentHistory dnph);
         Task<List<DemandNoticePaymentHistory>> ByBillingNumber(string billingnumber);
         Task<DemandNoticePaymentHistory> ById(Guid id);
+        Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel);
     }
 }

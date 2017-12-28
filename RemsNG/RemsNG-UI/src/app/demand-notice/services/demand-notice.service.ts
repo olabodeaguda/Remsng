@@ -13,7 +13,14 @@ export class DemandNoticeService {
     get(pageModel: PageModel) {
         this.datataservice.addToHeader('pageNum', pageModel.pageNum.toString());
         this.datataservice.addToHeader('pageSize', pageModel.pageSize.toString());
-        return this.datataservice.get('demandnotice/bylcda').catch(error => this.datataservice.handleError(error));
+        return this.datataservice.get('demandnotice/bylcda').
+        catch(error => this.datataservice.handleError(error));
+    }
+
+    get2(pageModel: PageModel) {
+        this.datataservice.addToHeader('pageNum', pageModel.pageNum.toString());
+        this.datataservice.addToHeader('pageSize', pageModel.pageSize.toString());
+        return this.datataservice.get('demandnotice/bylcda');
     }
 
     bybatchId(batchno:string){

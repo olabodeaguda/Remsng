@@ -1,0 +1,159 @@
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" #changestatus>
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">{{selectedReceipt.newPaymentStatus}} Receipt</h4>
+            </div>
+            <div class="modal-body clearfix">
+                <!--<div [ngClass]="roleModel.errClass" *ngIf="roleModel.isErrMsg">
+                    {{roleModel.msg}}
+                </div>-->
+                <div class="box-body">
+                    You are about to
+                    <b> {{selectedReceipt.newPaymentStatus}}</b> receipt with receipt number  {{selectedReceipt.billingNumber}}. Are you sure?
+                </div>
+                <div class="box-footer">
+                    <button [ladda]="selectedReceipt.isLoading" type="submit" class="btn btn-success" (click)="ReceiptAction()">Submit</button>
+                    <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<section class="content">
+    <div class="wrapper hold-transition skin-blue fixed sidebar-mini">
+        <app-hd></app-hd>
+        <div class="content-wrapper">
+            <section class="content-header">
+                <h1>
+                    Reciept
+                    <small>Manage Recievables</small>
+                </h1>
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="javascript:;">
+                            <i class="fa fa-dashboard"></i> Home</a>
+                    </li>
+                    <li class="active">Reciept Management</li>
+                </ol>
+            </section>
+
+            <section class="content" style="border-style:thin">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="box">
+                            <div class="box-header">
+                                <h3 class="box-title">Receipt List</h3>
+                            </div>
+                            <!-- /.box-header -->
+                            <div class="box-body">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="form-group col-md-3">
+                                            <label for="wardId">Billing Number</label>
+                                            <input type="text" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group">
+                                        <div class="form-group col-sm-3" style="margin-left:13px;">
+                                            <button [ladda]="isLoading" type="submit" 
+                                            class="btn btn-primary" 
+                                            (click)="submitDemandRequest()"><i class="fa fa-search"></i> Search</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <table class="table table-bordered table-hover">
+                                            <thead>
+                                                <th style="width:120px;"></th>
+                                                <th>Billing Number</th>
+                                                <th>Amount</th>
+                                                <th>charges</th>
+                                                <th>Total Amount Due</th>
+                                                <th>Payment Mode</th>
+                                                <th>Billing Year</th>
+                                                <th>Reference Number</th>
+                                                <th>Payment Status</th>
+                                                <th>Created Date</th>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let data of receiptLst; let i=index">
+                                                    <td>
+                                                       <div class="btn-group" *ngIf="data.paymentStatus === 'PENDING'">
+                                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                Action
+                                                                <span class="caret"></span>
+                                                            </button>
+                                                            <ul class="dropdown-menu">
+                                                                <li >
+                                                                    <a href="javascript:;" (click)="open('APPROVED',data)">
+                                                                        <i class="fa fa-send"></i>Approve
+                                                                    </a>
+                                                                </li>
+                                                                <li >
+                                                                    <a href="javascript:;" (click)="open('CANCEL',data)">
+                                                                        <i class="fa fa-send"></i>Cancel
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                    <td>{{data.billingNumber}}</td>
+                                                    <td>{{data.amount|number:'1.2'}}</td>
+                                                    <td>{{data.charges|number:'1.2'}}</td>
+                                                    <td>{{(data.amount + data.charges)|number:'1.2'}}</td>
+                                                    <td>{{data.paymentMode}}</td>
+                                                    <td>{{data.billingYear}}</td>
+                                                    <td>{{data.referenceNumber}}</td>
+                                                    <td>{{data.paymentStatus}}</td>
+                                                    <td>{{data.dateCreated|date}}</td>
+                                                </tr>
+                                                <tr *ngIf="receiptLst.length < 1">
+                                                    <td style="width:100%" colspan="9">No record !!!</td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="5">
+                                                        <nav *ngIf="receiptLst.length > 0">
+                                                            <ul class="pagination">
+                                                                <li>
+                                                                    <a aria-label="Previous" (click)="previous()">
+                                                                        <span aria-hidden="true">Previous</span>
+                                                                    </a>
+                                                                </li>
+                                                                <li *ngIf="pageModel.pageNum < pageModel.totalPageCount">
+                                                                    <a aria-label="Next" (click)="next()">
+                                                                        <span aria-hidden="true">Next </span>
+                                                                    </a>
+                                                                </li>
+                                                                <li>
+                                                                    <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}}
+                                                                        </span>
+                                                                </li>
+                                                            </ul>
+                                                        </nav>
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</section>
+<section class="content"></section>
+<ft></ft>
+<div class="loading" *ngIf="isLoading"></div>

@@ -181,16 +181,13 @@ export class DemandNoticeComponent implements OnInit {
     }
 
     getDemandNotice2() {
-        //this.isLoading = true;
-        this.demandnoticeservice.get(this.pageModel).subscribe(response => {
+        this.demandnoticeservice.get2(this.pageModel).subscribe(response => {
             const objschema = { data: [], totalPageCount: 0 };
             const res = Object.assign(objschema, response);
             this.demandNoticeLst = res.data;
             this.pageModel.totalPageCount = res.totalPageCount;
-           // this.isLoading = false;
         }, error => {
-         //   this.isLoading = false;
-            this.toasterService.pop('error', 'Error', error);
+          //  this.toasterService.pop('error', 'Error', error);
         })
     }
 

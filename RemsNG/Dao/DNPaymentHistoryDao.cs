@@ -13,20 +13,32 @@ namespace RemsNG.Dao
         public DNPaymentHistoryDao(RemsDbContext _db) : base(_db)
         {}
 
-        public async Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel)
+        private string PaymentQuery(List<DNAmountDueModel> paymentDueList, DemandNoticePaymentHistory dnph)
         {
-            var results = await db.Set<DemandNoticePaymentHistoryExt>().FromSql("sp_paymenthistoryByLcda @p0,@p1,@p2", new object[] { lcdaId, pageModel.PageSize, pageModel.PageNum }).ToListAsync();
-            int totalCount = 0;
-            if (results.Count > 0)
+            string query = "";
+
+            if (paymentDueList.Count > 0)
             {
-                totalCount = results[0].totalSize;
+                foreach (var tm in paymentDueList)
+                {
+                    switch (tm.category)
+                    {
+                        case "ARREARS":
+                            query = query + $"";
+                            break;
+                        case "PENALTY":
+                            query = query + $"";
+                            break;
+                        case "ITEMS":
+                            query = query + $"";
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
 
-            return new
-            {
-                data = results,
-                totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
-            };
+            return query;
         }
     }
 }

@@ -14,7 +14,6 @@ export class MediaFileService {
     }
 
     addImage(mediaImage: MediaFileModel) {
-       // this.dataService.addToHeader('imgBase64', mediaImage.imgBase64);
         return this.dataService.post('media', {
             imgFilename: mediaImage.imgFilename,
             ownerId: mediaImage.ownerId,

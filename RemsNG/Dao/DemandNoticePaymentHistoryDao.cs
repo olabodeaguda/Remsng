@@ -114,5 +114,24 @@ namespace RemsNG.Dao
             string query = $"select top 1 * from tbl_demandNoticePaymentHistory where id = '{id}'";
             return await db.DemandNoticePaymentHistories.FromSql(query).FirstOrDefaultAsync();
         }
+
+        public async Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel)
+        {
+            var results = await db.Set<DemandNoticePaymentHistoryExt>()
+                .FromSql("sp_paymenthistoryByLcda @p0,@p1,@p2",
+                new object[] { lcdaId, pageModel.PageSize, pageModel.PageNum }).ToListAsync();
+            int totalCount = 0;
+            if (results.Count > 0)
+            {
+                totalCount = results[0].totalSize;
+            }
+
+            return new
+            {
+                data = results,
+                totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
+            };
+        }
+
     }
 }

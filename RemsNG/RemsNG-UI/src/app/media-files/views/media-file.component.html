@@ -34,59 +34,61 @@
         <div class="loading" *ngIf="isfileLoading"></div>
     </div>
 </div>
-
-<div class="wrapper hold-transition skin-blue fixed sidebar-mini">
-    <app-hd></app-hd>
-    <div class="content-wrapper">
-        <section class="content-header">
-            <h1>
-                Manage LCDA Images
-                <small>Manage LCDA ({{lgda.lcdaName}}).</small>
-            </h1>
-        </section>
-        <div class="row">
-            <section class="content" style="border-style:thin">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="box">
-                            <div class="box-header">
-                                <h3 class="box-title">Images List</h3>
-                            </div>
-                            <!-- /.box-header -->
-                            <div class="box-body">
-                                <p>
-                                    <button class="btn btn-primary" (click)="openAdd()">
-                                        <i class="fa fa-plus"></i> Add/Update</button>
-                                </p>
-                                <table id="example2" class="table table-bordered table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th style="width:50px;"></th>
-                                            <th>Image Type</th>
-                                            <th>Views</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr *ngFor="let data of imgLst; let i=index">
-                                            <td>{{(i+1)}}</td>
-                                            <td>{{data.imgType}}</td>
-                                            <td>
-                                                <img [src]="sanitize(data.imgFilename)" style="width:50px;height:50px;" />
-                                            </td>
-                                        </tr>
-                                        <tr *ngIf="imgLst.length < 1">
-                                            <td style="width:100%" colspan="5">No record !!!</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+<section class="content">
+    <div class="wrapper hold-transition skin-blue fixed sidebar-mini">
+        <app-hd></app-hd>
+        <div class="content-wrapper">
+            <section class="content-header">
+                <h1>
+                    Manage LCDA Images
+                    <small>Manage LCDA ({{lgda.lcdaName}}).</small>
+                </h1>
+            </section>
+            <div class="row">
+                <section class="content" style="border-style:thin">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="box">
+                                <div class="box-header">
+                                    <h3 class="box-title">Images List</h3>
+                                </div>
+                                <!-- /.box-header -->
+                                <div class="box-body">
+                                    <p>
+                                        <button class="btn btn-primary" (click)="openAdd()">
+                                            <i class="fa fa-plus"></i> Add/Update</button>
+                                    </p>
+                                    <table id="example2" class="table table-bordered table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:50px;"></th>
+                                                <th>Image Type</th>
+                                                <th>Views</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let data of imgLst; let i=index">
+                                                <td>{{(i+1)}}</td>
+                                                <td>{{data.imgType}}</td>
+                                                <td>
+                                                    <img [src]="sanitize(data.imgFilename)" style="width:50px;height:50px;" />
+                                                </td>
+                                            </tr>
+                                            <tr *ngIf="imgLst.length < 1">
+                                                <td style="width:100%" colspan="5">No record !!!</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </div>
-    </div>
 
-</div>
+    </div>
+</section>
+<section class="content"></section>
 <ft></ft>
 <div class="loading" *ngIf="isLoading"></div>

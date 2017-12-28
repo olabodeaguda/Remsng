@@ -54,6 +54,7 @@ namespace RemsNG.ORM
         public DbSet<DNAmountDueModel> DNAmountDueModels { get; set; }
         public DbSet<DemandNoticePaymentHistory> DemandNoticePaymentHistories { get; set; }
         public DbSet<Bank> Banks { get; set; }
+        public DbSet<DemandNoticePaymentHistoryExt> DemandNoticePaymentHistoryExts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
