@@ -13,32 +13,6 @@ namespace RemsNG.Dao
         public DNPaymentHistoryDao(RemsDbContext _db) : base(_db)
         {}
 
-        private string PaymentQuery(List<DNAmountDueModel> paymentDueList, DemandNoticePaymentHistory dnph)
-        {
-            string query = "";
-
-            if (paymentDueList.Count > 0)
-            {
-                foreach (var tm in paymentDueList)
-                {
-                    switch (tm.category)
-                    {
-                        case "ARREARS":
-                            query = query + $"";
-                            break;
-                        case "PENALTY":
-                            query = query + $"";
-                            break;
-                        case "ITEMS":
-                            query = query + $"";
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            return query;
-        }
+        
     }
 }

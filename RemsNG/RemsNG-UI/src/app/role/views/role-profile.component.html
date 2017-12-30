@@ -53,7 +53,7 @@
                         <label for="roleId">Select Domain</label>
                         <select name="roleId" class="form-control" [(ngModel)]="assignRoleModel.domainId" 
                         (ngModelChange)="domainSelectedChange($event, 'ALL_DOMAINROLE')" >
-                        
+                            <option>Select Domain</option>
                             <option *ngFor="let data of lgdas;" [ngValue]="data.id">{{data.lcdaName}}</option>
                         </select>
                     </div>
@@ -61,6 +61,7 @@
                     <div class="form-group">
                         <label for="roleId">Select Role</label>
                         <select name="roleId" class="form-control" [(ngModel)]="assignRoleModel.roleId">
+                            <option>Select Role</option>
                             <option *ngFor="let data of roles;" [ngValue]="data.id">{{data.roleName}}</option>
                         </select>
                     </div>
@@ -90,8 +91,9 @@
                 </div>
                 <div class="box-body">
                     <div class="form-group ">
-                        <label for="lgdaId">Select LGDA</label>
+                        <label for="lgdaId">Select LCDA</label>
                         <select name="lgdaId" class="form-control" [(ngModel)]="assigndomainmodel.lgdaId">
+                            <option>Select LCDA</option>
                             <option *ngFor="let data of unassignDomainArray;" [ngValue]="data.id">{{data.lcdaName}}</option>
                         </select>
                     </div>

@@ -21,7 +21,7 @@ using Microsoft.Extensions.Logging;
 
 namespace RemsNG.Controllers
 {
-    
+    [Authorize]
     [Route("api/v1/dndownload")]
     public class DemandNoticeDownloadController : Controller
     {

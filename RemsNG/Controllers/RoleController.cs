@@ -27,7 +27,7 @@ namespace RemsNG.Controllers
             permissionService = _permissionService;
         }
 
-        [RemsRequirementAttribute("GET_ROLES")]
+       // [RemsRequirementAttribute("GET_ROLES")]
         [HttpGet]
         public async Task<object> Get([FromHeader] string pageSize, [FromHeader] string pageNum)
         {
@@ -80,7 +80,7 @@ namespace RemsNG.Controllers
         }
 
         [Route("alldomainroles")]
-        [RemsRequirementAttribute("GET_ROLES")]
+        //[RemsRequirementAttribute("GET_ROLES")]
         [HttpGet]
         public async Task<object> AllUserRoles([FromHeader] string username)
         {

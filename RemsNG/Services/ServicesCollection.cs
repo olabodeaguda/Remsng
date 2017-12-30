@@ -138,7 +138,8 @@ namespace RemsNG.Services
             services.AddTransient<IListPropertyService, ListPropertyService>();
             services.AddTransient<IDNAmountDueMgtService, DNAmountDueMgtService>();
             services.AddTransient<IDNPaymentHistoryService, DNPaymentHistoryService>();
-            services.AddTransient<IBankService, BankService > ();
+            services.AddTransient<IBankService, BankService> ();
+            services.AddTransient<IAbstractService, AbstractService>();
         }
 
         public static IConfigurationSection jwtAppSettingOptions

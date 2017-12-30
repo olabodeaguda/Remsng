@@ -26,5 +26,32 @@ namespace RemsNG.Services
         {
             return await dNAmountDueMgtDao.UpdateAmount(dnamount);
         }
+
+        public void CurrentAmountDue(List<DNAmountDueModel> UnpaidDueList,decimal amountPaid,bool isFullyPaid)
+        {
+            if (!isFullyPaid)
+            {
+                decimal totalAmountDue = UnpaidDueList.Sum(x => (x.itemAmount - x.amountPaid));
+
+                foreach (var tm in UnpaidDueList)
+                {
+                    decimal itemShare = (tm.itemAmount - tm.amountPaid) / totalAmountDue;
+                    tm.amountPaid = tm.amountPaid + (itemShare * amountPaid);
+                } 
+            }
+            else
+            {
+                foreach (var tm in UnpaidDueList)
+                {
+                    tm.amountPaid = tm.itemAmount;
+                }
+            }
+
+        }
+
+        public string PaymentQuery(List<DNAmountDueModel> paymentDueList, DemandNoticePaymentHistory dnph, string status)
+        {
+            return dNAmountDueMgtDao.PaymentQuery(paymentDueList, dnph, status);
+        }
     }
 }

@@ -24,16 +24,18 @@ namespace RemsNG.Controllers
         private readonly IDemandNoticeTaxpayerService demandNoticeTaxpayerService;
         private ILogger logger;
         private IDNAmountDueMgtService amountDueMgtService;
+        private IAbstractService abstractService;
         public DemanNoticePaymentController(IDNPaymentHistoryService _dNPaymentHistoryService,
-            IDemandNoticeTaxpayerService _demandNoticeTaxpayerService, 
-            ITaxpayerService _taxpayerService,ILoggerFactory loggerFactory,
-            IDNAmountDueMgtService _amountDueMgtService)
+            IDemandNoticeTaxpayerService _demandNoticeTaxpayerService,
+            ITaxpayerService _taxpayerService, ILoggerFactory loggerFactory,
+            IDNAmountDueMgtService _amountDueMgtService, IAbstractService _abstractService)
         {
             dNPaymentHistoryService = _dNPaymentHistoryService;
             dNPaymentHistoryService = _dNPaymentHistoryService;
             demandNoticeTaxpayerService = _demandNoticeTaxpayerService;
             logger = loggerFactory.CreateLogger("Receipt payment");
             amountDueMgtService = _amountDueMgtService;
+            abstractService = _abstractService;
         }
 
         [HttpGet("{billingNumber}")]
@@ -131,7 +133,7 @@ namespace RemsNG.Controllers
                     description = "Payment not found"
                 });
             }
-            if ((dnph.amount+dnph.charges) < 1)
+            if ((dnph.amount + dnph.charges) < 1)
             {
                 logger.LogWarning("Payment amount must be more than zero", dnph);
                 return BadRequest(new Response()
@@ -141,23 +143,55 @@ namespace RemsNG.Controllers
                 });
             }
             List<DNAmountDueModel> paymentDueList = await amountDueMgtService.ByBillingNo(dnph.billingNumber);
-            if ((dnph.amount+dnph.charges) == paymentDueList.Sum(x=>x.itemAmount))
+            string query = string.Empty;
+            if ((dnph.amount + dnph.charges) == paymentDueList.Sum(x => x.itemAmount))
             {
+                query = string.Empty;
                 //full payment
                 //update demand notice taxpayer table
                 //update all payment demand due list
                 //update payment as full payment
+                amountDueMgtService.CurrentAmountDue(paymentDueList, dnph.amount, true);
+                query = amountDueMgtService.PaymentQuery(paymentDueList, dnph,
+                   DemandNoticeStatus.PART_PAYMENT.ToString());
             }
             else
             {
-                //part payment
+                query = string.Empty;
+                List<DNAmountDueModel> paymentDueList2 = paymentDueList.Where(p => p.itemAmount > p.amountPaid).ToList();
+                amountDueMgtService.CurrentAmountDue(paymentDueList2, dnph.amount,false);
+                query = amountDueMgtService.PaymentQuery(paymentDueList, dnph,
+                    DemandNoticeStatus.PART_PAYMENT.ToString());
             }
 
-            return BadRequest(new Response()
+            if (string.IsNullOrEmpty(query))
             {
-                code = MsgCode_Enum.FAIL,
-                description = "Feature under construction"
-            });
+                bool result = await abstractService.ExecuteQueryAsync(query);
+                if (result)
+                {
+                    return Ok(new Response()
+                    {
+                        code = MsgCode_Enum.SUCCESS,
+                        description = "Payment has been approved"
+                    });
+                }
+                else
+                {
+                    return BadRequest(new Response()
+                    {
+                        code = MsgCode_Enum.FAIL,
+                        description = "An error occur while processing payment. Please try again or contact administrator"
+                    });
+                }
+            }
+            else
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "An error occur while processing payment. Please try again or contact administrator"
+                });
+            }
         }
     }
 }

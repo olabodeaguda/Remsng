@@ -41,8 +41,7 @@ namespace RemsNG.Controllers
                 data = new object[] { tu }
             });
         }
-
-        // GET api/values/5
+        
         [HttpGet("batchno/{batchno}")]
         public async Task<object> GetByBatchNo([FromRoute]string batchno, [FromHeader] string pageSize, [FromHeader] string pageNum)
         {

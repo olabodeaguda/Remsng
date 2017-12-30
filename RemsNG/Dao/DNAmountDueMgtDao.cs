@@ -59,5 +59,35 @@ namespace RemsNG.Dao
 
         }
 
+        public string PaymentQuery(List<DNAmountDueModel> paymentDueList, 
+            DemandNoticePaymentHistory dnph,string status)
+        {
+            string query = "";
+
+            if (paymentDueList.Count > 0)
+            {
+                foreach (var tm in paymentDueList)
+                {
+                    switch (tm.category)
+                    {
+                        case "ARREARS":
+                            query = query + $"update tbl_demandNoticeArrears set amountPaid = {tm.amountPaid}, arrearsStatus = '{status}' where id='{tm.id}';";
+                            break;
+                        case "PENALTY":
+                            query = query + $"update tbl_demandNoticePenalty set amountPaid = {tm.amountPaid}, itemPenaltyStatus = '{status}' where id='{tm.id}';";
+                            break;
+                        case "ITEMS":
+                            query = query + $"update tbl_demandNoticeItem set amountPaid = {tm.amountPaid}, itemStatus = '{status}' where id='{tm.id}';";
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                query = query + $"update tbl_demandNoticeTaxpayers set demandNoticeStatus = '{status}' where billingNumber = '{dnph.billingNumber}';";
+            }
+
+            return query;
+        }
     }
 }

@@ -11,5 +11,7 @@ namespace RemsNG.Services.Interfaces
     {
         Task<List<DNAmountDueModel>> ByBillingNo(string billingno);
         Task<Response> UpdateAmount(DNAmountDueModel dnamount);
+        void CurrentAmountDue(List<DNAmountDueModel> UnpaidDueList, decimal amountPaid, bool isFullyPaid);
+        string PaymentQuery(List<DNAmountDueModel> paymentDueList, DemandNoticePaymentHistory dnph, string status);
     }
 }

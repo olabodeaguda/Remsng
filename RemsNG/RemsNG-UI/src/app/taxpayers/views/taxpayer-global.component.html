@@ -125,9 +125,25 @@
                                     <tbody>
                                         <tr *ngFor="let data of taxpayers; let i=index">
                                             <td>
-                                                <a href="javascript:;" (click)="open('EDIT',data)">
-                                                    <i class="fa fa-edit"></i>
-                                                </a>
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        Action
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a href="javascript:;" (click)="open('EDIT',data)">
+                                                                <i class="fa fa-edit"></i>Edit
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a [routerLink]="['/companyitem',data.streetId,data.id]">
+                                                                <i class="fa fa-user"></i>
+                                                                Items</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+
                                             </td>
                                             <td>{{(pageModel.pageSize*(pageModel.pageNum - 1))+(i+1)}}</td>
                                             <td>{{data.surname}} {{data.firstname}} {{data.lastname}}</td>
