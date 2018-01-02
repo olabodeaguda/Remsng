@@ -21,5 +21,6 @@ namespace RemsNG.Services.Interfaces
         Task<bool> Update(User user);
         Task<bool> ChangePwd(Guid id, string newPwd);
         Task<bool> AssignLGDA(UserLcda userLcda);
+        Task<bool> ChangeStatus(string status, Guid id);
     }
 }

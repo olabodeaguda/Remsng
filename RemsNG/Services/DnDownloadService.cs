@@ -48,7 +48,8 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("WARD_NAME", dnrp.wardName);
             htmlContent = htmlContent.Replace("TOTAL_AMOUNT", $"{decimal.Round(dnph.amount,2)} naira");
             htmlContent = htmlContent.Replace("REFERENCE_NUMBER", dnph.referenceNumber);
-            htmlContent = htmlContent.Replace("REFERENCE_NUMBER", dnph.referenceNumber);
+            htmlContent = htmlContent.Replace("REFERENCE_NUMBER", dnph.referenceNumber);//PAYMENT_STATUS
+            htmlContent = htmlContent.Replace("PAYMENT_STATUS", dnrp.demandNoticeStatus);//PAYMENT_STATUS
             if (dnph.amount == 0)
             {
                 htmlContent = htmlContent.Replace("AMOUNT_IN_WORD", "Zero");

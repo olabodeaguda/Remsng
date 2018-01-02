@@ -36,7 +36,7 @@ namespace RemsNG.Services
                 foreach (var tm in UnpaidDueList)
                 {
                     decimal itemShare = (tm.itemAmount - tm.amountPaid) / totalAmountDue;
-                    tm.amountPaid = tm.amountPaid + (itemShare * amountPaid);
+                    tm.amountPaid = tm.amountPaid + decimal.Round((itemShare * amountPaid),2);
                 } 
             }
             else
@@ -49,9 +49,9 @@ namespace RemsNG.Services
 
         }
 
-        public string PaymentQuery(List<DNAmountDueModel> paymentDueList, DemandNoticePaymentHistory dnph, string status)
+        public string PaymentQuery(List<DNAmountDueModel> paymentDueList, DemandNoticePaymentHistory dnph, string status, string createdby)
         {
-            return dNAmountDueMgtDao.PaymentQuery(paymentDueList, dnph, status);
+            return dNAmountDueMgtDao.PaymentQuery(paymentDueList, dnph, status,createdby);
         }
     }
 }

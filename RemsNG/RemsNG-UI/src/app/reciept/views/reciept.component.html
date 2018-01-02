@@ -14,7 +14,8 @@
                     <b> {{selectedReceipt.newPaymentStatus}}</b> receipt with receipt number  {{selectedReceipt.billingNumber}}. Are you sure?
                 </div>
                 <div class="box-footer">
-                    <button [ladda]="selectedReceipt.isLoading" type="submit" class="btn btn-success" (click)="ReceiptAction()">Submit</button>
+                    <button [ladda]="selectedReceipt.isLoading" type="submit" class="btn btn-success"
+                     (click)="ReceiptAction()">Submit</button>
                     <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -54,16 +55,16 @@
                                     <div class="col-xs-12">
                                         <div class="form-group col-md-3">
                                             <label for="wardId">Billing Number</label>
-                                            <input type="text" class="form-control" />
+                                            <input [(ngModel)]= "selectedReceipt.billingNumber" type="text" class="form-control" />
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="form-group">
                                         <div class="form-group col-sm-3" style="margin-left:13px;">
-                                            <button [ladda]="isLoading" type="submit" 
+                                            <button [ladda]="selectedReceipt.isLoading" type="submit" 
                                             class="btn btn-primary" 
-                                            (click)="submitDemandRequest()"><i class="fa fa-search"></i> Search</button>
+                                            (click)="searchPayment()"><i class="fa fa-search"></i> Search</button>
                                         </div>
                                     </div>
                                 </div>
@@ -98,7 +99,7 @@
                                                                     </a>
                                                                 </li>
                                                                 <li >
-                                                                    <a href="javascript:;" (click)="open('CANCEL',data)">
+                                                                    <a href="javascript:;" (click)="open('CANCELED',data)">
                                                                         <i class="fa fa-send"></i>Cancel
                                                                     </a>
                                                                 </li>

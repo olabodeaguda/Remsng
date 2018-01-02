@@ -47,9 +47,39 @@ export class RecieptComponent implements OnInit {
         this.selectedReceipt.newPaymentStatus = newStatus;
         jQuery(this.approveReceiptModal.nativeElement).modal('show');
     }
-    
-    ReceiptAction(){
 
+    ReceiptAction() {
+        this.selectedReceipt.isLoading = true;
+        this.receiptService.approvePayment(this.selectedReceipt.id, this.selectedReceipt.newPaymentStatus)
+            .subscribe(response => {
+                this.selectedReceipt = new ReceiptModel();
+                this.toasterService.pop('success', 'Approved', response.description);
+                jQuery(this.approveReceiptModal.nativeElement).modal('hide');
+                this.getByLcda();
+            }, error => {
+                this.selectedReceipt.isLoading = false;
+                this.toasterService.pop('error', 'Error', error);
+            })
     }
 
+    searchPayment() {
+        if (this.selectedReceipt.billingNumber.length < 1) {
+            this.toasterService.pop('error', 'Required', 'Billing number is required!!!');
+            return;
+        }
+        this.selectedReceipt.isLoading = true;
+
+        this.receiptService.byBillingNumber(this.selectedReceipt.billingNumber)
+            .subscribe(response => {
+                this.selectedReceipt.isLoading = false;
+                this.receiptLst = response;
+                if(this.receiptLst.length < 1){
+                    this.toasterService.pop("warning",'not found','no record found');
+                }
+            }, error => {
+                this.selectedReceipt.isLoading = false;
+                this.toasterService.pop("error",'Error',error);
+            });
+
+    }
 }

@@ -49,7 +49,7 @@ export class UserService {
 
     changeStatus(user: ProfileModel) {
         return this.dataService.post('user/changestatus', {
-            lcdaStatus: user.userStatus,
+            userStatus: user.userStatus,
             id: user.id
         }).catch(error => this.dataService.handleError(error));
     }

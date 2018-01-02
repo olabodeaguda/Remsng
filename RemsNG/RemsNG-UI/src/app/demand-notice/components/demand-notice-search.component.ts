@@ -178,7 +178,7 @@ export class DemandNoticeSearchComponent implements OnInit {
             if (ty === 'itemAmount') {
                 sum += Number.parseFloat(this.amountDueList[i].itemAmount);
             } else if (ty === 'amountPaid') {
-                sum += sum += Number.parseFloat(this.amountDueList[i].amountPaid);
+                sum += Number.parseFloat(this.amountDueList[i].amountPaid);
             }
         }
         return sum;

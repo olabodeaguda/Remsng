@@ -184,5 +184,10 @@ namespace RemsNG.Services
         {
             return await this.userDao.AssignLGDA(userLcda);
         }
+
+        public async Task<bool> ChangeStatus(string status, Guid id)
+        {
+            return await userDao.ChangeStatus(status, id);
+        }
     }
 }

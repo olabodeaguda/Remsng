@@ -138,5 +138,18 @@ namespace RemsNG.Dao
             }
             return false;
         }
+
+        public async Task<bool> ChangeStatus(string status,Guid id)
+        {
+            string query = $"update tbl_users " +
+                $"set userStatus = '{status}' where id = '{id}' ";
+
+            int count = await db.Database.ExecuteSqlCommandAsync(query);
+            if (count > 0)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

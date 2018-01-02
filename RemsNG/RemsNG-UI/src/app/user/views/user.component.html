@@ -94,7 +94,6 @@
     </div>
 </div>
 
-
 <div class="modal fade" role="dialog" id="addModal" #addModal>
     <div class=" modal-dialog ">
         <div class="modal-content " style="width:500px;">
@@ -167,6 +166,30 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" #changestatus>
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">{{profileModel.userStatus === 'ACTIVE'?'Deactivate':'Activate'}} Role</h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div class="box-body">
+                    You are about to
+                    <b> {{profileModel.userStatus === 'ACTIVE'?'deactivate':'Activate'}}</b> 
+                    {{profileModel.surname}} {{profileModel.firstname}} {{profileModel.lastname}}. Are you sure?
+                </div>
+                <div class="box-footer">
+                    <button [ladda]="roleModel.isLoading" type="submit" class="btn btn-success" 
+                    (click)="addUser()">Submit</button>
+                    <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <section>
     <div class="wrapper hold-transition skin-blue fixed sidebar-mini">
         <app-hd></app-hd>
@@ -218,7 +241,7 @@
                                                             </li>
                                                             <li>
                                                                 <a (click)="open('CHANGE_STATUS',data)">
-                                                                    <i class="fa fa-cog"></i> {{data.userStatus === 'ACTIVE'?'Deactivate':'Approve'}}</a>
+                                                                    <i class="fa fa-cog"></i> {{data.userStatus === 'ACTIVE'?'Deactivate':'Activate'}}</a>
                                                             </li>
                                                             <li>
                                                                 <a (click)="open('CHANGE_PWD', data)">

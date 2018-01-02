@@ -24,6 +24,7 @@ namespace RemsNG.ORM
         public string councilTreasurerSigFilen { get; set; }
         public string revCoodinatorSigFilen { get; set; }
         public string councilTreasurerMobile { get; set; }
+        public string demandNoticeStatus { get; set; }
 
         public Nullable<int> totalSize { get; set; }
     }

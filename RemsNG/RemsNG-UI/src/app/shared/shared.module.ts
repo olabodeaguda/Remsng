@@ -11,6 +11,7 @@ import {ToasterModule, ToasterService} from 'angular2-toaster';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StateService } from './services/state.service';
 import { BankService } from './services/bank.service';
+import { LaddaModule } from 'angular2-ladda';
 
 const appRoutes: Routes = [
  ];
@@ -19,7 +20,8 @@ const appRoutes: Routes = [
     imports: [
       BrowserModule,
       ToasterModule,
-      HttpModule,
+      LaddaModule,
+      HttpModule,FormsModule,
       BrowserAnimationsModule,
       RouterModule.forChild(appRoutes)
     ],

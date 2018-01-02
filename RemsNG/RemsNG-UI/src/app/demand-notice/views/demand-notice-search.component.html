@@ -230,6 +230,7 @@
                                         <th>Address</th>
                                         <th>Ward</th>
                                         <th>LCDA </th>
+                                        <th>Payment Status</th>
                                     </thead>
                                     <tbody>
                                         <tr *ngFor="let data of taxpayersLst; let i=index">
@@ -271,14 +272,15 @@
                                             <td>{{data.addressName}}</td>
                                             <td>{{data.wardName}}</td>
                                             <td>{{data.lcdaName}}</td>
+                                            <td>{{data.demandNoticeStatus}}</td>
                                         </tr>
                                         <tr *ngIf="taxpayersLst.length < 1">
-                                            <td style="width:100%" colspan="8">No record !!!</td>
+                                            <td style="width:100%" colspan="9">No record !!!</td>
                                         </tr>
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <td colspan="8">
+                                            <td colspan="9">
                                                 <nav *ngIf="pageModel.totalPageCount > 1">
                                                     <ul class="pagination">
                                                         <li>

@@ -353,6 +353,46 @@ namespace RemsNG.Controllers
                 }, 409);
             }
         }
-        
+
+        [RemsRequirementAttribute("UPDATE_PROFILE")]
+        [Route("changestatus")]
+        [HttpPost]
+        public async Task<IActionResult> ChangeUserStatus([FromBody] User user)
+        {
+            if (string.IsNullOrEmpty(user.userStatus))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "User status is required"
+                });
+            }
+            else if (user.id == Guid.Empty)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Invalid request"
+                });
+            }
+
+            bool result = await userService.ChangeStatus(user.userStatus, user.id);
+            if (result)
+            {
+                return Ok(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = "request has been treated successfully"
+                });
+            }
+            else
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Please referesh the page and try again"
+                });
+            }
+        }
     }
 }

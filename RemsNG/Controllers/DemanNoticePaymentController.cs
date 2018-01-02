@@ -111,7 +111,7 @@ namespace RemsNG.Controllers
 
         [RemsRequirementAttribute("APPROVE_PAYMENT")]
         [HttpPost("changestatus/{id}")]
-        public async Task<object> ApprovePayment(Guid id)
+        public async Task<object> ApprovePayment(Guid id, [FromHeader] string pmt)
         {
             if (id == default(Guid))
             {
@@ -119,7 +119,16 @@ namespace RemsNG.Controllers
                 return BadRequest(new Response()
                 {
                     code = MsgCode_Enum.WRONG_CREDENTIALS,
-                    description = "Please refresh your page an try again"
+                    description = "Please refresh your page and try again"
+                });
+            }
+            else if (string.IsNullOrEmpty(pmt))
+            {
+                logger.LogWarning("Payment id is invalid", id);
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "New status is required"
                 });
             }
 
@@ -133,38 +142,39 @@ namespace RemsNG.Controllers
                     description = "Payment not found"
                 });
             }
-            if ((dnph.amount + dnph.charges) < 1)
-            {
-                logger.LogWarning("Payment amount must be more than zero", dnph);
-                return BadRequest(new Response()
-                {
-                    code = MsgCode_Enum.WRONG_CREDENTIALS,
-                    description = "Please refresh your page an try again"
-                });
-            }
-            List<DNAmountDueModel> paymentDueList = await amountDueMgtService.ByBillingNo(dnph.billingNumber);
             string query = string.Empty;
-            if ((dnph.amount + dnph.charges) == paymentDueList.Sum(x => x.itemAmount))
+            if (pmt == DemandNoticeStatus.CANCELED.ToString())
             {
-                query = string.Empty;
-                //full payment
-                //update demand notice taxpayer table
-                //update all payment demand due list
-                //update payment as full payment
-                amountDueMgtService.CurrentAmountDue(paymentDueList, dnph.amount, true);
-                query = amountDueMgtService.PaymentQuery(paymentDueList, dnph,
-                   DemandNoticeStatus.PART_PAYMENT.ToString());
+                query = $"update tbl_demandNoticePaymentHistory set paymentStatus= '{pmt}' where id = '{id}' ";
             }
             else
             {
-                query = string.Empty;
-                List<DNAmountDueModel> paymentDueList2 = paymentDueList.Where(p => p.itemAmount > p.amountPaid).ToList();
-                amountDueMgtService.CurrentAmountDue(paymentDueList2, dnph.amount,false);
-                query = amountDueMgtService.PaymentQuery(paymentDueList, dnph,
-                    DemandNoticeStatus.PART_PAYMENT.ToString());
+                if ((dnph.amount + dnph.charges) < 1)
+                {
+                    logger.LogWarning("Payment amount must be more than zero", dnph);
+                    return BadRequest(new Response()
+                    {
+                        code = MsgCode_Enum.WRONG_CREDENTIALS,
+                        description = "Please refresh your page an try again"
+                    });
+                }
+                List<DNAmountDueModel> paymentDueList = await amountDueMgtService.ByBillingNo(dnph.billingNumber);
+                if ((dnph.amount + dnph.charges) >= paymentDueList.Sum(x => (x.itemAmount - x.amountPaid )))
+                {
+                    amountDueMgtService.CurrentAmountDue(paymentDueList, dnph.amount, true);
+                    query = amountDueMgtService.PaymentQuery(paymentDueList, dnph,
+                       DemandNoticeStatus.PAID.ToString(),User.Identity.Name);
+                }
+                else
+                {
+                    List<DNAmountDueModel> paymentDueList2 = paymentDueList.Where(p => p.itemAmount > p.amountPaid).ToList();
+                    amountDueMgtService.CurrentAmountDue(paymentDueList2, dnph.amount, false);
+                    query = amountDueMgtService.PaymentQuery(paymentDueList, dnph,
+                        DemandNoticeStatus.PART_PAYMENT.ToString(), User.Identity.Name);
+                }
             }
 
-            if (string.IsNullOrEmpty(query))
+            if (!string.IsNullOrEmpty(query))
             {
                 bool result = await abstractService.ExecuteQueryAsync(query);
                 if (result)
@@ -172,7 +182,7 @@ namespace RemsNG.Controllers
                     return Ok(new Response()
                     {
                         code = MsgCode_Enum.SUCCESS,
-                        description = "Payment has been approved"
+                        description = $"Payment has been {pmt.ToLower()}"
                     });
                 }
                 else

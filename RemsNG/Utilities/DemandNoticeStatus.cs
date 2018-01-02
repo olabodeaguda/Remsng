@@ -9,7 +9,7 @@ namespace RemsNG.Utilities
     {
         ACTIVE,
         DEACTIVE,
-        CANCEL,
+        CANCELED,
         PENDING,
         SUBMITTED,
         PART_PAYMENT,

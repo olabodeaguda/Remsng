@@ -14,7 +14,6 @@ using RemsNG.Utilities;
 using RemsNG.ORM;
 using RemsNG.Exceptions;
 using RemsNG.Security;
-using System.IO;
 using Microsoft.Extensions.Logging;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
