@@ -11,9 +11,7 @@ namespace RemsNG.Dao
         public ReportDao(RemsDbContext _db) : base(_db)
         {
         }
-
-
-
-
+        
+        
     }
 }

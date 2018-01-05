@@ -20,3 +20,16 @@ begin
 	  where billingNo = @billingno
 end
 go
+
+ALTER procedure [dbo].[sp_CompanyBylcdaId]
+(
+	@lcdaId uniqueidentifier
+)
+as
+begin
+	select tbl_company.*,tbl_sector.sectorName as sectorName,tbl_taxpayerCategory.taxpayerCategoryName as categoryName,
+	-1 as totalSize from tbl_company 
+	left join tbl_sector on tbl_sector.id = tbl_company.sectorId
+	left join tbl_taxpayerCategory on tbl_company .categoryId= tbl_taxpayerCategory.id
+	where tbl_company.lcdaId = @lcdaId
+end
