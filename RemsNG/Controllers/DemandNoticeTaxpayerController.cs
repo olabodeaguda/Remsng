@@ -58,20 +58,6 @@ namespace RemsNG.Controllers
                 PageSize = int.Parse(pageSize)
             });
         }
-
-        [HttpPost]
-        public void Post([FromBody]string value)
-        {
-        }
-
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+        
     }
 }

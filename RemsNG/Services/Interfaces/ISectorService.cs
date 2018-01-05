@@ -13,5 +13,6 @@ namespace RemsNG.Services.Interfaces
         Task<List<Sector>> ByLcdaId(Guid lcdaId);
         Task<Sector> ById(Guid id);
         Task<Response> Update(Sector sector);
+        Task<Sector> ByTaxpayerId(Guid taxpayerId);
     }
 }

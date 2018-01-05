@@ -32,6 +32,11 @@ namespace RemsNG.Services
             return await sectorDao.ByLcdaId(lcdaId);
         }
 
+        public async Task<Sector> ByTaxpayerId(Guid taxpayerId)
+        {
+            return await sectorDao.ByTaxpayerId(taxpayerId);
+        }
+
         public async Task<Response> Update(Sector sector)
         {
             return await sectorDao.Update(sector);

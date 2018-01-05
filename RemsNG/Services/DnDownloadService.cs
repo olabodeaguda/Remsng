@@ -17,17 +17,20 @@ namespace RemsNG.Services
         private readonly IDemandNoticeDownloadHistory demandNoticeDownloadHistory;
         private readonly ILcdaService lcdaService;
         private IListPropertyService listPropertyService;
+        private ISectorService sectorService;
         public DnDownloadService(IDemandNoticeTaxpayerService _dnts,
             IDemandNoticeCharges _chargesService, 
             IDemandNoticeDownloadHistory _demandNoticeDownloadHistory,
             ILcdaService _lcdaService,
-            IListPropertyService _listPropertyService)
+            IListPropertyService _listPropertyService,
+            ISectorService _sectorService)
         {
             dnts = _dnts;
             chargesService = _chargesService;
             demandNoticeDownloadHistory = _demandNoticeDownloadHistory;
             lcdaService = _lcdaService;
             listPropertyService = _listPropertyService;
+            sectorService = _sectorService;
         }
 
         public async Task<string> PopulateReceiptHtml(string htmlContent, string rootUrl,
@@ -70,6 +73,7 @@ namespace RemsNG.Services
         public async Task<string> PopulateReportHtml(string htmlContent, string billingno, string rootUrl, string createdBy)
         {
             DemandNoticeReportModel dnrp = await dnts.ByBillingNo(billingno);
+            Sector sector = await sectorService.ByTaxpayerId(dnrp.taxpayerId);
 
             htmlContent = htmlContent.Replace("LOCAL_GOVERNMENT_NAME", dnrp.domainName);
             htmlContent = htmlContent.Replace("LCDA_NAME", dnrp.lcdaName);
@@ -77,7 +81,15 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("LCDA_STATE", dnrp.lcdaState);
             htmlContent = htmlContent.Replace("LAGOSLOGO", $"{rootUrl}/images/lagoslogo.jpg");
             htmlContent = htmlContent.Replace("LCDA_LOGO", $"{rootUrl}/images/{dnrp.lcdaLogoFileName}");
-            htmlContent = htmlContent.Replace("BILL_NO", dnrp.billingNumber);
+            //htmlContent = htmlContent.Replace("BILL_NO", dnrp.billingNumber);
+            if (sector != null)
+            {
+                htmlContent = htmlContent.Replace("BILL_NO",$"{sector.prefix}{dnrp.billingNumber}");
+            }
+            else
+            {
+                htmlContent = htmlContent.Replace("BILL_NO", dnrp.billingNumber);
+            }
             htmlContent = htmlContent.Replace("PAYER_NAME", dnrp.taxpayersName);
             htmlContent = htmlContent.Replace("PAYER_ADDRESS", dnrp.addressName);
             htmlContent = htmlContent.Replace("CURRENT_DATE", DateTime.Now.ToString("dd-MM-yyyy"));

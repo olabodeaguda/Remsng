@@ -73,5 +73,14 @@ namespace RemsNG.Dao
         public async Task<List<Sector>> ByLcdaId(Guid lcdaId) => await db.Sectors.Where(x => x.lcdaId == lcdaId).ToListAsync();
 
         public async Task<Sector> ById(Guid id) => await db.Sectors.FirstOrDefaultAsync(x=>x.id == id);
+
+        public async Task<Sector> ByTaxpayerId(Guid taxpayerId)
+        {
+            string query = $"select top 1 sect.*, tp.id as tpId from tbl_taxPayer as tp " +
+                $"inner join tbl_company as cpy on tp.companyId = cpy.id " +
+                $"inner join tbl_sector as sect on sect.id = cpy.sectorId " +
+                $"where tp.id = '{taxpayerId}'";
+            return await db.Sectors.FromSql(query).FirstOrDefaultAsync();
+        }
     }
 }
