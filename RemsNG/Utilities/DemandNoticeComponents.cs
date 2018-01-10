@@ -17,7 +17,7 @@ namespace RemsNG.Utilities
                 htmlmarkup = htmlmarkup + $"<tr style = 'border: 1px solid black;'>";
                 htmlmarkup = htmlmarkup + $"<td style = 'border-width:0px 1px 0px 1px'> {count++} </td>";
                 htmlmarkup = htmlmarkup + $"<td style = 'text -align:left;'> {tm.itemTitle} </td>";
-                htmlmarkup = htmlmarkup + $"<td>{ decimal.Round(tm.itemAmount, 2)}</ td ></tr>";
+                htmlmarkup = htmlmarkup + $"<td>{ String.Format("{0:n}", decimal.Round(tm.itemAmount, 2))}</ td ></tr>";
             }
 
             return htmlmarkup;

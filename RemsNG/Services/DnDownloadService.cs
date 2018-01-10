@@ -49,7 +49,7 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("CURRENT_DATE", DateTime.Now.ToString("dd-MM-yyyy"));
             htmlContent = htmlContent.Replace("BILLING_YEAR", dnrp.billingYr.ToString());
             htmlContent = htmlContent.Replace("WARD_NAME", dnrp.wardName);
-            htmlContent = htmlContent.Replace("TOTAL_AMOUNT", $"{decimal.Round(dnph.amount,2)} naira");
+            htmlContent = htmlContent.Replace("TOTAL_AMOUNT", $"{String.Format("{0:n}", decimal.Round(dnph.amount,2))} naira");
             htmlContent = htmlContent.Replace("REFERENCE_NUMBER", dnph.referenceNumber);
             htmlContent = htmlContent.Replace("REFERENCE_NUMBER", dnph.referenceNumber);//PAYMENT_STATUS
             htmlContent = htmlContent.Replace("PAYMENT_STATUS", dnrp.demandNoticeStatus);//PAYMENT_STATUS
@@ -81,7 +81,7 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("LCDA_STATE", dnrp.lcdaState);
             htmlContent = htmlContent.Replace("LAGOSLOGO", $"{rootUrl}/images/lagoslogo.jpg");
             htmlContent = htmlContent.Replace("LCDA_LOGO", $"{rootUrl}/images/{dnrp.lcdaLogoFileName}");
-            //htmlContent = htmlContent.Replace("BILL_NO", dnrp.billingNumber);
+
             if (sector != null)
             {
                 htmlContent = htmlContent.Replace("BILL_NO",$"{sector.prefix}{dnrp.billingNumber}");
@@ -98,8 +98,8 @@ namespace RemsNG.Services
 
             htmlContent = htmlContent.Replace("ITEMLIST", DemandNoticeComponents.HtmlBuildItems(dnrp));
             htmlContent = htmlContent.Replace("BANKLIST", DemandNoticeComponents.HtmlBuildBanks(dnrp));
-            htmlContent = htmlContent.Replace("ARREARS_AMMOUNT", decimal.Round(dnrp.arrears, 2).ToString());
-            htmlContent = htmlContent.Replace("PENALTY_AMOUNT", decimal.Round(dnrp.penalty, 2).ToString());
+            htmlContent = htmlContent.Replace("ARREARS_AMMOUNT", String.Format("{0:n}", decimal.Round(dnrp.arrears, 2)));
+            htmlContent = htmlContent.Replace("PENALTY_AMOUNT", String.Format("{0:n}", decimal.Round(dnrp.penalty, 2)));
 
             if (!string.IsNullOrEmpty(dnrp.councilTreasurerSigFilen))
             {
@@ -113,10 +113,9 @@ namespace RemsNG.Services
             decimal gtotal = dnrp.items.Sum(x => x.itemAmount) + dnrp.arrears + dnrp.penalty;
             htmlContent = htmlContent.Replace("GRAND_TOTAL", decimal.Round(gtotal, 2).ToString());
            
-            htmlContent = htmlContent.Replace("CHARGES", decimal.Round(dnrp.charges, 2).ToString());
+            htmlContent = htmlContent.Replace("CHARGES", String.Format("{0:n}", decimal.Round(dnrp.charges, 2)));
             decimal finalTotal = gtotal + dnrp.charges;
-            htmlContent = htmlContent.Replace("FINAL_TOTAL", decimal.Round(finalTotal, 2).ToString());
-
+            htmlContent = htmlContent.Replace("FINAL_TOTAL", String.Format("{0:n}", decimal.Round(finalTotal, 2)));
 
             if (finalTotal == 0)
             {

@@ -55,6 +55,7 @@ namespace RemsNG.ORM
         public DbSet<DemandNoticePaymentHistory> DemandNoticePaymentHistories { get; set; }
         public DbSet<Bank> Banks { get; set; }
         public DbSet<DemandNoticePaymentHistoryExt> DemandNoticePaymentHistoryExts { get; set; }
+        public DbSet<ItemReportSummaryModel> ItemReportSummaryModels { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
