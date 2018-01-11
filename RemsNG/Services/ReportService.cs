@@ -21,8 +21,10 @@ namespace RemsNG.Services
             return await reportDao.ByDate(startDate, endDate);
         }
 
-        public void ReportSummaryByDate(DateTime startDate, DateTime endDate)
+        public async void ReportSummaryByDate(DateTime startDate, DateTime endDate)
         {
+            List<ItemReportSummaryModel> datas = await ByDate(startDate, endDate);
+
         }
     }
 }
