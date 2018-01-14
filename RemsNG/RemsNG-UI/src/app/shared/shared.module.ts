@@ -21,14 +21,14 @@ const appRoutes: Routes = [
       BrowserModule,
       ToasterModule,
       LaddaModule,
-      HttpModule,FormsModule,
+      HttpModule, FormsModule,
       BrowserAnimationsModule,
       RouterModule.forChild(appRoutes)
     ],
     declarations: [
         HeaderComponent, SideBarComponent, FooterComponent
     ],
-    providers: [ToasterService,StateService,BankService],
+    providers: [ToasterService, StateService, BankService],
     exports: [
         HeaderComponent, SideBarComponent, FooterComponent
     ]

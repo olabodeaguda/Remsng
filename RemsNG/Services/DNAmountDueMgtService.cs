@@ -36,7 +36,8 @@ namespace RemsNG.Services
                 foreach (var tm in UnpaidDueList)
                 {
                     decimal itemShare = (tm.itemAmount - tm.amountPaid) / totalAmountDue;
-                    tm.amountPaid = tm.amountPaid + decimal.Round((itemShare * amountPaid),2);
+                    tm.amountInitialPaid = itemShare * amountPaid;
+                    tm.amountPaid = tm.amountPaid + decimal.Round((tm.amountInitialPaid),2);
                 } 
             }
             else
@@ -44,6 +45,7 @@ namespace RemsNG.Services
                 foreach (var tm in UnpaidDueList)
                 {
                     tm.amountPaid = tm.itemAmount;
+                    tm.amountInitialPaid = tm.itemAmount;
                 }
             }
 

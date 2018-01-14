@@ -8,6 +8,8 @@ namespace RemsNG.Services.Interfaces
 {
     public interface IExcelService
     {
-        Task<bool> WriteReportSummary(List<ItemReportSummaryModel> rptLst, string path);
+        Task<byte[]> WriteReportSummary(List<ItemReportSummaryModel> rptLst,
+            List<ItemReportSummaryModel> previousYearList,
+             string domainName, string lcdaName,DateTime startDate,DateTime enndDate);
     }
 }

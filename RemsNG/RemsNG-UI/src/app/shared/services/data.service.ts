@@ -64,14 +64,13 @@ export class DataService {
 
     getBlob(url): Observable<any> {
         const tk: UserModel = this.storageService.get();
-       
+
         const options = {
             headers: new HttpHeaders({
                 'Authorization': 'Bearer ' + tk.tk
             })
             , responseType: 'blob' as 'blob'
         };
-
         return this.http.get((this.appConfig.BASE_URL + url), options);
     }
 

@@ -87,8 +87,9 @@
                                             <tbody>
                                                 <tr *ngFor="let data of receiptLst; let i=index">
                                                     <td>
-                                                       <div class="btn-group" *ngIf="data.paymentStatus === 'PENDING'">
-                                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                       <div class="btn-group" *ngIf="data.paymentStatus === 'PENDING' || data.paymentStatus === 'COMPLETED'">
+                                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" 
+                                                            aria-haspopup="true" aria-expanded="false">
                                                                 Action
                                                                 <span class="caret"></span>
                                                             </button>
@@ -122,7 +123,7 @@
                                             </tbody>
                                             <tfoot>
                                                 <tr>
-                                                    <td colspan="5">
+                                                    <td colspan="9">
                                                         <nav *ngIf="receiptLst.length > 0">
                                                             <ul class="pagination">
                                                                 <li>

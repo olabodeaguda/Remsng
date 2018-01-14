@@ -44,7 +44,8 @@
                                 <tbody>
                                     <tr *ngFor="let data of dowloadRequestList; let i=index">
                                         <td>
-                                            <a *ngIf="data.requestStatus === 'COMPLETED'" href="javascript:;" (click)="downloadDN(data.batchNo)">
+                                            <a *ngIf="data.requestStatus === 'COMPLETED'" href="javascript:;" 
+                                            (click)="downloadDN(data.batchNo)">
                                                 <i class="fa fa-download"></i> Download
                                             </a>
                                         </td>

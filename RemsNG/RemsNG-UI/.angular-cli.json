@@ -33,7 +33,8 @@
         "../assets/bower_components/bootstrap/dist/js/bootstrap.min.js",
         "../assets/bower_components/jquery-slimscroll/jquery.slimscroll.min.js",
         "../assets/bower_components/fastclick/lib/fastclick.js",
-        "../assets/dist/js/adminlte.js"
+        "../assets/dist/js/adminlte.js",
+        "../assets/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {

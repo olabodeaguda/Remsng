@@ -14,5 +14,9 @@ namespace RemsNG.ORM
         public string itemDescription { get; set; }
         public string category { get; set; }
         public string itemStatus { get; set; }
+        public Guid itemId { get; set; }
+
+        [NotMapped]
+        public decimal amountInitialPaid { get; set; }
     }
 }

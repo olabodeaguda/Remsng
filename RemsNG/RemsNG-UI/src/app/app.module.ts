@@ -19,21 +19,23 @@ import { LCDAModule } from './lcda/lcda.module';
 import { WardModule } from './ward/ward.module';
 import { UserModule } from './user/user.module';
 import { RoleModule } from './role/role.module';
-import { StreetModule } from "./street/street.module";
-import { ItemModule } from "./items/item.module";
-import { CategoryModule } from "./Category/category.module";
-import { ItemPenaltyModule } from "./item-penalty/itempenalty.module";
-import { TaxPayersModule } from "./taxpayers/taxpayer.module";
-import { CompanyModule } from "./company/company.module";
-import { DemandNoticeModule } from "./demand-notice/demand-notice.module";
-import { CompanyItemModule } from "./companyitems/companyitem.module";
-import { HTTP_INTERCEPTORS } from "@angular/common/http";
-import { GlobalInterceptorService } from "./shared/services/global-interceptor.service";
+import { StreetModule } from './street/street.module';
+import { ItemModule } from './items/item.module';
+import { CategoryModule } from './Category/category.module';
+import { ItemPenaltyModule } from './item-penalty/itempenalty.module';
+import { TaxPayersModule } from './taxpayers/taxpayer.module';
+import { CompanyModule } from './company/company.module';
+import { DemandNoticeModule } from './demand-notice/demand-notice.module';
+import { CompanyItemModule } from './companyitems/companyitem.module';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { GlobalInterceptorService } from './shared/services/global-interceptor.service';
 import {HttpClientModule} from '@angular/common/http';
 import { MediaFilesModule } from './media-files/media-files.module';
 import { AddressGlobalModule } from './address/AddressGlobal.module';
 import { DashboardIndexComponent } from './Dashboard/components/dashboard-index.component';
 import { RecieptModule } from './reciept/reciept.module';
+import { ReportModule } from './report/report.module';
+// import { MyDatePickerModule } from 'angular4-datepicker';
 
 const appRoutes: Routes = [
     { path: '', component: DashboardIndexComponent }
@@ -45,10 +47,10 @@ const appRoutes: Routes = [
     ],
     imports: [
         BrowserModule,
-        LoginModule,
-        DashBoardModule,RecieptModule,
-        FormsModule,MediaFilesModule,AddressGlobalModule,
-        DomainModule,HttpClientModule,
+        LoginModule, ReportModule,
+        DashBoardModule, RecieptModule,
+        FormsModule, MediaFilesModule, AddressGlobalModule,
+        DomainModule, HttpClientModule,
         WardModule, UserModule, StreetModule, CategoryModule,
         ToasterModule, LCDAModule, RoleModule, ItemPenaltyModule, CompanyItemModule,
         BrowserAnimationsModule, ItemModule, TaxPayersModule, CompanyModule,

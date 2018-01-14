@@ -141,6 +141,7 @@ namespace RemsNG.Services
             services.AddTransient<IBankService, BankService> ();
             services.AddTransient<IAbstractService, AbstractService>();
             services.AddTransient<IReportService, ReportService>();
+            services.AddTransient<IExcelService, ExcelService>();
         }
 
         public static IConfigurationSection jwtAppSettingOptions

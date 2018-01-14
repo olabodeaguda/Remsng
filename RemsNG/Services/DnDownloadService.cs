@@ -37,13 +37,15 @@ namespace RemsNG.Services
             string createdBy, DemandNoticePaymentHistory dnph)
         {
             DemandNoticeReportModel dnrp = await dnts.ByBillingNo(dnph.billingNumber);
+            Sector sector = await sectorService.ByTaxpayerId(dnrp.taxpayerId);
+
             htmlContent = htmlContent.Replace("LOCAL_GOVERNMENT_NAME", dnrp.domainName);
             htmlContent = htmlContent.Replace("LCDA_NAME", dnrp.lcdaName);
             htmlContent = htmlContent.Replace("LCDA_ADDRESS", dnrp.lcdaAddress);
             htmlContent = htmlContent.Replace("LCDA_STATE", dnrp.lcdaState);
             htmlContent = htmlContent.Replace("LAGOSLOGO", $"{rootUrl}/images/lagoslogo.jpg");
             htmlContent = htmlContent.Replace("LCDA_LOGO", $"{rootUrl}/images/{dnrp.lcdaLogoFileName}");
-            htmlContent = htmlContent.Replace("BILL_NO", dnrp.billingNumber);
+            htmlContent = htmlContent.Replace("BILL_NO",$"{sector.prefix}{dnrp.billingNumber}");
             htmlContent = htmlContent.Replace("PAYER_NAME", dnrp.taxpayersName);
             htmlContent = htmlContent.Replace("PAYER_ADDRESS", dnrp.addressName);
             htmlContent = htmlContent.Replace("CURRENT_DATE", DateTime.Now.ToString("dd-MM-yyyy"));
@@ -70,7 +72,8 @@ namespace RemsNG.Services
             return htmlContent;
         }
 
-        public async Task<string> PopulateReportHtml(string htmlContent, string billingno, string rootUrl, string createdBy)
+        public async Task<string> PopulateReportHtml(string htmlContent, string billingno, 
+            string rootUrl, string createdBy)
         {
             DemandNoticeReportModel dnrp = await dnts.ByBillingNo(billingno);
             Sector sector = await sectorService.ByTaxpayerId(dnrp.taxpayerId);
@@ -111,7 +114,7 @@ namespace RemsNG.Services
             }
             htmlContent = htmlContent.Replace("TREASURER_MOBILE", string.IsNullOrEmpty(dnrp.councilTreasurerMobile) ? "nil" : dnrp.councilTreasurerMobile);
             decimal gtotal = dnrp.items.Sum(x => x.itemAmount) + dnrp.arrears + dnrp.penalty;
-            htmlContent = htmlContent.Replace("GRAND_TOTAL", decimal.Round(gtotal, 2).ToString());
+            htmlContent = htmlContent.Replace("GRAND_TOTAL", String.Format("{0:n}", decimal.Round(gtotal, 2)));
            
             htmlContent = htmlContent.Replace("CHARGES", String.Format("{0:n}", decimal.Round(dnrp.charges, 2)));
             decimal finalTotal = gtotal + dnrp.charges;

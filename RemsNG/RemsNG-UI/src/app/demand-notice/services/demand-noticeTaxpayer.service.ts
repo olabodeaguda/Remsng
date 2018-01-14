@@ -32,7 +32,7 @@ export class DemandNoticeTaxpayerService{
     }
 
     downloadReceipt(url:string){
-        return this.dataservice.getBlob('dndownload/receipt/'+url)       
+        return this.dataservice.getBlob('dndownload/receipt/' + url)
         .catch(error => this.dataservice.handleError(error));
     }
 

@@ -71,15 +71,15 @@ namespace RemsNG.Dao
                     switch (tm.category)
                     {
                         case "ARREARS":
-                            query = query + $"update tbl_demandNoticeArrears set amountPaid = {tm.amountPaid}, arrearsStatus = '{status}'," +
+                            query = query + $"update tbl_demandNoticeArrears set amountPaid = {tm.amountPaid}, arrearsStatus = '{status}', " +
                                 $" lastModifiedDate = getdate(),lastmodifiedby='{createdby}' where id='{tm.id}';";
                             break;
                         case "PENALTY":
-                            query = query + $"update tbl_demandNoticePenalty set amountPaid = {tm.amountPaid}, itemPenaltyStatus = '{status}'" +
+                            query = query + $"update tbl_demandNoticePenalty set amountPaid = {tm.amountPaid}, itemPenaltyStatus = '{status}', " +
                                 $" lastModifiedDate = getdate(),lastmodifiedby='{createdby}' where id='{tm.id}';";
                             break;
                         case "ITEMS":
-                            query = query + $"update tbl_demandNoticeItem set amountPaid = {tm.amountPaid}, itemStatus = '{status}' " +
+                            query = query + $"update tbl_demandNoticeItem set amountPaid = {tm.amountPaid}, itemStatus = '{status}', " +
                                 $" lastModifiedDate = getdate(),lastmodifiedby='{createdby}' where id='{tm.id}';";
                             break;
                         default:

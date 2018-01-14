@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using RemsNG.Exceptions;
 using RemsNG.Models;
 using RemsNG.Utilities;
 using System;
@@ -46,11 +47,12 @@ namespace RemsNG.Security
                 }
                 if (!hasClaim)
                 {
-                    context.Result = new HttpMessageResult(new Response()
-                    {
-                        code = MsgCode_Enum.FORBIDDEN,
-                        description = "You have no access to this request"
-                    }, 403);// new ForbidResult();
+                    throw new ForbidException("You have no access to this request");
+                    //context.Result = new HttpMessageResult(new Response()
+                    //{
+                    //    code = MsgCode_Enum.FORBIDDEN,
+                    //    description = "You have no access to this request"
+                    //}, 403);// new ForbidResult();
                 }
             }
         }

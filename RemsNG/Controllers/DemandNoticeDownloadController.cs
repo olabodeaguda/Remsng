@@ -58,15 +58,10 @@ namespace RemsNG.Controllers
                 });
             }
 
-          //  HttpClient hc = new HttpClient();
-           // string rootUrl = $"http://{Request.Host}";
             string template = await dnd.LcdaTemlate(billingno);
-            // var htmlContent = await hc.GetStringAsync($"{rootUrl}/templates/{template}");
 
-            logger.LogInformation(Request.Host.ToString());
-            string rootUrl = hostingEnvironment.WebRootPath; //$"http://{Request.Host}";
+            string rootUrl = hostingEnvironment.WebRootPath;
             var htmlContent = await System.IO.File.ReadAllTextAsync($"{rootUrl}/templates/{template}");
-
 
             htmlContent = await dnd.PopulateReportHtml(htmlContent, billingno, rootUrl, User.Identity.Name);
             var result = await nodeServices.InvokeAsync<byte[]>("./pdf", htmlContent);

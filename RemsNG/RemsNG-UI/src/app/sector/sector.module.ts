@@ -4,8 +4,8 @@ import { BrowserModule} from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
 import { LaddaModule } from 'angular2-ladda';
 import { SharedModule } from '../shared/shared.module';
-import { SectorComponent } from "./components/sector.component";
-import { SectorService } from "./services/sector.services";
+import { SectorComponent } from './components/sector.component';
+import { SectorService } from './services/sector.services';
 
 const appRoutes: Routes = [
     { path: 'sector/:id', component: SectorComponent }

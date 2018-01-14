@@ -73,6 +73,12 @@ namespace RemsNG.Security
                 response.code = MsgCode_Enum.DUPLICATE_COMPANY;
                 context.Response.StatusCode = (int)HttpStatusCode.OK;
             }
+            else if (exception.GetType() == typeof(ForbidException))
+            {
+                response.description = exception.Message;
+                response.code = MsgCode_Enum.FORBIDDEN;
+                context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+            }
             else
             {
                 response.description = exception.Message;

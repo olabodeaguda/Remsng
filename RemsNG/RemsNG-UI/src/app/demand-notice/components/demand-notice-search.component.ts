@@ -29,14 +29,14 @@ export class DemandNoticeSearchComponent implements OnInit {
     @ViewChild('paymentModal') paymentModal: ElementRef;
     @ViewChild('paymentListModal') paymentListModal: ElementRef;
     dnpModel: DemandNoticePaymentModel = new DemandNoticePaymentModel();
-    isLoadingMini:boolean = false;
+    isLoadingMini: boolean = false;
     isLoadingPayment: boolean = false;
-    isLoadingReceipt:boolean = false;
+    isLoadingReceipt: boolean = false;
     constructor(private appsettings: AppSettings,
         private toasterService: ToasterService,
         private dnTaxpayer: DemandNoticeTaxpayerService,
         private bankService: BankService,
-        private dnPaymentService:DemandNoticePaymentService) {
+        private dnPaymentService: DemandNoticePaymentService) {
     }
 
     ngOnInit(): void {
@@ -48,85 +48,99 @@ export class DemandNoticeSearchComponent implements OnInit {
         this.dnTaxpayer.downloadRpt(url).map(response => {
             this.isLoading = false;
             let blob = response;
-            FileSaver.saveAs(blob, url + ".pdf");
+            FileSaver.saveAs(blob, url + '.pdf');
         }, error => {
             this.isLoading = false;
-            this.toasterService.pop('error', "Download Error", error);
+            this.toasterService.pop('error', 'Download Error', error);
         }).subscribe();
     }
 
     getBanks() {
-        this.bankService.getBanks().subscribe(response=>{
+        this.bankService.getBanks().subscribe(response => {
             this.banks = response;
-        },error=>{
-            this.toasterService.pop('error','Error',error);
+        }, error => {
+            this.toasterService.pop('error', 'Error', error);
         })
     }
 
-    downloadReciept(id:string,billingNumber: string){
+    /*downloadReciept(id: string, billingNumber: string) {
         this.isLoadingReceipt = true;
         this.dnTaxpayer.downloadReceipt(id).map(response => {
             this.isLoadingReceipt = false;
             let blob = response;
-            FileSaver.saveAs(blob, billingNumber+"Receipt" + ".pdf");
+            FileSaver.saveAs(blob, billingNumber + 'Receipt' + '.pdf');
         }, error => {
+            alert('error');
             this.isLoadingReceipt = false;
-            this.toasterService.pop('error', "Download Error", error);
+            this.toasterService.pop('error', 'Download Error', error);
         }).subscribe();
-    }    
+    }*/
+
+    downloadReciept(id: string, billingNumber: string) {
+        this.isLoadingReceipt = true;
+        this.dnTaxpayer.downloadReceipt(id)
+            .subscribe(response => {
+                this.isLoadingReceipt = false;
+                let blob = response;
+                FileSaver.saveAs(blob, billingNumber + 'Receipt' + '.pdf');
+            }, error => {
+                this.isLoadingReceipt = false;
+                this.toasterService.pop('error', 'Download Error', error);
+            });
+    }
 
     openPayment(billingno: string) {
         this.dnpModel.billingNumber = billingno;
         jQuery(this.paymentModal.nativeElement).modal('show');
     }
 
-    openReciept(billingno: string){      
+    openReciept(billingno: string) {
         this.dnpModel.billingNumber = billingno;
-        if(this.dnpModel.billingNumber.length < 1){
+        if (this.dnpModel.billingNumber.length < 1) {
             return;
         }
         this.getListPayment(billingno);
         jQuery(this.paymentListModal.nativeElement).modal('show');
     }
 
-    getListPayment(billingno: string){        
+    getListPayment(billingno: string) {
         this.isLoadingReceipt = true;
         this.dnPaymentService.getRecipetList(billingno)
-        .subscribe(response=>{
-            this.isLoadingReceipt = false;
-            this.paymentList = response;
-        },error=>{
-            this.isLoadingReceipt = false;
-            this.toasterService.pop('error','Error',error);
-        })
-    }    
+            .subscribe(response => {
+                this.isLoadingReceipt = false;
+                this.paymentList = response;
+            }, error => {
+                this.isLoadingReceipt = false;
+                this.toasterService.pop('error', 'Error', error);
+            })
+    }
 
-    registerpayment(){
-        if(this.dnpModel.amount < 0){
-            this.toasterService.pop('error','Error','Amount paid is required');            
+    registerpayment() {
+        if (this.dnpModel.amount < 0) {
+            this.toasterService.pop('error', 'Error', 'Amount paid is required');
             return;
-        } else if(this.dnpModel.bankId.length < 1){
-            this.toasterService.pop('error','Error','Bank is required');
+        } else if (this.dnpModel.bankId.length < 1) {
+            this.toasterService.pop('error', 'Error', 'Bank is required');
             return;
-        } else if(this.dnpModel.referenceNumber.length < 1){
-            this.toasterService.pop('error','Error','Reference number is required');
+        } else if (this.dnpModel.referenceNumber.length < 1) {
+            this.toasterService.pop('error', 'Error', 'Reference number is required');
             return;
         }
         this.isLoadingMini = true;
         this.dnPaymentService.registerPayment(this.dnpModel)
-        .subscribe(response=>{
-             if(response.code === '00'){
-                 this.toasterService.pop('success',response.description);
-                 this.isLoadingMini = false;
-                 jQuery(this.paymentModal.nativeElement).modal('hide');
-                 this.dnpModel = new DemandNoticePaymentModel();
-             } else{
-                this.toasterService.pop('error','Error!!!',response.description);
-             }
-        },error=>{
-            this.isLoadingMini = false;
-            this.toasterService.pop('error','Error!!!',error);
-        })
+            .subscribe(response => {
+                if (response.code === '00') {
+                    this.toasterService.pop('success', response.description);
+                    this.isLoadingMini = false;
+                    jQuery(this.paymentModal.nativeElement).modal('hide');
+                    this.dnpModel = new DemandNoticePaymentModel();
+                } else {
+                    this.toasterService.pop('error', 'Error!!!', response.description);
+                }
+            }, error => {
+                this.isLoadingMini = false;
+                this.toasterService.pop('error', 'Error!!!', error);
+            })
 
     }
 
@@ -162,7 +176,7 @@ export class DemandNoticeSearchComponent implements OnInit {
             this.isLoading = false;
         }, error => {
             this.isLoading = false;
-            this.toasterService.pop("error", 'Error', error);
+            this.toasterService.pop('error', 'Error', error);
         })
     }
 
