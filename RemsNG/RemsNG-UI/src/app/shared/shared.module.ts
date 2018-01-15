@@ -20,7 +20,7 @@ const appRoutes: Routes = [
     imports: [
       BrowserModule,
       ToasterModule,
-      LaddaModule,
+      LaddaModule, 
       HttpModule, FormsModule,
       BrowserAnimationsModule,
       RouterModule.forChild(appRoutes)

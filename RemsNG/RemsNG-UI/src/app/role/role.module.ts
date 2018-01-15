@@ -8,8 +8,8 @@ import { RoleComponent } from './components/role.component';
 import { RoleService } from './services/role.service';
 import { PermissionComponent } from './components/permission.component';
 import { PermissionService } from './services/permission.service';
-import { RoleProfileComponent } from "./components/role-profile.component";
-import { UserModule } from "../user/user.module";
+import { RoleProfileComponent } from './components/role-profile.component';
+import { UserModule } from '../user/user.module';
 
 const appRoutes: Routes = [
     { path: 'role', component: RoleComponent },
@@ -26,11 +26,11 @@ const appRoutes: Routes = [
       RouterModule.forChild(appRoutes)
     ],
     declarations: [
-        RoleComponent,PermissionComponent,RoleProfileComponent
+        RoleComponent, PermissionComponent, RoleProfileComponent
     ],
     providers: [ RoleService, PermissionService],
     exports: [
-        RoleComponent, PermissionComponent,RoleProfileComponent
+        RoleComponent, PermissionComponent, RoleProfileComponent
     ]
   })
 

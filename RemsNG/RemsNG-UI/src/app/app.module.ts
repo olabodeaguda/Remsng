@@ -35,7 +35,6 @@ import { AddressGlobalModule } from './address/AddressGlobal.module';
 import { DashboardIndexComponent } from './Dashboard/components/dashboard-index.component';
 import { RecieptModule } from './reciept/reciept.module';
 import { ReportModule } from './report/report.module';
-// import { MyDatePickerModule } from 'angular4-datepicker';
 
 const appRoutes: Routes = [
     { path: '', component: DashboardIndexComponent }

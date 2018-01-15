@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {IMyDpOptions} from 'mydatepicker';
 
 @Component({
     selector: 'app-report',
@@ -8,9 +9,11 @@ import { Component } from '@angular/core';
 export class ReportComponent {
 
     isLoading: boolean = false;
+    public myDatePickerOptions: IMyDpOptions = {
+        dateFormat: 'dd-mm-yyyy',
+    };
+
     constructor() {
     }
-
-    
 
 }

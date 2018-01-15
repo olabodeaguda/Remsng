@@ -6,6 +6,7 @@ import { LaddaModule } from 'angular2-ladda';
 import { SharedModule } from '../shared/shared.module';
 import { ReportComponent } from './components/report.component';
 import { ReportService } from './services/report.service';
+import { MyDatePickerModule } from 'mydatepicker';
 
 const appRoutes: Routes = [
     { path: 'report', component: ReportComponent }
@@ -14,7 +15,7 @@ const appRoutes: Routes = [
 @NgModule({
     imports: [
       BrowserModule,
-      LaddaModule,
+      LaddaModule,MyDatePickerModule,
       FormsModule,
       ReactiveFormsModule,
       SharedModule,
