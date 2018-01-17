@@ -9,6 +9,8 @@ import { AmountDueModel } from "../models/amount-due.model";
 import { DemandNoticePaymentModel } from "../models/demandNotice-payment.model";
 import { BankService } from "../../shared/services/bank.service";
 import { DemandNoticePaymentService } from "../services/demand-notice-payment.service";
+import { ItemService } from "../../items/services/item.service";
+import { DemandNoticeService } from "../services/demand-notice.service";
 declare var jQuery: any;
 
 @Component({
@@ -21,11 +23,13 @@ export class DemandNoticeSearchComponent implements OnInit {
     isLoading: boolean;
     taxpayersLst = [];
     banks = [];
+    items = [];
     pageModel: PageModel = new PageModel();
     amountDueList = [];
     searchModel: DemandNoticeSearch = new DemandNoticeSearch();
     amountDueModel: AmountDueModel = new AmountDueModel();
     @ViewChild('addModal') addModel: ElementRef;
+    @ViewChild('addArrears') addArrears: ElementRef;
     @ViewChild('paymentModal') paymentModal: ElementRef;
     @ViewChild('paymentListModal') paymentListModal: ElementRef;
     dnpModel: DemandNoticePaymentModel = new DemandNoticePaymentModel();
@@ -36,7 +40,9 @@ export class DemandNoticeSearchComponent implements OnInit {
         private toasterService: ToasterService,
         private dnTaxpayer: DemandNoticeTaxpayerService,
         private bankService: BankService,
-        private dnPaymentService: DemandNoticePaymentService) {
+        private itemservice: ItemService,
+        private dnPaymentService: DemandNoticePaymentService,
+        private dnService: DemandNoticeService) {
     }
 
     ngOnInit(): void {
@@ -164,10 +170,64 @@ export class DemandNoticeSearchComponent implements OnInit {
     }
 
     openEdit(billingNo: string) {
-        this.amountDueModel.billingNumber = billingNo
+        this.amountDueModel.billingNumber = billingNo;
         jQuery(this.addModel.nativeElement).modal('show');
         this.getAmountDueByBillingNo(billingNo);
     }
+
+    openArrears(data: any) {
+        this.amountDueModel.billingNumber = data.billingNumber;
+        this.amountDueModel.id = data.taxpayerId;
+        this.getItemsByTaxpayerId(data.taxpayerId);
+        jQuery(this.addArrears.nativeElement).modal('show');
+    }
+
+    submitArrears() {
+        if (this.amountDueModel.itemId.length < 1) {
+            this.toasterService.pop('error', 'Error', 'Item is required');
+            return;
+        } else if (this.amountDueModel.itemAmount < 1) {
+            this.toasterService.pop('error', 'Error', 'Amount is required');
+            return;
+        } else if (this.amountDueModel.billingNumber.length < 1 || this.amountDueModel.id.length < 1) {
+            this.toasterService.pop('error', 'Error', 'Bad request: Please referesh the page and try again');
+            return;
+        }
+
+        this.amountDueModel.isLoading = true;
+        this.dnService.addArrears(this.amountDueModel)
+            .subscribe(response => {
+                this.amountDueModel.isLoading = false;
+                if (response.code === '00') {
+                    this.toasterService.pop('success', 'Success', response.description);
+                    jQuery(this.addArrears.nativeElement).modal('hide');
+                } else {
+                    this.toasterService.pop('warning', 'Warning', response.description);
+                    jQuery(this.addArrears.nativeElement).modal('hide');
+                }
+                this.amountDueModel = new AmountDueModel();
+            }, error => {
+                this.toasterService.pop('error', 'Error', error);
+                this.amountDueModel.isLoading = false;
+            });
+    }
+
+    getItemsByTaxpayerId(taxpayerId: any) {
+        if (taxpayerId.length < 1) {
+            return;
+        }
+        this.isLoading = true;
+        this.itemservice.itemByTaxpayers(taxpayerId)
+            .subscribe(response => {
+                this.isLoading = false;
+                this.items = Object.assign([], response);
+            }, error => {
+                this.isLoading = false;
+                this.toasterService.pop('error', 'Error', error);
+            });
+    }
+
+
 
     getAmountDueByBillingNo(billingNo: string) {
         this.isLoading = true;

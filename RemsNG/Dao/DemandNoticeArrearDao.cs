@@ -92,5 +92,23 @@ namespace RemsNG.Dao
                 .FromSql($"select tbl_demandNoticeArrears.*, 0 as billingYr from tbl_demandNoticeArrears where billingNo = {billingno}").ToListAsync();
             return lstdbItem;
         }
+
+        public async Task<bool> AddArrears(DemandNoticeArrears dna)
+        {
+            string query = $"insert into tbl_demandNoticeArrears(id,billingNo,taxpayerId,totalAmount," +
+                $" amountPaid,itemId,originatedYear," +
+                $"billingYear,arrearsStatus,createdBy,dateCreated) values(" +
+                $"'{Guid.NewGuid()}','{dna.billingNo}','{dna.taxpayerId}','{dna.totalAmount}',0," +
+                $"'{dna.itemId}','{dna.originatedYear}','{dna.billingYr}','{dna.arrearsStatus}'," +
+                $"'{dna.createdBy}',getdate())";
+
+            int count = await db.Database.ExecuteSqlCommandAsync(query);
+            if (count > 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

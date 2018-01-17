@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,5 +16,8 @@ namespace RemsNG.ORM
         public int originatedYear { get; set; }// billing year arrears
         public int billingYr { get; set; }
         public string arrearsStatus { get; set; }
+
+        [NotMapped]
+        public Guid taxpayerId { get; set; }
     }
 }

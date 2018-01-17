@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { DataService } from "../../shared/services/data.service";
-import { PageModel } from "../../shared/models/page.model";
-import { DemandNoticeSearch } from "../models/demand-notice.search";
+import { DataService } from '../../shared/services/data.service';
+import { PageModel } from '../../shared/models/page.model';
+import { DemandNoticeSearch } from '../models/demand-notice.search';
 import { retry } from 'rxjs/operators/retry';
 
 @Injectable()
@@ -52,6 +52,17 @@ export class DemandNoticeService {
     downloadRpt(url:string){
         return this.datataservice.getBlob('dndownload/bulk/'+url)       
         .catch(error => this.datataservice.handleError(error));
+    }
+
+    addArrears(data: any) {
+        const outD: any = {
+            billingNo: data.billingNumber,
+            taxpayerId: data.id,
+            totalAmount: data.itemAmount,
+            itemId: data.itemId
+        };
+
+        return this.datataservice.post('demandnotice/addarrears', outD).catch(x => this.datataservice.handleError(x));
     }
 
 }

@@ -11,11 +11,12 @@ namespace RemsNG.Services
 {
     public class DemanNoticeService : IDemandNoticeService
     {
-        DemandNoticeDao demandNoticeDao;
-
+        private DemandNoticeDao demandNoticeDao;
+        private DemandNoticeArrearDao dnaDao;
         public DemanNoticeService(RemsDbContext db)
         {
             demandNoticeDao = new DemandNoticeDao(db);
+            dnaDao = new DemandNoticeArrearDao(db);
         }
 
         public async Task<Response> Add(DemandNotice demandNotice)
@@ -56,6 +57,11 @@ namespace RemsNG.Services
         public async Task<DemandNotice> GetByBatchId(string batchId)
         {
             return await demandNoticeDao.GetByBatchId(batchId);
+        }
+
+        public async Task<bool> AddArrears(DemandNoticeArrears dna)
+        {
+            return await dnaDao.AddArrears(dna);
         }
     }
 }

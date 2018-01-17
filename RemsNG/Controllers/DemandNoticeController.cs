@@ -23,12 +23,14 @@ namespace RemsNG.Controllers
         private IDemandNoticeService demandService;
         private IStreetService streetService;
         private IWardService wardService;
+        private IDemandNoticeTaxpayerService dnTaxpayerService;
         public DemandNoticeController(IDemandNoticeService _demandService, IStreetService _streetService,
-            IWardService _wardService)
+            IWardService _wardService, IDemandNoticeTaxpayerService _dnTaxpayerService)
         {
             demandService = _demandService;
             streetService = _streetService;
             wardService = _wardService;
+            dnTaxpayerService = _dnTaxpayerService;
         }
 
         [HttpGet("bylcda")]
@@ -54,7 +56,7 @@ namespace RemsNG.Controllers
                 {
                     PageNum = int.Parse(pageNum),
                     PageSize = int.Parse(pageSize)
-                }); 
+                });
             }
             else
             {
@@ -127,7 +129,7 @@ namespace RemsNG.Controllers
         [HttpPost]
         public async Task<object> Post([FromBody]DemandNoticeRequest demandNoticeRequest)
         {
-           // DemandNoticeRequest demandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequest>(value);
+            // DemandNoticeRequest demandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequest>(value);
             if (demandNoticeRequest.streetId != null && demandNoticeRequest.streetId != default(Guid))
             {
                 Street street = await streetService.ById(demandNoticeRequest.streetId.Value);
@@ -284,6 +286,67 @@ namespace RemsNG.Controllers
             }
         }
 
+        [HttpPost("addarrears")]
+        public async Task<object> AddArrears([FromBody]DemandNoticeArrears dna)
+        {
+            if (dna.itemId == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Item is required"
+                });
+            }
+            else if (dna.totalAmount < 1)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Item is required"
+                });
+            }
+            else if (dna.taxpayerId == Guid.Empty || string.IsNullOrEmpty(dna.billingNo))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Bad request. Please refresh the page and try again"
+                });
+            }
 
+            DemandNoticeTaxpayersDetail dnTxPayer = await dnTaxpayerService.ByBillingNo(dna.billingNo);
+
+            if (dnTxPayer == null)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.NOTFOUND,
+                    description = $"{dna.billingNo} not found"
+                });
+            }
+
+            dna.arrearsStatus = DemandNoticeStatus.PENDING.ToString();
+            dna.billingYr = dnTxPayer.billingYr;
+            dna.createdBy = User.Identity.Name;
+
+            bool result = await demandService.AddArrears(dna);
+
+            if (result)
+            {
+                return Created("/", new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = "Arrears has been created successfully"
+                });
+            }
+            else
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = "Arrears has been created successfully"
+                });
+            }
+        }
     }
 }

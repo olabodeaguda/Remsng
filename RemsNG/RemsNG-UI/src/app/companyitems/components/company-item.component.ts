@@ -29,6 +29,7 @@ export class ComponentItemComponent implements OnInit {
     @ViewChild('changeModal') changeModal: ElementRef;
     yrLst = [];
     items = [];
+
     constructor(private companyitemservice: ComponentItemService,
         private activeRoute: ActivatedRoute,
         private toasterService: ToasterService,
@@ -122,7 +123,7 @@ export class ComponentItemComponent implements OnInit {
             this.companyitemservice.add(this.companyItem).subscribe(response => {
                 this.companyItem.isLoading = false;
                 const result = Object.assign(new ResponseModel(), response);
-                if (result.code == '00') {
+                if (result.code === '00') {
                     this.getItemByTaxpayerId();
                     this.getCompanyitemsByTaxPayers();
                     jQuery(this.addModal.nativeElement).modal('hide');
