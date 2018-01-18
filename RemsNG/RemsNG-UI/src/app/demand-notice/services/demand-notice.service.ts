@@ -23,8 +23,8 @@ export class DemandNoticeService {
         return this.datataservice.get('demandnotice/bylcda');
     }
 
-    bybatchId(batchno:string){
-        return this.datataservice.get('demandnotice/batchno/'+batchno).catch(error => this.datataservice.handleError(error));
+    bybatchId(batchno: string) {
+        return this.datataservice.get('demandnotice/batchno/' + batchno).catch(error => this.datataservice.handleError(error));
     }
 
     add(searchModel: DemandNoticeSearch) {
@@ -39,18 +39,18 @@ export class DemandNoticeService {
         return this.datataservice.post('demandnotice', s).catch(x => this.datataservice.handleError(x));
     }
 
-    adDownloadRequest(batchno: string){
-        return this.datataservice.post('dndownload/'+batchno, {})
+    adDownloadRequest(batchno: string) {
+        return this.datataservice.post('dndownload/' + batchno, {})
         .catch(x => this.datataservice.handleError(x));
     }
 
-    getRaisedRequest(batchno:string){
-        return this.datataservice.get('dndownload/'+batchno)
+    getRaisedRequest(batchno: string) {
+        return this.datataservice.get('dndownload/' + batchno)
         .catch(x => this.datataservice.handleError(x));
     }
 
-    downloadRpt(url:string){
-        return this.datataservice.getBlob('dndownload/bulk/'+url)       
+    downloadRpt(url: string) {
+        return this.datataservice.getBlob('dndownload/bulk/' + url)
         .catch(error => this.datataservice.handleError(error));
     }
 
