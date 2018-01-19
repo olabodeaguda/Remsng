@@ -64,6 +64,7 @@ namespace RemsNG
             loggerFactory.AddFile("Logs/remsng-logs-{Date}.txt");
             DbInitializer.Initialize(dbContext);
             app.UseCors("CorsPolicy");
+            app.UseHangfireDashboard();
 
             var ops = new BackgroundJobServerOptions { WorkerCount = 20 };
 
@@ -99,6 +100,7 @@ namespace RemsNG
 
             app.UseMiddleware(typeof(HangfireMiddleware));
             app.UseMiddleware(typeof(ErrorHandlingMiddleware));
+           
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseMvc();

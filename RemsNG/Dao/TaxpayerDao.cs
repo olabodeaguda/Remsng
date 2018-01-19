@@ -79,7 +79,6 @@ namespace RemsNG.Dao
             }
         }
 
-
         public async Task<TaxpayerExtension> ById(Guid id)
         {
             return await db.Set<TaxpayerExtension>().FromSql("sp_TaxpayerById @p0", new object[] { id }).FirstOrDefaultAsync();
@@ -159,7 +158,7 @@ namespace RemsNG.Dao
             };
         }
 
-       public async Task<Lgda> getLcda(Guid taxpayerId)
+        public async Task<Lgda> getLcda(Guid taxpayerId)
         {
             string query = $"select distinct ld.* from tbl_lcda as ld ";
             query = query + $"inner join tbl_ward as wd on wd.lcdaId = ld.id ";

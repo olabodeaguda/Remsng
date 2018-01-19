@@ -31,6 +31,7 @@ export class DemandNoticeSearchComponent implements OnInit {
     @ViewChild('addModal') addModel: ElementRef;
     @ViewChild('addArrears') addArrears: ElementRef;
     @ViewChild('paymentModal') paymentModal: ElementRef;
+    @ViewChild('cancelDemandNoticeModal') cancelDemandNoticeModal: ElementRef;
     @ViewChild('paymentListModal') paymentListModal: ElementRef;
     dnpModel: DemandNoticePaymentModel = new DemandNoticePaymentModel();
     isLoadingMini: boolean = false;
@@ -69,19 +70,6 @@ export class DemandNoticeSearchComponent implements OnInit {
         })
     }
 
-    /*downloadReciept(id: string, billingNumber: string) {
-        this.isLoadingReceipt = true;
-        this.dnTaxpayer.downloadReceipt(id).map(response => {
-            this.isLoadingReceipt = false;
-            let blob = response;
-            FileSaver.saveAs(blob, billingNumber + 'Receipt' + '.pdf');
-        }, error => {
-            alert('error');
-            this.isLoadingReceipt = false;
-            this.toasterService.pop('error', 'Download Error', error);
-        }).subscribe();
-    }*/
-
     downloadReciept(id: string, billingNumber: string) {
         this.isLoadingReceipt = true;
         this.dnTaxpayer.downloadReceipt(id)
@@ -93,6 +81,35 @@ export class DemandNoticeSearchComponent implements OnInit {
                 this.isLoadingReceipt = false;
                 this.toasterService.pop('error', 'Download Error', error);
             });
+    }
+
+    openCancel(billingno: string) {
+        this.dnpModel.billingNumber = billingno;
+        jQuery(this.cancelDemandNoticeModal.nativeElement).modal('show');
+    }
+
+    submitCancel() {
+        if (this.dnpModel.billingNumber.length < 1) {
+
+            return;
+        }
+       // alert('ok');
+        this.isLoadingMini = true;
+
+        this.dnService.cancelDemandNotice(this.dnpModel.billingNumber)
+        .subscribe(response => {
+            this.isLoadingMini = false;
+            jQuery(this.cancelDemandNoticeModal.nativeElement).modal('hide');
+            if (response.code === '00') {
+                this.toasterService.pop('success', 'Cancelled', response.description);
+            } else {
+                this.toasterService.pop('error', 'Cancelled', response.description);
+            }
+        }, error => {
+            this.isLoadingMini = false;
+            jQuery(this.cancelDemandNoticeModal.nativeElement).modal('hide');
+            this.toasterService.pop('error', 'Error', error);
+        });
     }
 
     openPayment(billingno: string) {
@@ -226,8 +243,6 @@ export class DemandNoticeSearchComponent implements OnInit {
                 this.toasterService.pop('error', 'Error', error);
             });
     }
-
-
 
     getAmountDueByBillingNo(billingNo: string) {
         this.isLoading = true;

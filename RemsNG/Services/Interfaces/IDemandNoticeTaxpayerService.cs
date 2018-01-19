@@ -12,5 +12,6 @@ namespace RemsNG.Services.Interfaces
         Task<DemandNoticeReportModel> ByBillingNo(string billingNo);
         Task<List<DemandNoticeTaxpayersDetail>> GetDNTaxpayerByBatchNoAsync(string batchno);
         Task<DemandNoticeTaxpayersDetail> TaxpayerMiniByBillingNo(string billingNo);
+        Task<Response> CancelTaxpayerDemandNoticeByBillingNo(string billingNo);
     }
 }

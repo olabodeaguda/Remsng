@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RemsNG.Services.Interfaces;
 using RemsNG.Exceptions;
 using RemsNG.Models;
-using Microsoft.AspNetCore.Authorization;
+using RemsNG.Services.Interfaces;
+using RemsNG.Utilities;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,9 +15,12 @@ namespace RemsNG.Controllers
     public class DemandNoticeTaxpayerController : Controller
     {
         private IDnTaxpayer dnTaxpayer;
-        public DemandNoticeTaxpayerController(IDnTaxpayer _dnTaxpayer)
+        private IDemandNoticeTaxpayerService demandNoticeTaxpayerService;
+        public DemandNoticeTaxpayerController(IDnTaxpayer _dnTaxpayer,
+            IDemandNoticeTaxpayerService _demandNoticeTaxpayerService)
         {
             dnTaxpayer = _dnTaxpayer;
+            demandNoticeTaxpayerService = _demandNoticeTaxpayerService;
         }
 
         [HttpGet("billingno/{billingno}")]
@@ -41,7 +42,7 @@ namespace RemsNG.Controllers
                 data = new object[] { tu }
             });
         }
-        
+
         [HttpGet("batchno/{batchno}")]
         public async Task<object> GetByBatchNo([FromRoute]string batchno, [FromHeader] string pageSize, [FromHeader] string pageNum)
         {
@@ -58,6 +59,29 @@ namespace RemsNG.Controllers
                 PageSize = int.Parse(pageSize)
             });
         }
-        
+
+        [HttpGet("cancel/{billingno}")]
+        public async Task<object> CancelDemandNotice([FromRoute] string billingno)
+        {
+            if (string.IsNullOrEmpty(billingno))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Billing number is required"
+                });
+            }
+
+            Response response = await demandNoticeTaxpayerService.CancelTaxpayerDemandNoticeByBillingNo(billingno);
+
+            if (response.code == MsgCode_Enum.SUCCESS)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(response);
+            }
+        }
     }
 }

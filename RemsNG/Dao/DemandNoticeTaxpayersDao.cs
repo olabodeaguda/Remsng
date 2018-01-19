@@ -115,6 +115,31 @@ namespace RemsNG.Dao
               new object[] { batchno }).ToListAsync();
         }
 
+        public async Task<Response> CancelTaxpayerDemandNoticeByBillingNo(string billingNo)
+        {
+            string query = $"delete from tbl_demandNoticeArrears where billingNo = '{billingNo}'; ";
+            query = query + $"delete from tbl_demandNoticeItem where billingNo ='{billingNo}';";
+            query = query + $"delete from tbl_demandNoticePenalty where billingNo = '{billingNo}';";
+            query = query + $"delete from tbl_demandNoticeTaxpayers where billingNumber = '{billingNo}';";
 
+            int count = await db.Database.ExecuteSqlCommandAsync(query);
+
+            if (count > 0)
+            {
+                return new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = $"{billingNo} has been deleted"
+                };
+            }
+            else
+            {
+                return new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = $"An error occur while deleting {billingNo}"
+                };
+            }
+        }
     }
 }

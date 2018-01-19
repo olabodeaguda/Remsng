@@ -204,7 +204,89 @@ namespace RemsNG.Services
             }
         }
 
-        [DisableConcurrentExecution(5 * 60)]
+        // [DisableConcurrentExecution(5 * 60)]
+        public async Task GenerateBulkDemandNotice2()
+        {
+            BatchDemandNoticeModel bdnm = null;// await batchDwnRequestService.Dequeue();
+            try
+            {
+                bdnm = await batchDwnRequestService.Dequeue();
+                if (bdnm != null)
+                {
+                    List<DemandNoticeTaxpayersDetail> lstOfDN = await demandNoticeTaxpayerService.GetDNTaxpayerByBatchNoAsync(bdnm.batchNo);
+                    if (lstOfDN.Count > 0)
+                    {
+                        var firstTaxpayer = lstOfDN[0];
+                        Lgda lgda = await taxpayerService.getLcda(firstTaxpayer.taxpayerId);
+                        string template = await dnDownloadService.LcdaTemlateByLcda(lgda.id);
+
+                        //string rootUrl = $"http://{context.Request.Host}";
+                        string rootUrl = this.hostingEnvironment.WebRootPath;
+                        string rootPath = Path.Combine(this.hostingEnvironment.WebRootPath, "zipReports", bdnm.batchNo);
+                        if (!Directory.Exists(rootPath))
+                        {
+                            Directory.CreateDirectory(rootPath);
+                        }
+
+                        //string htmlPatch = $" <div style='height:200px;width:100%;'></ div > ";
+                        var htmlContent = await File.ReadAllTextAsync($"{rootUrl}/templates/{template}");
+                        string htmlContents = string.Empty;
+                        for (int i = 0; i < lstOfDN.Count; i++)
+                        {
+                            //if (i > 0 && i < (lstOfDN.Count - 1))
+                            //{
+                            //    htmlContents = htmlContents + htmlPatch;
+                            //}
+                            string s = await dnDownloadService.PopulateReportHtml(htmlContent, lstOfDN[i].billingNumber, rootUrl, bdnm.createdBy);
+                            htmlContents = htmlContents + s;
+                        }
+
+                        using (FileStream zipToOpen = new FileStream($"{rootPath}/{bdnm.batchNo}.zip", FileMode.Create))
+                        {
+                            using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
+                            {
+                                var result = await nodeServices.InvokeAsync<byte[]>("./pdf", htmlContents);
+                                string reportname = $"bulkDownload{DateTime.Now.ToString("ddMMyyyyhhmmss")}";
+
+                                string filePath = Path.Combine(rootPath, $"{reportname}.pdf");
+                                using (FileStream fs = System.IO.File.Create(filePath))
+                                {
+                                    await fs.WriteAsync(result, 0, result.Length);
+                                    fs.Flush();
+                                }
+                                archive.CreateEntryFromFile(filePath, $"{reportname}.pdf");
+                            }
+                        }
+                    }
+
+                    //update request
+                    Response response = await batchDwnRequestService.UpdateBatchRequest(new BatchDemandNoticeModel
+                    {
+                        id = bdnm.id,
+                        batchFileName = $"{bdnm.batchNo}.zip",
+                        requestStatus = "COMPLETED",
+                        createdBy = "APPLICATION"
+
+                    });
+                }
+            }
+            catch (Exception x)
+            {
+                if (bdnm != null)
+                {
+                    Response response = await batchDwnRequestService.UpdateBatchRequest(new BatchDemandNoticeModel
+                    {
+                        id = bdnm.id,
+                        batchFileName = $"{bdnm.batchNo}.zip",
+                        requestStatus = "ERROR",
+                        createdBy = "APPLICATION"
+                    });
+                }
+                logger.LogError(x.Message);
+            }
+        }
+
+        //[DisableConcurrentExecution(5 * 60)]
         public async Task GenerateBulkDemandNotice()
         {
             BatchDemandNoticeModel bdnm = null;// await batchDwnRequestService.Dequeue();
@@ -273,7 +355,7 @@ namespace RemsNG.Services
                         batchFileName = $"{bdnm.batchNo}.zip",
                         requestStatus = "ERROR",
                         createdBy = "APPLICATION"
-                    }); 
+                    });
                 }
                 logger.LogError(x.Message);
             }

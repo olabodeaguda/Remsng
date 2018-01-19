@@ -11,6 +11,7 @@ import { DownloadRequestModel } from '../models/download-request.model';
 import { DemandNoticeTaxpayerService } from '../services/demand-noticeTaxpayer.service';
 declare var jQuery: any;
 import * as FileSaver from 'file-saver'
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'demand-notice',
@@ -37,7 +38,7 @@ export class DemandNoticeComponent implements OnInit {
         private toasterService: ToasterService,
         private wardservice: WardService,
         private streetservice: StreetService,
-        private dtsService: DemandNoticeTaxpayerService) {
+        private dtsService: DemandNoticeTaxpayerService, private router: Router) {
         this.searchModel = new DemandNoticeSearch();
         this.pageModel = new PageModel();
         this.downloadRequestmodel = new DownloadRequestModel();
@@ -47,9 +48,12 @@ export class DemandNoticeComponent implements OnInit {
         this.yrLst = this.appsettings.getYearList();
 
         this.getDemandNotice();
-        setInterval(()=>{                
+        setInterval(() => {
+            const currentUrl = this.router.url;
+            if (currentUrl === '/demandnotice') {
             this.getDemandNotice2();
-        },3000);
+            }
+        }, 3000);
         this.getWards();
     }
 
@@ -58,10 +62,10 @@ export class DemandNoticeComponent implements OnInit {
         this.demandnoticeservice.downloadRpt(url).map(response => {
               this.isLoadingMini = false;
              let blob = response;
-             FileSaver.saveAs(blob,url+".zip");
+             FileSaver.saveAs(blob, url + '.zip');
         }, error => {
             this.isLoadingMini = false;
-            this.toasterService.pop('error',"Download Error",error);
+            this.toasterService.pop('error', 'Download Error', error);
         }).subscribe();
     }
 
@@ -118,7 +122,7 @@ export class DemandNoticeComponent implements OnInit {
             jQuery(this.downloadRequestModal.nativeElement).modal('show');
 
             this.getRaisedRequest(this.batchNo);
-            setInterval(()=>{                
+            setInterval(() =>{
                 this.getRaisedRequest(this.batchNo);
             },3000);
         }
