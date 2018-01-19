@@ -22,11 +22,13 @@
                         <div class="col-xs-9">
                             <div class="form-group col-md-3">
                                 <label for="startDate">Start Date</label>
-                                <my-date-picker name="startDate" [options]="myDatePickerOptions"></my-date-picker>
+                                <my-date-picker name="startDate" [options]="myDatePickerOptions"
+                                (dateChanged)="onDateChanged($event,'startDate')" ></my-date-picker>
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="endDate">End Date</label>
-                                <my-date-picker name="endDate" [options]="myDatePickerOptions"></my-date-picker>
+                                <my-date-picker name="endDate" [options]="myDatePickerOptions" 
+                                (dateChanged)="onDateChanged($event,'endDate')" ></my-date-picker>
                             </div>
                             <div class="form-group col-md-3">
                                 <label></label>

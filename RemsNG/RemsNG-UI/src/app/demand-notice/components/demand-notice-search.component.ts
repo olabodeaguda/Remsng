@@ -4,7 +4,7 @@ import { AppSettings } from "../../shared/models/app.settings";
 import { PageModel } from "../../shared/models/page.model";
 import { ToasterService } from "angular2-toaster";
 import { DemandNoticeTaxpayerService } from "../services/demand-noticeTaxpayer.service";
-import * as FileSaver from 'file-saver'
+import * as FileSaver from 'file-saver';
 import { AmountDueModel } from "../models/amount-due.model";
 import { DemandNoticePaymentModel } from "../models/demandNotice-payment.model";
 import { BankService } from "../../shared/services/bank.service";
@@ -93,7 +93,6 @@ export class DemandNoticeSearchComponent implements OnInit {
 
             return;
         }
-       // alert('ok');
         this.isLoadingMini = true;
 
         this.dnService.cancelDemandNotice(this.dnpModel.billingNumber)
