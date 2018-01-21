@@ -141,5 +141,14 @@ namespace RemsNG.Dao
                 };
             }
         }
+
+        public async Task<List<DemandNoticeTaxpayersDetail>> SearchAllAsync(string querystring)
+        {
+            string query = $"select tbl_demandNoticeTaxpayers.*,-1 as totalSize from tbl_demandNoticeTaxpayers " +
+                $"where taxpayersName like '%{querystring}%' or billingNumber like '%{querystring}%' " +
+                $"or addressName like '%{querystring}%'or wardName like '%{querystring}%'";
+
+            return await db.DemandNoticeTaxpayersDetails.FromSql(query).ToListAsync();
+        }
     }
 }

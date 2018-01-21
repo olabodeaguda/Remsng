@@ -171,18 +171,20 @@ export class DemandNoticeSearchComponent implements OnInit {
             this.toasterService.pop('warning', 'Warning', 'Billing number is required');
             return;
         }
-
-        this.dnTaxpayer.ByBillingno(this.searchModel.billingNo)
+        this.searchModel.isLoading = true;
+        this.dnTaxpayer.Search(this.searchModel.billingNo)
             .subscribe(response => {
-                if (response.code == '00') {
+                this.searchModel.isLoading = false;
+                if (response.code === '00') {
                     this.taxpayersLst = response.data;
                 }
                 if (this.taxpayersLst.length < 1) {
                     this.toasterService.pop('warning', 'Empty!!!', 'no record found');
                 }
             }, error => {
+                this.searchModel.isLoading = false;
                 this.toasterService.pop('error', 'error', error);
-            })
+            });
     }
 
     openEdit(billingNo: string) {

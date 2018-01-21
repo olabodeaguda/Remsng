@@ -148,5 +148,10 @@ namespace RemsNG.Services
         {
             return await dntDao.CancelTaxpayerDemandNoticeByBillingNo(billingNo);
         }
+
+        public async Task<List<DemandNoticeTaxpayersDetail>> Search(string query)
+        {
+            return await dntDao.SearchAllAsync(query);
+        }
     }
 }

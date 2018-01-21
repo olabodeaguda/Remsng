@@ -8,7 +8,25 @@ export class ReportService {
     }
 
     downloadReport(startDate: string, endDate: string) {
-        return this.dateService.getBlob('revenue/' + startDate + '/' + endDate)
+        return this.dateService.getBlob('report/revenue/' + startDate + '/' + endDate)
         .catch(error => this.dateService.handleError(error));
     }
+
+// reportdata
+    html(startDate: string, endDate: string) {
+        return this.dateService.get('report/revenuehtml/' + startDate + '/' + endDate)
+        .catch(error => this.dateService.handleError(error));
+    }
+
+    graphRecievables() {
+        return this.dateService.get('report/reportreceivables')
+        .catch(error => this.dateService.handleError(error));
+    }
+
+    graphRevenue() {
+        return this.dateService.get('report/reportrevenue')
+        .catch(error => this.dateService.handleError(error));
+    }
+
 }
+

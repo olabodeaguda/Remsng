@@ -13,6 +13,7 @@ export class ReportComponent {
 
     startDate: string = '';
     endDate: string = '';
+    htmlresult: string = '';
 
     isLoading: boolean = false;
     public myDatePickerOptions: IMyDpOptions = {
@@ -32,6 +33,32 @@ export class ReportComponent {
         console.log(this.startDate.length);
     }
 
+    download() {
+        if (this.startDate.length < 1) {
+            this.toasterService.pop('error', 'Error', 'Start Date is required');
+            return;
+        } else if (this.endDate.length < 1) {
+            this.toasterService.pop('error', 'Error', 'Start Date is required');
+            return;
+        } else if (this.startDate.length < 10) {
+            this.toasterService.pop('error', 'Error', 'Start Date is in the wrong format');
+            return;
+        } else if (this.endDate.length < 10) {
+            this.toasterService.pop('error', 'Error', 'Start Date is required');
+            return;
+        }
+
+        this.isLoading = true;
+        this.reportService.downloadReport(this.startDate, this.endDate)
+            .subscribe(response => {
+                this.isLoading = false;
+                FileSaver.saveAs(response, this.startDate + '-' + this.endDate + 'report' + '.xlsx');
+            }, error => {
+                this.isLoading = false;
+                this.toasterService.pop('error', 'Error', error);
+            });
+    }
+
     search() {
         if (this.startDate.length < 1) {
             this.toasterService.pop('error', 'Error', 'Start Date is required');
@@ -47,13 +74,19 @@ export class ReportComponent {
             return;
         }
 
-        this.reportService.downloadReport(this.startDate, this.endDate)
-        .subscribe(response => {
-                FileSaver.saveAs(response, this.startDate + '-' + this.endDate + 'report' + '.xlsx');
-        }, error => {
-            this.toasterService.pop('error', 'Error', error);
-        });
+        this.isLoading = true;
+        this.reportService.html(this.startDate, this.endDate)
+            .subscribe(response => {
+                this.isLoading = false;
+                if (response.code === '00') {
+                    this.htmlresult = response.description;
+                } else {
+                    this.htmlresult = '';
+                }
+            }, error => {
+                this.isLoading = false;
+                this.toasterService.pop('error', 'Error', error);
+            });
     }
-
 
 }

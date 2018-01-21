@@ -20,14 +20,18 @@ export class DemandNoticeTaxpayerService{
         .catch(error => this.dataservice.handleError(error));
     }
 
-    
-    ByBillingno(billingnumber:string){
-        return this.dataservice.get('dnt/billingno/'+billingnumber)
+    Search(billingnumber: string) {
+        return this.dataservice.get('dnt/search/' + billingnumber)
         .catch(error => this.dataservice.handleError(error));
     }
 
-    downloadRpt(url:string){
-        return this.dataservice.getBlob('dndownload/single/'+url)       
+    ByBillingno(billingnumber: string) {
+        return this.dataservice.get('dnt/billingno/' + billingnumber)
+        .catch(error => this.dataservice.handleError(error));
+    }
+
+    downloadRpt(url: string) {
+        return this.dataservice.getBlob('dndownload/single/' + url)
         .catch(error => this.dataservice.handleError(error));
     }
 

@@ -10,118 +10,25 @@
     </section>
     <div class="row">
       <section class="content">
-        <div class="callout callout-info">
+        <!--<div class="callout callout-info">
           <h4>Tip!</h4>
 
           <p>Rems-NG features... Click the
             <b>More info</b> on each box to visit each features </p>
-        </div>
-
-        <!-- Small boxes (Stat box) -->
+        </div>-->
         <div class="row">
-          <div class="col-lg-3 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-aqua">
-              <div class="inner">
-                <h3></h3>
-                <br/>
-                <br/>
-
-                <p>Demand Notice</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-bag"></i>
-              </div>
-              <a [routerLink]="['/demandnotice']" class="small-box-footer">More info
-                <i class="fa fa-arrow-circle-right"></i>
-              </a>
-            </div>
+          <div class="col-md-6">
+            <fusioncharts [width]="width" [height]="height" [type]="type" [dataFormat]="dataFormat" [dataSource]="dataSourceReceivables">
+            </fusioncharts>
           </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-green">
-              <div class="inner">
-                <h3></h3>
-                <br/>
-                <br/>
 
-                <p>LCDA</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-stats-bars"></i>
-              </div>
-              <a [routerLink]="['/lcda']" class="small-box-footer">More info
-                <i class="fa fa-arrow-circle-right"></i>
-              </a>
+          <div class="col-md-6">
+              <fusioncharts [width]="width" [height]="height" [type]="type" [dataFormat]="dataFormat"
+               [dataSource]="dataSourceRevenue">
+              </fusioncharts>
             </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-yellow">
-              <div class="inner">
-                <h3></h3>
-                <br/>
-                <br/>
-
-                <p>User Registrations</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-person-add"></i>
-              </div>
-              <a [routerLink]="['/users']" class="small-box-footer">More info
-                <i class="fa fa-arrow-circle-right"></i>
-              </a>
-            </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-red">
-              <div class="inner">
-                <h3></h3>
-                <br/>
-                <br/>
-
-                <p>Roles Management</p>
-              </div>
-              <div class="icon">
-                <i class="fa fa-lock"></i>
-              </div>
-              <a [routerLink]="['/role']" class="small-box-footer">More info
-                <i class="fa fa-arrow-circle-right"></i>
-              </a>
-            </div>
-          </div>
-          <!-- ./col -->
         </div>
 
-
-
-      </section>
-
-      <section class="content">
-        <div class="row">
-          <div class="col-lg-3 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-yellow">
-              <div class="inner">
-                <h3></h3>
-                <br/>
-                <br/>
-
-                <p>Search Demand Notice</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-bag"></i>
-              </div>
-              <a [routerLink]="['/demandnotice/searchtaxpayer']" class="small-box-footer">More info
-                <i class="fa fa-arrow-circle-right"></i>
-              </a>
-            </div>
-          </div>
-        </div>
       </section>
     </div>
   </div>

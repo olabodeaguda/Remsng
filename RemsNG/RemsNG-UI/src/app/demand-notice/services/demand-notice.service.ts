@@ -69,4 +69,8 @@ export class DemandNoticeService {
         return this.datataservice.get('dnt/cancel/' + billingNo).catch(x => this.datataservice.handleError(x));
     }
 
+    currentReport() {
+        return this.datataservice.get('dnt/cancel').catch(x => this.datataservice.handleError(x));
+    }
+
 }

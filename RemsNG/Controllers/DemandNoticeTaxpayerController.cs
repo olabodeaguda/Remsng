@@ -83,5 +83,20 @@ namespace RemsNG.Controllers
                 return BadRequest(response);
             }
         }
+
+        [HttpGet("search/{query}")]
+        public async Task<object> searchAsync([FromRoute] string query)
+        {
+            if (string.IsNullOrEmpty(query))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "bad request"
+                });
+            }
+            var results = await demandNoticeTaxpayerService.Search(query);
+            return Ok(new Response() { code = MsgCode_Enum.SUCCESS, data = results });
+        }
     }
 }

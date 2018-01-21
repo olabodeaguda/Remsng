@@ -47,27 +47,30 @@ ALTER procedure [dbo].[sp_paymentSummaryByItems]
 )
 as
 begin
-	select dnItem.id,dnItem.itemAmount,dnItem.amountPaid,dnItem.billingNo
-	'ITEMS',ward.id as wardId,ward.wardName from tbl_demandNoticeItem as dnItem
+	select dnItem.id,dnItem.itemAmount,dnItem.amountPaid,dnItem.billingNo,
+	'ITEMS' as category,ward.id as wardId,ward.wardName,item.itemDescription,item.id as itemId from tbl_demandNoticeItem as dnItem
 	inner join tbl_taxPayer as tp on tp.id = dnItem.taxpayerId
 	inner join tbl_street as street on street.id = tp.streetId
 	inner join tbl_ward as ward on ward.id = street.wardId
+	inner join tbl_item as item on item.id = dnItem.itemId
 	where ward.wardStatus = 'ACTIVE' and (dnItem.lastModifiedDate between @startEnd and @endDate)
 	union
 
-	select dnArrears.id,dnArrears.totalAmount,dnArrears.amountPaid,dnArrears.billingNo
-	'ITEMS',ward.id as wardId,ward.wardName from tbl_demandNoticeArrears as dnArrears
+	select dnArrears.id,dnArrears.totalAmount as itemAmount,dnArrears.amountPaid,dnArrears.billingNo,
+	'ARREARS' as category,ward.id as wardId,ward.wardName,item.itemDescription,item.id as itemId  from tbl_demandNoticeArrears as dnArrears
 	inner join tbl_taxPayer as tp on tp.id = dnArrears.taxpayerId
 	inner join tbl_street as street on street.id = tp.streetId
 	inner join tbl_ward as ward on ward.id = street.wardId
+	inner join tbl_item as item on item.id = dnArrears.itemId
 	where ward.wardStatus = 'ACTIVE' and (dnArrears.lastModifiedDate between @startEnd and @endDate)
 	union 
 
-	select dnPenalty.id,dnPenalty.totalAmount,dnPenalty.amountPaid,dnPenalty.billingNo
-	'ITEMS',ward.id as wardId,ward.wardName from tbl_demandNoticePenalty as dnPenalty
+	select dnPenalty.id,dnPenalty.totalAmount as itemAmount,dnPenalty.amountPaid,dnPenalty.billingNo,
+	'PENALTY' as category,ward.id as wardId,ward.wardName,item.itemDescription,item.id as itemId from tbl_demandNoticePenalty as dnPenalty
 	inner join tbl_taxPayer as tp on tp.id = dnPenalty.taxpayerId
 	inner join tbl_street as street on street.id = tp.streetId
 	inner join tbl_ward as ward on ward.id = street.wardId
+	inner join tbl_item as item on item.id = dnPenalty.itemId
 	where ward.wardStatus = 'ACTIVE' and (dnPenalty.lastModifiedDate between @startEnd and @endDate)
 	
 end
@@ -98,3 +101,53 @@ begin
 	  where billingNo = @billingno
 end
 go
+
+create procedure sp_reportByYear(@yr int)
+as
+declare @temptable Table(
+id uniqueidentifier,
+itemAmount decimal(18,2),
+amountPaid decimal(18,2),
+billingNo varchar(50),
+category varchar(100),
+wardId uniqueidentifier,
+wardName varchar(100),
+itemDescription varchar(250),
+itemId uniqueidentifier
+);
+
+insert into  @temptable(id,itemAmount,amountPaid,billingNo,category,wardId,wardName,itemDescription,itemId)
+	(select dnItem.id,dnItem.itemAmount,dnItem.amountPaid,dnItem.billingNo,
+	'ITEMS' as category,ward.id as wardId,ward.wardName,item.itemDescription,item.id as itemId from tbl_demandNoticeItem as dnItem
+	inner join tbl_taxPayer as tp on tp.id = dnItem.taxpayerId
+	inner join tbl_street as street on street.id = tp.streetId
+	inner join tbl_ward as ward on ward.id = street.wardId
+	inner join tbl_item as item on item.id = dnItem.itemId
+	inner join tbl_demandNoticeTaxpayers as dnt on dnt.billingNumber = dnItem.billingNo
+	where dnt.billingYr = @yr
+
+	union
+
+	select dnArrears.id,dnArrears.totalAmount as itemAmount,dnArrears.amountPaid,dnArrears.billingNo,
+	'ARREARS' as category,ward.id as wardId,ward.wardName,item.itemDescription,item.id as itemId  from tbl_demandNoticeArrears as dnArrears
+	inner join tbl_taxPayer as tp on tp.id = dnArrears.taxpayerId
+	inner join tbl_street as street on street.id = tp.streetId
+	inner join tbl_ward as ward on ward.id = street.wardId
+	inner join tbl_item as item on item.id = dnArrears.itemId
+	inner join tbl_demandNoticeTaxpayers as dnt on dnt.billingNumber = dnArrears.billingNo
+	where dnArrears.billingYear = @yr
+	union 
+
+	select dnPenalty.id,dnPenalty.totalAmount as itemAmount,dnPenalty.amountPaid,dnPenalty.billingNo,
+	'PENALTY' as category,ward.id as wardId,ward.wardName,item.itemDescription,item.id as itemId from tbl_demandNoticePenalty as dnPenalty
+	inner join tbl_taxPayer as tp on tp.id = dnPenalty.taxpayerId
+	inner join tbl_street as street on street.id = tp.streetId
+	inner join tbl_ward as ward on ward.id = street.wardId
+	inner join tbl_item as item on item.id = dnPenalty.itemId
+	inner join tbl_demandNoticeTaxpayers as dnt on dnt.billingNumber = dnPenalty.billingNo
+	where dnPenalty.billingYear = @yr);
+
+	select wardName, SUM(itemAmount),SUM(amountPaid) from @temptable
+	group by wardName
+
+

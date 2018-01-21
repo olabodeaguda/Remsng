@@ -33,17 +33,20 @@
                             <div class="form-group col-md-3">
                                 <label></label>
                                 <div class="bn-group">
-                                    <button class="btn btn-primary"><i class="fa fa-download"></i> Download</button>
-                                    <button class="btn btn-primary"><i class="fa fa-search"></i> Search</button>
+                                    <button (click)="download()" class="btn btn-primary"><i class="fa fa-download"></i> Download</button>
+                                    <button (click)="search()" class="btn btn-primary"><i class="fa fa-search"></i> Search</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>    
+                <div class="row" [innerHtml]= "htmlresult"></div>            
+            </section>
+            <section class="content" id="cnt" >
+                
             </section>
         </div>
     </div>
 </section>
-<section class="content"></section>
 <ft></ft>
 <div class="loading" *ngIf="isLoading"></div>

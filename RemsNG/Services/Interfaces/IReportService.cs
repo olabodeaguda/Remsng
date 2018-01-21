@@ -9,5 +9,8 @@ namespace RemsNG.Services.Interfaces
     public interface IReportService
     {
         Task<List<ItemReportSummaryModel>> ByDate(DateTime startDate, DateTime endDate);
+        Task<string> HtmlByDate(List<ItemReportSummaryModel> rptLst,
+            List<ItemReportSummaryModel> previousYearList);
+        Task<List<ChartReport>> ReportByCurrentYear();
     }
 }

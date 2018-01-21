@@ -21,5 +21,14 @@ namespace RemsNG.Dao
                     startDate,endDate
                 }).ToListAsync();
         }
+
+        public async Task<List<ChartReport>> ReportByYear()
+        {
+            return await db.ChartReports.FromSql("sp_reportByYear @p0",
+                new object[]
+                {
+                    DateTime.Now.Year
+                }).ToListAsync();
+        }
     }
 }
