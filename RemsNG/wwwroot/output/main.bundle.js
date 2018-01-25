@@ -387,6 +387,9 @@ DashboardIndexComponent = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/@angular/core.es5.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__report_services_report_service__ = __webpack_require__("../../../../../src/app/report/services/report.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_angular2_toaster__ = __webpack_require__("../../../../angular2-toaster/angular2-toaster.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ward_services_ward_service__ = __webpack_require__("../../../../../src/app/ward/services/ward.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_ng2_charts_ng2_charts__ = __webpack_require__("../../../../ng2-charts/ng2-charts.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_ng2_charts_ng2_charts___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_ng2_charts_ng2_charts__);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -399,71 +402,90 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
+
 var DashboardComponent = (function () {
-    function DashboardComponent(reportService, toasterService) {
+    function DashboardComponent(reportService, toasterService, wardservice) {
         this.reportService = reportService;
         this.toasterService = toasterService;
-        this.width = 600;
-        this.height = 400;
-        this.type = 'column2d';
-        this.dataFormat = 'json';
+        this.wardservice = wardservice;
         this.dataSourceReceivables = {
-            'chart': {
-                'caption': 'Demand Notice Receivables',
-                'subCaption': 'All Receivables by Wards',
-                'numberPrefix': 'N',
-                'theme': 'ocean',
-                'xAxisName': 'Ward',
-                'yAxisName': 'Receivables (In Naira)'
+            'data': [{ data: [0], label: '' }],
+            'barChartLegend': true,
+            'barChartOptions': {
+                scaleShowVerticalLines: false,
+                responsive: true
             },
-            'data': []
+            'barChartType': 'bar',
+            'labels': []
         };
         this.dataSourceRevenue = {
-            'chart': {
-                'caption': 'Demand Notice Revenue',
-                'subCaption': 'Revenue by Wards for the year',
-                'numberPrefix': 'N',
-                'theme': 'ocean',
-                'xAxisName': 'Ward',
-                'yAxisName': 'Revenues (In Naira)'
+            'data': [{ data: [0], label: '' }],
+            'barChartLegend': true,
+            'barChartOptions': {
+                scaleShowVerticalLines: false,
+                responsive: true
             },
-            'data': []
+            'barChartType': 'bar',
+            'labels': []
         };
     }
     DashboardComponent.prototype.ngOnInit = function () {
-        // this.loadScript('assets/dist/js/adminlte.min.js');
+        this.getLabel();
         this.getReceivables();
-        this.getRevenue();
+    };
+    DashboardComponent.prototype.getLabel = function () {
+        var _this = this;
+        this.wardservice.all().subscribe(function (response) {
+            _this.dataSourceReceivables.labels = response.map(function (_a) {
+                var wardName = _a.wardName;
+                return wardName;
+            });
+        }, function (error) {
+            _this.toasterService.pop('warning', 'Warning', error);
+        });
     };
     DashboardComponent.prototype.getReceivables = function () {
         var _this = this;
         this.reportService.graphRecievables()
             .subscribe(function (response) {
-            _this.dataSourceReceivables.data = response;
-        }, function (error) {
-            _this.toasterService.pop('error', 'Error', error);
-        });
-    };
-    DashboardComponent.prototype.getRevenue = function () {
-        var _this = this;
-        this.reportService.graphRevenue()
-            .subscribe(function (response) {
-            _this.dataSourceRevenue.data = response;
+            _this.chart2.datasets = response.map(function (data, index) {
+                var v = new Array();
+                v.push(data.receivables);
+                return { data: v, label: data.label };
+            });
+            _this.chart3.datasets = response.map(function (data, index) {
+                var s = new Array();
+                s.push(data.amountPaid);
+                return { data: s, label: data.label };
+            });
+            // this.chart2.datasets = this.dataSourceReceivables.data;
+            //  this.chart3.data = this.dataSourceRevenue.data;
+            _this.chart2.ngOnChanges({});
+            _this.chart3.ngOnChanges({});
         }, function (error) {
             _this.toasterService.pop('error', 'Error', error);
         });
     };
     return DashboardComponent;
 }());
+__decorate([
+    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["ViewChild"])('baseChart'),
+    __metadata("design:type", typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_4_ng2_charts_ng2_charts__["BaseChartDirective"] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4_ng2_charts_ng2_charts__["BaseChartDirective"]) === "function" && _a || Object)
+], DashboardComponent.prototype, "chart2", void 0);
+__decorate([
+    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["ViewChild"])('baseChart1'),
+    __metadata("design:type", typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_4_ng2_charts_ng2_charts__["BaseChartDirective"] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4_ng2_charts_ng2_charts__["BaseChartDirective"]) === "function" && _b || Object)
+], DashboardComponent.prototype, "chart3", void 0);
 DashboardComponent = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
         selector: 'app-dsh',
         template: __webpack_require__("../../../../../src/app/Dashboard/views/dashboard.component.html")
     }),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__report_services_report_service__["a" /* ReportService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__report_services_report_service__["a" /* ReportService */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2_angular2_toaster__["b" /* ToasterService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2_angular2_toaster__["b" /* ToasterService */]) === "function" && _b || Object])
+    __metadata("design:paramtypes", [typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_1__report_services_report_service__["a" /* ReportService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__report_services_report_service__["a" /* ReportService */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_2_angular2_toaster__["b" /* ToasterService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2_angular2_toaster__["b" /* ToasterService */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_3__ward_services_ward_service__["a" /* WardService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__ward_services_ward_service__["a" /* WardService */]) === "function" && _e || Object])
 ], DashboardComponent);
 
-var _a, _b;
+var _a, _b, _c, _d, _e;
 //# sourceMappingURL=dashboard.component.js.map
 
 /***/ }),
@@ -498,13 +520,8 @@ module.exports = module.exports.toString();
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__shared_shared_module__ = __webpack_require__("../../../../../src/app/shared/shared.module.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_dashboard_index_component__ = __webpack_require__("../../../../../src/app/Dashboard/components/dashboard-index.component.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_angular4_carousel__ = __webpack_require__("../../../../angular4-carousel/index.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_angular4_fusioncharts__ = __webpack_require__("../../../../angular4-fusioncharts/dist/index.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_fusioncharts__ = __webpack_require__("../../../../fusioncharts/fusioncharts.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_fusioncharts___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_fusioncharts__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_fusioncharts_fusioncharts_charts__ = __webpack_require__("../../../../fusioncharts/fusioncharts.charts.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_fusioncharts_fusioncharts_charts___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9_fusioncharts_fusioncharts_charts__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_fusioncharts_themes_fusioncharts_theme_fint__ = __webpack_require__("../../../../fusioncharts/themes/fusioncharts.theme.fint.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_fusioncharts_themes_fusioncharts_theme_fint___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10_fusioncharts_themes_fusioncharts_theme_fint__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_ng2_charts__ = __webpack_require__("../../../../ng2-charts/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_ng2_charts___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_ng2_charts__);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -519,13 +536,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 
 
-
-
-
 var appRoutes = [
     { path: 'dashboard', component: __WEBPACK_IMPORTED_MODULE_3__components_dashboard_component__["a" /* DashboardComponent */] }
 ];
-__WEBPACK_IMPORTED_MODULE_7_angular4_fusioncharts__["a" /* FusionChartsModule */].fcRoot(__WEBPACK_IMPORTED_MODULE_8_fusioncharts__, __WEBPACK_IMPORTED_MODULE_9_fusioncharts_fusioncharts_charts__, __WEBPACK_IMPORTED_MODULE_10_fusioncharts_themes_fusioncharts_theme_fint__);
 var DashBoardModule = (function () {
     function DashBoardModule() {
     }
@@ -534,9 +547,8 @@ var DashBoardModule = (function () {
 DashBoardModule = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["NgModule"])({
         imports: [
-            __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__["a" /* BrowserModule */],
+            __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__["a" /* BrowserModule */], __WEBPACK_IMPORTED_MODULE_7_ng2_charts__["ChartsModule"],
             __WEBPACK_IMPORTED_MODULE_4__shared_shared_module__["a" /* SharedModule */], __WEBPACK_IMPORTED_MODULE_6_angular4_carousel__["b" /* CarouselModule */],
-            __WEBPACK_IMPORTED_MODULE_7_angular4_fusioncharts__["a" /* FusionChartsModule */],
             __WEBPACK_IMPORTED_MODULE_2__angular_router__["c" /* RouterModule */].forChild(appRoutes)
         ],
         declarations: [
@@ -563,7 +575,7 @@ module.exports = "<nav style=\"background-color:#acce46 \" class=\"navbar navbar
 /***/ "../../../../../src/app/Dashboard/views/dashboard.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"wrapper hold-transition skin-blue fixed sidebar-mini\">\r\n  <app-hd></app-hd>\r\n\r\n  <div class=\"content-wrapper\">\r\n    <section class=\"content-header\">\r\n      <h1>\r\n        Dashboard\r\n        <small>Revenue payment at ease</small>\r\n      </h1>\r\n    </section>\r\n    <div class=\"row\">\r\n      <section class=\"content\">\r\n        <!--<div class=\"callout callout-info\">\r\n          <h4>Tip!</h4>\r\n\r\n          <p>Rems-NG features... Click the\r\n            <b>More info</b> on each box to visit each features </p>\r\n        </div>-->\r\n        <div class=\"row\">\r\n          <div class=\"col-md-6\">\r\n            <fusioncharts [width]=\"width\" [height]=\"height\" [type]=\"type\" [dataFormat]=\"dataFormat\" [dataSource]=\"dataSourceReceivables\">\r\n            </fusioncharts>\r\n          </div>\r\n\r\n          <div class=\"col-md-6\">\r\n              <fusioncharts [width]=\"width\" [height]=\"height\" [type]=\"type\" [dataFormat]=\"dataFormat\"\r\n               [dataSource]=\"dataSourceRevenue\">\r\n              </fusioncharts>\r\n            </div>\r\n        </div>\r\n\r\n      </section>\r\n    </div>\r\n  </div>\r\n</div>\r\n<ft></ft>"
+module.exports = "<div class=\"wrapper hold-transition skin-blue fixed sidebar-mini\">\r\n  <app-hd></app-hd>\r\n\r\n  <div class=\"content-wrapper\">\r\n    <section class=\"content-header\">\r\n      <h1>\r\n        Dashboard\r\n        <small>Revenue payment at ease</small>\r\n      </h1>\r\n    </section>\r\n    <div class=\"row\">\r\n      <section class=\"content\">\r\n        <!--<div class=\"callout callout-info\">\r\n          <h4>Tip!</h4>\r\n\r\n          <p>Rems-NG features... Click the\r\n            <b>More info</b> on each box to visit each features </p>\r\n        </div>-->\r\n        <div class=\"row\" style=\"text-align:center;\">         \r\n          <div class=\"col-md-6\">\r\n            <h3>Total recievables by ward</h3>\r\n            <canvas baseChart [datasets]=\"dataSourceReceivables.data\" \r\n            [options]=\"dataSourceReceivables.barChartOptions\" \r\n            [legend]=\"dataSourceReceivables.barChartLegend\"\r\n              [chartType]=\"dataSourceReceivables.barChartType\" [labels]=\"dataSourceReceivables.label\"\r\n               #baseChart='base-chart'></canvas>              \r\n          </div>\r\n          <div class=\"col-md-6\">\r\n            <h3>Total amount recieved by ward</h3>\r\n              <canvas baseChart [datasets]=\"dataSourceRevenue.data\" \r\n              [options]=\"dataSourceRevenue.barChartOptions\" \r\n              [legend]=\"dataSourceRevenue.barChartLegend\"\r\n                [chartType]=\"dataSourceRevenue.barChartType\" [labels]=\"dataSourceRevenue.label\"\r\n                 #baseChart1 = 'base-chart'></canvas>              \r\n            </div>\r\n        </div>\r\n      </section>\r\n      <section class=\"content\"></section>\r\n    </div>\r\n  </div>\r\n</div>\r\n<ft></ft>"
 
 /***/ }),
 
@@ -7579,14 +7591,15 @@ var DataService = (function () {
             return __WEBPACK_IMPORTED_MODULE_1_rxjs_Rx__["a" /* Observable */].throw(res.description || 'Not found exception');
         }
         else if (err.status === 401) {
-            if (res.code === '09' || res.code == '10' || res.code === '11') {
+            var d = err.error;
+            if (res.code === '09' || res.code === '10' || res.code === '11') {
                 this.toasterService.pop('error', res.description || 'You have no access to the request');
                 this.storageService.remove();
             }
             return __WEBPACK_IMPORTED_MODULE_1_rxjs_Rx__["a" /* Observable */].throw(res.description || 'You have no access to the request');
         }
         else if (err.status === 403) {
-            if (res.code === '09' || res.code == '10' || res.code === '11') {
+            if (res.code === '09' || res.code === '10' || res.code === '11') {
                 this.toasterService.pop('error', res.description || 'You have no access to the request');
                 this.storageService.remove();
             }
@@ -10692,6 +10705,259 @@ if (__WEBPACK_IMPORTED_MODULE_3__environments_environment__["a" /* environment *
 }
 Object(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__["a" /* platformBrowserDynamic */])().bootstrapModule(__WEBPACK_IMPORTED_MODULE_2__app_app_module__["a" /* AppModule */]);
 //# sourceMappingURL=main.js.map
+
+/***/ }),
+
+/***/ "../../../../moment/locale recursive ^\\.\\/.*$":
+/***/ (function(module, exports, __webpack_require__) {
+
+var map = {
+	"./af": "../../../../moment/locale/af.js",
+	"./af.js": "../../../../moment/locale/af.js",
+	"./ar": "../../../../moment/locale/ar.js",
+	"./ar-dz": "../../../../moment/locale/ar-dz.js",
+	"./ar-dz.js": "../../../../moment/locale/ar-dz.js",
+	"./ar-kw": "../../../../moment/locale/ar-kw.js",
+	"./ar-kw.js": "../../../../moment/locale/ar-kw.js",
+	"./ar-ly": "../../../../moment/locale/ar-ly.js",
+	"./ar-ly.js": "../../../../moment/locale/ar-ly.js",
+	"./ar-ma": "../../../../moment/locale/ar-ma.js",
+	"./ar-ma.js": "../../../../moment/locale/ar-ma.js",
+	"./ar-sa": "../../../../moment/locale/ar-sa.js",
+	"./ar-sa.js": "../../../../moment/locale/ar-sa.js",
+	"./ar-tn": "../../../../moment/locale/ar-tn.js",
+	"./ar-tn.js": "../../../../moment/locale/ar-tn.js",
+	"./ar.js": "../../../../moment/locale/ar.js",
+	"./az": "../../../../moment/locale/az.js",
+	"./az.js": "../../../../moment/locale/az.js",
+	"./be": "../../../../moment/locale/be.js",
+	"./be.js": "../../../../moment/locale/be.js",
+	"./bg": "../../../../moment/locale/bg.js",
+	"./bg.js": "../../../../moment/locale/bg.js",
+	"./bn": "../../../../moment/locale/bn.js",
+	"./bn.js": "../../../../moment/locale/bn.js",
+	"./bo": "../../../../moment/locale/bo.js",
+	"./bo.js": "../../../../moment/locale/bo.js",
+	"./br": "../../../../moment/locale/br.js",
+	"./br.js": "../../../../moment/locale/br.js",
+	"./bs": "../../../../moment/locale/bs.js",
+	"./bs.js": "../../../../moment/locale/bs.js",
+	"./ca": "../../../../moment/locale/ca.js",
+	"./ca.js": "../../../../moment/locale/ca.js",
+	"./cs": "../../../../moment/locale/cs.js",
+	"./cs.js": "../../../../moment/locale/cs.js",
+	"./cv": "../../../../moment/locale/cv.js",
+	"./cv.js": "../../../../moment/locale/cv.js",
+	"./cy": "../../../../moment/locale/cy.js",
+	"./cy.js": "../../../../moment/locale/cy.js",
+	"./da": "../../../../moment/locale/da.js",
+	"./da.js": "../../../../moment/locale/da.js",
+	"./de": "../../../../moment/locale/de.js",
+	"./de-at": "../../../../moment/locale/de-at.js",
+	"./de-at.js": "../../../../moment/locale/de-at.js",
+	"./de-ch": "../../../../moment/locale/de-ch.js",
+	"./de-ch.js": "../../../../moment/locale/de-ch.js",
+	"./de.js": "../../../../moment/locale/de.js",
+	"./dv": "../../../../moment/locale/dv.js",
+	"./dv.js": "../../../../moment/locale/dv.js",
+	"./el": "../../../../moment/locale/el.js",
+	"./el.js": "../../../../moment/locale/el.js",
+	"./en-au": "../../../../moment/locale/en-au.js",
+	"./en-au.js": "../../../../moment/locale/en-au.js",
+	"./en-ca": "../../../../moment/locale/en-ca.js",
+	"./en-ca.js": "../../../../moment/locale/en-ca.js",
+	"./en-gb": "../../../../moment/locale/en-gb.js",
+	"./en-gb.js": "../../../../moment/locale/en-gb.js",
+	"./en-ie": "../../../../moment/locale/en-ie.js",
+	"./en-ie.js": "../../../../moment/locale/en-ie.js",
+	"./en-nz": "../../../../moment/locale/en-nz.js",
+	"./en-nz.js": "../../../../moment/locale/en-nz.js",
+	"./eo": "../../../../moment/locale/eo.js",
+	"./eo.js": "../../../../moment/locale/eo.js",
+	"./es": "../../../../moment/locale/es.js",
+	"./es-do": "../../../../moment/locale/es-do.js",
+	"./es-do.js": "../../../../moment/locale/es-do.js",
+	"./es.js": "../../../../moment/locale/es.js",
+	"./et": "../../../../moment/locale/et.js",
+	"./et.js": "../../../../moment/locale/et.js",
+	"./eu": "../../../../moment/locale/eu.js",
+	"./eu.js": "../../../../moment/locale/eu.js",
+	"./fa": "../../../../moment/locale/fa.js",
+	"./fa.js": "../../../../moment/locale/fa.js",
+	"./fi": "../../../../moment/locale/fi.js",
+	"./fi.js": "../../../../moment/locale/fi.js",
+	"./fo": "../../../../moment/locale/fo.js",
+	"./fo.js": "../../../../moment/locale/fo.js",
+	"./fr": "../../../../moment/locale/fr.js",
+	"./fr-ca": "../../../../moment/locale/fr-ca.js",
+	"./fr-ca.js": "../../../../moment/locale/fr-ca.js",
+	"./fr-ch": "../../../../moment/locale/fr-ch.js",
+	"./fr-ch.js": "../../../../moment/locale/fr-ch.js",
+	"./fr.js": "../../../../moment/locale/fr.js",
+	"./fy": "../../../../moment/locale/fy.js",
+	"./fy.js": "../../../../moment/locale/fy.js",
+	"./gd": "../../../../moment/locale/gd.js",
+	"./gd.js": "../../../../moment/locale/gd.js",
+	"./gl": "../../../../moment/locale/gl.js",
+	"./gl.js": "../../../../moment/locale/gl.js",
+	"./gom-latn": "../../../../moment/locale/gom-latn.js",
+	"./gom-latn.js": "../../../../moment/locale/gom-latn.js",
+	"./he": "../../../../moment/locale/he.js",
+	"./he.js": "../../../../moment/locale/he.js",
+	"./hi": "../../../../moment/locale/hi.js",
+	"./hi.js": "../../../../moment/locale/hi.js",
+	"./hr": "../../../../moment/locale/hr.js",
+	"./hr.js": "../../../../moment/locale/hr.js",
+	"./hu": "../../../../moment/locale/hu.js",
+	"./hu.js": "../../../../moment/locale/hu.js",
+	"./hy-am": "../../../../moment/locale/hy-am.js",
+	"./hy-am.js": "../../../../moment/locale/hy-am.js",
+	"./id": "../../../../moment/locale/id.js",
+	"./id.js": "../../../../moment/locale/id.js",
+	"./is": "../../../../moment/locale/is.js",
+	"./is.js": "../../../../moment/locale/is.js",
+	"./it": "../../../../moment/locale/it.js",
+	"./it.js": "../../../../moment/locale/it.js",
+	"./ja": "../../../../moment/locale/ja.js",
+	"./ja.js": "../../../../moment/locale/ja.js",
+	"./jv": "../../../../moment/locale/jv.js",
+	"./jv.js": "../../../../moment/locale/jv.js",
+	"./ka": "../../../../moment/locale/ka.js",
+	"./ka.js": "../../../../moment/locale/ka.js",
+	"./kk": "../../../../moment/locale/kk.js",
+	"./kk.js": "../../../../moment/locale/kk.js",
+	"./km": "../../../../moment/locale/km.js",
+	"./km.js": "../../../../moment/locale/km.js",
+	"./kn": "../../../../moment/locale/kn.js",
+	"./kn.js": "../../../../moment/locale/kn.js",
+	"./ko": "../../../../moment/locale/ko.js",
+	"./ko.js": "../../../../moment/locale/ko.js",
+	"./ky": "../../../../moment/locale/ky.js",
+	"./ky.js": "../../../../moment/locale/ky.js",
+	"./lb": "../../../../moment/locale/lb.js",
+	"./lb.js": "../../../../moment/locale/lb.js",
+	"./lo": "../../../../moment/locale/lo.js",
+	"./lo.js": "../../../../moment/locale/lo.js",
+	"./lt": "../../../../moment/locale/lt.js",
+	"./lt.js": "../../../../moment/locale/lt.js",
+	"./lv": "../../../../moment/locale/lv.js",
+	"./lv.js": "../../../../moment/locale/lv.js",
+	"./me": "../../../../moment/locale/me.js",
+	"./me.js": "../../../../moment/locale/me.js",
+	"./mi": "../../../../moment/locale/mi.js",
+	"./mi.js": "../../../../moment/locale/mi.js",
+	"./mk": "../../../../moment/locale/mk.js",
+	"./mk.js": "../../../../moment/locale/mk.js",
+	"./ml": "../../../../moment/locale/ml.js",
+	"./ml.js": "../../../../moment/locale/ml.js",
+	"./mr": "../../../../moment/locale/mr.js",
+	"./mr.js": "../../../../moment/locale/mr.js",
+	"./ms": "../../../../moment/locale/ms.js",
+	"./ms-my": "../../../../moment/locale/ms-my.js",
+	"./ms-my.js": "../../../../moment/locale/ms-my.js",
+	"./ms.js": "../../../../moment/locale/ms.js",
+	"./my": "../../../../moment/locale/my.js",
+	"./my.js": "../../../../moment/locale/my.js",
+	"./nb": "../../../../moment/locale/nb.js",
+	"./nb.js": "../../../../moment/locale/nb.js",
+	"./ne": "../../../../moment/locale/ne.js",
+	"./ne.js": "../../../../moment/locale/ne.js",
+	"./nl": "../../../../moment/locale/nl.js",
+	"./nl-be": "../../../../moment/locale/nl-be.js",
+	"./nl-be.js": "../../../../moment/locale/nl-be.js",
+	"./nl.js": "../../../../moment/locale/nl.js",
+	"./nn": "../../../../moment/locale/nn.js",
+	"./nn.js": "../../../../moment/locale/nn.js",
+	"./pa-in": "../../../../moment/locale/pa-in.js",
+	"./pa-in.js": "../../../../moment/locale/pa-in.js",
+	"./pl": "../../../../moment/locale/pl.js",
+	"./pl.js": "../../../../moment/locale/pl.js",
+	"./pt": "../../../../moment/locale/pt.js",
+	"./pt-br": "../../../../moment/locale/pt-br.js",
+	"./pt-br.js": "../../../../moment/locale/pt-br.js",
+	"./pt.js": "../../../../moment/locale/pt.js",
+	"./ro": "../../../../moment/locale/ro.js",
+	"./ro.js": "../../../../moment/locale/ro.js",
+	"./ru": "../../../../moment/locale/ru.js",
+	"./ru.js": "../../../../moment/locale/ru.js",
+	"./sd": "../../../../moment/locale/sd.js",
+	"./sd.js": "../../../../moment/locale/sd.js",
+	"./se": "../../../../moment/locale/se.js",
+	"./se.js": "../../../../moment/locale/se.js",
+	"./si": "../../../../moment/locale/si.js",
+	"./si.js": "../../../../moment/locale/si.js",
+	"./sk": "../../../../moment/locale/sk.js",
+	"./sk.js": "../../../../moment/locale/sk.js",
+	"./sl": "../../../../moment/locale/sl.js",
+	"./sl.js": "../../../../moment/locale/sl.js",
+	"./sq": "../../../../moment/locale/sq.js",
+	"./sq.js": "../../../../moment/locale/sq.js",
+	"./sr": "../../../../moment/locale/sr.js",
+	"./sr-cyrl": "../../../../moment/locale/sr-cyrl.js",
+	"./sr-cyrl.js": "../../../../moment/locale/sr-cyrl.js",
+	"./sr.js": "../../../../moment/locale/sr.js",
+	"./ss": "../../../../moment/locale/ss.js",
+	"./ss.js": "../../../../moment/locale/ss.js",
+	"./sv": "../../../../moment/locale/sv.js",
+	"./sv.js": "../../../../moment/locale/sv.js",
+	"./sw": "../../../../moment/locale/sw.js",
+	"./sw.js": "../../../../moment/locale/sw.js",
+	"./ta": "../../../../moment/locale/ta.js",
+	"./ta.js": "../../../../moment/locale/ta.js",
+	"./te": "../../../../moment/locale/te.js",
+	"./te.js": "../../../../moment/locale/te.js",
+	"./tet": "../../../../moment/locale/tet.js",
+	"./tet.js": "../../../../moment/locale/tet.js",
+	"./th": "../../../../moment/locale/th.js",
+	"./th.js": "../../../../moment/locale/th.js",
+	"./tl-ph": "../../../../moment/locale/tl-ph.js",
+	"./tl-ph.js": "../../../../moment/locale/tl-ph.js",
+	"./tlh": "../../../../moment/locale/tlh.js",
+	"./tlh.js": "../../../../moment/locale/tlh.js",
+	"./tr": "../../../../moment/locale/tr.js",
+	"./tr.js": "../../../../moment/locale/tr.js",
+	"./tzl": "../../../../moment/locale/tzl.js",
+	"./tzl.js": "../../../../moment/locale/tzl.js",
+	"./tzm": "../../../../moment/locale/tzm.js",
+	"./tzm-latn": "../../../../moment/locale/tzm-latn.js",
+	"./tzm-latn.js": "../../../../moment/locale/tzm-latn.js",
+	"./tzm.js": "../../../../moment/locale/tzm.js",
+	"./uk": "../../../../moment/locale/uk.js",
+	"./uk.js": "../../../../moment/locale/uk.js",
+	"./ur": "../../../../moment/locale/ur.js",
+	"./ur.js": "../../../../moment/locale/ur.js",
+	"./uz": "../../../../moment/locale/uz.js",
+	"./uz-latn": "../../../../moment/locale/uz-latn.js",
+	"./uz-latn.js": "../../../../moment/locale/uz-latn.js",
+	"./uz.js": "../../../../moment/locale/uz.js",
+	"./vi": "../../../../moment/locale/vi.js",
+	"./vi.js": "../../../../moment/locale/vi.js",
+	"./x-pseudo": "../../../../moment/locale/x-pseudo.js",
+	"./x-pseudo.js": "../../../../moment/locale/x-pseudo.js",
+	"./yo": "../../../../moment/locale/yo.js",
+	"./yo.js": "../../../../moment/locale/yo.js",
+	"./zh-cn": "../../../../moment/locale/zh-cn.js",
+	"./zh-cn.js": "../../../../moment/locale/zh-cn.js",
+	"./zh-hk": "../../../../moment/locale/zh-hk.js",
+	"./zh-hk.js": "../../../../moment/locale/zh-hk.js",
+	"./zh-tw": "../../../../moment/locale/zh-tw.js",
+	"./zh-tw.js": "../../../../moment/locale/zh-tw.js"
+};
+function webpackContext(req) {
+	return __webpack_require__(webpackContextResolve(req));
+};
+function webpackContextResolve(req) {
+	var id = map[req];
+	if(!(id + 1)) // check for number or string
+		throw new Error("Cannot find module '" + req + "'.");
+	return id;
+};
+webpackContext.keys = function webpackContextKeys() {
+	return Object.keys(map);
+};
+webpackContext.resolve = webpackContextResolve;
+module.exports = webpackContext;
+webpackContext.id = "../../../../moment/locale recursive ^\\.\\/.*$";
 
 /***/ }),
 

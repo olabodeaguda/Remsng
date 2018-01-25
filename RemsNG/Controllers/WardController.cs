@@ -32,14 +32,16 @@ namespace RemsNG.Controllers
         {
             if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
             {
-                return await wardService.all();
+                var wards = await wardService.all();
+                return wards.OrderBy(x => x.wardName);
             }
             else
             {
                 var domainId = ClaimExtension.GetDomainId(User.Claims.ToArray());// User.Claims.FirstOrDefault(x => x.Type == "Domain");
                 if (domainId != Guid.Empty)
                 {
-                    return await wardService.GetWardByLGDAId(domainId);
+                    var wards = await wardService.GetWardByLGDAId(domainId);
+                    return wards.OrderBy(x => x.wardName);
                 }
             }
 

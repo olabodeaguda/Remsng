@@ -116,13 +116,14 @@ export class DataService {
         if (err.status === 404) {
             return Observable.throw(res.description || 'Not found exception');
         } else if (err.status === 401) {
-            if (res.code === '09' || res.code == '10' || res.code === '11') {
+            const d = err.error;
+            if (res.code === '09' || res.code === '10' || res.code === '11') {
                 this.toasterService.pop('error', res.description || 'You have no access to the request');
                 this.storageService.remove();
             }
             return Observable.throw(res.description || 'You have no access to the request');
         } else if (err.status === 403) {
-            if (res.code === '09' || res.code == '10' || res.code === '11') {
+            if (res.code === '09' || res.code === '10' || res.code === '11') {
                 this.toasterService.pop('error', res.description || 'You have no access to the request');
                 this.storageService.remove();
             }

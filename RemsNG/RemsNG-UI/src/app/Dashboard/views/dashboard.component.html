@@ -16,20 +16,26 @@
           <p>Rems-NG features... Click the
             <b>More info</b> on each box to visit each features </p>
         </div>-->
-        <div class="row">
+        <div class="row" style="text-align:center;">         
           <div class="col-md-6">
-            <fusioncharts [width]="width" [height]="height" [type]="type" [dataFormat]="dataFormat" [dataSource]="dataSourceReceivables">
-            </fusioncharts>
+            <h3>Total recievables by ward</h3>
+            <canvas baseChart [datasets]="dataSourceReceivables.data" 
+            [options]="dataSourceReceivables.barChartOptions" 
+            [legend]="dataSourceReceivables.barChartLegend"
+              [chartType]="dataSourceReceivables.barChartType" [labels]="dataSourceReceivables.label"
+               #baseChart='base-chart'></canvas>              
           </div>
-
           <div class="col-md-6">
-              <fusioncharts [width]="width" [height]="height" [type]="type" [dataFormat]="dataFormat"
-               [dataSource]="dataSourceRevenue">
-              </fusioncharts>
+            <h3>Total amount recieved by ward</h3>
+              <canvas baseChart [datasets]="dataSourceRevenue.data" 
+              [options]="dataSourceRevenue.barChartOptions" 
+              [legend]="dataSourceRevenue.barChartLegend"
+                [chartType]="dataSourceRevenue.barChartType" [labels]="dataSourceRevenue.label"
+                 #baseChart1 = 'base-chart'></canvas>              
             </div>
         </div>
-
       </section>
+      <section class="content"></section>
     </div>
   </div>
 </div>

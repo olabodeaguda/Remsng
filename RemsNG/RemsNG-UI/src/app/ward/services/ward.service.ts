@@ -8,7 +8,6 @@ import { PageModel } from '../../shared/models/page.model';
 export class WardService {
 
     constructor(private dataService: DataService) {
-        
     }
 
     all() {

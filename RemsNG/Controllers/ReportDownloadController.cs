@@ -160,8 +160,9 @@ namespace RemsNG.Controllers
             return Ok(result.Select(x => new
             {
                 label = x.wardName,
-                value = (x.itemAmount - x.amountPaid)
-            }));
+                receivables = (x.itemAmount - x.amountPaid),
+                amountPaid = x.amountPaid
+            }).OrderBy(x=>x.label));
         }
 
         [HttpGet("reportrevenue")]

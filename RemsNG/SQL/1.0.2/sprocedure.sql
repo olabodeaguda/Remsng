@@ -1,5 +1,4 @@
-﻿ 
- ALTER procedure [dbo].[sp_addDemandNotice]
+﻿ ALTER procedure [dbo].[sp_addDemandNotice]
   (
 	@id uniqueidentifier,
 	@query varchar(MAX),
@@ -147,7 +146,5 @@ insert into  @temptable(id,itemAmount,amountPaid,billingNo,category,wardId,wardN
 	inner join tbl_demandNoticeTaxpayers as dnt on dnt.billingNumber = dnPenalty.billingNo
 	where dnPenalty.billingYear = @yr);
 
-	select wardName, SUM(itemAmount),SUM(amountPaid) from @temptable
+	select NEWID()as id, wardName, SUM(itemAmount) as itemAmount,SUM(amountPaid) as amountPaid from @temptable
 	group by wardName
-
-

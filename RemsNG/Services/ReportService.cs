@@ -39,6 +39,7 @@ namespace RemsNG.Services
                 html = html + $"<tr> " +
                 $"<td>SN</td>" +
                 $"<td>DETAILS OF REVENUE</td>" +
+                $"<td>ITEM CODE</td>" +
                 $"<td>APPROVED ESTIMATE</td>";
 
                 foreach (var tm in wards)
@@ -63,6 +64,8 @@ namespace RemsNG.Services
                     html = html + "<tr>";
                     html = html + $"<td>{(i + 1)}</td>";
                     html = html + $"<td>{items[i]}</td>";
+                    var itemCode = rptLst.Where(x => x.itemDescription == items[i]).FirstOrDefault();
+                    html = html + $"<td>{(itemCode == null ? "Empty" : itemCode.itemCode)}</td>";
 
                     decimal estmatAmount = rptLst.Where(x => x.itemDescription == items[i]).Sum(x => x.itemAmount);
                     html = html + $"<td>{String.Format("{0:n}", decimal.Round(estmatAmount, 2))}</td>";

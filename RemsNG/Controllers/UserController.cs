@@ -71,6 +71,14 @@ namespace RemsNG.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromHeader]string value)
         {
+            if (DateTime.Now.CompareTo(new DateTime(2019, 1, 1)) == 1)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = $"Licesnce expired. Please contact your administrator for renewal"
+                });
+            }
             byte[] obj = Convert.FromBase64String(value);
             string jsonValue = Encoding.UTF8.GetString(obj);
             LoginModel ln = JsonConvert.DeserializeObject<LoginModel>(jsonValue);
