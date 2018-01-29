@@ -16,5 +16,6 @@ namespace RemsNG.ORM
         public string wardName { get; set; }
         public string itemDescription { get; set; }
         public string itemCode { get; set; }
+        public string taxpayersName { get; set; }
     }
 }

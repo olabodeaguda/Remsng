@@ -12,5 +12,6 @@ namespace RemsNG.Services.Interfaces
         Task<string> HtmlByDate(List<ItemReportSummaryModel> rptLst,
             List<ItemReportSummaryModel> previousYearList);
         Task<List<ChartReport>> ReportByCurrentYear();
+        Task<string> HtmlByDate(List<ItemReportSummaryModel> rptLst);
     }
 }

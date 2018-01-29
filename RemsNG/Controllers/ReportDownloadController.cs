@@ -86,7 +86,7 @@ namespace RemsNG.Controllers
             HttpContext.Response.Body.Write(result, 0, result.Length);
             return new ContentResult();
         }
-
+        
         [RemsRequirementAttribute("DOWNLOAD_REPORT")]
         [HttpGet("revenuehtml/{startDate}/{endDate}")]
         public async Task<object> GetHtml(string startDate, string endDate)
@@ -153,6 +153,126 @@ namespace RemsNG.Controllers
             }
         }
 
+        [RemsRequirementAttribute("DOWNLOAD_REPORT")]
+        [HttpGet("outstandingbybillno/{startDate}/{endDate}")]
+        public async Task<object> GetByBIllNumber(string startDate, string endDate)
+        {
+            if (string.IsNullOrEmpty(startDate))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Start date is required"
+                });
+            }
+            else if (string.IsNullOrEmpty(endDate))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "End date is required"
+                });
+            }
+            Guid lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
+            Lgda lgda = await lcdaService.Get(lcdaId);
+            if (lgda == null)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.UNKNOWN,
+                    description = $"Log on user unknown"
+                });
+            }
+
+            DateTime sd = DateTime.ParseExact(startDate, "dd-MM-yyyy", null);
+            DateTime ed = DateTime.ParseExact(endDate, "dd-MM-yyyy", null);
+
+            List<ItemReportSummaryModel> current = await reportService.ByDate(sd, ed);
+
+            if (current.Count < 1)
+            {
+                return NotFound(new Response()
+                {
+                    code = MsgCode_Enum.NOTFOUND,
+                    description = "Zero record(s) found"
+                });
+            }
+
+            Domain domain = await lcdaService.GetDomain(lgda.id);
+
+            byte[] result = await excelService.WriteReportSummary(current, (domain == null ? "Unknown" : domain.domainName), lgda.lcdaName, sd, ed);
+
+            HttpContext.Response.ContentType = "application/octet-stream";
+            HttpContext.Response.Body.Write(result, 0, result.Length);
+            return new ContentResult();
+        }
+
+
+        [RemsRequirementAttribute("DOWNLOAD_REPORT")]
+        [HttpGet("outstandingbybillnohtml/{startDate}/{endDate}")]
+        public async Task<object> GetByBIllNumberHtml(string startDate, string endDate)
+        {
+            if (string.IsNullOrEmpty(startDate))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Start date is required"
+                });
+            }
+            else if (string.IsNullOrEmpty(endDate))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "End date is required"
+                });
+            }
+            Guid lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
+            Lgda lgda = await lcdaService.Get(lcdaId);
+            if (lgda == null)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.UNKNOWN,
+                    description = $"Log on user unknown"
+                });
+            }
+
+            DateTime sd = DateTime.ParseExact(startDate, "dd-MM-yyyy", null);
+            DateTime ed = DateTime.ParseExact(endDate, "dd-MM-yyyy", null);
+
+            List<ItemReportSummaryModel> current = await reportService.ByDate(sd, ed);
+
+            if (current.Count < 1)
+            {
+                return NotFound(new Response()
+                {
+                    code = MsgCode_Enum.NOTFOUND,
+                    description = "Zero record(s) found"
+                });
+            }
+
+            string result = await reportService.HtmlByDate(current);
+            if (!string.IsNullOrEmpty(result))
+            {
+                return new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = result
+                };
+            }
+            else
+            {
+                return new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = string.Empty
+                };
+            }
+        }
+
+
         [HttpGet("reportreceivables")]
         public async Task<object> GetReport()
         {
@@ -175,5 +295,7 @@ namespace RemsNG.Controllers
                 value = x.amountPaid
             }));
         }
+
+
     }
 }

@@ -19,31 +19,54 @@
             <section class="content" style="border-style:thin">
                 <div class="row">
                     <div class="row">
-                        <div class="col-xs-9">
+                        <div class="col-xs-12">
                             <div class="form-group col-md-3">
                                 <label for="startDate">Start Date</label>
-                                <my-date-picker name="startDate" [options]="myDatePickerOptions"
-                                (dateChanged)="onDateChanged($event,'startDate')" ></my-date-picker>
+                                <my-date-picker name="startDate" [options]="myDatePickerOptions" (dateChanged)="onDateChanged($event,'startDate')"></my-date-picker>
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="endDate">End Date</label>
-                                <my-date-picker name="endDate" [options]="myDatePickerOptions" 
-                                (dateChanged)="onDateChanged($event,'endDate')" ></my-date-picker>
+                                <my-date-picker name="endDate" [options]="myDatePickerOptions" (dateChanged)="onDateChanged($event,'endDate')"></my-date-picker>
                             </div>
-                            <div class="form-group col-md-3">
+                            <div class="form-group col-md-6">
                                 <label></label>
-                                <div class="bn-group">
-                                    <button (click)="download()" class="btn btn-primary"><i class="fa fa-download"></i> Download</button>
-                                    <button (click)="search()" class="btn btn-primary"><i class="fa fa-search"></i> Search</button>
+                                <div class="row">
+                                    <div class="col-ms-3">
+                                        <div class="bn-group">
+                                            <div class="dropdown">
+                                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                                    <i class="fa fa-download"></i> Download
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <a href="javascript:;" (click)="search()">
+                                                            <i class="fa fa-search"></i> Search Report Summary</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="javascript:;" (click)="download()"><i class="fa fa-download"></i> Report Summary</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="javascript:;" (click)="searchReportBreakDown()">
+                                                            <i class="fa fa-search"></i> Search Report Breakdown</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="javascript:;" (click)="downloadReportBreakDown()">
+                                                            <i class="fa fa-download"></i> Report Breakdown</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>    
-                <div class="row" [innerHtml]= "htmlresult"></div>            
+                </div>
+                <div class="row" [innerHtml]="htmlresult"></div>
             </section>
-            <section class="content" id="cnt" >
-                
+            <section class="content" id="cnt">
+
             </section>
         </div>
     </div>

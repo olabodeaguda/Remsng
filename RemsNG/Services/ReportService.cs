@@ -92,6 +92,83 @@ namespace RemsNG.Services
             });
         }
 
+
+        public async Task<string> HtmlByDate(List<ItemReportSummaryModel> rptLst)
+        {
+            if (rptLst.Count < 1)
+            {
+                return null;
+            }
+
+            return await Task.Run(() =>
+            {
+                string[] items = rptLst.Select(x => x.itemDescription).Distinct().OrderBy(x => x).ToArray();
+
+                string html = "<table class='table table-bordered table - hover'><thead>";
+
+                html = html + $"<tr> " +
+                $"<td>SN</td>" +
+                $"<td>TAXPAYER'S</td>" +
+                $"<td>WARD</td>" +
+                $"<td>BILLING NO</td>";
+
+                foreach (var tm in items)
+                {
+                    html = html + $"<td>{tm}</td>";
+                }
+
+                html = html + $"<td>ARREARS</td>";
+                html = html + $"<td>PENALTIES</td>";
+                html = html + $"<td>AMOUNT PAID</td>";
+                html = html + $"<td>AMOUNT OWE</td>";
+                html = html + $"</tr>";
+                html = html + "</thead>";
+
+                html = html + "<tbody>";
+
+                var allitems = rptLst.GroupBy(x => x.billingNo);
+                int rowCount = 1;
+                foreach (var eachGrp in allitems)
+                {
+                    var firstTaxpayer = eachGrp.FirstOrDefault();
+
+                    #region body
+                    html = html + "<tr>";
+                    html = html + $"<td>{rowCount++}</td>";
+                    html = html + $"<td>{firstTaxpayer.taxpayersName}</td>";
+                    html = html + $"<td>{firstTaxpayer.wardName}</td>";
+                    html = html + $"<td>{eachGrp.Key}</td>";
+
+                    var taxPItems = eachGrp.Where(x => x.category == "ITEMS");
+                    foreach (var tm in items)
+                    {
+                        decimal h = taxPItems.Where(x => x.itemDescription == tm).Sum(x => x.itemAmount);
+                        html = html + $"<td>{String.Format("{0:n}", decimal.Round(h, 2))}</td>";
+                    }
+
+                    decimal arrears = eachGrp.Where(x => x.category == "ARREARS").Sum(x => x.itemAmount);
+                    html = html + $"<td>{String.Format("{0:n}", decimal.Round(arrears, 2))}</td>";
+
+                    decimal penalties = eachGrp.Where(x => x.category == "PENALTY").Sum(x => x.itemAmount);
+                    html = html + $"<td>{String.Format("{0:n}", decimal.Round(penalties, 2))}</td>";
+
+                    decimal amountPaid = eachGrp.Sum(x => x.amountPaid);
+                    html = html + $"<td>{String.Format("{0:n}", decimal.Round(amountPaid, 2))}</td>";
+
+                    decimal totalAmount = eachGrp.Sum(x => x.itemAmount);
+                    html = html + $"<td>{String.Format("{0:n}", decimal.Round(totalAmount - amountPaid, 2))}</td>";
+
+                    html = html + "</tr>";
+                    #endregion
+                }
+
+                html = html + "</tbody>";
+                html = html + "</table>";
+                return html;
+            });
+        }
+
+
         public async Task<List<ChartReport>> ReportByCurrentYear()
         {
             return await reportDao.ReportByYear();

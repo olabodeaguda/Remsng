@@ -11,5 +11,8 @@ namespace RemsNG.Services.Interfaces
         Task<byte[]> WriteReportSummary(List<ItemReportSummaryModel> rptLst,
             List<ItemReportSummaryModel> previousYearList,
              string domainName, string lcdaName,DateTime startDate,DateTime enndDate);
+
+        Task<byte[]> WriteReportSummary(List<ItemReportSummaryModel> rptLst,
+            string domainName, string lcdaName, DateTime startDate, DateTime endDate);
     }
 }

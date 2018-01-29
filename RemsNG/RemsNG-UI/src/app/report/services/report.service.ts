@@ -18,6 +18,17 @@ export class ReportService {
         .catch(error => this.dateService.handleError(error));
     }
 
+    downloadReportBreakDown(startDate: string, endDate: string) {
+        return this.dateService.getBlob('report/outstandingbybillno/' + startDate + '/' + endDate)
+        .catch(error => this.dateService.handleError(error));
+    }
+
+    downloadReportBreakDownhtml(startDate: string, endDate: string) {
+        return this.dateService.get('report/outstandingbybillnohtml/' + startDate + '/' + endDate)
+        .catch(error => this.dateService.handleError(error));
+    }
+
+
     graphRecievables() {
         return this.dateService.get('report/reportreceivables')
         .catch(error => this.dateService.handleError(error));
