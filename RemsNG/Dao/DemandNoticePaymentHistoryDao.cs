@@ -105,13 +105,25 @@ namespace RemsNG.Dao
 
         public async Task<List<DemandNoticePaymentHistory>> ByBillingNumber(string billingnumber)
         {
-            string query = $"select * from tbl_demandNoticePaymentHistory where billingNumber = '{billingnumber}'";
+            string query = "select dnph.*,bank.bankName from tbl_demandNoticePaymentHistory as dnph " +
+                $"inner join tbl_bank bank on bank.id = dnph.bankId where billingNumber = '{billingnumber}'";
+
             return await db.DemandNoticePaymentHistories.FromSql(query).ToListAsync();
         }
 
         public async Task<DemandNoticePaymentHistory> ById(Guid id)
         {
-            string query = $"select top 1 * from tbl_demandNoticePaymentHistory where id = '{id}'";
+            string query = "select dnph.*,bank.bankName from tbl_demandNoticePaymentHistory as dnph " +
+                 $"inner join tbl_bank bank on bank.id = dnph.bankId where dnph.id = '{id}'";
+
+            return await db.DemandNoticePaymentHistories.FromSql(query).FirstOrDefaultAsync();
+        }
+
+        public async Task<DemandNoticePaymentHistory> ByIdExtended(Guid id)
+        {
+            string query = "select dnph.*,bank.bankName from tbl_demandNoticePaymentHistory as dnph " +
+                $"inner join tbl_bank bank on bank.id = dnph.bankId where dnph.id = '{id}'";
+            
             return await db.DemandNoticePaymentHistories.FromSql(query).FirstOrDefaultAsync();
         }
 

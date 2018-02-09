@@ -45,5 +45,10 @@ namespace RemsNG.Services
         {
             return await dnph.ByLcdaId(lcdaId, pageModel);
         }
+
+        public async Task<DemandNoticePaymentHistory> ByIdExtended(Guid id)
+        {
+            return await dnph.ByIdExtended(id);
+        }
     }
 }

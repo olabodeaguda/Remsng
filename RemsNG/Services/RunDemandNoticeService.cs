@@ -218,6 +218,7 @@ namespace RemsNG.Services
                     {
                         var firstTaxpayer = lstOfDN[0];
                         Lgda lgda = await taxpayerService.getLcda(firstTaxpayer.taxpayerId);
+
                         string template = await dnDownloadService.LcdaTemlateByLcda(lgda.id);
 
                         //string rootUrl = $"http://{context.Request.Host}";
@@ -228,24 +229,22 @@ namespace RemsNG.Services
                             Directory.CreateDirectory(rootPath);
                         }
 
-                        //string htmlPatch = $" <div style='height:200px;width:100%;'></ div > ";
                         var htmlContent = await File.ReadAllTextAsync($"{rootUrl}/templates/{template}");
                         string htmlContents = string.Empty;
                         for (int i = 0; i < lstOfDN.Count; i++)
-                        {
-                            //if (i > 0 && i < (lstOfDN.Count - 1))
-                            //{
-                            //    htmlContents = htmlContents + htmlPatch;
-                            //}
+                        {                          
                             string s = await dnDownloadService.PopulateReportHtml(htmlContent, lstOfDN[i].billingNumber, rootUrl, bdnm.createdBy);
                             htmlContents = htmlContents + s;
+                            // htmlContents = htmlContents + "<div style='height: 130px;width:100%;'><div>";
                         }
+                        htmlContents = htmlContents.Replace("PATCH1", "<br /><br /><br /><br /><br />");
+                        htmlContents = htmlContents.Replace("PATCH2", "<br /><br /><br /><br /><br />");
+                        var result = await nodeServices.InvokeAsync<byte[]>("./pdf", htmlContents);
 
                         using (FileStream zipToOpen = new FileStream($"{rootPath}/{bdnm.batchNo}.zip", FileMode.Create))
                         {
                             using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
                             {
-                                var result = await nodeServices.InvokeAsync<byte[]>("./pdf", htmlContents);
                                 string reportname = $"bulkDownload{DateTime.Now.ToString("ddMMyyyyhhmmss")}";
 
                                 string filePath = Path.Combine(rootPath, $"{reportname}.pdf");
@@ -301,15 +300,12 @@ namespace RemsNG.Services
                         var firstTaxpayer = lstOfDN[0];
                         Lgda lgda = await taxpayerService.getLcda(firstTaxpayer.taxpayerId);
                         string template = await dnDownloadService.LcdaTemlateByLcda(lgda.id);
-
-                        //string rootUrl = $"http://{context.Request.Host}";
                         string rootUrl = this.hostingEnvironment.WebRootPath;
                         string rootPath = Path.Combine(this.hostingEnvironment.WebRootPath, "zipReports", bdnm.batchNo);
                         if (!Directory.Exists(rootPath))
                         {
                             Directory.CreateDirectory(rootPath);
                         }
-
                         using (FileStream zipToOpen = new FileStream($"{rootPath}/{bdnm.batchNo}.zip", FileMode.Create))
                         {
                             using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
@@ -318,6 +314,10 @@ namespace RemsNG.Services
                                 {
                                     var htmlContent = await File.ReadAllTextAsync($"{rootUrl}/templates/{template}");
                                     htmlContent = await dnDownloadService.PopulateReportHtml(htmlContent, dnt.billingNumber, rootUrl, bdnm.createdBy);
+
+                                    htmlContent = htmlContent.Replace("PATCH1", "");
+                                    htmlContent = htmlContent.Replace("PATCH2", "");
+
                                     var result = await nodeServices.InvokeAsync<byte[]>("./pdf",
                                         htmlContent);
 
@@ -332,18 +332,17 @@ namespace RemsNG.Services
                                 }
                             }
                         }
-
-                        //update request
-                        Response response = await batchDwnRequestService.UpdateBatchRequest(new BatchDemandNoticeModel
-                        {
-                            id = bdnm.id,
-                            batchFileName = $"{bdnm.batchNo}.zip",
-                            requestStatus = "COMPLETED",
-                            createdBy = "APPLICATION"
-
-                        });
                     }
                 }
+
+                Response response = await batchDwnRequestService.UpdateBatchRequest(new BatchDemandNoticeModel
+                {
+                    id = bdnm.id,
+                    batchFileName = $"{bdnm.batchNo}.zip",
+                    requestStatus = "COMPLETED",
+                    createdBy = "APPLICATION"
+
+                });
             }
             catch (Exception x)
             {

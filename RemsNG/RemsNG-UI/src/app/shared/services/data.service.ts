@@ -6,7 +6,7 @@ import { AppSettings } from '../models/app.settings';
 import { ResponseModel } from '../models/response.model';
 import { StorageService } from './storage.service';
 import { UserModel } from '../models/user.model';
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Headers, RequestOptions, ResponseContentType } from '@angular/http';
 
 @Injectable()
@@ -128,13 +128,13 @@ export class DataService {
                 this.storageService.remove();
             }
             return Observable.throw(res.description || 'You have not access to the request');
-        } else if (err.status == 500) {
+        } else if (err.status === 500) {
             return Observable.throw(res.description || 'You have not access to the request');
-        } else if (err.status == 0) {
+        } else if (err.status === 0) {
             return Observable.throw(res.description || 'Connection to the server failed');
-        } else if (err.status == 400) {
+        } else if (err.status === 400) {
             return Observable.throw(res.description || 'Internal server error occur. Please contact administrator');
-        } else if (err.status == 409) {
+        } else if (err.status === 409) {
             return Observable.throw(res.description || 'Internal server error occur. Please contact administrator');
         } else {
             return Observable.throw(res.description || 'Connection to the server failed');

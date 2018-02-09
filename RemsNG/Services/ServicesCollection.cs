@@ -42,8 +42,12 @@ namespace RemsNG.Services
 
             var builderException = services.AddMvc();
 
-            services.AddNodeServices();
-           
+            services.AddNodeServices(x =>
+            {
+                x.InvocationTimeoutMilliseconds = 300000;
+                x.LaunchWithDebugging = false;
+            });
+
             services.Configure<JwtIssuerOptions>(options =>
             {
                 options.Issuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
@@ -91,10 +95,10 @@ namespace RemsNG.Services
 
             services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
             {
-                builder 
-                  .AllowAnyMethod() 
+                builder
+                  .AllowAnyMethod()
                   .AllowAnyHeader()
-                  .AllowCredentials() 
+                  .AllowCredentials()
                   .WithExposedHeaders("new-t")
                   .WithOrigins(corsUrls.ToArray());
             }));
@@ -127,7 +131,7 @@ namespace RemsNG.Services
             services.AddTransient<IDnTaxpayer, DnTaxpayerService>();
             services.AddTransient<IStateService, StateService>();
             services.AddTransient<IImageService, ImageService>();
-            services.AddTransient<IDemandNoticeTaxpayerService , DemandNoticeTaxpayerService>();
+            services.AddTransient<IDemandNoticeTaxpayerService, DemandNoticeTaxpayerService>();
             services.AddTransient<IDemandNoticeItemService, DemandNoticeItemService>();
             services.AddTransient<IDnDownloadService, DnDownloadService>();
             services.AddTransient<IDemandNoticeCharges, DemandNoticeChargesService>();
@@ -138,7 +142,7 @@ namespace RemsNG.Services
             services.AddTransient<IListPropertyService, ListPropertyService>();
             services.AddTransient<IDNAmountDueMgtService, DNAmountDueMgtService>();
             services.AddTransient<IDNPaymentHistoryService, DNPaymentHistoryService>();
-            services.AddTransient<IBankService, BankService> ();
+            services.AddTransient<IBankService, BankService>();
             services.AddTransient<IAbstractService, AbstractService>();
             services.AddTransient<IReportService, ReportService>();
             services.AddTransient<IExcelService, ExcelService>();

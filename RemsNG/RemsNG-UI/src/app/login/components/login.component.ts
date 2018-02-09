@@ -19,10 +19,27 @@ export class LoginComponent {
 
     constructor(private router: Router, private loginService: LoginService,
         private storageService: StorageService, private appsettings: AppSettings) {
+        this.setLicence();
+    }
+
+    isvalid: boolean = false;
+    isNotifyValidy = false;
+    setLicence() {
+        const currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0);
+        const d2 = new Date(2018, 2, 1, 0, 0, 0);
+        if (currentDate.getTime() > d2.getTime()) {
+            this.isvalid = true;
+        }
+        const timeDiff = Math.abs(currentDate.getTime() - d2.getTime());
+        const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+        if (diffDays < 10) {
+            this.isNotifyValidy = true;
+        }
     }
 
     signIn() {
-        if(this.loginModel.username !== this.loginModel.validatedUsername){
+        if (this.loginModel.username !== this.loginModel.validatedUsername) {
             this.loginModel = new LoginModel();
             return;
         }
@@ -72,39 +89,39 @@ export class LoginComponent {
         this.loginModel.isLoading = true;
         this.loginService.GetUserDomain(this.loginModel.username)
             .subscribe(
-            response => {
-                this.loginModel.isLoading = false;
-                const result = Object.assign(new ResponseModel(), response);
-                if (result.code === '00') {
-                    this.loginModel.isUsernameValid = true;
-                    this.loginModel.validatedUsername = this.loginModel.username;
-                    if (result.data.length > 1) {
-                        this.loginModel.domainIds = result.data;
-                    }else if (result.data.length == 1) {
-                        const dModel = <DomainModel>result.data[0];
-                        this.loginModel.domainId = dModel.id;
+                response => {
+                    this.loginModel.isLoading = false;
+                    const result = Object.assign(new ResponseModel(), response);
+                    if (result.code === '00') {
+                        this.loginModel.isUsernameValid = true;
+                        this.loginModel.validatedUsername = this.loginModel.username;
+                        if (result.data.length > 1) {
+                            this.loginModel.domainIds = result.data;
+                        } else if (result.data.length === 1) {
+                            const dModel = <DomainModel>result.data[0];
+                            this.loginModel.domainId = dModel.id;
+                        }
+                    } else {
+                        this.loginModel.isError = true;
+                        this.loginModel.errmsg = result.description;
+                        setTimeout(() => {
+                            this.loginModel.isError = false;
+                            this.loginModel.errmsg = '';
+                            this.loginModel.errorClass.pop();
+                        }, 4000);
                     }
-                } else {
+                    this.loginModel.isLoading = false;
+                },
+                error => {
+                    this.loginModel.isLoading = false;
                     this.loginModel.isError = true;
-                    this.loginModel.errmsg = result.description;
+                    this.loginModel.errmsg = error;
+                    this.loginModel.errorClass.push(this.appsettings.danger);
                     setTimeout(() => {
                         this.loginModel.isError = false;
                         this.loginModel.errmsg = '';
                         this.loginModel.errorClass.pop();
-                    }, 4000);
-                }
-                this.loginModel.isLoading = false;
-            },
-            error => {
-                this.loginModel.isLoading = false;
-                this.loginModel.isError = true;
-                this.loginModel.errmsg = error;
-                this.loginModel.errorClass.push(this.appsettings.danger);
-                setTimeout(() => {
-                    this.loginModel.isError = false;
-                    this.loginModel.errmsg = '';
-                    this.loginModel.errorClass.pop();
-                }, 2000);
-            });
+                    }, 2000);
+                });
     }
 }

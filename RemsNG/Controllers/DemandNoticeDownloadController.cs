@@ -64,6 +64,8 @@ namespace RemsNG.Controllers
             var htmlContent = await System.IO.File.ReadAllTextAsync($"{rootUrl}/templates/{template}");
 
             htmlContent = await dnd.PopulateReportHtml(htmlContent, billingno, rootUrl, User.Identity.Name);
+            htmlContent = htmlContent.Replace("PATCH1", "<br /><br /><br /><br /><br /><br /><br /><br />");
+            htmlContent = htmlContent.Replace("PATCH2", "");
             var result = await nodeServices.InvokeAsync<byte[]>("./pdf", htmlContent);
 
             HttpContext.Response.ContentType = "application/pdf";
@@ -153,7 +155,7 @@ namespace RemsNG.Controllers
             {
                 throw new InvalidCredentialsException("Invalid request");
             }
-            DemandNoticePaymentHistory dnph = await paymentHistoryService.ById(id);
+            DemandNoticePaymentHistory dnph = await paymentHistoryService.ByIdExtended(id);
             if (dnph == null)
             {
                 throw new NotFoundException("Request not found");
@@ -167,6 +169,7 @@ namespace RemsNG.Controllers
             var htmlContent = await System.IO.File.ReadAllTextAsync($"{rootUrl}/templates/{template}");
 
             htmlContent = await dnd.PopulateReceiptHtml(htmlContent, rootUrl, User.Identity.Name,dnph);
+            htmlContent = htmlContent.Replace("BANK_NAME", dnph.bankName);
             var result = await nodeServices.InvokeAsync<byte[]>("./pdf", htmlContent);
 
             HttpContext.Response.ContentType = "application/pdf";
