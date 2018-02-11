@@ -14,19 +14,19 @@ export class StorageService {
         const val = localStorage.getItem(this.appsettings.tk);
         if (val === null) {
            // window.location.replace('/login');
-            this.router.navigate(['login'])
+            this.router.navigate(['login']);
         } else {
             localStorage.removeItem(this.appsettings.tk);
         }
         const usermodel: UserModel = new UserModel();
         usermodel.fullname = 'Anonymous';
-        this.usermodelEmit.emit(usermodel);  
+        this.usermodelEmit.emit(usermodel);
         // window.location.replace('/login');
-         this.router.navigate(['login'])      
+         this.router.navigate(['login']);
     }
-    
-    updateToken(tk:string){
-        let um:UserModel = this.get();
+
+    updateToken(tk: string) {
+        const um: UserModel = this.get();
         um.tk = tk;
         this.Save(um);
     }

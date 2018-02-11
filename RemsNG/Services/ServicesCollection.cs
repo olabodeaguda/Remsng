@@ -44,7 +44,7 @@ namespace RemsNG.Services
 
             services.AddNodeServices(x =>
             {
-                x.InvocationTimeoutMilliseconds = 300000;
+                x.InvocationTimeoutMilliseconds = 6000000;
                 x.LaunchWithDebugging = false;
             });
 

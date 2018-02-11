@@ -71,7 +71,7 @@ namespace RemsNG.Dao
 
         public async Task<List<BatchDemandNoticeModel>> ListByBatchNo(string batchno)
         {
-            return await db.BatchDemanNoticeModels.Where(x=>x.batchNo == batchno).ToListAsync(); // db.BatchDemanNoticeModels.FromSql($"select * from tbl_batchDownloadRequest where batchNo = '{batchno}'").ToListAsync();
+            return await db.BatchDemanNoticeModels.Where(x=>x.batchNo == batchno).OrderByDescending(x=>x.dateCreated).ToListAsync(); // db.BatchDemanNoticeModels.FromSql($"select * from tbl_batchDownloadRequest where batchNo = '{batchno}'").ToListAsync();
         }
 
         public async Task<BatchDemandNoticeModel> Dequeue()

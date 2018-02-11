@@ -51,7 +51,7 @@
                                         </td>
                                         <td>{{data.batchNo}}</td>
                                         <td>{{data.requestStatus}}</td>
-                                        <td>{{data.dateCreated|date}}</td>
+                                        <td >{{data.dateCreated|date: 'dd-MM-yyyy hh:mm:ss'}}</td>
                                     </tr>
                                     <tr *ngIf="dowloadRequestList.length < 1">
                                         <td style="width:100%" colspan="6">No record !!!</td>

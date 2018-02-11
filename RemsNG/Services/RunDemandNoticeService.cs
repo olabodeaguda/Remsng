@@ -205,7 +205,7 @@ namespace RemsNG.Services
         }
 
         // [DisableConcurrentExecution(5 * 60)]
-        public async Task GenerateBulkDemandNotice2()
+        public async Task GenerateBulkDemandNotice()
         {
             BatchDemandNoticeModel bdnm = null;// await batchDwnRequestService.Dequeue();
             try
@@ -229,31 +229,46 @@ namespace RemsNG.Services
                             Directory.CreateDirectory(rootPath);
                         }
 
+                        List<string> lstContent = new List<string>();
                         var htmlContent = await File.ReadAllTextAsync($"{rootUrl}/templates/{template}");
                         string htmlContents = string.Empty;
                         for (int i = 0; i < lstOfDN.Count; i++)
-                        {                          
+                        {
                             string s = await dnDownloadService.PopulateReportHtml(htmlContent, lstOfDN[i].billingNumber, rootUrl, bdnm.createdBy);
+                            if (s == string.Empty)
+                            {
+                                continue;
+                            }
                             htmlContents = htmlContents + s;
-                            // htmlContents = htmlContents + "<div style='height: 130px;width:100%;'><div>";
+                            if (i < 1)
+                            {
+                                continue;
+                            }
+                            if (i % 90 == 0 || i == (lstOfDN.Count - 1))
+                            {
+                                lstContent.Add(htmlContents);
+                                htmlContents = string.Empty;
+                            }
                         }
-                        htmlContents = htmlContents.Replace("PATCH1", "<br /><br /><br /><br /><br />");
-                        htmlContents = htmlContents.Replace("PATCH2", "<br /><br /><br /><br /><br />");
-                        var result = await nodeServices.InvokeAsync<byte[]>("./pdf", htmlContents);
 
                         using (FileStream zipToOpen = new FileStream($"{rootPath}/{bdnm.batchNo}.zip", FileMode.Create))
                         {
                             using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
                             {
-                                string reportname = $"bulkDownload{DateTime.Now.ToString("ddMMyyyyhhmmss")}";
-
-                                string filePath = Path.Combine(rootPath, $"{reportname}.pdf");
-                                using (FileStream fs = System.IO.File.Create(filePath))
+                                int count = 0;
+                                foreach (var dnt in lstContent)
                                 {
-                                    await fs.WriteAsync(result, 0, result.Length);
-                                    fs.Flush();
+                                    var result = await nodeServices.InvokeAsync<byte[]>("./pdf", dnt);
+
+                                    string filePath = Path.Combine(rootPath, $"Batch {count + 1}.pdf");
+                                    using (FileStream fs = System.IO.File.Create(filePath))
+                                    {
+                                        await fs.WriteAsync(result, 0, result.Length);
+                                        fs.Flush();
+                                    }
+                                    archive.CreateEntryFromFile(filePath, $"batch {count + 1}.pdf");
+                                    count++;
                                 }
-                                archive.CreateEntryFromFile(filePath, $"{reportname}.pdf");
                             }
                         }
                     }
@@ -286,7 +301,7 @@ namespace RemsNG.Services
         }
 
         //[DisableConcurrentExecution(5 * 60)]
-        public async Task GenerateBulkDemandNotice()
+        public async Task GenerateBulkDemandNotice2()
         {
             BatchDemandNoticeModel bdnm = null;// await batchDwnRequestService.Dequeue();
             try

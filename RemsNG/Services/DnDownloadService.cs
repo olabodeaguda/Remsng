@@ -19,7 +19,7 @@ namespace RemsNG.Services
         private IListPropertyService listPropertyService;
         private ISectorService sectorService;
         public DnDownloadService(IDemandNoticeTaxpayerService _dnts,
-            IDemandNoticeCharges _chargesService, 
+            IDemandNoticeCharges _chargesService,
             IDemandNoticeDownloadHistory _demandNoticeDownloadHistory,
             ILcdaService _lcdaService,
             IListPropertyService _listPropertyService,
@@ -45,13 +45,13 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("LCDA_STATE", dnrp.lcdaState);
             htmlContent = htmlContent.Replace("LAGOSLOGO", $"{rootUrl}/images/lagoslogo.jpg");
             htmlContent = htmlContent.Replace("LCDA_LOGO", $"{rootUrl}/images/{dnrp.lcdaLogoFileName}");
-            htmlContent = htmlContent.Replace("BILL_NO",$"{sector.prefix}{dnrp.billingNumber}");
+            htmlContent = htmlContent.Replace("BILL_NO", $"{sector.prefix}{dnrp.billingNumber}");
             htmlContent = htmlContent.Replace("PAYER_NAME", dnrp.taxpayersName);
             htmlContent = htmlContent.Replace("PAYER_ADDRESS", dnrp.addressName);
             htmlContent = htmlContent.Replace("CURRENT_DATE", DateTime.Now.ToString("dd-MM-yyyy"));
             htmlContent = htmlContent.Replace("BILLING_YEAR", dnrp.billingYr.ToString());
             htmlContent = htmlContent.Replace("WARD_NAME", dnrp.wardName);
-            htmlContent = htmlContent.Replace("TOTAL_AMOUNT", $"{String.Format("{0:n}", decimal.Round(dnph.amount,2))} naira");
+            htmlContent = htmlContent.Replace("TOTAL_AMOUNT", $"{String.Format("{0:n}", decimal.Round(dnph.amount, 2))} naira");
             htmlContent = htmlContent.Replace("REFERENCE_NUMBER", dnph.referenceNumber);
             htmlContent = htmlContent.Replace("REFERENCE_NUMBER", dnph.referenceNumber);//PAYMENT_STATUS
             htmlContent = htmlContent.Replace("PAYMENT_STATUS", dnrp.demandNoticeStatus);//PAYMENT_STATUS
@@ -61,7 +61,7 @@ namespace RemsNG.Services
             }
             else
             {
-                htmlContent = htmlContent.Replace("AMOUNT_IN_WORD", 
+                htmlContent = htmlContent.Replace("AMOUNT_IN_WORD",
                     CurrencyWords.ConvertToWords(decimal.Round(dnph.amount, 2).ToString()));
             }
 
@@ -72,10 +72,14 @@ namespace RemsNG.Services
             return htmlContent;
         }
 
-        public async Task<string> PopulateReportHtml(string htmlContent, string billingno, 
+        public async Task<string> PopulateReportHtml(string htmlContent, string billingno,
             string rootUrl, string createdBy)
         {
             DemandNoticeReportModel dnrp = await dnts.ByBillingNo(billingno);
+            if (dnrp.items.Count == 0)
+            {
+                return string.Empty;
+            }
             Sector sector = await sectorService.ByTaxpayerId(dnrp.taxpayerId);
 
             htmlContent = htmlContent.Replace("LOCAL_GOVERNMENT_NAME", dnrp.domainName);
@@ -87,7 +91,7 @@ namespace RemsNG.Services
 
             if (sector != null)
             {
-                htmlContent = htmlContent.Replace("BILL_NO",$"{sector.prefix}{dnrp.billingNumber}");
+                htmlContent = htmlContent.Replace("BILL_NO", $"{sector.prefix}{dnrp.billingNumber}");
             }
             else
             {
@@ -100,6 +104,25 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("WARD_NAME", dnrp.wardName);
 
             htmlContent = htmlContent.Replace("ITEMLIST", DemandNoticeComponents.HtmlBuildItems(dnrp));
+            int partialItemCount = 0;
+            foreach (var tm in dnrp.items)
+            {
+                if (tm.itemTitle.Length > 27)
+                {
+                    partialItemCount = partialItemCount + 1;
+                }
+            }
+            int patchHeight = 0;
+            if (dnrp.items.Count > 0)
+            {
+                patchHeight = 145 - (dnrp.items.Count == 1 ? 0 : (((dnrp.items.Count - 1)) * 40)) - (partialItemCount*30);
+            }
+            else
+            {
+                patchHeight = 185;
+            }
+            htmlContent = htmlContent.Replace("PATCH2", $"<div style='width: 100 %; height: {patchHeight}px; '></div>");
+
             htmlContent = htmlContent.Replace("BANKLIST", DemandNoticeComponents.HtmlBuildBanks(dnrp));
             htmlContent = htmlContent.Replace("ARREARS_AMMOUNT", String.Format("{0:n}", decimal.Round(dnrp.arrears, 2)));
             htmlContent = htmlContent.Replace("PENALTY_AMOUNT", String.Format("{0:n}", decimal.Round(dnrp.penalty, 2)));
@@ -115,7 +138,7 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("TREASURER_MOBILE", string.IsNullOrEmpty(dnrp.councilTreasurerMobile) ? "nil" : dnrp.councilTreasurerMobile);
             decimal gtotal = dnrp.items.Sum(x => x.itemAmount) + dnrp.arrears + dnrp.penalty;
             htmlContent = htmlContent.Replace("GRAND_TOTAL", String.Format("{0:n}", decimal.Round(gtotal, 2)));
-           
+
             htmlContent = htmlContent.Replace("CHARGES", String.Format("{0:n}", decimal.Round(dnrp.charges, 2)));
             decimal finalTotal = gtotal + dnrp.charges;
             htmlContent = htmlContent.Replace("FINAL_TOTAL", String.Format("{0:n}", decimal.Round(finalTotal, 2)));
@@ -137,7 +160,7 @@ namespace RemsNG.Services
             dndh.grandTotal = gtotal;
 
             await demandNoticeDownloadHistory.Add(dndh);
-            
+
             return htmlContent;
         }
 
