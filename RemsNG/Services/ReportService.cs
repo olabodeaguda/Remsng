@@ -96,7 +96,6 @@ namespace RemsNG.Services
             });
         }
 
-
         public async Task<string> HtmlByDate(List<ItemReportSummaryModel> rptLst)
         {
             if (rptLst.Count < 1)
@@ -171,7 +170,6 @@ namespace RemsNG.Services
                 return html;
             });
         }
-
 
         public async Task<List<ChartReport>> ReportByCurrentYear()
         {

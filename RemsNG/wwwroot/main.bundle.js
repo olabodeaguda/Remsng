@@ -1375,7 +1375,7 @@ var CompanyComponent = (function () {
         this.lcdaservice.getLCdaById(lcdaId).subscribe(function (response) {
             _this.isLoading = false;
             var objSchema = Object.assign(new __WEBPACK_IMPORTED_MODULE_7__shared_models_response_model__["a" /* ResponseModel */](), response);
-            if (objSchema.code == '00') {
+            if (objSchema.code === '00') {
                 _this.lcdaModel = objSchema.data;
                 _this.getSectorbyLcda();
                 _this.getCategoryByLCda();
@@ -1470,6 +1470,20 @@ var CompanyComponent = (function () {
                 _this.companyModel.isLoading = false;
             });
         }
+    };
+    CompanyComponent.prototype.next = function () {
+        if (this.pageModel.pageNum > 1 && this.companies.length < 1) {
+            return;
+        }
+        this.pageModel.pageNum += 1;
+        this.getCompanyByLcda();
+    };
+    CompanyComponent.prototype.previous = function () {
+        this.pageModel.pageNum -= 1;
+        if (this.pageModel.pageNum < 1) {
+            this.pageModel.pageNum = 1;
+        }
+        this.getCompanyByLcda();
     };
     return CompanyComponent;
 }());

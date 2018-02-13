@@ -19,13 +19,13 @@ export class CompanyService {
     }
 
     byLcda(id: string, pagemodel: PageModel) {
-        this.dataservice.addToHeader('pageNum', pagemodel.pageNum.toString())
-        this.dataservice.addToHeader('pageSize', pagemodel.pageSize.toString())
-        return this.dataservice.get('company/bylcdapaging/' + id).catch(x => this.dataservice.handleError(x))
+        this.dataservice.addToHeader('pageNum', pagemodel.pageNum.toString());
+        this.dataservice.addToHeader('pageSize', pagemodel.pageSize.toString());
+        return this.dataservice.get('company/bylcdapaging/' + id).catch(x => this.dataservice.handleError(x));
     }
 
     byLgda(id: string) {
-        return this.dataservice.get('company/bylcda/' + id).catch(x => this.dataservice.handleError(x))
+        return this.dataservice.get('company/bylcda/' + id).catch(x => this.dataservice.handleError(x));
     }
 
     update(companyModel: CompanyModel) {

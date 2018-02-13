@@ -66,13 +66,12 @@ export class CompanyComponent implements OnInit {
         this.lcdaservice.getLCdaById(lcdaId).subscribe(response => {
             this.isLoading = false;
             const objSchema = Object.assign(new ResponseModel(), response);
-            if (objSchema.code == '00') {
+            if (objSchema.code === '00') {
                 this.lcdaModel = objSchema.data;
                 this.getSectorbyLcda();
                 this.getCategoryByLCda();
                 this.getCompanyByLcda();
-            }
-            else {
+            } else {
                 this.toasterService.pop('error', 'Error', objSchema.desciption);
             }
 
@@ -91,7 +90,7 @@ export class CompanyComponent implements OnInit {
             }, error => {
                 this.isLoading = false;
                 this.toasterService.pop('error', 'Error', error);
-            })
+            });
     }
 
     getCategoryByLCda() {
@@ -150,8 +149,7 @@ export class CompanyComponent implements OnInit {
             }, error => {
                 this.companyModel.isLoading = false;
             });
-        }
-        else if(this.companyModel.eventType === 'EDIT'){
+        } else if (this.companyModel.eventType === 'EDIT') {
             this.companyservice.update(this.companyModel).subscribe(response => {
                 this.companyModel.isLoading = false;
                 const result = Object.assign(new ResponseModel(), response);
@@ -164,4 +162,21 @@ export class CompanyComponent implements OnInit {
             });
         }
     }
+
+    next() {
+        if (this.pageModel.pageNum > 1 && this.companies.length < 1) {
+            return;
+        }
+        this.pageModel.pageNum += 1;
+        this.getCompanyByLcda();
+    }
+
+    previous() {
+        this.pageModel.pageNum -= 1;
+        if (this.pageModel.pageNum < 1) {
+            this.pageModel.pageNum = 1;
+        }
+        this.getCompanyByLcda();
+    }
+
 }
