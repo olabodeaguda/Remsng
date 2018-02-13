@@ -57,6 +57,7 @@ namespace RemsNG.ORM
         public DbSet<DemandNoticePaymentHistoryExt> DemandNoticePaymentHistoryExts { get; set; }
         public DbSet<ItemReportSummaryModel> ItemReportSummaryModels { get; set; }
         public DbSet<ChartReport> ChartReports { get; set; }
+        public DbSet<DnError> DnErroor{ get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -89,6 +90,7 @@ namespace RemsNG.ORM
             modelBuilder.Entity<DemandNoticeArrears>().ToTable("tbl_demandNoticeArrears");
             modelBuilder.Entity<DemandNoticeDownloadHistory>().ToTable("tbl_DemandNoticeDownloadHistory");
             modelBuilder.Entity<BatchDemandNoticeModel>().ToTable("tbl_batchDownloadRequest");
+            modelBuilder.Entity<LcdaProperty>().ToTable("tbl_LcdaProperty");
             modelBuilder.Entity<LcdaProperty>().ToTable("tbl_LcdaProperty");
         }
     }

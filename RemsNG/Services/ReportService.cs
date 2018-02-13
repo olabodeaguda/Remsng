@@ -50,6 +50,7 @@ namespace RemsNG.Services
                 html = html + $"<td>CURRENT WEEK</td>";
                 html = html + $"<td>PREVIOUS AMOUNT</td>";
                 html = html + $"<td>TO DATE</td>";
+                html = html + $"<td>CUMULATIVE</td>";
                 html = html + $"</tr>";
 
                 html = html + "</thead>";
@@ -58,6 +59,7 @@ namespace RemsNG.Services
 
                 string[] items = rptLst.Select(x => x.itemDescription).Distinct().ToArray();
 
+                decimal cumulative = 0;
                 for (int i = 0; i < items.Length; i++)
                 {
                     #region body
@@ -81,7 +83,9 @@ namespace RemsNG.Services
                     decimal previousAmount = previousYearList.Where(x => x.itemDescription == items[i]).Sum(x => x.amountPaid);
                     html = html + $"<td>{String.Format("{0:n}", decimal.Round(previousAmount, 2))}</td>";
 
+                    cumulative = cumulative + decimal.Round((previousAmount + currentAmountPaid), 2);
                     html = html + $"<td>{String.Format("{0:n}", decimal.Round((previousAmount + currentAmountPaid), 2))}</td>";
+                    html = html + $"<td>{String.Format("{0:n}", cumulative)}</td>";
                     html = html + "</tr>";
                     #endregion
                 }

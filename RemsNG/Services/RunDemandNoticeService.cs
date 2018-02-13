@@ -237,6 +237,7 @@ namespace RemsNG.Services
                             string s = await dnDownloadService.PopulateReportHtml(htmlContent, lstOfDN[i].billingNumber, rootUrl, bdnm.createdBy);
                             if (s == string.Empty)
                             {
+                                // log bill number
                                 continue;
                             }
                             htmlContents = htmlContents + s;

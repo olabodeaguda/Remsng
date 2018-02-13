@@ -44,4 +44,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <Target Name="NgDebug" BeforeTargets="Build" Condition="'$(Configuration)' == 'Debug'">
+    <Exec WorkingDirectory="$(ProjectDir)RemsNG-UI" Command="ng build --output-hashing=none  --delete-output-path=false" />
+  </Target>
+  <Target Name="NgRelease" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
+    <Exec WorkingDirectory="$(ProjectDir)RemsNG-UI" Command="ng build --output-hashing=none  --delete-output-path=false" />
+  </Target>
 </Project>

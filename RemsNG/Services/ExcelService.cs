@@ -109,11 +109,13 @@ namespace RemsNG.Services
                     rowHeader.CreateCell(colCount++).SetCellValue("CURRENT WEEK");
                     rowHeader.CreateCell(colCount++).SetCellValue("PREVIOUS AMOUNT");
                     rowHeader.CreateCell(colCount++).SetCellValue("TO DATE");
+                    rowHeader.CreateCell(colCount++).SetCellValue("Cumulative");
 
                     #endregion
 
                     string[] items = rptLst.Select(x => x.itemDescription).Distinct().ToArray();
 
+                    decimal cumulative = 0;
                     for (int i = 0; i < items.Length; i++)
                     {
                         #region body
@@ -138,7 +140,9 @@ namespace RemsNG.Services
                         decimal previousAmount = previousYearList.Where(x => x.itemDescription == items[i]).Sum(x => x.amountPaid);
                         rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round(previousAmount, 2)));
 
+                        cumulative = cumulative + decimal.Round((previousAmount + currentAmountPaid), 2);
                         rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round((previousAmount + currentAmountPaid), 2)));
+                        rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", cumulative));
                         #endregion
                     }
 
