@@ -12,8 +12,12 @@ namespace RemsNG.Dao
 {
     public class DemandNoticeDao : AbstractDao
     {
+        private StreetDao streetDao;
+        WardDao wardDao;
         public DemandNoticeDao(RemsDbContext _db) : base(_db)
         {
+            wardDao = new WardDao(_db);
+            streetDao = new StreetDao(_db);
         }
 
         public async Task<Response> Add(DemandNotice demandNotice)
@@ -130,20 +134,46 @@ namespace RemsNG.Dao
                 DemandNotice demandNotice = results[0];
                 totalCount = demandNotice.totalSize.HasValue ? demandNotice.totalSize.Value : 1;
             }
+            List<DemandNoticeExt> lst = new List<DemandNoticeExt>();
+            foreach (var x in results)
+            {
+                DemandNoticeExt dne = new DemandNoticeExt();
+                dne.batchNo = x.batchNo;
+                dne.billingYear = x.billingYear;
+                dne.demandNoticeStatus = x.demandNoticeStatus;
+                dne.id = x.id;
+                dne.lcdaId = x.lcdaId;
+                dne.demandNoticeRequest = await TranslateDemandNoticeRequest(x.query);
+                lst.Add(dne);
+            }
 
             return new
             {
-                data = results.Select(x => new DemandNoticeExt()
-                {
-                    batchNo = x.batchNo,
-                    billingYear = x.billingYear,
-                    demandNoticeStatus = x.demandNoticeStatus,
-                    id = x.id,
-                    lcdaId = x.lcdaId,
-                    demandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequest>(EncryptDecryptUtils.FromHexString(x.query))
-                }),
+                data = lst,
                 totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
             };
+        }
+
+        private async Task<DemandNoticeRequest> TranslateDemandNoticeRequest(string jsonObject)
+        {
+            DemandNoticeRequest s = JsonConvert.DeserializeObject<DemandNoticeRequest>(EncryptDecryptUtils.FromHexString(jsonObject));
+            if (s.wardId != null)
+            {
+                Ward ward = await wardDao.GetWard(s.wardId.Value);
+                if (ward != null)
+                {
+                    s.wardName = ward.wardName;
+                }
+            }
+            if (s.streetId != null)
+            {
+                Street street = await streetDao.ById(s.streetId.Value);
+                if (street != null)
+                {
+                    s.streetName = street.streetName;
+                }
+            }
+            return s;
         }
 
         public async Task<object> All(PageModel pageModel)
@@ -174,7 +204,7 @@ namespace RemsNG.Dao
         public async Task<DemandNotice> GetById(Guid id)
         {
             return await db.DemandNotices.FromSql("sp_getDemandNotice @p0", new object[] { id }).FirstOrDefaultAsync();
-        }   
+        }
 
         public async Task<DemandNotice> GetByBatchId(string batchId)
         {
@@ -200,6 +230,6 @@ namespace RemsNG.Dao
                 throw;
             }
         }
-        
+
     }
 }

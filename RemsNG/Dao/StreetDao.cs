@@ -18,6 +18,10 @@ namespace RemsNG.Dao
             this.logger = loggerFactory.CreateLogger("LCDA Dao");
         }
 
+        public StreetDao(RemsDbContext _db) : base(_db)
+        {
+        }
+
         public async Task<Response> Add(Street street)
         {
             DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addStreet @p0, @p1, @p2, @p3, @p4, @p5", new object[] {
