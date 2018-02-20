@@ -218,10 +218,8 @@ namespace RemsNG.Services
                     {
                         var firstTaxpayer = lstOfDN[0];
                         Lgda lgda = await taxpayerService.getLcda(firstTaxpayer.taxpayerId);
-
                         string template = await dnDownloadService.LcdaTemlateByLcda(lgda.id);
 
-                        //string rootUrl = $"http://{context.Request.Host}";
                         string rootUrl = this.hostingEnvironment.WebRootPath;
                         string rootPath = Path.Combine(this.hostingEnvironment.WebRootPath, "zipReports", bdnm.batchNo);
                         if (!Directory.Exists(rootPath))

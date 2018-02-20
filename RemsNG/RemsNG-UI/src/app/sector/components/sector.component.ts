@@ -21,8 +21,8 @@ export class SectorComponent implements OnInit {
     @ViewChild('addModal') addModal: ElementRef;
     constructor(private activeRoute: ActivatedRoute,
         private lcdaService: LcdaService,
-        private toasterService: ToasterService,
-        private sectorService: SectorService) {
+      private toasterService: ToasterService,
+      private sectorService: SectorService) {
         this.lcdaModel = new LcdaModel();
         this.sectorModel = new SectorModel();
     }

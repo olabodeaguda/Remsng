@@ -114,6 +114,9 @@ namespace RemsNG.Services
                     #endregion
 
                     string[] items = rptLst.Select(x => x.itemDescription).Distinct().ToArray();
+                    decimal totalApproveEstimate = 0;
+                    decimal totalCurrentAMountPaid = 0;
+                    decimal totalPreviousAMountPaid = 0;
 
                     decimal cumulative = 0;
                     for (int i = 0; i < items.Length; i++)
@@ -127,6 +130,7 @@ namespace RemsNG.Services
                         var itemCode = rptLst.Where(x => x.itemDescription == items[i]).FirstOrDefault();
                         rowbody.CreateCell(colCount++).SetCellValue(itemCode == null ? "Empty" : itemCode.itemCode);
                         rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round(estmatAmount, 2)));
+                        totalApproveEstimate = totalApproveEstimate + estmatAmount;
 
                         foreach (var tm in wards)
                         {
@@ -136,15 +140,23 @@ namespace RemsNG.Services
 
                         decimal currentAmountPaid = rptLst.Where(x => x.itemDescription == items[i]).Sum(x => x.amountPaid);
                         rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round(currentAmountPaid, 2)));
+                        totalCurrentAMountPaid = totalCurrentAMountPaid + currentAmountPaid;
 
                         decimal previousAmount = previousYearList.Where(x => x.itemDescription == items[i]).Sum(x => x.amountPaid);
                         rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round(previousAmount, 2)));
+                        totalPreviousAMountPaid = totalPreviousAMountPaid + previousAmount;
 
                         cumulative = cumulative + decimal.Round((previousAmount + currentAmountPaid), 2);
                         rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round((previousAmount + currentAmountPaid), 2)));
                         rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", cumulative));
                         #endregion
                     }
+
+                    IRow rowbody1 = sheet1.CreateRow(rowIndex++);
+                    rowbody1.CreateCell(3).SetCellValue(String.Format("{0:n}", decimal.Round(totalApproveEstimate, 2)));
+                    rowbody1.CreateCell(colCount - 4).SetCellValue(String.Format("{0:n}", decimal.Round(totalCurrentAMountPaid, 2)));
+                    rowbody1.CreateCell(colCount - 3).SetCellValue(String.Format("{0:n}", decimal.Round(totalPreviousAMountPaid, 2)));
+                    rowbody1.CreateCell(colCount - 2).SetCellValue(String.Format("{0:n}", decimal.Round(cumulative, 2)));
 
                     sheet1.AutoSizeColumn(0);
                     MemoryStream memo = new MemoryStream();
@@ -238,6 +250,8 @@ namespace RemsNG.Services
 
                     var allitems = rptLst.GroupBy(x => x.billingNo);
 
+                    decimal totalAmountPaid = 0;
+                    decimal totalAllAMount = 0;
                     foreach (var eachGrp in allitems)
                     {
                         #region body
@@ -263,13 +277,20 @@ namespace RemsNG.Services
                         rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round(penalties, 2)));
 
                         decimal amountPaid = eachGrp.Sum(x => x.amountPaid);
+                        totalAmountPaid = totalAmountPaid + amountPaid;
                         rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round(amountPaid, 2)));
 
                         decimal totalAmount = eachGrp.Sum(x => x.itemAmount);
+                        totalAllAMount = totalAllAMount + totalAmount;
                         rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round(totalAmount - amountPaid, 2)));
 
                         #endregion
                     }
+
+                    colCount = items.Count() + 8;
+                    IRow rowbody1 = sheet1.CreateRow(rowIndex++);
+                    rowbody1.CreateCell(colCount - 2).SetCellValue(String.Format("{0:n}", decimal.Round(totalAmountPaid, 2)));
+                    rowbody1.CreateCell(colCount - 1).SetCellValue(String.Format("{0:n}", decimal.Round(totalAllAMount, 2)));
 
                     sheet1.AutoSizeColumn(0);
                     MemoryStream memo = new MemoryStream();

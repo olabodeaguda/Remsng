@@ -5528,6 +5528,20 @@ var RecieptComponent = (function () {
             _this.toasterService.pop("error", 'Error', error);
         });
     };
+    RecieptComponent.prototype.next = function () {
+        if (this.pageModel.pageNum > 1 && this.receiptLst.length < 1) {
+            return;
+        }
+        this.pageModel.pageNum += 1;
+        this.getByLcda();
+    };
+    RecieptComponent.prototype.previous = function () {
+        this.pageModel.pageNum -= 1;
+        if (this.pageModel.pageNum < 1) {
+            this.pageModel.pageNum = 1;
+        }
+        this.getByLcda();
+    };
     return RecieptComponent;
 }());
 __decorate([

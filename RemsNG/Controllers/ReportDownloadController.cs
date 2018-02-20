@@ -64,6 +64,8 @@ namespace RemsNG.Controllers
 
             DateTime sd = DateTime.ParseExact(startDate, "dd-MM-yyyy", null);
             DateTime ed = DateTime.ParseExact(endDate, "dd-MM-yyyy", null);
+            ed = ed.AddHours(23);
+            ed = ed.AddMinutes(59);
 
             List<ItemReportSummaryModel> current = await reportService.ByDate(sd, ed);
             List<ItemReportSummaryModel> previous = await reportService.ByDate(
@@ -86,7 +88,7 @@ namespace RemsNG.Controllers
             HttpContext.Response.Body.Write(result, 0, result.Length);
             return new ContentResult();
         }
-        
+
         [RemsRequirementAttribute("DOWNLOAD_REPORT")]
         [HttpGet("revenuehtml/{startDate}/{endDate}")]
         public async Task<object> GetHtml(string startDate, string endDate)
@@ -120,6 +122,8 @@ namespace RemsNG.Controllers
 
             DateTime sd = DateTime.ParseExact(startDate, "dd-MM-yyyy", null);
             DateTime ed = DateTime.ParseExact(endDate, "dd-MM-yyyy", null);
+            ed = ed.AddHours(23);
+            ed = ed.AddMinutes(59);
 
             List<ItemReportSummaryModel> current = await reportService.ByDate(sd, ed);
             List<ItemReportSummaryModel> previous = await reportService.ByDate(
@@ -186,6 +190,8 @@ namespace RemsNG.Controllers
 
             DateTime sd = DateTime.ParseExact(startDate, "dd-MM-yyyy", null);
             DateTime ed = DateTime.ParseExact(endDate, "dd-MM-yyyy", null);
+            ed = ed.AddHours(23);
+            ed = ed.AddMinutes(59);
 
             List<ItemReportSummaryModel> current = await reportService.ByDate(sd, ed);
 
@@ -241,6 +247,8 @@ namespace RemsNG.Controllers
 
             DateTime sd = DateTime.ParseExact(startDate, "dd-MM-yyyy", null);
             DateTime ed = DateTime.ParseExact(endDate, "dd-MM-yyyy", null);
+            ed = ed.AddHours(23);
+            ed = ed.AddMinutes(59);
 
             List<ItemReportSummaryModel> current = await reportService.ByDate(sd, ed);
 
@@ -282,7 +290,7 @@ namespace RemsNG.Controllers
                 label = x.wardName,
                 receivables = (x.itemAmount - x.amountPaid),
                 amountPaid = x.amountPaid
-            }).OrderBy(x=>x.label));
+            }).OrderBy(x => x.label));
         }
 
         [HttpGet("reportrevenue")]
@@ -295,7 +303,5 @@ namespace RemsNG.Controllers
                 value = x.amountPaid
             }));
         }
-
-
     }
 }

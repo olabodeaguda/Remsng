@@ -11,6 +11,7 @@ import { BankService } from "../../shared/services/bank.service";
 import { DemandNoticePaymentService } from "../services/demand-notice-payment.service";
 import { ItemService } from "../../items/services/item.service";
 import { DemandNoticeService } from "../services/demand-notice.service";
+import { IMyDateModel, IMyDpOptions } from "mydatepicker";
 declare var jQuery: any;
 
 @Component({
@@ -37,6 +38,11 @@ export class DemandNoticeSearchComponent implements OnInit {
     isLoadingMini: boolean = false;
     isLoadingPayment: boolean = false;
     isLoadingReceipt: boolean = false;
+
+    onDateChanged(event: IMyDateModel, dataType: string) {
+        this.dnpModel.dateCreated = event.formatted;
+    }
+
     constructor(private appsettings: AppSettings,
         private toasterService: ToasterService,
         private dnTaxpayer: DemandNoticeTaxpayerService,
@@ -49,6 +55,11 @@ export class DemandNoticeSearchComponent implements OnInit {
     ngOnInit(): void {
         this.getBanks();
     }
+
+    public myDatePickerOptions: IMyDpOptions = {
+        dateFormat: 'dd-mm-yyyy',
+    };
+
 
     downloadDN(url: string) {
         this.isLoading = true;

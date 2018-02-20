@@ -81,5 +81,22 @@ export class RecieptComponent implements OnInit {
                 this.toasterService.pop("error",'Error',error);
             });
 
+  }
+
+  next() {
+    if (this.pageModel.pageNum > 1 && this.receiptLst.length < 1) {
+      return;
     }
+    this.pageModel.pageNum += 1;
+    this.getByLcda();
+  }
+
+  previous() {
+    this.pageModel.pageNum -= 1;
+    if (this.pageModel.pageNum < 1) {
+      this.pageModel.pageNum = 1;
+    }
+    this.getByLcda();
+  }
+
 }
