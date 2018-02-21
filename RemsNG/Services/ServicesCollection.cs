@@ -1,8 +1,6 @@
 ﻿using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using Microsoft.EntityFrameworkCore;
@@ -15,11 +13,8 @@ using RemsNG.Models;
 using RemsNG.ORM;
 using RemsNG.Security;
 using RemsNG.Services.Interfaces;
-using RemsNG.Utilities;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -56,7 +51,6 @@ namespace RemsNG.Services
                 options.logOutTIme = jwtAppSettingOptions[nameof(JwtIssuerOptions.logOutTIme)];
             });
 
-            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             services.AddAuthentication(option =>
             {
                 option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -146,6 +140,8 @@ namespace RemsNG.Services
             services.AddTransient<IAbstractService, AbstractService>();
             services.AddTransient<IReportService, ReportService>();
             services.AddTransient<IExcelService, ExcelService>();
+            services.AddTransient<ISyncService, SyncService>();
+            services.AddSingleton<IConfigurationRoot>(provider => Configuration);
         }
 
         public static IConfigurationSection jwtAppSettingOptions

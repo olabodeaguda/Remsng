@@ -58,6 +58,7 @@ namespace RemsNG.ORM
         public DbSet<ItemReportSummaryModel> ItemReportSummaryModels { get; set; }
         public DbSet<ChartReport> ChartReports { get; set; }
         public DbSet<DnError> DnErroor{ get; set; }
+        public DbSet<SyncDataModel> SyncDataModels { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -18,7 +18,8 @@ namespace RemsNG
             this.next = next;
         }
 
-        public async Task Invoke(HttpContext context, ILoggerFactory loggerFactory, IRunDemandNoticeService runDemandNoticeService)
+        public async Task Invoke(HttpContext context, ILoggerFactory loggerFactory,
+            IRunDemandNoticeService runDemandNoticeService, ISyncService syncService)
         {
             logger = loggerFactory.CreateLogger("Recurring job scheduler");
 
@@ -27,6 +28,7 @@ namespace RemsNG
                 RecurringJob.AddOrUpdate(() => runDemandNoticeService.RegisterTaxpayer(), Cron.MinuteInterval(2));
                 RecurringJob.AddOrUpdate(() => runDemandNoticeService.TaxpayerPenalty(), Cron.MinuteInterval(2));
                 RecurringJob.AddOrUpdate(() => runDemandNoticeService.GenerateBulkDemandNotice(), Cron.MinuteInterval(2));
+                RecurringJob.AddOrUpdate(() => syncService.Sync(), Cron.MinuteInterval(2));
                 await next(context);
             }
             catch (Exception ex)
