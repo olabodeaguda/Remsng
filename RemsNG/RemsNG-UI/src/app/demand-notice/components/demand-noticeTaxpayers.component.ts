@@ -34,9 +34,11 @@ export class DemandNoticeTaxpayersComponent implements OnInit {
         private storageService: StorageService) {
         this.isLoading = false;
     }
+    
     ngOnInit() {
         this.initializePage();
     }
+
     initializePage() {
         this.activeRoute.params.subscribe((param: any) => {
             this.getDemandNoticeByBatchId(param["batchId"]);

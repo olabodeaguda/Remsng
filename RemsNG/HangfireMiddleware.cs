@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using RemsNG.Services.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace RemsNG
@@ -28,7 +26,8 @@ namespace RemsNG
                 RecurringJob.AddOrUpdate(() => runDemandNoticeService.RegisterTaxpayer(), Cron.MinuteInterval(2));
                 RecurringJob.AddOrUpdate(() => runDemandNoticeService.TaxpayerPenalty(), Cron.MinuteInterval(2));
                 RecurringJob.AddOrUpdate(() => runDemandNoticeService.GenerateBulkDemandNotice(), Cron.MinuteInterval(2));
-                RecurringJob.AddOrUpdate(() => syncService.Sync(), Cron.MinuteInterval(2));
+                RecurringJob.AddOrUpdate(() => syncService.SyncUp(), Cron.MinuteInterval(4));
+                RecurringJob.AddOrUpdate(() => syncService.SyncDown(), Cron.MinuteInterval(4));
                 await next(context);
             }
             catch (Exception ex)

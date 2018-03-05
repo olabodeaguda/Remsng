@@ -73,4 +73,8 @@ export class DemandNoticeService {
         return this.datataservice.get('dnt/cancel').catch(x => this.datataservice.handleError(x));
     }
 
+    demandNoticeError(id:string) {
+        return this.datataservice.get('dnt/error/'+id).catch(x => this.datataservice.handleError(x));
+    }
+
 }

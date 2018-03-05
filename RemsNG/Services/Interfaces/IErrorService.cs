@@ -9,5 +9,6 @@ namespace RemsNG.Services.Interfaces
     public interface IErrorService
     {
         Task<bool> Add(Error error);
+        Task<List<Error>> ByOwnerIdAsync(Guid ownerId);
     }
 }

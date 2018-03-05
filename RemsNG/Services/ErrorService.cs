@@ -21,5 +21,11 @@ namespace RemsNG.Services
         {
             return await errorDao.Add(error);
         }
+
+        public async Task<List<Error>> ByOwnerIdAsync(Guid ownerId)
+        {            
+            return await errorDao.ByOwnerIdAsync(ownerId);
+        }
+        
     }
 }

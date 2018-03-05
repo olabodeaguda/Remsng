@@ -7,6 +7,7 @@ namespace RemsNG.Services.Interfaces
 {
     public interface ISyncService
     {
-        Task Sync();
+        Task SyncUp();
+        Task SyncDown();
     }
 }

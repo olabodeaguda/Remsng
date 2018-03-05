@@ -12,13 +12,15 @@ import { DemandNoticeTaxpayerService } from './services/demand-noticeTaxpayer.se
 import { DemandNoticeIndexComponent } from './components/demand-notice-index.component';
 import { DemandNoticeSearchComponent } from './components/demand-notice-search.component';
 import { DemandNoticePaymentService } from './services/demand-notice-payment.service';
+import { DemandNoticeErrorComponent } from './components/demand-notice-error.component';
 
 const appRoutes: Routes = [
     { path: 'demandnotice', component: DemandNoticeIndexComponent,
         children:[
             { path: '', component: DemandNoticeComponent, pathMatch: 'full' },
             { path: 'taxpayer/:batchId', component: DemandNoticeTaxpayersComponent, pathMatch: 'full' },            
-            { path: 'searchtaxpayer', component: DemandNoticeSearchComponent }
+            { path: 'searchtaxpayer', component: DemandNoticeSearchComponent },
+            { path: 'dnerror/:id', component: DemandNoticeErrorComponent }
         ]
     },
  ];
@@ -35,7 +37,8 @@ const appRoutes: Routes = [
     ],
     declarations: [
         DemandNoticeComponent,DemandNoticeTaxpayersComponent,
-        DemandNoticeIndexComponent,DemandNoticeSearchComponent
+        DemandNoticeIndexComponent,DemandNoticeSearchComponent,
+        DemandNoticeErrorComponent
     ],
     providers: [ 
         DemandNoticeService,
@@ -44,7 +47,8 @@ const appRoutes: Routes = [
     ],
     exports: [
         DemandNoticeComponent,DemandNoticeTaxpayersComponent,
-        DemandNoticeIndexComponent,DemandNoticeSearchComponent
+        DemandNoticeIndexComponent,DemandNoticeSearchComponent,
+        DemandNoticeErrorComponent
     ]
   })
 

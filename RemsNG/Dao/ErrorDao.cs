@@ -35,5 +35,10 @@ namespace RemsNG.Dao
             return false;
         }
 
+        public async Task<List<Error>> ByOwnerIdAsync(Guid ownerId)
+        {
+            return await db.Errors.FromSql($"select * from tbl_error where ownerId = '{ownerId}'").ToListAsync();
+        }
+
     }
 }

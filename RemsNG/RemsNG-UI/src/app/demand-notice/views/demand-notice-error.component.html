@@ -1,0 +1,62 @@
+<!--<section class="content">
+    <div class="row">
+        <section class="content-header">
+            <h1>
+                Demand Notice
+                <small>Manage Demand Notice Taxpayers. Batch Number({{demandNoticeModel.batchNo}})</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="javascript:;">
+                        <i class="fa fa-dashboard"></i> Home</a>
+                </li>
+                <li>
+                    <a [routerLink]="['/demandnotice']">
+                        <i class="fa fa-dashboard"></i> Demand Notice</a>
+                </li>
+                <li class="active">Taxpayers</li>
+            </ol>
+        </section>
+        <div class="row">
+            <section class="content" style="border-style:thin">
+    
+                <div class="row">
+                    <div class="col-xs-12">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <th style="width:40px;"></th>
+                                <th></th>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let data of taxpayersLst; let i=index">
+                                    <td>{{i+1}}</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-default dropdown-toggle" 
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                Action
+                                                <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                   <p></p>>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                    <td>{{data.billingNumber}}</td>
+                                </tr>
+                                <tr *ngIf="taxpayersLst.length < 1">
+                                    <td style="width:100%" colspan="1">No record !!!</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>    
+    </div>
+    </section>
+    <section class="content"></section>
+    <section class="content"></section>
+    <div class="loading" *ngIf="isLoading"></div>-->
