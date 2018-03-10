@@ -12,7 +12,6 @@ namespace RemsNG.ORM
         public RemsDbContext(DbContextOptions<RemsDbContext> options) : base(options)
         {
         }
-
         public DbSet<User> Users { get; set; }
         public DbSet<Domain> Domains { get; set; }
         public DbSet<UserDomain> UserDomains { get; set; }

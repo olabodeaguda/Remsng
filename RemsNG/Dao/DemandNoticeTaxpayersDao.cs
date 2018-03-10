@@ -25,11 +25,27 @@ namespace RemsNG.Dao
             return await db.Set<DemandNoticeTaxpayersDetail>().FromSql(query).ToListAsync();
         }
 
+        public async Task<long> NewBillingNumber()
+        {
+            DbResponse dbResponse = new DbResponse();
+            try
+            {
+                dbResponse = await db.DbResponses.FromSql("sp_currentMaxBilling").FirstOrDefaultAsync();
+            }
+            catch (Exception x)
+            {
+                throw;
+            }
+
+            return dbResponse == null ? 0 : long.Parse(dbResponse.msg);
+        }
+
         public async Task<Response> Add(DemandNoticeTaxpayersDetail dnt)
         {
             try
             {
-                DbResponse dbResponse = await db.DbResponses.FromSql("sp_addDemandNoticeTaxpayer @p0,@p1,@p2,@p3,@p4,@p5,@p6,@p7,@p8,@p9,@p10,@p11", new object[]{
+                long billnumber = await NewBillingNumber();
+                DbResponse dbResponse = await db.DbResponses.FromSql("sp_addDemandNoticeTaxpayer @p0,@p1,@p2,@p3,@p4,@p5,@p6,@p7,@p8,@p9,@p10,@p11,@p12", new object[]{
                 dnt.dnId,
                 dnt.billingYr,
                 dnt.createdBy,
@@ -41,7 +57,8 @@ namespace RemsNG.Dao
                 dnt.councilTreasurerSigFilen== null?string.Empty:dnt.councilTreasurerSigFilen,
                 dnt.revCoodinatorSigFilen == null?string.Empty:dnt.revCoodinatorSigFilen,
                 dnt.councilTreasurerMobile == null?string.Empty:dnt.councilTreasurerMobile,
-                dnt.lcdaName
+                dnt.lcdaName,
+                $"{(billnumber+1)}"
             }).FirstOrDefaultAsync();
 
                 if (dbResponse.success)

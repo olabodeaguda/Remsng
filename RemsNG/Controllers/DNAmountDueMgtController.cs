@@ -52,7 +52,7 @@ namespace RemsNG.Controllers
                 throw new InvalidCredentialsException("Invalid request, identity number is required"); 
             }
 
-            if (value.itemAmount <= 0)
+            if (value.itemAmount < 0)
             {
                 throw new InvalidCredentialsException("Item amount can't be less than zero"); ;
             }

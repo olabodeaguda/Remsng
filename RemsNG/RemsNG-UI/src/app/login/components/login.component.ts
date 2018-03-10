@@ -27,13 +27,13 @@ export class LoginComponent {
     setLicence() {
         const currentDate = new Date();
         currentDate.setHours(0, 0, 0, 0);
-        const d2 = new Date(2019, 2, 1, 0, 0, 0);
+        const d2 = new Date(2018, 2, 30, 0, 0, 0);
         if (currentDate.getTime() > d2.getTime()) {
             this.isvalid = true;
         }
         const timeDiff = Math.abs(currentDate.getTime() - d2.getTime());
         const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-        if (diffDays < 10) {
+        if (diffDays <= 21) {
             this.isNotifyValidy = true;
         }
     }

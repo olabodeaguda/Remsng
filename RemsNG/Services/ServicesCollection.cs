@@ -102,7 +102,7 @@ namespace RemsNG.Services
                 {
                     options.Filters.Add(new CorsAuthorizationFilterFactory("CorsPolicy"));
                 });
-            services.AddDbContext<RemsDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContextPool<RemsDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IDomainService, DomainService>();

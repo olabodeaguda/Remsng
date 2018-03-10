@@ -105,23 +105,7 @@ namespace RemsNG.Services
 
             htmlContent = htmlContent.Replace("ITEMLIST", DemandNoticeComponents.HtmlBuildItems(dnrp));
             int partialItemCount = 0;
-            //foreach (var tm in dnrp.items)
-            //{
-            //    if (tm.itemTitle.Length > 27)
-            //    {
-            //        partialItemCount = partialItemCount + 1;
-            //    }
-            //}
-            //int patchHeight = 0;
-            //if (dnrp.items.Count > 0)
-            //{
-            //    patchHeight = 145 - (dnrp.items.Count == 1 ? 0 : (((dnrp.items.Count - 1)) * 40)) - (partialItemCount*30);
-            //}
-            //else
-            //{
-            //    patchHeight = 185;
-            //}
-            //htmlContent = htmlContent.Replace("PATCH2", $"<div style='width: 100 %; height: {patchHeight}px; '></div>");
+            
             htmlContent = htmlContent.Replace("PATCH2", "");
 
             htmlContent = htmlContent.Replace("BANKLIST", DemandNoticeComponents.HtmlBuildBanks(dnrp));
