@@ -27,7 +27,8 @@
                     <span class="glyphicon glyphicon-user form-control-feedback"></span>
                   </div>
                   <div class="form-group has-feedback" *ngIf="!loginModel.isUsernameValid">
-                    <button  [disabled]="isvalid" [ladda]="loginModel.isLoading" type="submit" class="btn btn-primary btn-block btn-flat" (click)="validateUsername()">Next</button>
+                    <button  [disabled]="isvalid" [ladda]="loginModel.isLoading" type="submit" 
+                    class="btn btn-primary btn-block btn-flat" (click)="validateUsername()">Next</button>
                   </div>
                 </div>
 

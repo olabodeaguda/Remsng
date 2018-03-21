@@ -13,6 +13,7 @@ import { DemandNoticeIndexComponent } from './components/demand-notice-index.com
 import { DemandNoticeSearchComponent } from './components/demand-notice-search.component';
 import { DemandNoticePaymentService } from './services/demand-notice-payment.service';
 import { DemandNoticeErrorComponent } from './components/demand-notice-error.component';
+import { MyDatePickerModule } from 'mydatepicker';
 
 const appRoutes: Routes = [
     { path: 'demandnotice', component: DemandNoticeIndexComponent,
@@ -29,7 +30,7 @@ const appRoutes: Routes = [
     imports: [
       BrowserModule,
       LaddaModule,
-      FormsModule,
+      FormsModule,MyDatePickerModule,
       ReactiveFormsModule,
       SharedModule,
       ItemPenaltyModule,

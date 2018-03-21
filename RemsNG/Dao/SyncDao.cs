@@ -47,7 +47,7 @@ namespace RemsNG.Dao
             foreach (var tm in approveBills)
             {
                 query = query + $"update tbl_demandNoticePaymentHistory set paymentStatus = '{tm.paymentStatus}'," +
-                    $" lastmodifiedby= '{tm.lastmodifiedby}', lastModifiedDate = '{tm.lastModifiedDate}' where id '{tm.Id}'; ";
+                    $" lastmodifiedby= '{tm.lastmodifiedby}', lastModifiedDate = '{tm.lastModifiedDate}' where id = '{tm.Id}'; ";
             }
 
             int count = await db.Database.ExecuteSqlCommandAsync(query);

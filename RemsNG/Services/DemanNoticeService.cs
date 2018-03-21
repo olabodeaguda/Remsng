@@ -24,6 +24,11 @@ namespace RemsNG.Services
             return await demandNoticeDao.Add(demandNotice);
         }
 
+        public async Task<object> SearchDemandNotice(DemandNotice demandNotice,PageModel pageModel)
+        {
+            return await demandNoticeDao.SearchDemandNotice(demandNotice, pageModel);
+        }
+
         public async Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel)
         {
             return await demandNoticeDao.ByLcdaId(lcdaId, pageModel);

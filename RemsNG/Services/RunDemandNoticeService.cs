@@ -1,22 +1,19 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.NodeServices;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using RemsNG.Dao;
 using RemsNG.Models;
 using RemsNG.ORM;
 using RemsNG.Services.Interfaces;
+using RemsNG.Utilities;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Security.Claims;
-using RemsNG.Utilities;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http;
-using System.Net.Http;
-using Microsoft.AspNetCore.NodeServices;
-using Microsoft.AspNetCore.Hosting;
-using System.IO;
-using Hangfire;
-using System.IO.Compression;
 
 namespace RemsNG.Services
 {
@@ -46,6 +43,7 @@ namespace RemsNG.Services
         private INodeServices nodeServices;
         private IHostingEnvironment hostingEnvironment;
         private IServiceProvider serviceProvider;
+
         public RunDemandNoticeService(RemsDbContext _db,
             ILoggerFactory loggerFactory, IAddress _address,
             ILcdaService _lcdaService, IStateService _stateService,
@@ -377,13 +375,17 @@ namespace RemsNG.Services
         public async Task TaxpayerPenalty()
         {
             // scan through demandnoticeitem() check the year/penalty duration compare, if passed then create penalty
-            DateTime startDuration = new DateTime(DateTime.Now.Year, 1, 1);
+            
             List<DemandNoticeItem> demandNoticeItem = await demandNoticePenaltyDao.OverDueDemandNotice();
-            List<string> lstOfdurations = CommonList.CurrentDurations(startDuration);
+
             string query = string.Empty;
             string ids = string.Empty;
             foreach (var tm in demandNoticeItem)
             {
+                DateTime dt = tm.dateCreated.Value;
+                DateTime startDuration = new DateTime(dt.Year,dt.Month, dt.Day);
+                List<string> lstOfdurations = CommonList.CurrentDurations(startDuration);
+
                 if (!lstOfdurations.Contains(tm.duration))
                 {
                     continue;
@@ -457,6 +459,8 @@ namespace RemsNG.Services
                 };
                 bool result = await errorDao.Add(error);
             }
+
+            //get position of the year
 
             Response responseUnpaidDemandNotice = await demandNoticeArrearDao.AddUnpaidDemandNoticeToArrearsAsync(dN_ArrearsModel);
             if (responseUnpaidDemandNotice.code != MsgCode_Enum.SUCCESS)

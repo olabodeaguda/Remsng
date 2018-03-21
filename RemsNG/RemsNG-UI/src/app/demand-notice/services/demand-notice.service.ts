@@ -39,6 +39,24 @@ export class DemandNoticeService {
         return this.datataservice.post('demandnotice', s).catch(x => this.datataservice.handleError(x));
     }
 
+    
+    searchDemandNotice(searchModel: DemandNoticeSearch,pageModel:PageModel) {
+        this.datataservice.addToHeader('pageNum', pageModel.pageNum.toString());
+        this.datataservice.addToHeader('pageSize', pageModel.pageSize.toString());
+        let s = {
+            wardId: searchModel.wardId,
+            streetId: searchModel.streetId.length <= 0 ? null : searchModel.streetId,
+            searchByName: null,
+            dateYear: searchModel.dateYear <= 0 ? null : searchModel.dateYear,
+            lcdaId: null
+        };
+
+        return this.datataservice
+        .post('demandnotice/search/'+pageModel.pageNum+'/'+pageModel.pageSize, s)
+        .catch(x => this.datataservice.handleError(x));
+    }
+
+
     adDownloadRequest(batchno: string) {
         return this.datataservice.post('dndownload/' + batchno, {})
         .catch(x => this.datataservice.handleError(x));

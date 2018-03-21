@@ -38,6 +38,9 @@ export class DemandNoticeSearchComponent implements OnInit {
     isLoadingMini: boolean = false;
     isLoadingPayment: boolean = false;
     isLoadingReceipt: boolean = false;
+    public myDatePickerOptions: IMyDpOptions = {
+        dateFormat: 'dd-mm-yyyy',
+    };
 
     onDateChanged(event: IMyDateModel, dataType: string) {
         this.dnpModel.dateCreated = event.formatted;
@@ -55,11 +58,6 @@ export class DemandNoticeSearchComponent implements OnInit {
     ngOnInit(): void {
         this.getBanks();
     }
-
-    public myDatePickerOptions: IMyDpOptions = {
-        dateFormat: 'dd-mm-yyyy',
-    };
-
 
     downloadDN(url: string) {
         this.isLoading = true;

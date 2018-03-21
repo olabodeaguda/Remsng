@@ -50,13 +50,15 @@ export class DemandNoticeTaxpayersComponent implements OnInit {
     }
 
     getDemandNoticeByBatchId(batchno: string) {
+        this.isLoading = true;
         this.dNotice.bybatchId(batchno).subscribe(response => {
+            this.isLoading=false;
             if (response.code === '00') {
                 this.demandNoticeModel = response.data;
                 this.getTaxpayerBybatchId();
             }
         }, error => {
-
+            this.isLoading=false;
         })
     }
 
@@ -64,7 +66,7 @@ export class DemandNoticeTaxpayersComponent implements OnInit {
         if (this.demandNoticeModel.batchNo.length < 1) {
             return;
         }
-        this.isLoading = false;
+        this.isLoading = true;
         this.dtsService.byBatchId(this.demandNoticeModel.batchNo, this.pageModel)
             .subscribe(response => {
                 const objschema = { data: [], totalPageCount: 0 };

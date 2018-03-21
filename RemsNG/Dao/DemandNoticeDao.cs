@@ -50,6 +50,42 @@ namespace RemsNG.Dao
             }
         }
 
+        public async Task<object> SearchDemandNotice(DemandNotice query, PageModel pageModel)
+        {
+            List<DemandNotice> results = await db.DemandNotices.FromSql("sp_searchdemandNoticePaginated @p0,@p1,@p2",
+                new object[] {
+                    pageModel.PageNum,
+                    pageModel.PageSize,
+                    query.query
+                }).ToListAsync();
+            var totalCount = 0;
+            if (results.Count > 0)
+            {
+                DemandNotice demandNotice = results[0];
+                totalCount = demandNotice.totalSize.HasValue ? demandNotice.totalSize.Value : 1;
+            }
+
+            List<DemandNoticeExt> lst = new List<DemandNoticeExt>();
+            foreach (var x in results)
+            {
+                DemandNoticeExt dne = new DemandNoticeExt();
+                dne.batchNo = x.batchNo;
+                dne.billingYear = x.billingYear;
+                dne.demandNoticeStatus = x.demandNoticeStatus;
+                dne.id = x.id;
+                dne.lcdaId = x.lcdaId;
+                dne.demandNoticeRequest = await TranslateDemandNoticeRequest(x.query);
+                lst.Add(dne);
+            }
+
+            return new
+            {
+                data =lst,
+                totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
+            };
+        }
+
+
         public async Task<Response> UpdateQuery(DemandNotice demandNotice)
         {
             DbResponse dbResponse = await db.DbResponses.FromSql("sp_updateQueryDemandNotice @p0,@p1", new object[] {

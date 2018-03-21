@@ -7,6 +7,7 @@ import { ResponseModel } from "../../shared/models/response.model";
 import { ToasterService } from "angular2-toaster/angular2-toaster";
 import { WardService } from "../../ward/services/ward.service";
 import { StreetService } from "../../street/services/street.service";
+import { IMyDpOptions, IMyDateModel } from 'mydatepicker';
 import { DownloadRequestModel } from '../models/download-request.model';
 import { DemandNoticeTaxpayerService } from '../services/demand-noticeTaxpayer.service';
 declare var jQuery: any;
@@ -33,6 +34,7 @@ export class DemandNoticeComponent implements OnInit {
     @ViewChild('downloadRequestModal') downloadRequestModal: ElementRef;
     isLoadingMini: boolean = false;
     dowloadRequestList = [];
+    
     constructor(private appsettings: AppSettings,
         private demandnoticeservice: DemandNoticeService,
         private toasterService: ToasterService,
@@ -48,12 +50,12 @@ export class DemandNoticeComponent implements OnInit {
         this.yrLst = this.appsettings.getYearList();
 
         this.getDemandNotice();
-        setInterval(() => {
-            const currentUrl = this.router.url;
-            if (currentUrl === '/demandnotice') {
-            this.getDemandNotice2();
-            }
-        }, 3000);
+        // setInterval(() => {
+        //     const currentUrl = this.router.url;
+        //     if (currentUrl === '/demandnotice') {
+        //     this.getDemandNotice2();
+        //     }
+        // }, 30000);
         this.getWards();
     }
 
@@ -69,9 +71,31 @@ export class DemandNoticeComponent implements OnInit {
         }).subscribe();
     }
 
+    searchDemandNotice() {
+        if (this.searchModel.dateYear <= 0) {
+            this.toasterService.pop('error', 'Error', 'Billing year is required')
+            return;
+        }
+
+        this.isLoading = true;
+        this.demandnoticeservice.searchDemandNotice(this.searchModel,this.pageModel).subscribe(
+            response => {
+                const objschema = { data: [], totalPageCount: 0 };
+                const res = Object.assign(objschema, response);
+                this.demandNoticeLst = res.data;
+                this.pageModel.totalPageCount = res.totalPageCount;
+                this.isLoading = false;
+            },
+            error => {
+                this.isLoading = false;
+                this.toasterService.pop('error', 'Error', error);
+            });
+        
+    }
+
     submitDemandRequest() {
         if (this.searchModel.dateYear <= 0) {
-            this.toasterService.pop('error', 'Error', 'Biling year is required')
+            this.toasterService.pop('error', 'Error', 'Billing year is required')
             return;
         }
 

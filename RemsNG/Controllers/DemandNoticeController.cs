@@ -129,7 +129,6 @@ namespace RemsNG.Controllers
         [HttpPost]
         public async Task<object> Post([FromBody]DemandNoticeRequest demandNoticeRequest)
         {
-            // DemandNoticeRequest demandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequest>(value);
             if (demandNoticeRequest.streetId != null && demandNoticeRequest.streetId != default(Guid))
             {
                 Street street = await streetService.ById(demandNoticeRequest.streetId.Value);
@@ -189,6 +188,67 @@ namespace RemsNG.Controllers
             {
                 return BadRequest(response);
             }
+        }
+
+        [HttpPost("search/{pagenum}/{pagesize}")]
+        public async Task<object> SearchDemandNotice([FromBody]DemandNoticeRequest demandNoticeRequest, [FromHeader] string pageNum, [FromHeader] string pageSize)
+        {
+            if (demandNoticeRequest.streetId != null && demandNoticeRequest.streetId != default(Guid))
+            {
+                Street street = await streetService.ById(demandNoticeRequest.streetId.Value);
+                if (street == null)
+                {
+                    return BadRequest(new Response()
+                    {
+                        code = MsgCode_Enum.NOTFOUND,
+                        description = "Street not found"
+                    });
+                }
+
+            }
+            else if (demandNoticeRequest.wardId != null && demandNoticeRequest.wardId != default(Guid))
+            {
+                Guid s = demandNoticeRequest.wardId.Value;
+                Ward ward = await wardService.GetWard(demandNoticeRequest.wardId.Value);
+                if (ward == null)
+                {
+                    return BadRequest(new Response()
+                    {
+                        code = MsgCode_Enum.NOTFOUND,
+                        description = "Ward not found"
+                    });
+                }
+            }
+            else if (demandNoticeRequest.dateYear == 0)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Billing year is required"
+                });
+            }
+
+            pageSize = string.IsNullOrEmpty(pageSize) ? "1" : pageSize;
+            pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
+
+            demandNoticeRequest.createdBy = User.Identity.Name;
+            DemandNotice demandNotice = new DemandNotice();
+            demandNotice.lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
+            string encr = JsonConvert.SerializeObject(demandNoticeRequest);
+            string dx = EncryptDecryptUtils.ToHexString(encr); ;
+            string ddx = EncryptDecryptUtils.FromHexString(dx);
+            demandNotice.query = EncryptDecryptUtils.ToHexString(encr);
+            demandNotice.billingYear = demandNoticeRequest.dateYear;
+            demandNotice.createdBy = User.Identity.Name;
+            demandNotice.id = Guid.NewGuid();
+            demandNotice.batchNo = CommonList.GetBatchNo();
+            demandNotice.demandNoticeStatus = DemandNoticeStatus.SUBMITTED.ToString();
+
+            return await demandService.SearchDemandNotice(demandNotice, new PageModel()
+            {
+                PageNum = int.Parse(pageNum),
+                PageSize = int.Parse(pageSize)
+            });
         }
 
         [HttpPut("updatequery/{id}")]

@@ -69,7 +69,6 @@ namespace RemsNG
             var ops = new BackgroundJobServerOptions { WorkerCount = 20 };
 
             app.UseHangfireServer(ops);
-            //app.UseHangfireDashboard();
 
             app.Use(async (context, next) =>
             {

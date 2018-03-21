@@ -17,6 +17,10 @@ namespace RemsNG.Dao
             this.logger = loggerFactory.CreateLogger("Error Dao");
         }
 
+        public ErrorDao(RemsDbContext _db): base(_db)
+        {
+        }
+
         public async Task<bool> Add(Error error)
         {
             DbResponse dbResponse = await db.DbResponses.FromSql("sp_addError @p0,@p1,@p2", new object[]
@@ -31,7 +35,10 @@ namespace RemsNG.Dao
                 return true;
             }
 
-            logger.LogError(dbResponse.msg, error);
+            if (logger != null)
+            {
+                logger.LogError(dbResponse.msg, error); 
+            }
             return false;
         }
 

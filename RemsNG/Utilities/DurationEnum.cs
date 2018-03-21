@@ -7,6 +7,6 @@ namespace RemsNG.Utilities
 {
     public enum DurationEnum
     {
-        DAILY,WEEKELY,MONTHLY,QUARTERLY,YEARLY
+        DAILY,WEEKLY,MONTHLY,QUARTERLY,YEARLY
     }
 }

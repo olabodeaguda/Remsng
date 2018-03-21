@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+using RemsNG.Utilities;
 
 namespace RemsNG.Utilities
 {
@@ -50,39 +49,45 @@ namespace RemsNG.Utilities
         {
             List<string> duration = new List<string>();
             DateTime currentDate = DateTime.Now;
-            
-            if (currentDate.CompareTo(dateDuration.AddDays(1))>= 1)
+
+            if (currentDate.CompareTo(dateDuration.AddDays(1)) >= 1)
             {
                 duration.Add(DurationEnum.DAILY.ToString());
             }
-            if(currentDate.CompareTo(dateDuration.AddDays(7)) >= 1)
+            if (currentDate.CompareTo(dateDuration.AddDays(7)) >= 1)
             {
-                duration.Add(DurationEnum.WEEKELY.ToString());
+                duration.Add(DurationEnum.WEEKLY.ToString());
             }
             if (currentDate.Month > dateDuration.Month)
             {
                 duration.Add(DurationEnum.MONTHLY.ToString());
             }
-            if (currentDate.Month > 4)
+
+            if (currentDate.Month == 3 || currentDate.Month == 6
+                || currentDate.Month == 9 || currentDate.Month == 12)
             {
-                duration.Add(DurationEnum.QUARTERLY.ToString());
+                int days = dateDuration.DaysInAMonth();
+                if (days == dateDuration.Day)
+                {
+                    duration.Add(DurationEnum.QUARTERLY.ToString());
+                }
             }
+
             if (currentDate.Month > 10)
             {
                 duration.Add(DurationEnum.YEARLY.ToString());
             }
 
             return duration;
-
         }
 
-        public static string Template(string allowPayment,string allowHeader)
+        public static string Template(string allowPayment, string allowHeader)
         {
             if (allowPayment == "1" && allowHeader == "1")
             {
                 return "dnTemplatePaymentHeader.html";
             }
-            else if(allowPayment == "1" && allowHeader == "0")
+            else if (allowPayment == "1" && allowHeader == "0")
             {
                 return "dnTemplatePayment.html";
             }

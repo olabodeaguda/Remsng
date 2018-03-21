@@ -12,8 +12,10 @@ namespace RemsNG.Dao
 {
     public class DemandNoticeTaxpayersDao : AbstractDao
     {
+        private readonly ErrorDao errorDao;
         public DemandNoticeTaxpayersDao(RemsDbContext _db) : base(_db)
         {
+            errorDao = new ErrorDao(_db);
         }
 
         public async Task<List<DemandNoticeTaxpayersDetail>> getTaxpayerByIds(string[] ids, int billingYr)
@@ -143,6 +145,18 @@ namespace RemsNG.Dao
 
             if (count > 0)
             {
+                //log
+                Error error = new Error()
+                {
+                    dateCreated = DateTime.Now,
+                    errorType = "Delete Demand Notice",
+                    errorvalue = billingNo,
+                    id = Guid.NewGuid(),
+                    ownerId = Guid.NewGuid()
+                };
+
+                await errorDao.Add(error);
+
                 return new Response()
                 {
                     code = MsgCode_Enum.SUCCESS,
@@ -159,13 +173,29 @@ namespace RemsNG.Dao
             }
         }
 
-        public async Task<List<DemandNoticeTaxpayersDetail>> SearchAllAsync(string querystring)
+        public async Task<List<DemandNoticeTaxpayersDetail>> SearchAllAsync(string qs)
         {
-            string query = $"select tbl_demandNoticeTaxpayers.*,-1 as totalSize from tbl_demandNoticeTaxpayers " +
-                $"where taxpayersName like '%{querystring}%' or billingNumber like '%{querystring}%' " +
-                $"or addressName like '%{querystring}%'or wardName like '%{querystring}%'";
+            string[] q = qs.Split(new char[] { ' ' });
+            string query = string.Empty;
+            for (int i = 0; i < q.Length; i++)
+            {
+                if (string.IsNullOrEmpty(q[i].Trim()))
+                {
+                    continue;
+                }
+                if (query != string.Empty && i < q.Length)
+                {
+                    query = query + $" union ";
+                }
+                string t = $"select tbl_demandNoticeTaxpayers.*,-1 as totalSize from tbl_demandNoticeTaxpayers " +
+                $"where taxpayersName like '%{q[i]}%' or billingNumber like '%{q[i]}%' " +
+                $"or addressName like '%{q[i]}%'or wardName like '%{q[i]}%'";
+                query = query + t;
+            }
 
-            return await db.DemandNoticeTaxpayersDetails.FromSql(query).ToListAsync();
+            var results = await db.DemandNoticeTaxpayersDetails.FromSql(query).ToListAsync(); ;
+
+            return results.Distinct().ToList();
         }
     }
 }

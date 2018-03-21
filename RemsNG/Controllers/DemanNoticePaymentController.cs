@@ -46,7 +46,7 @@ namespace RemsNG.Controllers
 
         [RemsRequirementAttribute("REGISTER_PAYMENT")]
         [HttpPost]
-        public async Task<Response> Post([FromBody]DemandNoticePaymentHistory value)
+        public async Task<Response> Post([FromBody]DemandNoticePaymentHistory value, [FromHeader] string dateCreated)
         {
             if (value.amount < 1)
             {
@@ -64,7 +64,15 @@ namespace RemsNG.Controllers
             {
                 throw new InvalidCredentialsException("Reference number is required");
             }
-            // 
+            if (!string.IsNullOrEmpty(dateCreated))
+            {
+                value.dateCreated = DateTime.ParseExact(dateCreated, "dd-MM-yyyy", null);
+            }
+            else
+            {
+                value.dateCreated = DateTime.Now;
+            }
+            
             var taxpayeD = await demandNoticeTaxpayerService.TaxpayerMiniByBillingNo(value.billingNumber);
             if (taxpayeD == null)
             {

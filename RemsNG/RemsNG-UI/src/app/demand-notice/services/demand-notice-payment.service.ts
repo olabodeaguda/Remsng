@@ -9,11 +9,13 @@ export class DemandNoticePaymentService {
     }
 
     registerPayment(dnpModel: DemandNoticePaymentModel) {
+        this.dataservice.addToHeader('dateCreated', dnpModel.dateCreated);
         return this.dataservice.post('payment', {
             billingNumber:dnpModel.billingNumber,
             bankId:dnpModel.bankId,
             referenceNumber:dnpModel.referenceNumber,
-            amount:dnpModel.amount
+            amount:dnpModel.amount,
+            dateCreated: dnpModel.dateCreated
         }).catch(error => this.dataservice.handleError(error));
     }
 
