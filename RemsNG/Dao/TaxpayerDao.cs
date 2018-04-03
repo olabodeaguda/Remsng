@@ -4,6 +4,7 @@ using RemsNG.Models;
 using RemsNG.ORM;
 using RemsNG.Utilities;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
@@ -140,6 +141,43 @@ namespace RemsNG.Dao
         public async Task<List<TaxpayerExtension>> ByLcdaId(Guid lcdaId)
         {
             return await db.Set<TaxpayerExtension>().FromSql("sp_TaxpayerByLcdaId @p0", new object[] { lcdaId }).ToListAsync();
+        }
+
+        public async Task<List<TaxpayerExtension>> Search(Guid lcdaId, string qu)
+        {
+            string[] q = qu.Split(new char[] { ' ' });
+
+            string query = $"select tbl_taxPayer.*,tbl_company.companyName as companyName, tbl_Address.addressnumber as streetNumber,-1 as totalSize  from tbl_taxPayer " +
+               $"inner join tbl_company on tbl_company.id = tbl_taxPayer.companyId " +
+               $"inner join tbl_street on tbl_street.id = tbl_taxPayer.streetId " +
+               $"inner join tbl_ward on tbl_ward.id = tbl_street.wardId " +
+               $"inner join tbl_address on tbl_address.ownerId = tbl_taxPayer.id " +
+               $"where tbl_ward.lcdaId = '{lcdaId}' and (tbl_taxPayer.surname like '%{qu}%' or tbl_taxPayer.firstname like '%{qu}%' " +
+               $"or tbl_taxPayer.lastname like '%{qu}%' " +
+               $" or tbl_company.companyName like '%{qu}%')"; ;
+            for (int i = 0; i < q.Length; i++)
+            {
+                if (string.IsNullOrEmpty(q[i].Trim()))
+                {
+                    continue;
+                }
+                if (query != string.Empty && i < q.Length)
+                {
+                    query = query + $" union ";
+                }
+                string t = $"select tbl_taxPayer.*,tbl_company.companyName as companyName, tbl_Address.addressnumber as streetNumber,-1 as totalSize  from tbl_taxPayer " +
+                $"inner join tbl_company on tbl_company.id = tbl_taxPayer.companyId " +
+                $"inner join tbl_street on tbl_street.id = tbl_taxPayer.streetId " +
+                $"inner join tbl_ward on tbl_ward.id = tbl_street.wardId " +
+                $"inner join tbl_address on tbl_address.ownerId = tbl_taxPayer.id " +
+                $"where tbl_ward.lcdaId = '{lcdaId}' and (tbl_taxPayer.surname like '%{q[i]}%' or tbl_taxPayer.firstname like '%{q[i]}%' " +
+                $"or tbl_taxPayer.lastname like '%{q[i]}%' " +
+                $" or tbl_company.companyName like '%{q[i]}%')";
+                query = query + t;
+            }
+
+            var results = await db.TaxpayerExtensions.FromSql(query).ToListAsync();
+            return results.Distinct().OrderBy(x=>x.firstname).ToList();
         }
 
         public async Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel)

@@ -58,6 +58,11 @@ namespace RemsNG.Services
             return await taxpayerDao.getLcda(taxpayerId);
         }
 
+        public async Task<List<TaxpayerExtension>> Search(Guid lcdaId, string qu)
+        {
+            return await taxpayerDao.Search(lcdaId, qu);
+        }
+
         public async Task<Response> Update(Taxpayer taxpayer)
         {
             return await taxpayerDao.Update(taxpayer);

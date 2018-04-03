@@ -14,6 +14,11 @@ export class TaxpayerService {
         return this.dataservice.get('taxpayer/bylcdapaginated/' + lcdaId).catch(x => this.dataservice.handleError(x));
     }
 
+    search(lcdaId: string, search: string) {
+        return this.dataservice.get('taxpayer/search/' + lcdaId+'/'+search)
+        .catch(x => this.dataservice.handleError(x));
+    }
+
     byStreet(lcdaId: string, pageModel: PageModel) {
         this.dataservice.addToHeader('pageNum', pageModel.pageNum.toString());
         this.dataservice.addToHeader('pageSize', pageModel.pageSize.toString());

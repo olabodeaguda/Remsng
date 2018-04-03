@@ -14,5 +14,6 @@ namespace RemsNG.Services.Interfaces
         Task<DemandNoticeTaxpayersDetail> TaxpayerMiniByBillingNo(string billingNo);
         Task<Response> CancelTaxpayerDemandNoticeByBillingNo(string billingNo);
         Task<List<DemandNoticeTaxpayersDetail>> Search(string query);
+        Task<bool> BlinkClosesDemandNoticeByCompany(Guid companyId);
     }
 }

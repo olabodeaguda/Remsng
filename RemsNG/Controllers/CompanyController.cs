@@ -21,10 +21,13 @@ namespace RemsNG.Controllers
     {
         private ICompany companyService;
         private ILcdaService lcdaService;
-        public CompanyController(ICompany _companyservice, ILcdaService _lcdaService)
+        private IDemandNoticeTaxpayerService demandNoticeTaxpayerService;
+        public CompanyController(ICompany _companyservice, ILcdaService _lcdaService,
+            IDemandNoticeTaxpayerService _demandNoticeTaxpayerService)
         {
             companyService = _companyservice;
             lcdaService = _lcdaService;
+            demandNoticeTaxpayerService = _demandNoticeTaxpayerService;
         }
 
         [Route("bylcda/{id}")]
@@ -35,8 +38,8 @@ namespace RemsNG.Controllers
             {
                 return BadRequest(new Response()
                 {
-                     code = MsgCode_Enum.FAIL,
-                      description = "Bad Request"
+                    code = MsgCode_Enum.FAIL,
+                    description = "Bad Request"
                 });
             }
 
@@ -243,7 +246,7 @@ namespace RemsNG.Controllers
                     description = "Bad request"
                 });
             }
-            else if(string.IsNullOrEmpty(status))
+            else if (string.IsNullOrEmpty(status))
             {
                 return BadRequest(new Response()
                 {
@@ -260,13 +263,54 @@ namespace RemsNG.Controllers
 
             if (response.code == MsgCode_Enum.SUCCESS)
             {
-                return Ok( response);
+                return Ok(response);
             }
             else
             {
                 return BadRequest(response);
             }
 
+        }
+
+        [Route("close/{id}")]
+        [HttpGet]
+        public async Task<object> CloseDemandNotice(Guid id)
+        {
+            if (id == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Bad request"
+                });
+            }
+            Company company = await companyService.ById(id);
+            if (company == null)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.NOTFOUND,
+                    description = "Company can not be found"
+                });
+            }
+
+            bool result = await demandNoticeTaxpayerService.BlinkClosesDemandNoticeByCompany(id);
+            if (result)
+            {
+                return Ok(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = "All raised demand notice has been closed"
+                });
+            }
+            else
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "An error occured. Please try again later"
+                });
+            }
         }
     }
 }

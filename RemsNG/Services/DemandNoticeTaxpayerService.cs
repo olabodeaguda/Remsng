@@ -153,5 +153,10 @@ namespace RemsNG.Services
         {
             return await dntDao.SearchAllAsync(query);
         }
+
+        public async Task<bool> BlinkClosesDemandNoticeByCompany(Guid companyId)
+        {
+            return await dntDao.BlinkClosesDemandNoticeByCompany(companyId);
+        }
     }
 }

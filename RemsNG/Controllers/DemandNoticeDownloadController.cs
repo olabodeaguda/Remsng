@@ -161,11 +161,9 @@ namespace RemsNG.Controllers
                 throw new NotFoundException("Request not found");
             }
             HttpClient hc = new HttpClient();
-           // string rootUrl = $"http://{Request.Host}";
             string template = await dnd.ReceiptTemlate(dnph.billingNumber);
-           // var htmlContent = await hc.GetStringAsync($"{rootUrl}/templates/{template}");
 
-            string rootUrl = hostingEnvironment.WebRootPath; //$"http://{Request.Host}";
+            string rootUrl = hostingEnvironment.WebRootPath;
             var htmlContent = await System.IO.File.ReadAllTextAsync($"{rootUrl}/templates/{template}");
 
             htmlContent = await dnd.PopulateReceiptHtml(htmlContent, rootUrl, User.Identity.Name,dnph);
@@ -175,8 +173,6 @@ namespace RemsNG.Controllers
             HttpContext.Response.ContentType = "application/pdf";
             HttpContext.Response.Body.Write(result, 0, result.Length);
             return new ContentResult();
-
-
         }
     }
 }

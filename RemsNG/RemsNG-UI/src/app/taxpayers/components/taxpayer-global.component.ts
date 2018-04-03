@@ -29,6 +29,7 @@ export class TaxPayerGlobalComponent implements OnInit {
     wardlst = [];
     @ViewChild('addModal') addModal: ElementRef;
     isAddLoading:boolean = false;
+    query:string = '';
 
     constructor(private activeRoute: ActivatedRoute,
         private streetservice: StreetService,
@@ -52,6 +53,23 @@ export class TaxPayerGlobalComponent implements OnInit {
             this.getWard();
             this.getCompanies();
         });
+    }
+
+    searchQuery() {
+        if(this.query.length < 1){
+            return;
+        }
+
+        this.isLoading = true;
+        this.taxpayerservice.search(this.lcdaId, this.query).subscribe(response => {
+            this.isLoading = false;
+            this.taxpayers = response;
+            this.pageModel.pageNum=1;
+            this.pageModel.totalPageCount=1;
+        }, error => {
+            this.isLoading = false;
+        })
+
     }
 
     wardChanges(wardId:string){

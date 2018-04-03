@@ -52,6 +52,22 @@ namespace RemsNG.Controllers
             return await taxpayerService.ByLcdaId(id);
         }
 
+        [Route("search/{id}/{query}")]
+        [HttpGet]
+        public async Task<object> ByLcda(Guid id, string query)
+        {
+            if (id == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Bad request"
+                });
+            }
+
+            return await taxpayerService.Search(id, query);
+        }
+
         [Route("bylcdapaginated/{id}")]
         [HttpGet]
         public async Task<object> ByLcdaPaginated(Guid id, [FromHeader] string pageSize, [FromHeader] string pageNum)

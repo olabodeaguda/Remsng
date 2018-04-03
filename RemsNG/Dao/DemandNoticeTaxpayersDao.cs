@@ -23,7 +23,8 @@ namespace RemsNG.Dao
             StringBuilder stringBuilder = new StringBuilder();
             string tIds = stringBuilder.AppendJoin(',', ids).ToString();
 
-            string query = $"select tbl_demandNoticeTaxpayers.*, -1 as totalSize from tbl_demandNoticeTaxpayers where taxpayerId in ({tIds}) and billingYr = {billingYr}";
+            string query = $"select tbl_demandNoticeTaxpayers.*, -1 as totalSize from tbl_demandNoticeTaxpayers" +
+                $" where taxpayerId in ({tIds}) and billingYr = {billingYr} and demandNoticeStatus <> 'CLOSED'";
             return await db.Set<DemandNoticeTaxpayersDetail>().FromSql(query).ToListAsync();
         }
 
@@ -193,9 +194,23 @@ namespace RemsNG.Dao
                 query = query + t;
             }
 
-            var results = await db.DemandNoticeTaxpayersDetails.FromSql(query).ToListAsync(); ;
+            var results = await db.DemandNoticeTaxpayersDetails.FromSql(query).ToListAsync();
 
             return results.Distinct().ToList();
         }
+
+        public async Task<bool> BlinkClosesDemandNoticeByCompany(Guid companyId)
+        {
+            string query = $"update tbl_demandNoticeTaxpayers set demandNoticeStatus = 'CLOSED' " +
+                $" WHERE id IN (select id from tbl_taxPayer where companyId = '{companyId}')";
+
+            int count = await db.Database.ExecuteSqlCommandAsync(query);
+            if (count > 0)
+            {
+                return true;
+            }
+            return false;
+        }
+        
     }
 }

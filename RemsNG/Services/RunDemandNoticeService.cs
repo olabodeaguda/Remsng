@@ -201,8 +201,7 @@ namespace RemsNG.Services
                 logger.LogError(x.Message);
             }
         }
-
-        // [DisableConcurrentExecution(5 * 60)]
+        
         public async Task GenerateBulkDemandNotice()
         {
             BatchDemandNoticeModel bdnm = null;// await batchDwnRequestService.Dequeue();
@@ -296,8 +295,7 @@ namespace RemsNG.Services
                 logger.LogError(x.Message);
             }
         }
-
-        //[DisableConcurrentExecution(5 * 60)]
+        
         public async Task GenerateBulkDemandNotice2()
         {
             BatchDemandNoticeModel bdnm = null;// await batchDwnRequestService.Dequeue();
