@@ -14,8 +14,7 @@ export class DemandNoticePaymentService {
             billingNumber:dnpModel.billingNumber,
             bankId:dnpModel.bankId,
             referenceNumber:dnpModel.referenceNumber,
-            amount:dnpModel.amount,
-            dateCreated: dnpModel.dateCreated
+            amount:dnpModel.amount
         }).catch(error => this.dataservice.handleError(error));
     }
 
