@@ -165,13 +165,14 @@ namespace RemsNG.Controllers
             }
 
 
-            demandNoticeRequest.createdBy = User.Identity.Name;
             DemandNotice demandNotice = new DemandNotice();
             demandNotice.lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
             string encr = JsonConvert.SerializeObject(demandNoticeRequest);
             string dx = EncryptDecryptUtils.ToHexString(encr); ;
             string ddx = EncryptDecryptUtils.FromHexString(dx);
             demandNotice.query = EncryptDecryptUtils.ToHexString(encr);
+
+            demandNoticeRequest.createdBy = User.Identity.Name;
             demandNotice.billingYear = demandNoticeRequest.dateYear;
             demandNotice.createdBy = User.Identity.Name;
             demandNotice.id = Guid.NewGuid();
@@ -231,11 +232,12 @@ namespace RemsNG.Controllers
             pageSize = string.IsNullOrEmpty(pageSize) ? "1" : pageSize;
             pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
 
-            demandNoticeRequest.createdBy = User.Identity.Name;
+            // demandNoticeRequest.createdBy = User.Identity.Name;
             DemandNotice demandNotice = new DemandNotice();
             demandNotice.lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
             string encr = JsonConvert.SerializeObject(demandNoticeRequest);
             string dx = EncryptDecryptUtils.ToHexString(encr); ;
+
             string ddx = EncryptDecryptUtils.FromHexString(dx);
             demandNotice.query = EncryptDecryptUtils.ToHexString(encr);
             demandNotice.billingYear = demandNoticeRequest.dateYear;

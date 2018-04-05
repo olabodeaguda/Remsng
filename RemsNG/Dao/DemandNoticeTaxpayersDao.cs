@@ -177,22 +177,24 @@ namespace RemsNG.Dao
         public async Task<List<DemandNoticeTaxpayersDetail>> SearchAllAsync(string qs)
         {
             string[] q = qs.Split(new char[] { ' ' });
-            string query = string.Empty;
+            string query = $"select tbl_demandNoticeTaxpayers.*,-1 as totalSize from tbl_demandNoticeTaxpayers where ";
+            string subQuery = string.Empty;
             for (int i = 0; i < q.Length; i++)
             {
                 if (string.IsNullOrEmpty(q[i].Trim()))
                 {
                     continue;
                 }
-                if (query != string.Empty && i < q.Length)
+                 
+               string t = $" (taxpayersName like '%{q[i]}%' or billingNumber like '%{q[i]}%' " +
+                $"or addressName like '%{q[i]}%'or wardName like '%{q[i]}%')";
+                if(!string.IsNullOrEmpty(subQuery))
                 {
-                    query = query + $" union ";
+                    subQuery = subQuery + " and ";
                 }
-                string t = $"select tbl_demandNoticeTaxpayers.*,-1 as totalSize from tbl_demandNoticeTaxpayers " +
-                $"where taxpayersName like '%{q[i]}%' or billingNumber like '%{q[i]}%' " +
-                $"or addressName like '%{q[i]}%'or wardName like '%{q[i]}%'";
-                query = query + t;
+                subQuery = subQuery + t;
             }
+            query = query + $" {subQuery}";
 
             var results = await db.DemandNoticeTaxpayersDetails.FromSql(query).ToListAsync();
 
