@@ -123,7 +123,6 @@ namespace RemsNG.Dao
             }
         }
 
-
         public async Task<List<DemandNoticeArrears>> ByBillingNumber(string billingno)
         {
             List<DemandNoticeArrears> lstdbItem = await db.DemandNoticeArrearss

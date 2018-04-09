@@ -33,7 +33,8 @@ export class DemandNoticeService {
             streetId: searchModel.streetId.length <= 0 ? null : searchModel.streetId,
             searchByName: null,
             dateYear: searchModel.dateYear <= 0 ? null : searchModel.dateYear,
-            lcdaId: null
+            lcdaId: null,
+            CloseOldData: searchModel.isClosedData
         };
 
         return this.datataservice.post('demandnotice', s).catch(x => this.datataservice.handleError(x));

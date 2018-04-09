@@ -117,13 +117,28 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="form-group">
-                            <div class="form-group col-sm-3" style="margin-left:13px;">
-                                <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary" (click)="submitDemandRequest()">Run Demand Notice</button>
+                        <div class="col-xs-12">
+                            <div class="form-check col-sm-3">
+                                <input type="checkbox" class="form-check-input" id="isClosedData" 
+                                [checked]="searchModel.isClosedData" 
+                                (change)="searchModel.isClosedData = !searchModel.isClosedData" >
+                                <label class="form-check-label" for="isClosedData">Closed Previous record(s)</label>
                             </div>
-
-                            <div class="form-group col-sm-3">
-                                <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary" (click)="searchDemandNotice()">Search Demand Notice</button>
+                            <div class=" col-sm-3">
+                                <div class="btn-group">
+                                        <button [ladda]="searchModel.isLoading" 
+                                        type="submit" class="btn btn-primary" (click)="submitDemandRequest()">Run</button>
+                                        <button [ladda]="searchModel.isLoading" 
+                                    type="submit" class="btn btn-primary" (click)="searchDemandNotice()">Search</button>
+                                </div>
+                                <!--<div class="form-group col-sm-6">
+                                    <button [ladda]="searchModel.isLoading" 
+                                    type="submit" class="btn btn-primary" (click)="submitDemandRequest()">Run</button>
+                                </div>
+                                <div class="form-group col-sm-6">
+                                    <button [ladda]="searchModel.isLoading" 
+                                    type="submit" class="btn btn-primary" (click)="searchDemandNotice()">Search</button>
+                                </div>-->
                             </div>
                         </div>
                     </div>

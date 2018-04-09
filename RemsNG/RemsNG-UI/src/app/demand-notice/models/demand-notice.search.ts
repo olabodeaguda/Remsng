@@ -6,4 +6,5 @@ export class DemandNoticeSearch {
     dateYear: number = 0;
     isLoading: boolean = false;
     billingNo: string = ''    
+    isClosedData: boolean = false;
 }

@@ -92,6 +92,7 @@ namespace RemsNG.Services
                 {
                     String query = EncryptDecryptUtils.FromHexString(demandNotice.query);
                     DemandNoticeRequest demandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequest>(query);
+                    demandNoticeRequest.createdBy = demandNotice.createdBy;
                     List<Taxpayer> taxpayers = await taxpayerDao.Get(demandNoticeRequest);
                     string domainName = string.Empty;
 
@@ -115,7 +116,7 @@ namespace RemsNG.Services
                         foreach (var tm in taxpayers)
                         {
                             var itExist = dt.FirstOrDefault(x => x.taxpayerId == tm.id);
-                            if (itExist != null)
+                            if (itExist != null && !demandNoticeRequest.CloseOldData)
                             {
                                 Error error = new Error()
                                 {
@@ -129,7 +130,19 @@ namespace RemsNG.Services
                             }
                             else
                             {
-                                //add taxpayers
+                                if (demandNoticeRequest.CloseOldData && itExist != null)
+                                {
+                                    //closed demand notice taxpaet
+                                    await ClosedDDTaxpayer(itExist);
+                                    Error error = new Error()
+                                    {
+                                        errorType = ErrorType.DEMAND_NOTICE.ToString(),
+                                        errorvalue = $"{itExist.billingNumber},{itExist.billingYr} has been closed",
+                                        ownerId = itExist.taxpayerId
+                                    };
+                                    bool result = await errorDao.Add(error);
+                                }
+
                                 DemandNoticeTaxpayersDetail dntd = new DemandNoticeTaxpayersDetail();
                                 dntd.billingYr = demandNotice.billingYear;
                                 dntd.dnId = demandNotice.id;
@@ -201,7 +214,12 @@ namespace RemsNG.Services
                 logger.LogError(x.Message);
             }
         }
-        
+
+        private async Task<bool> ClosedDDTaxpayer(DemandNoticeTaxpayersDetail itExist)
+        {
+            return await demandNoticeTaxpayersDao.UpdateTaxPayer(itExist.id, DemandNoticeStatus.CLOSED.ToString());
+        }
+
         public async Task GenerateBulkDemandNotice()
         {
             BatchDemandNoticeModel bdnm = null;// await batchDwnRequestService.Dequeue();
@@ -295,7 +313,7 @@ namespace RemsNG.Services
                 logger.LogError(x.Message);
             }
         }
-        
+
         public async Task GenerateBulkDemandNotice2()
         {
             BatchDemandNoticeModel bdnm = null;// await batchDwnRequestService.Dequeue();
@@ -373,7 +391,7 @@ namespace RemsNG.Services
         public async Task TaxpayerPenalty()
         {
             // scan through demandnoticeitem() check the year/penalty duration compare, if passed then create penalty
-            
+
             List<DemandNoticeItem> demandNoticeItem = await demandNoticePenaltyDao.OverDueDemandNotice();
 
             string query = string.Empty;
@@ -381,7 +399,7 @@ namespace RemsNG.Services
             foreach (var tm in demandNoticeItem)
             {
                 DateTime dt = tm.dateCreated.Value;
-                DateTime startDuration = new DateTime(dt.Year,dt.Month, dt.Day);
+                DateTime startDuration = new DateTime(dt.Year, dt.Month, dt.Day);
                 List<string> lstOfdurations = CommonList.CurrentDurations(startDuration);
 
                 if (!lstOfdurations.Contains(tm.duration))
@@ -439,7 +457,7 @@ namespace RemsNG.Services
                 arrearstatus = DemandNoticeStatus.PENDING.ToString(),
                 billingNo = dntd.billingNumber,
                 billingYr = dntd.billingYr,
-                previousBillingYr = dntd.billingYr - 1,
+                previousBillingYr = dntd.billingYr,
                 createdBy = dntd.createdBy,
                 taxpayerId = dntd.taxpayerId
             };

@@ -15,6 +15,7 @@ namespace RemsNG.Models
         public int dateYear { get; set; }
         public string createdBy { get; set; }
 
+        public bool CloseOldData { get; set; }
         [NotMapped]
         public string streetName { get; set; }
 

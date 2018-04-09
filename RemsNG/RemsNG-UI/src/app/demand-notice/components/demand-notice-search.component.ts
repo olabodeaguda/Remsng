@@ -105,19 +105,19 @@ export class DemandNoticeSearchComponent implements OnInit {
         this.isLoadingMini = true;
 
         this.dnService.cancelDemandNotice(this.dnpModel.billingNumber)
-        .subscribe(response => {
-            this.isLoadingMini = false;
-            jQuery(this.cancelDemandNoticeModal.nativeElement).modal('hide');
-            if (response.code === '00') {
-                this.toasterService.pop('success', 'Cancelled', response.description);
-            } else {
-                this.toasterService.pop('error', 'Cancelled', response.description);
-            }
-        }, error => {
-            this.isLoadingMini = false;
-            jQuery(this.cancelDemandNoticeModal.nativeElement).modal('hide');
-            this.toasterService.pop('error', 'Error', error);
-        });
+            .subscribe(response => {
+                this.isLoadingMini = false;
+                jQuery(this.cancelDemandNoticeModal.nativeElement).modal('hide');
+                if (response.code === '00') {
+                    this.toasterService.pop('success', 'Cancelled', response.description);
+                } else {
+                    this.toasterService.pop('error', 'Cancelled', response.description);
+                }
+            }, error => {
+                this.isLoadingMini = false;
+                jQuery(this.cancelDemandNoticeModal.nativeElement).modal('hide');
+                this.toasterService.pop('error', 'Error', error);
+            });
     }
 
     openPayment(billingno: string) {
@@ -172,7 +172,6 @@ export class DemandNoticeSearchComponent implements OnInit {
                 this.isLoadingMini = false;
                 this.toasterService.pop('error', 'Error!!!', error);
             })
-
     }
 
     search() {

@@ -117,6 +117,7 @@ export class DemandNoticeComponent implements OnInit {
     }
 
     loadStreets(event) {
+        console.log(this.searchModel);
         this.getStreet(this.searchModel.wardId);
     }
 

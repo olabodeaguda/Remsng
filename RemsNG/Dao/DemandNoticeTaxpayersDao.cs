@@ -28,6 +28,19 @@ namespace RemsNG.Dao
             return await db.Set<DemandNoticeTaxpayersDetail>().FromSql(query).ToListAsync();
         }
 
+        public async Task<bool> UpdateTaxPayer(Guid id,string status)
+        {
+            string query = $"update tbl_demandNoticeTaxpayers set demandNoticeStatus = '{status}' where id='{id}'";
+
+            int count = await db.Database.ExecuteSqlCommandAsync(query);
+            if (count > 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public async Task<long> NewBillingNumber()
         {
             DbResponse dbResponse = new DbResponse();
