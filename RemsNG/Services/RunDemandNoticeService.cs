@@ -236,6 +236,7 @@ namespace RemsNG.Services
                         string template = await dnDownloadService.LcdaTemlateByLcda(lgda.id);
 
                         string rootUrl = this.hostingEnvironment.WebRootPath;
+                      
                         string rootPath = Path.Combine(this.hostingEnvironment.WebRootPath, "zipReports", bdnm.batchNo);
                         if (!Directory.Exists(rootPath))
                         {

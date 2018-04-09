@@ -14,7 +14,7 @@ export class DemandNoticeService {
         this.datataservice.addToHeader('pageNum', pageModel.pageNum.toString());
         this.datataservice.addToHeader('pageSize', pageModel.pageSize.toString());
         return this.datataservice.get('demandnotice/bylcda').
-        catch(error => this.datataservice.handleError(error));
+            catch(error => this.datataservice.handleError(error));
     }
 
     get2(pageModel: PageModel) {
@@ -40,8 +40,7 @@ export class DemandNoticeService {
         return this.datataservice.post('demandnotice', s).catch(x => this.datataservice.handleError(x));
     }
 
-    
-    searchDemandNotice(searchModel: DemandNoticeSearch,pageModel:PageModel) {
+    searchDemandNotice(searchModel: DemandNoticeSearch, pageModel: PageModel) {
         this.datataservice.addToHeader('pageNum', pageModel.pageNum.toString());
         this.datataservice.addToHeader('pageSize', pageModel.pageSize.toString());
         let s = {
@@ -53,24 +52,24 @@ export class DemandNoticeService {
         };
 
         return this.datataservice
-        .post('demandnotice/search/'+pageModel.pageNum+'/'+pageModel.pageSize, s)
-        .catch(x => this.datataservice.handleError(x));
+            .post('demandnotice/search/' + pageModel.pageNum + '/' + pageModel.pageSize, s)
+            .catch(x => this.datataservice.handleError(x));
     }
 
 
     adDownloadRequest(batchno: string) {
         return this.datataservice.post('dndownload/' + batchno, {})
-        .catch(x => this.datataservice.handleError(x));
+            .catch(x => this.datataservice.handleError(x));
     }
 
     getRaisedRequest(batchno: string) {
         return this.datataservice.get('dndownload/' + batchno)
-        .catch(x => this.datataservice.handleError(x));
+            .catch(x => this.datataservice.handleError(x));
     }
 
     downloadRpt(url: string) {
         return this.datataservice.getBlob('dndownload/bulk/' + url)
-        .catch(error => this.datataservice.handleError(error));
+            .catch(error => this.datataservice.handleError(error));
     }
 
     addArrears(data: any) {
@@ -92,8 +91,8 @@ export class DemandNoticeService {
         return this.datataservice.get('dnt/cancel').catch(x => this.datataservice.handleError(x));
     }
 
-    demandNoticeError(id:string) {
-        return this.datataservice.get('dnt/error/'+id).catch(x => this.datataservice.handleError(x));
+    demandNoticeError(id: string) {
+        return this.datataservice.get('dnt/error/' + id).catch(x => this.datataservice.handleError(x));
     }
 
 }
