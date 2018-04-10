@@ -178,8 +178,10 @@ namespace RemsNG.Controllers
             demandNotice.id = Guid.NewGuid();
             demandNotice.batchNo = CommonList.GetBatchNo();
             demandNotice.demandNoticeStatus = DemandNoticeStatus.SUBMITTED.ToString();
+            demandNotice.wardId = demandNoticeRequest.wardId;
+            demandNotice.streetId = demandNoticeRequest.streetId;
 
-            Response response = await demandService.Add(demandNotice);
+           Response response = await demandService.Add(demandNotice);
 
             if (response.code == MsgCode_Enum.SUCCESS)
             {
@@ -245,6 +247,8 @@ namespace RemsNG.Controllers
             demandNotice.id = Guid.NewGuid();
             demandNotice.batchNo = CommonList.GetBatchNo();
             demandNotice.demandNoticeStatus = DemandNoticeStatus.SUBMITTED.ToString();
+            demandNotice.wardId = demandNoticeRequest.wardId;
+            demandNotice.streetId = demandNoticeRequest.streetId;
 
             return await demandService.SearchDemandNotice(demandNotice, new PageModel()
             {
@@ -410,6 +414,8 @@ namespace RemsNG.Controllers
                 });
             }
         }
+
+
 
     }
 }

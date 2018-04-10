@@ -90,7 +90,7 @@ namespace RemsNG.Services
             {
                 if (demandNotice != null)
                 {
-                    String query = EncryptDecryptUtils.FromHexString(demandNotice.query);
+                    string query = EncryptDecryptUtils.FromHexString(demandNotice.query);
                     DemandNoticeRequest demandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequest>(query);
                     demandNoticeRequest.createdBy = demandNotice.createdBy;
                     List<Taxpayer> taxpayers = await taxpayerDao.Get(demandNoticeRequest);
@@ -236,7 +236,7 @@ namespace RemsNG.Services
                         string template = await dnDownloadService.LcdaTemlateByLcda(lgda.id);
 
                         string rootUrl = this.hostingEnvironment.WebRootPath;
-                      
+
                         string rootPath = Path.Combine(this.hostingEnvironment.WebRootPath, "zipReports", bdnm.batchNo);
                         if (!Directory.Exists(rootPath))
                         {
@@ -519,5 +519,31 @@ namespace RemsNG.Services
                 logger.LogError(response.description, dntd);
             }
         }
+
+        public async Task ReconcileDemandNotice()
+        {
+            List<DemandNotice> lst = await demandNoticeDao.GetUnSyncData();
+            if (lst.Count > 0)
+            {
+                string query = string.Empty;
+                foreach (var tm in lst)
+                {
+                    string qy = EncryptDecryptUtils.FromHexString(tm.query);
+                    DemandNoticeRequest dnr = JsonConvert.DeserializeObject<DemandNoticeRequest>(qy);
+                    query = query + $"update tbl_demandnotice set wardId='{dnr.wardId}'," +
+                        $" streetId='{dnr.streetId}' where id='{tm.id}';";
+                }
+
+                if (!string.IsNullOrEmpty(query))
+                {
+                    bool result = await demandNoticeDao.updateData(query);
+                    if (!result)
+                    {
+                        logger.LogError("no record(s)");
+                    }
+                }
+            }
+        }
+
     }
 }

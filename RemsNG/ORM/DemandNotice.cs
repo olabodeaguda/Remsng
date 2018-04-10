@@ -14,5 +14,8 @@ namespace RemsNG.ORM
         public int billingYear { get; set; }
         public Guid lcdaId { get; set; }
         public Nullable<int> totalSize { get; set; }
+        public Guid? wardId { get; set; }
+        public Guid? streetId { get; set; }
+
     }
 }

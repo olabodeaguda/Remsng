@@ -28,6 +28,7 @@ namespace RemsNG
                 RecurringJob.AddOrUpdate(() => runDemandNoticeService.GenerateBulkDemandNotice(), Cron.MinuteInterval(2));
                 RecurringJob.AddOrUpdate("Sync Upstream", () => syncService.SyncUp(), Cron.MinuteInterval(4));
                 RecurringJob.AddOrUpdate("Sync Downstream", () => syncService.SyncDown(), Cron.MinuteInterval(4));
+                RecurringJob.AddOrUpdate("Update demand notice table", () => runDemandNoticeService.ReconcileDemandNotice(), Cron.MinuteInterval(4));
                 await next(context);
             }
             catch (Exception ex)

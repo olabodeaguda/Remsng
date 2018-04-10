@@ -43,7 +43,7 @@ export class DemandNoticeService {
     searchDemandNotice(searchModel: DemandNoticeSearch, pageModel: PageModel) {
         this.datataservice.addToHeader('pageNum', pageModel.pageNum.toString());
         this.datataservice.addToHeader('pageSize', pageModel.pageSize.toString());
-        let s = {
+        let s: any = {
             wardId: searchModel.wardId,
             streetId: searchModel.streetId.length <= 0 ? null : searchModel.streetId,
             searchByName: null,

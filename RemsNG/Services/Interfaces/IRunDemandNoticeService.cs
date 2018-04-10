@@ -11,5 +11,6 @@ namespace RemsNG.Services.Interfaces
         Task RegisterTaxpayer();
         Task TaxpayerPenalty();
         Task GenerateBulkDemandNotice();
+        Task ReconcileDemandNotice();
     }
 }
