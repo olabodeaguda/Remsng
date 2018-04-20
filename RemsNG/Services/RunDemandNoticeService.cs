@@ -530,6 +530,10 @@ namespace RemsNG.Services
                 {
                     string qy = EncryptDecryptUtils.FromHexString(tm.query);
                     DemandNoticeRequest dnr = JsonConvert.DeserializeObject<DemandNoticeRequest>(qy);
+                    if (dnr.wardId == null )
+                    {
+                        continue;
+                    }
                     query = query + $"update tbl_demandnotice set wardId='{dnr.wardId}'," +
                         $" streetId='{dnr.streetId}' where id='{tm.id}';";
                 }

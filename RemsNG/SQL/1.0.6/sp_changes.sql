@@ -1,4 +1,4 @@
-﻿ALTER procedure [dbo].[sp_previousDemandNoticeArrears]
+﻿ALTER procedure sp_previousDemandNoticeArrears
 (
 	@billingNo varchar(50),
 	@taxpayerId uniqueidentifier,

@@ -306,7 +306,7 @@ namespace RemsNG.Dao
 
         public async Task<List<DemandNotice>> GetUnSyncData()
         {
-            string query = $"select tbl_demandnotice.*,-1 as totalSize from tbl_demandnotice where wardId is null";
+            string query = $"select tbl_demandnotice.*,-1 as totalSize from tbl_demandnotice where wardId is null and demandNoticeStatus = 'ERROR'";
             return await db.DemandNotices.FromSql(query).ToListAsync();
         }
 
