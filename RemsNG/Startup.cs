@@ -1,30 +1,18 @@
 ﻿using Hangfire;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-using RemsNG.Exceptions;
 using RemsNG.Models;
 using RemsNG.ORM;
 using RemsNG.Security;
 using RemsNG.Services;
 using RemsNG.Services.Interfaces;
-using RemsNG.Utilities;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.IO;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace RemsNG
 {
