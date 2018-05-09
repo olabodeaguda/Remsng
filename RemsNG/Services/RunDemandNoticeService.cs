@@ -106,12 +106,24 @@ namespace RemsNG.Services
                             {
                                 domainName = dd.domainName;
                             }
-
                         }
 
                         List<DemandNoticeTaxpayersDetail> dt =
-                            await demandNoticeTaxpayersDao.getTaxpayerByIds(taxpayers.Select(x => string.Format("'{0}'", x.id)).ToArray(), demandNotice.billingYear);
+                            await demandNoticeTaxpayersDao.getTaxpayerByIds(taxpayers
+                            .Select(x => string.Format("'{0}'", x.id)).ToArray(), demandNotice.billingYear);
                         //make sure demand notice have not been raised for the taxpayers by year and taxpayersId
+
+                        if (dt.Count > 0)
+                        {
+                            await ClosedDDTaxpayer(dt.Select(x => x.id).ToArray());
+                            Error error = new Error()
+                            {
+                                errorType = ErrorType.DEMAND_NOTICE.ToString(),
+                                errorvalue = $"{lcda.lcdaName} has been closed. Created by {demandNotice.createdBy}",
+                                ownerId = demandNotice.id
+                            };
+                            bool result = await errorDao.Add(error);
+                        }
 
                         foreach (var tm in taxpayers)
                         {
@@ -130,18 +142,18 @@ namespace RemsNG.Services
                             }
                             else
                             {
-                                if (demandNoticeRequest.CloseOldData && itExist != null)
-                                {
-                                    //closed demand notice taxpaet
-                                    await ClosedDDTaxpayer(itExist);
-                                    Error error = new Error()
-                                    {
-                                        errorType = ErrorType.DEMAND_NOTICE.ToString(),
-                                        errorvalue = $"{itExist.billingNumber},{itExist.billingYr} has been closed",
-                                        ownerId = itExist.taxpayerId
-                                    };
-                                    bool result = await errorDao.Add(error);
-                                }
+                                //if (demandNoticeRequest.CloseOldData && itExist != null)
+                                //{
+                                //    //closed demand notice taxpaet
+                                //    await ClosedDDTaxpayer(itExist);
+                                //    Error error = new Error()
+                                //    {
+                                //        errorType = ErrorType.DEMAND_NOTICE.ToString(),
+                                //        errorvalue = $"{itExist.billingNumber},{itExist.billingYr} has been closed",
+                                //        ownerId = itExist.taxpayerId
+                                //    };
+                                //    bool result = await errorDao.Add(error);
+                                //}
 
                                 DemandNoticeTaxpayersDetail dntd = new DemandNoticeTaxpayersDetail();
                                 dntd.billingYr = demandNotice.billingYear;
@@ -218,6 +230,11 @@ namespace RemsNG.Services
         private async Task<bool> ClosedDDTaxpayer(DemandNoticeTaxpayersDetail itExist)
         {
             return await demandNoticeTaxpayersDao.UpdateTaxPayer(itExist.id, DemandNoticeStatus.CLOSED.ToString());
+        }
+
+        private async Task<bool> ClosedDDTaxpayer(Guid[] ids)
+        {
+            return await demandNoticeTaxpayersDao.UpdateTaxPayers(ids, DemandNoticeStatus.CLOSED.ToString());
         }
 
         public async Task GenerateBulkDemandNotice()
@@ -530,7 +547,7 @@ namespace RemsNG.Services
                 {
                     string qy = EncryptDecryptUtils.FromHexString(tm.query);
                     DemandNoticeRequest dnr = JsonConvert.DeserializeObject<DemandNoticeRequest>(qy);
-                    if (dnr.wardId == null )
+                    if (dnr.wardId == null)
                     {
                         continue;
                     }

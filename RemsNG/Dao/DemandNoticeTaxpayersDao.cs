@@ -28,9 +28,33 @@ namespace RemsNG.Dao
             return await db.Set<DemandNoticeTaxpayersDetail>().FromSql(query).ToListAsync();
         }
 
-        public async Task<bool> UpdateTaxPayer(Guid id,string status)
+        public async Task<bool> UpdateTaxPayer(Guid id, string status)
         {
             string query = $"update tbl_demandNoticeTaxpayers set demandNoticeStatus = '{status}' where id='{id}'";
+
+            int count = await db.Database.ExecuteSqlCommandAsync(query);
+            if (count > 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<bool> UpdateTaxPayers(Guid[] ids, string status)
+        {
+            string ds = string.Empty;
+
+            for (int i = 0; i < ids.Length; i++)
+            {
+                ds = ds + "'" + ids[i] + "'";
+                if (i < ids.Length - 1)
+                {
+                    ds = ds + ",";
+                }
+            }
+
+            string query = $"update tbl_demandNoticeTaxpayers set demandNoticeStatus = '{status}' where id in ({ds})";
 
             int count = await db.Database.ExecuteSqlCommandAsync(query);
             if (count > 0)
@@ -198,10 +222,10 @@ namespace RemsNG.Dao
                 {
                     continue;
                 }
-                 
-               string t = $" (taxpayersName like '%{q[i]}%' or billingNumber like '%{q[i]}%' " +
-                $"or addressName like '%{q[i]}%'or wardName like '%{q[i]}%')";
-                if(!string.IsNullOrEmpty(subQuery))
+
+                string t = $" (taxpayersName like '%{q[i]}%' or billingNumber like '%{q[i]}%' " +
+                 $"or addressName like '%{q[i]}%'or wardName like '%{q[i]}%')";
+                if (!string.IsNullOrEmpty(subQuery))
                 {
                     subQuery = subQuery + " and ";
                 }
@@ -226,6 +250,6 @@ namespace RemsNG.Dao
             }
             return false;
         }
-        
+
     }
 }
