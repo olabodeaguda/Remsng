@@ -121,18 +121,17 @@ export class ItemComponent implements OnInit {
                 this.toasterService.pop('error', 'Error', 'Please refresh you page and try again');
                 this.itemmodel.isLoading = false;
                 return;
-            }
-            else if (this.itemmodel.itemStatus.length < 1 || this.currentstatus.length < 1) {
+            }else if (this.itemmodel.itemStatus.length < 1 || this.currentstatus.length < 1) {
                 this.toasterService.pop('error', 'Error', 'Please select new status');
                 this.itemmodel.isLoading = false;
                 return;
             }
-            
+
             this.itemmodel.itemStatus = this.currentstatus;
             this.itemService.changeStatus(this.itemmodel).subscribe(response => {
                 this.itemmodel.isLoading = false;
                 const result = Object.assign(new ResponseModel(), response);
-                if (result.code == '00') {
+                if (result.code === '00') {
                     this.currentstatus = '';
                     jQuery(this.changeModal.nativeElement).modal('hide');
                     this.getItems();

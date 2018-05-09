@@ -23,11 +23,12 @@ namespace RemsNG.Services
         private readonly ILcdaBankService lcdaBankService;
         private readonly IListPropertyService lpService;
         private readonly IDemandNoticeCharges chargesService;
+        private readonly ILcdaService lcdaService;
         public DemandNoticeTaxpayerService(RemsDbContext _db,
             IDemandNoticeItemService _dnItemService, ITaxpayerService _taxpayerService,
              IImageService _imageService, ILcdaBankService _lcdaBankService,
              IListPropertyService _lpService,
-            IDemandNoticeCharges _chargesService)
+            IDemandNoticeCharges _chargesService, ILcdaService _lcdaService)
         {
             dntDao = new DemandNoticeTaxpayersDao(_db);
             dnItemService = _dnItemService;
@@ -38,6 +39,7 @@ namespace RemsNG.Services
             lcdaBankService = _lcdaBankService;
             lpService = _lpService;
             chargesService = _chargesService;
+            lcdaService = _lcdaService;
         }
 
         public async Task<DemandNoticeReportModel> ByBillingNo(string billingNo)
@@ -70,7 +72,7 @@ namespace RemsNG.Services
                     taxpayerId = t.taxpayerId,
                     demandNoticeStatus = t.demandNoticeStatus
                 };
-                Lgda lgda = await taxpayerService.getLcda(t.taxpayerId);
+                Lgda lgda = await lcdaService.ByBillingNumber(billingNo); //await taxpayerService.getLcda(t.taxpayerId);
                 List<LcdaProperty> ls = new List<LcdaProperty>();
                 if (lgda != null)
                 {

@@ -94,7 +94,7 @@ export class DomainComponent implements OnInit {
                 } else {
                     this.alertMsg(this.appSettings.danger, resp.description || 'An error occur, please try again or contact administrator');
                 }
-            }, error => {                
+            }, error => {
                 this.getDomain();
                 this.domainModel.isLoading = false;
                 this.alertMsg(this.appSettings.danger, error || 'An error occur, please try again or contact administrator');

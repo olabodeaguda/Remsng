@@ -47,7 +47,7 @@ export class DataService {
     getWithoutHeader(url): Observable<object> {
         let headerObj = {
             'Access-Control-Expose-Headers': '\"*\"',
-            'Content-Type':'application/json'
+            'Content-Type': 'application/json'
         };
     
         return this.http.get(this.appConfig.BASE_URL + url, {

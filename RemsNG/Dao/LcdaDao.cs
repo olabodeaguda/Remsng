@@ -175,11 +175,16 @@ namespace RemsNG.Dao
 
         public async Task<Lgda> ByBillingNumber(String billingno)
         {
+            //string query = $"select top 1 lc.* from tbl_demandNoticeTaxpayers as dnt ";
+            //query = query + $"inner join tbl_taxPayer as tp on tp.id = dnt.taxpayerId ";
+            //query = query + $"inner join tbl_street as st on st.id = tp.streetId ";
+            //query = query + $"inner join tbl_ward as wd on wd.id = st.wardId ";
+            //query = query + $"inner join tbl_lcda as lc on lc.id = wd.lcdaId ";
+            //query = query + $"where dnt.billingNumber = '{billingno}'";
+
             string query = $"select top 1 lc.* from tbl_demandNoticeTaxpayers as dnt ";
-            query = query + $"inner join tbl_taxPayer as tp on tp.id = dnt.taxpayerId ";
-            query = query + $"inner join tbl_street as st on st.id = tp.streetId ";
-            query = query + $"inner join tbl_ward as wd on wd.id = st.wardId ";
-            query = query + $"inner join tbl_lcda as lc on lc.id = wd.lcdaId ";
+            query = query + $"inner join tbl_demandnotice as dn on dn.id = dnt.dnId ";
+            query = query + $"inner join tbl_lcda as lc on lc.id = dn.lcdaId ";
             query = query + $"where dnt.billingNumber = '{billingno}'";
 
             return await db.lgdas.FromSql(query).FirstOrDefaultAsync();

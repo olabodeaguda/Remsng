@@ -45,7 +45,7 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("LCDA_STATE", dnrp.lcdaState);
             htmlContent = htmlContent.Replace("LAGOSLOGO", $"{rootUrl}/images/lagoslogo.jpg");
             htmlContent = htmlContent.Replace("LCDA_LOGO", $"{rootUrl}/images/{dnrp.lcdaLogoFileName}");
-            htmlContent = htmlContent.Replace("BILL_NO", $"{sector.prefix}{dnrp.billingNumber}");
+            htmlContent = htmlContent.Replace("BILL_NO", $"{(sector != null ? sector.prefix:"")}{dnrp.billingNumber}");
             htmlContent = htmlContent.Replace("PAYER_NAME", dnrp.taxpayersName);
             htmlContent = htmlContent.Replace("PAYER_ADDRESS", dnrp.addressName);
             htmlContent = htmlContent.Replace("CURRENT_DATE", DateTime.Now.ToString("dd-MM-yyyy"));
@@ -105,7 +105,7 @@ namespace RemsNG.Services
 
             htmlContent = htmlContent.Replace("ITEMLIST", DemandNoticeComponents.HtmlBuildItems(dnrp));
             int partialItemCount = 0;
-            
+
             htmlContent = htmlContent.Replace("PATCH2", "");
 
             htmlContent = htmlContent.Replace("BANKLIST", DemandNoticeComponents.HtmlBuildBanks(dnrp));
