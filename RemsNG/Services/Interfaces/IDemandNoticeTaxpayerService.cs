@@ -12,7 +12,7 @@ namespace RemsNG.Services.Interfaces
         Task<DemandNoticeReportModel> ByBillingNo(string billingNo);
         Task<List<DemandNoticeTaxpayersDetail>> GetDNTaxpayerByBatchNoAsync(string batchno);
         Task<DemandNoticeTaxpayersDetail> TaxpayerMiniByBillingNo(string billingNo);
-        Task<Response> CancelTaxpayerDemandNoticeByBillingNo(string billingNo);
+        Task<Response> CancelTaxpayerDemandNoticeByBillingNo(string billingNo, string createdBy);
         Task<List<DemandNoticeTaxpayersDetail>> Search(string query);
         Task<bool> BlinkClosesDemandNoticeByCompany(Guid companyId);
     }

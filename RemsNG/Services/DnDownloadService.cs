@@ -45,7 +45,7 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("LCDA_STATE", dnrp.lcdaState);
             htmlContent = htmlContent.Replace("LAGOSLOGO", $"{rootUrl}/images/lagoslogo.jpg");
             htmlContent = htmlContent.Replace("LCDA_LOGO", $"{rootUrl}/images/{dnrp.lcdaLogoFileName}");
-            htmlContent = htmlContent.Replace("BILL_NO", $"{(sector != null ? sector.prefix:"")}{dnrp.billingNumber}");
+            htmlContent = htmlContent.Replace("BILL_NO", $"{(sector != null ? sector.prefix : "")}{dnrp.billingNumber}");
             htmlContent = htmlContent.Replace("PAYER_NAME", dnrp.taxpayersName);
             htmlContent = htmlContent.Replace("PAYER_ADDRESS", dnrp.addressName);
             htmlContent = htmlContent.Replace("CURRENT_DATE", DateTime.Now.ToString("dd-MM-yyyy"));
@@ -88,6 +88,17 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("LCDA_STATE", dnrp.lcdaState);
             htmlContent = htmlContent.Replace("LAGOSLOGO", $"{rootUrl}/images/lagoslogo.jpg");
             htmlContent = htmlContent.Replace("LCDA_LOGO", $"{rootUrl}/images/{dnrp.lcdaLogoFileName}");
+
+            if (dnrp.billingNumber.Length < 5)
+            {
+                string v = "";
+                for (int i = 0; i < 5 - dnrp.billingNumber.Length; i++)
+                {
+                    v = v + "0";
+                }
+
+                dnrp.billingNumber = v + dnrp.billingNumber;
+            }
 
             if (sector != null)
             {

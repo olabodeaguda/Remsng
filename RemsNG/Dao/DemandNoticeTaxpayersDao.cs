@@ -172,7 +172,7 @@ namespace RemsNG.Dao
               new object[] { batchno }).ToListAsync();
         }
 
-        public async Task<Response> CancelTaxpayerDemandNoticeByBillingNo(string billingNo)
+        public async Task<Response> CancelTaxpayerDemandNoticeByBillingNo(string billingNo, string createdBy)
         {
             string query = $"delete from tbl_demandNoticeArrears where billingNo = '{billingNo}'; ";
             query = query + $"delete from tbl_demandNoticeItem where billingNo ='{billingNo}';";
@@ -188,7 +188,7 @@ namespace RemsNG.Dao
                 {
                     dateCreated = DateTime.Now,
                     errorType = "Delete Demand Notice",
-                    errorvalue = billingNo,
+                    errorvalue = $"{billingNo}, created by {createdBy}",
                     id = Guid.NewGuid(),
                     ownerId = Guid.NewGuid()
                 };

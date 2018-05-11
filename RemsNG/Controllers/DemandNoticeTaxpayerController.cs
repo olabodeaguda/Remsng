@@ -72,7 +72,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            Response response = await demandNoticeTaxpayerService.CancelTaxpayerDemandNoticeByBillingNo(billingno);
+            Response response = await demandNoticeTaxpayerService.CancelTaxpayerDemandNoticeByBillingNo(billingno, User.Identity.Name);
 
             if (response.code == MsgCode_Enum.SUCCESS)
             {
