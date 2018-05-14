@@ -18,6 +18,7 @@ namespace RemsNG.Utilities
         MOVE_TO_ARREARS,
         PAID,
         ERROR,
-        CLOSED
+        CLOSED,
+        OVERPAYMENT
     }
 }

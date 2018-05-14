@@ -9,5 +9,6 @@ namespace RemsNG.Models
     {
         public string itemTitle { get; set; }
         public decimal itemAmount { get; set; }
+        public decimal itemPaid { get; set; }
     }
 }

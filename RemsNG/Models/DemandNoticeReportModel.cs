@@ -15,5 +15,7 @@ namespace RemsNG.Models
         public decimal arrears { get; set; }
         public Guid lcdaId { get; set; }
         public decimal charges { get; set; }
+        public decimal amountPaid { get; set; }
+        public decimal amountDue { get; set; }
     }
 }

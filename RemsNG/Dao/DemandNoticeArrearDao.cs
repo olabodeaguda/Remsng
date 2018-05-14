@@ -86,6 +86,42 @@ namespace RemsNG.Dao
             }
         }
 
+        public async Task<Response> AddUnpaidDemandNoticeToArrearsAsync2(DN_ArrearsModel dN_ArrearsModel)
+        {
+            try
+            {
+                DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_cancelpreviousDemandNoticeArrears @p0, @p1, @p2, @p3, @p4", new object[] {
+                dN_ArrearsModel.billingNo,
+                dN_ArrearsModel.taxpayerId,
+                dN_ArrearsModel.previousBillingYr,
+                dN_ArrearsModel.billingYr,
+                dN_ArrearsModel.createdBy
+            }).FirstOrDefaultAsync();
+
+                if (dbResponse.success)
+                {
+                    return new Response()
+                    {
+                        code = MsgCode_Enum.SUCCESS,
+                        description = dbResponse.msg
+                    };
+                }
+                else
+                {
+                    return new Response()
+                    {
+                        code = MsgCode_Enum.FAIL,
+                        description = dbResponse.msg
+                    };
+                }
+            }
+            catch (Exception x)
+            {
+
+                throw;
+            }
+        }
+
         public async Task<Response> AddUnpaidDemandNoticeToArrears2Async(DN_ArrearsModel dN_ArrearsModel, string duration)
         {
             try

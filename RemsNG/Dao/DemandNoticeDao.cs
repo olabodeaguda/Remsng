@@ -216,6 +216,7 @@ namespace RemsNG.Dao
                 dne.id = x.id;
                 dne.lcdaId = x.lcdaId;
                 dne.demandNoticeRequest = await TranslateDemandNoticeRequest(x.query);
+                dne.CreatedDate = x.dateCreated.Value;
                 lst.Add(dne);
             }
 

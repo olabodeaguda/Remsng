@@ -21,6 +21,7 @@ namespace RemsNG.Models
 
         [NotMapped]
         public string wardName { get; set; }
+        public bool RunArrears { get; set; }
     }
 }
 

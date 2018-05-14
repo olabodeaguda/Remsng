@@ -308,8 +308,8 @@
                                         <tbody>
                                             <tr *ngFor="let data of taxpayersLst; let i=index">
                                                 <td>{{i+1}}</td>
-                                                <td>
-                                                    <div class="btn-group">
+                                                <td >
+                                                    <div class="btn-group"  *ngIf="data.demandNoticeStatus !== 'CANCEL'" >
                                                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                             Action
                                                             <span class="caret"></span>
@@ -329,7 +329,7 @@
                                                                     <i class="fa fa-plus"></i> Add Arrears </a>
                                                             </li>
                                                             <li>
-                                                                <a href="javascript:;" (click)="openCancel(data.billingNumber)">
+                                                                <a href="javascript:;" (click)="openCancel(data.billingNumber)" >
                                                                     <i class="fa fa-exclamation-triangle"></i> Cancel Demand Notice </a>
                                                             </li>
                                                             <li>

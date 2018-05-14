@@ -24,7 +24,7 @@ namespace RemsNG.Dao
             string tIds = stringBuilder.AppendJoin(',', ids).ToString();
 
             string query = $"select tbl_demandNoticeTaxpayers.*, -1 as totalSize from tbl_demandNoticeTaxpayers" +
-                $" where taxpayerId in ({tIds}) and billingYr = {billingYr} and demandNoticeStatus <> 'CLOSED'";
+                $" where taxpayerId in ({tIds}) and billingYr = {billingYr} and demandNoticeStatus not in ('CLOSED','CANCEL')";
             return await db.Set<DemandNoticeTaxpayersDetail>().FromSql(query).ToListAsync();
         }
 
@@ -41,14 +41,34 @@ namespace RemsNG.Dao
             return false;
         }
 
-        public async Task<bool> UpdateTaxPayers(Guid[] ids, string status)
+        public async Task<bool> UpdateTaxpayers(string[] taxpayerIds, int billingYr, string status)
+        {
+
+            StringBuilder stringBuilder = new StringBuilder();
+            string tIds = stringBuilder.AppendJoin(',', taxpayerIds).ToString();
+
+            string query_dnt_Ids = $"select id from tbl_demandNoticeTaxpayers" +
+                $" where taxpayerId in ({tIds}) and billingYr = {billingYr} and demandNoticeStatus not in ('CLOSED','CANCEL')";
+
+            string query = $"update tbl_demandNoticeTaxpayers set demandNoticeStatus = '{status}' where id in ({query_dnt_Ids})";
+
+            int count = await db.Database.ExecuteSqlCommandAsync(query);
+            if (count > 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<bool> UpdateTaxPayers(Guid[] demandNoticeTaxpayerIds, string status)
         {
             string ds = string.Empty;
 
-            for (int i = 0; i < ids.Length; i++)
+            for (int i = 0; i < demandNoticeTaxpayerIds.Length; i++)
             {
-                ds = ds + "'" + ids[i] + "'";
-                if (i < ids.Length - 1)
+                ds = ds + "'" + demandNoticeTaxpayerIds[i] + "'";
+                if (i < demandNoticeTaxpayerIds.Length - 1)
                 {
                     ds = ds + ",";
                 }
@@ -172,12 +192,52 @@ namespace RemsNG.Dao
               new object[] { batchno }).ToListAsync();
         }
 
-        public async Task<Response> CancelTaxpayerDemandNoticeByBillingNo(string billingNo, string createdBy)
+        public async Task<Response> CancelTaxpayerDemandNoticeByBillingNo1(string billingNo, string createdBy)
         {
             string query = $"delete from tbl_demandNoticeArrears where billingNo = '{billingNo}'; ";
             query = query + $"delete from tbl_demandNoticeItem where billingNo ='{billingNo}';";
             query = query + $"delete from tbl_demandNoticePenalty where billingNo = '{billingNo}';";
             query = query + $"delete from tbl_demandNoticeTaxpayers where billingNumber = '{billingNo}';";
+
+            int count = await db.Database.ExecuteSqlCommandAsync(query);
+
+            if (count > 0)
+            {
+                //log
+                Error error = new Error()
+                {
+                    dateCreated = DateTime.Now,
+                    errorType = "Delete Demand Notice",
+                    errorvalue = $"{billingNo}, created by {createdBy}",
+                    id = Guid.NewGuid(),
+                    ownerId = Guid.NewGuid()
+                };
+
+                await errorDao.Add(error);
+
+                return new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = $"{billingNo} has been deleted"
+                };
+            }
+            else
+            {
+                return new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = $"An error occur while deleting {billingNo}"
+                };
+            }
+        }
+
+
+        public async Task<Response> CancelTaxpayerDemandNoticeByBillingNo(string billingNo, string createdBy)
+        {
+            string query = $"update tbl_demandNoticeArrears set arrearsStatus='CANCEL', lastmodifiedby='{createdBy}', lastModifiedDate=GETDATE() where billingNo = '{billingNo}'; ";
+            query = query + $"update tbl_demandNoticeItem SET itemStatus='CANCEL', lastmodifiedby='{createdBy}', lastModifiedDate=GETDATE()  where billingNo ='{billingNo}';";
+            query = query + $"update tbl_demandNoticePenalty SET itemPenaltyStatus='CANCEL', lastmodifiedby='{createdBy}', lastModifiedDate=GETDATE() where billingNo = '{billingNo}';";
+            query = query + $"update tbl_demandNoticeTaxpayers SET demandNoticeStatus = 'CANCEL', lastmodifiedby='{createdBy}', lastModifiedDate=GETDATE() where billingNumber = '{billingNo}';";
 
             int count = await db.Database.ExecuteSqlCommandAsync(query);
 

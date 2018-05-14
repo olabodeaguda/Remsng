@@ -97,21 +97,26 @@ namespace RemsNG.Services
                 dnrm.items = dnitem.Select(x => new DnReportItem()
                 {
                     itemTitle = x.itemName,
-                    itemAmount = x.itemAmount - x.amountPaid
+                    itemAmount = x.itemAmount
                 }).ToList();
+
+                dnrm.amountPaid = dnrm.amountPaid + dnitem.Sum(x => x.amountPaid);
 
                 dnrm.banks = await lcdaBankService.Get(lgda.id);
 
                 var penalties = await dnp.ByBillingNumber(billingNo);
 
-                dnrm.penalty = penalties.Sum(x => (x.totalAmount - x.amountPaid));
+                dnrm.penalty = penalties.Sum(x => (x.totalAmount));
+                dnrm.amountPaid = dnrm.amountPaid + penalties.Sum(x => x.amountPaid);
 
                 var arrears = await dna.ByBillingNumber(billingNo);
-                dnrm.arrears = arrears.Sum(x => (x.totalAmount - x.amountPaid));
+                dnrm.arrears = arrears.Sum(x => (x.totalAmount));
+                dnrm.amountPaid = dnrm.amountPaid + arrears.Sum(x=>x.amountPaid);
 
                 LcdaProperty isEnablePayment = ls.FirstOrDefault(x =>
                 x.propertyKey == "ALLOW_PAYMENT_SERVICES" && x.propertyStatus == "ACTIVE");
                 decimal gtotal = dnrm.items.Sum(x => x.itemAmount) + dnrm.arrears + dnrm.penalty;
+                dnrm.amountDue = gtotal;
                 if (isEnablePayment != null)
                 {
                     if (isEnablePayment.propertyValue == "1")

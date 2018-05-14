@@ -18,12 +18,13 @@ namespace RemsNG.Services
         private readonly ILcdaService lcdaService;
         private IListPropertyService listPropertyService;
         private ISectorService sectorService;
+        private IDNAmountDueMgtService amountDueMgtService;
         public DnDownloadService(IDemandNoticeTaxpayerService _dnts,
             IDemandNoticeCharges _chargesService,
             IDemandNoticeDownloadHistory _demandNoticeDownloadHistory,
             ILcdaService _lcdaService,
             IListPropertyService _listPropertyService,
-            ISectorService _sectorService)
+            ISectorService _sectorService, IDNAmountDueMgtService _amountDueMgtService)
         {
             dnts = _dnts;
             chargesService = _chargesService;
@@ -31,11 +32,15 @@ namespace RemsNG.Services
             lcdaService = _lcdaService;
             listPropertyService = _listPropertyService;
             sectorService = _sectorService;
+            amountDueMgtService = _amountDueMgtService;
         }
 
         public async Task<string> PopulateReceiptHtml(string htmlContent, string rootUrl,
             string createdBy, DemandNoticePaymentHistory dnph)
         {
+            //var amountDue = await amountDueMgtService.ByBillingNo(dnph.billingNumber);
+            //decimal amtDue = amountDue.Sum(x => x.amountPaid);
+            // get history amount
             DemandNoticeReportModel dnrp = await dnts.ByBillingNo(dnph.billingNumber);
             Sector sector = await sectorService.ByTaxpayerId(dnrp.taxpayerId);
 
@@ -51,18 +56,36 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("CURRENT_DATE", DateTime.Now.ToString("dd-MM-yyyy"));
             htmlContent = htmlContent.Replace("BILLING_YEAR", dnrp.billingYr.ToString());
             htmlContent = htmlContent.Replace("WARD_NAME", dnrp.wardName);
-            htmlContent = htmlContent.Replace("TOTAL_AMOUNT", $"{String.Format("{0:n}", decimal.Round(dnph.amount, 2))} naira");
             htmlContent = htmlContent.Replace("REFERENCE_NUMBER", dnph.referenceNumber);
-            htmlContent = htmlContent.Replace("REFERENCE_NUMBER", dnph.referenceNumber);//PAYMENT_STATUS
-            htmlContent = htmlContent.Replace("PAYMENT_STATUS", dnrp.demandNoticeStatus);//PAYMENT_STATUS
+            htmlContent = htmlContent.Replace("TOTAL_AMOUNT", $"{String.Format("{0:n}", decimal.Round(dnrp.amountPaid, 2))} naira");
+            if (dnph.amount > dnrp.amountPaid)
+            {
+                htmlContent = htmlContent.Replace("PAYMENT_STATUS", DemandNoticeStatus.OVERPAYMENT.ToString());//PAYMENT_STATUS
+                htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Overpaid : {String.Format("{0:n}", decimal.Round(dnph.amount - dnrp.amountPaid, 2))} naira");//PAYMENT_STATUS
+            }
+            else if(dnrp.amountDue > dnrp.amountPaid)
+            {
+                htmlContent = htmlContent.Replace("PAYMENT_STATUS", dnrp.demandNoticeStatus);//PAYMENT_STATUS
+                decimal s = 0;
+                htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Due : {String.Format("{0:n}", decimal.Round(dnrp.amountDue - dnrp.amountPaid, 2), 2)} naira");//PAYMENT_STATUS
+            }
+            else
+            {
+                htmlContent = htmlContent.Replace("PAYMENT_STATUS", dnrp.demandNoticeStatus);//PAYMENT_STATUS
+                decimal s = 0;
+                htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Overpaid/Due : {String.Format("{0:n}", decimal.Round(s, 2), 2)} naira");//PAYMENT_STATUS
+            }
+
             if (dnph.amount == 0)
             {
                 htmlContent = htmlContent.Replace("AMOUNT_IN_WORD", "Zero");
             }
             else
             {
+                //htmlContent = htmlContent.Replace("AMOUNT_IN_WORD",
+                //    CurrencyWords.ConvertToWords(decimal.Round(dnph.amount, 2).ToString()));
                 htmlContent = htmlContent.Replace("AMOUNT_IN_WORD",
-                    CurrencyWords.ConvertToWords(decimal.Round(dnph.amount, 2).ToString()));
+                   CurrencyWords.ConvertToWords(decimal.Round(dnrp.amountPaid, 2).ToString()));
             }
 
             string discp = string.Join(',', dnrp.items.Select(x => x.itemTitle));

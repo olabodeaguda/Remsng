@@ -61,7 +61,7 @@ namespace RemsNG.Dao
             return await db.Taxpayers.FromSql(query).FirstOrDefaultAsync();
         }
 
-        public async Task<List<Taxpayer>> Get(DemandNoticeRequest demandNoticeRequest)
+        public async Task<List<Taxpayer>> GetActiveTaxpayers(DemandNoticeRequest demandNoticeRequest)
         {
             if (demandNoticeRequest.streetId != Guid.Empty && demandNoticeRequest.streetId != null)
             {

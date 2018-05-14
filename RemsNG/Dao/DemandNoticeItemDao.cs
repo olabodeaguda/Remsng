@@ -17,9 +17,7 @@ namespace RemsNG.Dao
 
       
         public async Task<Response> Add(DemandNoticeTaxpayersDetail dntd)
-        {
-           
-
+        {           
             DbResponse dbResponse = await db.DbResponses.FromSql("sp_addTaxpayerDemandNoticeItem @p0,@p1,@p2,@p3", new object[] {
                 dntd.dnId,
                 dntd.taxpayerId,
@@ -49,7 +47,7 @@ namespace RemsNG.Dao
         {
             List<DemandNoticeItem> lstdbItem = await db.DemandNoticeItems.
                     FromSql($"select tbl_demandNoticeItem.*,0.0 as penaltyAmount,'nil' as duration,-1 " +
-                    $" as billingYr from tbl_demandNoticeItem where billingNo = '{billingno}'").ToListAsync();
+                    $" as billingYr from tbl_demandNoticeItem where billingNo = '{billingno}' and itemStatus in ('PENDING','PART_PAYMENT','PAID')").ToListAsync();
             return lstdbItem;
         }
     }

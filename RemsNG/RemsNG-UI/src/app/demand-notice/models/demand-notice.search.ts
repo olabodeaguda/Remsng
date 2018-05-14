@@ -5,6 +5,8 @@ export class DemandNoticeSearch {
     searchByName: string = '';
     dateYear: number = 0;
     isLoading: boolean = false;
-    billingNo: string = ''    
+    isProcessingRequest: boolean = false;
+    billingNo: string = '';
     isClosedData: boolean = false;
+    runArrears: boolean = false;
 }

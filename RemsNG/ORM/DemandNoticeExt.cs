@@ -16,5 +16,6 @@ namespace RemsNG.ORM
         public Guid lcdaId { get; set; }
         public Nullable<int> totalSize { get; set; }
         public DemandNoticeRequest demandNoticeRequest { get; set; }
+        public DateTime CreatedDate { get; set; }
     }
 }

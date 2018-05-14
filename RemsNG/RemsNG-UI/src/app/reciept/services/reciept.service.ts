@@ -18,7 +18,7 @@ export class RecieptService{
     approvePayment(id:string,status:string){
         this.dataService.addToHeader('pmt', status);
         return this.dataService.post('payment/changestatus/'+id,{})
-        .catch(error=> this.dataService.handleError(error))
+        .catch(error => this.dataService.handleError(error))
     }
     byBillingNumber(billingNumber:string){
         return this.dataService.get('payment/'+billingNumber)

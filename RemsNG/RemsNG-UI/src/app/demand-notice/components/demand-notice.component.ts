@@ -34,7 +34,7 @@ export class DemandNoticeComponent implements OnInit {
     @ViewChild('downloadRequestModal') downloadRequestModal: ElementRef;
     isLoadingMini: boolean = false;
     dowloadRequestList = [];
-    
+
     constructor(private appsettings: AppSettings,
         private demandnoticeservice: DemandNoticeService,
         private toasterService: ToasterService,
@@ -99,10 +99,10 @@ export class DemandNoticeComponent implements OnInit {
             return;
         }
 
-        this.searchModel.isLoading = true;
+        this.searchModel.isProcessingRequest = true;
         this.demandnoticeservice.add(this.searchModel).subscribe(
             response => {
-                this.searchModel.isLoading = false;
+                this.searchModel.isProcessingRequest = false;
                 if (response.code === '00') {
                     this.toasterService.pop('success', 'Success', response.description);
                     this.getDemandNotice();
@@ -111,7 +111,7 @@ export class DemandNoticeComponent implements OnInit {
                 }
             },
             error => {
-                this.searchModel.isLoading = false;
+                this.searchModel.isProcessingRequest = false;
                 this.toasterService.pop('error', 'Error', error);
             });
     }

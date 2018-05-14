@@ -93,9 +93,8 @@ namespace RemsNG.Services
                     string query = EncryptDecryptUtils.FromHexString(demandNotice.query);
                     DemandNoticeRequest demandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequest>(query);
                     demandNoticeRequest.createdBy = demandNotice.createdBy;
-                    List<Taxpayer> taxpayers = await taxpayerDao.Get(demandNoticeRequest);
+                    List<Taxpayer> taxpayers = await taxpayerDao.GetActiveTaxpayers(demandNoticeRequest);
                     string domainName = string.Empty;
-
                     if (taxpayers.Count > 0)
                     {
                         Lgda lcda = await lcdaService.Get(demandNoticeRequest);
@@ -108,14 +107,10 @@ namespace RemsNG.Services
                             }
                         }
 
-                        List<DemandNoticeTaxpayersDetail> dt =
-                            await demandNoticeTaxpayersDao.getTaxpayerByIds(taxpayers
-                            .Select(x => string.Format("'{0}'", x.id)).ToArray(), demandNotice.billingYear);
-                        //make sure demand notice have not been raised for the taxpayers by year and taxpayersId
-
-                        if (dt.Count > 0)
+                        if (demandNoticeRequest.CloseOldData)
                         {
-                            await ClosedDDTaxpayer(dt.Select(x => x.id).ToArray());
+                            string[] taxpyIds = taxpayers.Select(x => string.Format("'{0}'", x.id)).ToArray();
+                            await ClosedDDTaxpayers(taxpyIds, demandNotice.billingYear);
                             Error error = new Error()
                             {
                                 errorType = ErrorType.DEMAND_NOTICE.ToString(),
@@ -125,10 +120,14 @@ namespace RemsNG.Services
                             bool result = await errorDao.Add(error);
                         }
 
+                        List<DemandNoticeTaxpayersDetail> dt =
+                            await demandNoticeTaxpayersDao.getTaxpayerByIds(taxpayers
+                            .Select(x => string.Format("'{0}'", x.id)).ToArray(), demandNotice.billingYear);
+
                         foreach (var tm in taxpayers)
                         {
                             var itExist = dt.FirstOrDefault(x => x.taxpayerId == tm.id);
-                            if (itExist != null && !demandNoticeRequest.CloseOldData)
+                            if (itExist != null)
                             {
                                 Error error = new Error()
                                 {
@@ -142,19 +141,6 @@ namespace RemsNG.Services
                             }
                             else
                             {
-                                //if (demandNoticeRequest.CloseOldData && itExist != null)
-                                //{
-                                //    //closed demand notice taxpaet
-                                //    await ClosedDDTaxpayer(itExist);
-                                //    Error error = new Error()
-                                //    {
-                                //        errorType = ErrorType.DEMAND_NOTICE.ToString(),
-                                //        errorvalue = $"{itExist.billingNumber},{itExist.billingYr} has been closed",
-                                //        ownerId = itExist.taxpayerId
-                                //    };
-                                //    bool result = await errorDao.Add(error);
-                                //}
-
                                 DemandNoticeTaxpayersDetail dntd = new DemandNoticeTaxpayersDetail();
                                 dntd.billingYr = demandNotice.billingYear;
                                 dntd.dnId = demandNotice.id;
@@ -176,8 +162,16 @@ namespace RemsNG.Services
                                 {
                                     dntd.billingNumber = response1.data.ToString().Trim();
                                     //run arrears 
-                                    await RunArrears(dntd);
-                                    await RunDemandNoticeItem(dntd); //run items 
+                                    if (demandNoticeRequest.RunArrears)
+                                    {
+                                        await RunArrears(dntd);
+                                    }
+                                    else
+                                    {
+                                        await RunArrears2(dntd);
+                                    }
+                                    
+                                    await RunDemandNoticeItem(dntd); //run items
                                 }
                                 else
                                 {
@@ -203,8 +197,6 @@ namespace RemsNG.Services
                         };
                         bool result = await errorDao.Add(error);
                     }
-
-
                     //update demand notice
                     demandNotice.demandNoticeStatus = DemandNoticeStatus.COMPLETED.ToString();
                     Response response = await demandNoticeDao.UpdateStatus(demandNotice);
@@ -227,14 +219,9 @@ namespace RemsNG.Services
             }
         }
 
-        private async Task<bool> ClosedDDTaxpayer(DemandNoticeTaxpayersDetail itExist)
+        private async Task<bool> ClosedDDTaxpayers(string[] taxpayerIds, int billingYr)
         {
-            return await demandNoticeTaxpayersDao.UpdateTaxPayer(itExist.id, DemandNoticeStatus.CLOSED.ToString());
-        }
-
-        private async Task<bool> ClosedDDTaxpayer(Guid[] ids)
-        {
-            return await demandNoticeTaxpayersDao.UpdateTaxPayers(ids, DemandNoticeStatus.CLOSED.ToString());
+            return await demandNoticeTaxpayersDao.UpdateTaxpayers(taxpayerIds, billingYr, DemandNoticeStatus.CLOSED.ToString());
         }
 
         public async Task GenerateBulkDemandNotice()
@@ -465,11 +452,6 @@ namespace RemsNG.Services
 
         private async Task RunArrears(DemandNoticeTaxpayersDetail dntd)
         {
-            // check for unpaid arrears  paid or partly paid
-            // change current arrear status to move
-            // create a new arrears with the status unpaid
-            //get previous year demand notice
-
             DN_ArrearsModel dN_ArrearsModel = new DN_ArrearsModel()
             {
                 arrearstatus = DemandNoticeStatus.PENDING.ToString(),
@@ -511,6 +493,49 @@ namespace RemsNG.Services
 
             await MovedUnpaidPenalty(dN_ArrearsModel);
         }
+
+        private async Task RunArrears2(DemandNoticeTaxpayersDetail dntd)
+        {
+            DN_ArrearsModel dN_ArrearsModel = new DN_ArrearsModel()
+            {
+                arrearstatus = DemandNoticeStatus.PENDING.ToString(),
+                billingNo = dntd.billingNumber,
+                billingYr = dntd.billingYr,
+                previousBillingYr = dntd.billingYr,
+                createdBy = dntd.createdBy,
+                taxpayerId = dntd.taxpayerId
+            };
+
+            Response responseUnpaidArrears = await demandNoticeArrearDao.AddUnpaidArrearsAsync(dN_ArrearsModel);
+            if (responseUnpaidArrears.code != MsgCode_Enum.SUCCESS)
+            {
+                // logger error
+                logger.LogError(responseUnpaidArrears.description);
+                Error error = new Error()
+                {
+                    errorType = ErrorType.DEMAND_NOTICE.ToString(),
+                    errorvalue = $"Unpaid arrears section : {responseUnpaidArrears.description}, {JsonConvert.SerializeObject(dN_ArrearsModel)}",
+                    ownerId = dntd.dnId
+                };
+                bool result = await errorDao.Add(error);
+            }
+
+            //get position of the year
+
+            Response responseUnpaidDemandNotice = await demandNoticeArrearDao.AddUnpaidDemandNoticeToArrearsAsync2(dN_ArrearsModel);
+            if (responseUnpaidDemandNotice.code != MsgCode_Enum.SUCCESS)
+            {
+                logger.LogError(responseUnpaidDemandNotice.description);
+                Error error = new Error()
+                {
+                    errorType = ErrorType.DEMAND_NOTICE.ToString(),
+                    errorvalue = $"Unpaid demand notice arrears section: {responseUnpaidDemandNotice.description}, {JsonConvert.SerializeObject(dN_ArrearsModel)}",
+                    ownerId = dntd.dnId
+                };
+                bool result = await errorDao.Add(error);
+            }
+        }
+
 
         private async Task MovedUnpaidPenalty(DN_ArrearsModel dN_ArrearsModel)
         {
