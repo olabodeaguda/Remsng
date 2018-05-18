@@ -67,13 +67,13 @@ namespace RemsNG.Services
             {
                 htmlContent = htmlContent.Replace("PAYMENT_STATUS", dnrp.demandNoticeStatus);//PAYMENT_STATUS
                 decimal s = 0;
-                htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Due : {String.Format("{0:n}", decimal.Round(dnrp.amountDue - dnrp.amountPaid, 2), 2)} naira");//PAYMENT_STATUS
+                htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount balance Due : {String.Format("{0:n}", decimal.Round(dnrp.amountDue - dnrp.amountPaid, 2), 2)} naira");//PAYMENT_STATUS
             }
             else
             {
                 htmlContent = htmlContent.Replace("PAYMENT_STATUS", dnrp.demandNoticeStatus);//PAYMENT_STATUS
                 decimal s = 0;
-                htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Overpaid/Due : {String.Format("{0:n}", decimal.Round(s, 2), 2)} naira");//PAYMENT_STATUS
+                htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Overpaid/balance Due : {String.Format("{0:n}", decimal.Round(s, 2), 2)} naira");//PAYMENT_STATUS
             }
 
             if (dnph.amount == 0)
@@ -111,6 +111,7 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("LCDA_STATE", dnrp.lcdaState);
             htmlContent = htmlContent.Replace("LAGOSLOGO", $"{rootUrl}/images/lagoslogo.jpg");
             htmlContent = htmlContent.Replace("LCDA_LOGO", $"{rootUrl}/images/{dnrp.lcdaLogoFileName}");
+            htmlContent = htmlContent.Replace("dated", DateTime.Now.ToString("dd-MM-yyyy HH:mm"));
 
             if (dnrp.billingNumber.Length < 5)
             {

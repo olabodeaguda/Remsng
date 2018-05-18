@@ -65,8 +65,8 @@ namespace RemsNG.Controllers
 
             htmlContent = await dnd.PopulateReportHtml(htmlContent, billingno, rootUrl, User.Identity.Name);
             htmlContent = htmlContent.Replace("PATCH1", "<br /><br /><br /><br /><br /><br /><br /><br />");
-            htmlContent = htmlContent.Replace("PATCH2", "");
-            htmlContent = htmlContent.Replace("dated", DateTime.Now.ToString("dd-MM-yyyy HH:mm"));
+            //htmlContent = htmlContent.Replace("PATCH2", "");
+            //htmlContent = htmlContent.Replace("dated", DateTime.Now.ToString("dd-MM-yyyy HH:mm"));
             var result = await nodeServices.InvokeAsync<byte[]>("./pdf", htmlContent);
 
             HttpContext.Response.ContentType = "application/pdf";

@@ -212,5 +212,6 @@ namespace RemsNG.Dao
 
             return await db.lgdas.FromSql(query).FirstOrDefaultAsync();
         }
+
     }
 }

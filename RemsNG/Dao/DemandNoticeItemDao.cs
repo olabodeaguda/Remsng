@@ -47,7 +47,7 @@ namespace RemsNG.Dao
         {
             List<DemandNoticeItem> lstdbItem = await db.DemandNoticeItems.
                     FromSql($"select tbl_demandNoticeItem.*,0.0 as penaltyAmount,'nil' as duration,-1 " +
-                    $" as billingYr from tbl_demandNoticeItem where billingNo = '{billingno}' and itemStatus in ('PENDING','PART_PAYMENT','PAID')").ToListAsync();
+                    $" as billingYr from tbl_demandNoticeItem where billingNo = '{billingno}' and itemStatus in ('PENDING','PART_PAYMENT','PAID','CANCEL')").ToListAsync();
             return lstdbItem;
         }
     }
