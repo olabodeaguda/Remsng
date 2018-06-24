@@ -170,7 +170,7 @@ namespace RemsNG.Services
                                     {
                                         await RunArrears2(dntd);
                                     }
-                                    
+
                                     await RunDemandNoticeItem(dntd); //run items
                                 }
                                 else
@@ -239,9 +239,9 @@ namespace RemsNG.Services
                         Lgda lgda = await taxpayerService.getLcda(firstTaxpayer.taxpayerId);
                         string template = await dnDownloadService.LcdaTemlateByLcda(lgda.id);
 
-                        string rootUrl = this.hostingEnvironment.WebRootPath;
+                        string rootUrl = this.hostingEnvironment.WebRootPath == null ? @"C:\" : this.hostingEnvironment.WebRootPath;
 
-                        string rootPath = Path.Combine(this.hostingEnvironment.WebRootPath, "zipReports", bdnm.batchNo);
+                        string rootPath = Path.Combine(rootUrl, "zipReports", bdnm.batchNo);
                         if (!Directory.Exists(rootPath))
                         {
                             Directory.CreateDirectory(rootPath);
@@ -253,12 +253,8 @@ namespace RemsNG.Services
                         for (int i = 0; i < lstOfDN.Count; i++)
                         {
                             string s = await dnDownloadService.PopulateReportHtml(htmlContent, lstOfDN[i].billingNumber, rootUrl, bdnm.createdBy);
-                            if (s == string.Empty)
-                            {
-                                // log bill number
-                                continue;
-                            }
-                            htmlContents = htmlContents + s;
+
+                            htmlContents = htmlContents + (s == null || string.IsNullOrEmpty(s) ? "" : s);
                             if (i < 1)
                             {
                                 continue;

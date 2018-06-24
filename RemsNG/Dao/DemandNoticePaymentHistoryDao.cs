@@ -111,6 +111,14 @@ namespace RemsNG.Dao
             return await db.DemandNoticePaymentHistories.FromSql(query).ToListAsync();
         }
 
+        public async Task<List<DemandNoticePaymentHistory>> ByBillingNumbers(string billingnumber)
+        {
+            string query = "select dnph.*,bank.bankName from tbl_demandNoticePaymentHistory as dnph " +
+                $"inner join tbl_bank bank on bank.id = dnph.bankId where paymentStatus = 'APPROVED' and billingNumber in ({billingnumber})";
+
+            return await db.DemandNoticePaymentHistories.FromSql(query).ToListAsync();
+        }
+
         public async Task<DemandNoticePaymentHistory> ById(Guid id)
         {
             string query = "select dnph.*,bank.bankName from tbl_demandNoticePaymentHistory as dnph " +

@@ -17,5 +17,7 @@ namespace RemsNG.ORM
         public string itemDescription { get; set; }
         public string itemCode { get; set; }
         public string taxpayersName { get; set; }
+        public string addressName { get; set; }
+        public DateTime? lastModifiedDate { get; set; }
     }
 }

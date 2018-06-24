@@ -36,6 +36,11 @@ namespace RemsNG.Services
             return await dnph.ByBillingNumber(billingnumber);
         }
 
+        public async Task<List<DemandNoticePaymentHistory>> ByBillingNumbers(string billingnumber)
+        {
+            return await dnph.ByBillingNumbers(billingnumber);
+        }
+
         public async Task<DemandNoticePaymentHistory> ById(Guid id)
         {
             return await dnph.ById(id);

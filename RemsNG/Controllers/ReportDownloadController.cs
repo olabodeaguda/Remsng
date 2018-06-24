@@ -23,12 +23,15 @@ namespace RemsNG.Controllers
         private readonly IReportService reportService;
         private readonly IExcelService excelService;
         private readonly ILcdaService lcdaService;
+        private readonly IDNPaymentHistoryService dNPaymentHistoryService;
         public ReportDownloadController(IReportService _reportService,
-            IExcelService _excelService, ILcdaService _lcdaService)
+            IExcelService _excelService, ILcdaService _lcdaService,
+            IDNPaymentHistoryService _dNPaymentHistoryService)
         {
             reportService = _reportService;
             excelService = _excelService;
             lcdaService = _lcdaService;
+            dNPaymentHistoryService = _dNPaymentHistoryService;
         }
 
         [RemsRequirementAttribute("DOWNLOAD_REPORT")]
@@ -193,7 +196,12 @@ namespace RemsNG.Controllers
             ed = ed.AddHours(23);
             ed = ed.AddMinutes(59);
 
-            List<ItemReportSummaryModel> current = await reportService.ByDate(sd, ed);
+            List<ItemReportSummaryModel> current = await reportService.ByDate2(sd, ed);
+
+            // getPayment history 
+            string billnums = current.Select(x => x.billingNo).ToArray().FormatString();
+
+            List<DemandNoticePaymentHistory> dnph = await dNPaymentHistoryService.ByBillingNumbers(billnums);
 
             if (current.Count < 1)
             {
@@ -206,7 +214,9 @@ namespace RemsNG.Controllers
 
             Domain domain = await lcdaService.GetDomain(lgda.id);
 
-            byte[] result = await excelService.WriteReportSummary(current, (domain == null ? "Unknown" : domain.domainName), lgda.lcdaName, sd, ed);
+            // byte[] result = await excelService.WriteReportSummary(current, (domain == null ? "Unknown" : domain.domainName), lgda.lcdaName, sd, ed);
+            byte[] result = await excelService.WriteReportSummaryConsolidated(current, 
+                (domain == null ? "Unknown" : domain.domainName), lgda.lcdaName, sd, ed,dnph);
 
             HttpContext.Response.ContentType = "application/octet-stream";
             HttpContext.Response.Body.Write(result, 0, result.Length);

@@ -117,7 +117,7 @@ namespace RemsNG.Utilities
                 return "receipt.html";
             }
         }
-
+        
         //public static void CopyAllTo<T>(this T source, T target)
         //{
         //    var type = typeof(T);

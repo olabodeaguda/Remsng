@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace RemsNG.Utilities
@@ -21,6 +22,21 @@ namespace RemsNG.Utilities
                 return 30;
             }
             return 31;
+        }
+
+        public static string FormatString(this string[] arr)
+        {
+            StringBuilder builder = new StringBuilder();
+
+            for (int i = 0; i < arr.Length; i++)
+            {
+                builder.AppendFormat("'{0}'", arr[i]);
+                if (i < (arr.Length - 1))
+                {
+                    builder.Append(",");
+                }
+            }
+            return builder.ToString();
         }
     }
 }

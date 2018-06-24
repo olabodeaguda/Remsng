@@ -21,6 +21,11 @@ namespace RemsNG.Services
             return await reportDao.ByDate(startDate, endDate);
         }
 
+        public async Task<List<ItemReportSummaryModel>> ByDate2(DateTime startDate, DateTime endDate)
+        {
+            return await reportDao.ByDate2(startDate, endDate);
+        }
+
         public async Task<string> HtmlByDate(List<ItemReportSummaryModel> rptLst,
             List<ItemReportSummaryModel> previousYearList)
         {
