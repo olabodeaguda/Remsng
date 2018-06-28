@@ -18,7 +18,8 @@ begin
 	inner join tbl_demandNoticeTaxpayers as dnt on dnt.taxpayerId = dnItem.taxpayerId
 	inner join tbl_demandnotice on tbl_demandnotice.id = dnt.dnId
 	where ward.wardStatus = 'ACTIVE' and ((dnItem.dateCreated between @startEnd and @endDate) 
-	or (dnItem.lastModifiedDate between @startEnd and @endDate)) and dnItem.itemStatus in ('PAID', 'PENDING','PART_PAYMENT')
+	or (dnItem.lastModifiedDate between @startEnd and @endDate)) 
+	--and dnItem.itemStatus in ('PAID', 'PENDING','PART_PAYMENT')
 	union
 
 	select dnArrears.id,dnArrears.totalAmount as itemAmount,dnArrears.amountPaid,dnArrears.billingNo,
@@ -34,7 +35,7 @@ begin
 	inner join tbl_demandnotice on tbl_demandnotice.id = dnt.dnId
 	where ward.wardStatus = 'ACTIVE' and ((dnArrears.dateCreated between @startEnd and @endDate)
 	 or (dnArrears.lastModifiedDate between @startEnd and @endDate)) 
-	 and dnArrears.arrearsStatus in ('PAID', 'PENDING','PART_PAYMENT')
+	 --and dnArrears.arrearsStatus in ('PAID', 'PENDING','PART_PAYMENT')
 	union 
 
 	select dnPenalty.id,dnPenalty.totalAmount as itemAmount,dnPenalty.amountPaid,dnPenalty.billingNo,
@@ -50,7 +51,7 @@ begin
 	inner join tbl_demandnotice on tbl_demandnotice.id = dnt.dnId
 	where ward.wardStatus = 'ACTIVE' and ((dnPenalty.dateCreated between @startEnd and @endDate)
 	or (dnPenalty.lastModifiedDate between @startEnd and @endDate)) 
-	and dnPenalty.itemPenaltyStatus in ('PAID', 'PENDING','PART_PAYMENT')
+	--and dnPenalty.itemPenaltyStatus in ('PAID', 'PENDING','PART_PAYMENT')
 	
 end
 
@@ -73,7 +74,8 @@ begin
 	inner join tbl_demandNoticeTaxpayers as dnt on dnt.taxpayerId = dnItem.taxpayerId
 	inner join tbl_demandnotice on tbl_demandnotice.id = dnt.dnId
 	where ward.wardStatus = 'ACTIVE' and ((dnItem.dateCreated between @startEnd and @endDate) 
-	or (dnItem.lastModifiedDate between @startEnd and @endDate)) and dnItem.itemStatus in ('PAID', 'PENDING','PART_PAYMENT')
+	or (dnItem.lastModifiedDate between @startEnd and @endDate))
+	--and dnItem.itemStatus in ('PAID', 'PENDING','PART_PAYMENT')
 	union
 
 	select dnArrears.id,dnArrears.totalAmount as itemAmount,dnArrears.amountPaid,dnArrears.billingNo,
@@ -87,7 +89,7 @@ begin
 	inner join tbl_demandnotice on tbl_demandnotice.id = dnt.dnId
 	where ward.wardStatus = 'ACTIVE' and ((dnArrears.dateCreated between @startEnd and @endDate)
 	 or (dnArrears.lastModifiedDate between @startEnd and @endDate)) 
-	 and dnArrears.arrearsStatus in ('PAID', 'PENDING','PART_PAYMENT')
+	 --and dnArrears.arrearsStatus in ('PAID', 'PENDING','PART_PAYMENT')
 	union 
 
 	select dnPenalty.id,dnPenalty.totalAmount as itemAmount,dnPenalty.amountPaid,dnPenalty.billingNo,
@@ -101,6 +103,6 @@ begin
 	inner join tbl_demandnotice on tbl_demandnotice.id = dnt.dnId
 	where ward.wardStatus = 'ACTIVE' and ((dnPenalty.dateCreated between @startEnd and @endDate)
 	or (dnPenalty.lastModifiedDate between @startEnd and @endDate)) 
-	and dnPenalty.itemPenaltyStatus in ('PAID', 'PENDING','PART_PAYMENT')
+	--and dnPenalty.itemPenaltyStatus in ('PAID', 'PENDING','PART_PAYMENT')
 	
 end
