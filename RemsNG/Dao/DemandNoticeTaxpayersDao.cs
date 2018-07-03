@@ -231,7 +231,6 @@ namespace RemsNG.Dao
             }
         }
 
-
         public async Task<Response> CancelTaxpayerDemandNoticeByBillingNo(string billingNo, string createdBy)
         {
             string query = $"update tbl_demandNoticeArrears set arrearsStatus='CANCEL', lastmodifiedby='{createdBy}', lastModifiedDate=GETDATE() where billingNo = '{billingNo}'; ";
