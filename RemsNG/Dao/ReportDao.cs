@@ -15,11 +15,19 @@ namespace RemsNG.Dao
 
         public async Task<List<ItemReportSummaryModel>> ByDate(DateTime startDate, DateTime endDate)
         {
-            return await db.ItemReportSummaryModels.FromSql("sp_paymentSummaryByItems @p0,@p1",
-                new object[]
-                {
+            try
+            {
+                return await db.ItemReportSummaryModels.FromSql("sp_paymentSummaryByItems @p0,@p1",
+                       new object[]
+                       {
                     startDate,endDate
-                }).ToListAsync();
+                       }).ToListAsync();
+            }
+            catch (Exception x)
+            {
+
+                throw;
+            }
         }
 
         public async Task<List<ItemReportSummaryModel>> ByDate2(DateTime startDate, DateTime endDate)
