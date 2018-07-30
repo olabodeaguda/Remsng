@@ -12,6 +12,7 @@ namespace RemsNG.Services
 {
     public class DnDownloadService : IDnDownloadService
     {
+        private readonly IDNPaymentHistoryService dNPaymentHistoryService;
         private readonly IDemandNoticeTaxpayerService dnts;
         private readonly IDemandNoticeCharges chargesService;
         private readonly IDemandNoticeDownloadHistory demandNoticeDownloadHistory;
@@ -24,7 +25,8 @@ namespace RemsNG.Services
             IDemandNoticeDownloadHistory _demandNoticeDownloadHistory,
             ILcdaService _lcdaService,
             IListPropertyService _listPropertyService,
-            ISectorService _sectorService, IDNAmountDueMgtService _amountDueMgtService)
+            ISectorService _sectorService, IDNAmountDueMgtService _amountDueMgtService,
+            IDNPaymentHistoryService _dNPaymentHistoryService)
         {
             dnts = _dnts;
             chargesService = _chargesService;
@@ -33,6 +35,7 @@ namespace RemsNG.Services
             listPropertyService = _listPropertyService;
             sectorService = _sectorService;
             amountDueMgtService = _amountDueMgtService;
+            dNPaymentHistoryService = _dNPaymentHistoryService;
         }
 
         public async Task<string> PopulateReceiptHtml(string htmlContent, string rootUrl,
@@ -58,22 +61,49 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("WARD_NAME", dnrp.wardName);
             htmlContent = htmlContent.Replace("REFERENCE_NUMBER", dnph.referenceNumber);
             htmlContent = htmlContent.Replace("TOTAL_AMOUNT", $"{String.Format("{0:n}", decimal.Round(dnrp.amountPaid, 2))} naira");
-            if (dnph.amount > dnrp.amountPaid)
+            // total amount paid from reciept page
+            List<DemandNoticePaymentHistory> dnpHistory = await dNPaymentHistoryService.ByBillingNumber(dnph.billingNumber);
+            dnpHistory = dnpHistory.Where(x => x.paymentStatus == "APPROVED").ToList();
+            decimal amtPaid = dnpHistory.Sum(x => x.amount);
+            decimal amtDue = dnrp.amountDue;
+            #region old
+            //dnph.amount > dnrp.amountPaid
+            //if (dnph.amount > dnrp.amountPaid)
+            //{
+            //    htmlContent = htmlContent.Replace("PAYMENT_STATUS", DemandNoticeStatus.OVERPAYMENT.ToString());//PAYMENT_STATUS
+            //    htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Overpaid : {String.Format("{0:n}", decimal.Round(dnph.amount - dnrp.amountPaid, 2))} naira");//PAYMENT_STATUS
+            //}
+            //else if (dnrp.amountDue > dnrp.amountPaid)
+            //{
+            //    htmlContent = htmlContent.Replace("PAYMENT_STATUS", dnrp.demandNoticeStatus);//PAYMENT_STATUS
+            //    decimal s = 0;
+            //    htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount balance Due : {String.Format("{0:n}", decimal.Round(dnrp.amountDue - dnrp.amountPaid, 2), 2)} naira");//PAYMENT_STATUS
+            //}
+            //else
+            //{
+            //    htmlContent = htmlContent.Replace("PAYMENT_STATUS", dnrp.demandNoticeStatus);//PAYMENT_STATUS
+            //    decimal s = 0;
+            //    htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Overpaid/balance Due : {String.Format("{0:n}", decimal.Round(s, 2), 2)} naira");//PAYMENT_STATUS
+            //} 
+            #endregion
+
+            if (amtPaid > amtDue)
             {
+                // overpayment
                 htmlContent = htmlContent.Replace("PAYMENT_STATUS", DemandNoticeStatus.OVERPAYMENT.ToString());//PAYMENT_STATUS
-                htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Overpaid : {String.Format("{0:n}", decimal.Round(dnph.amount - dnrp.amountPaid, 2))} naira");//PAYMENT_STATUS
+                htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Overpaid : {String.Format("{0:n}", decimal.Round(amtPaid - amtDue, 2))} naira");//PAYMENT_STATUS
+
             }
-            else if(dnrp.amountDue > dnrp.amountPaid)
+            else if(amtPaid < amtDue)
             {
-                htmlContent = htmlContent.Replace("PAYMENT_STATUS", dnrp.demandNoticeStatus);//PAYMENT_STATUS
-                decimal s = 0;
-                htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount balance Due : {String.Format("{0:n}", decimal.Round(dnrp.amountDue - dnrp.amountPaid, 2), 2)} naira");//PAYMENT_STATUS
+                htmlContent = htmlContent.Replace("PAYMENT_STATUS", DemandNoticeStatus.PART_PAYMENT.ToString());//PAYMENT_STATUS
+                htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Overpaid : {String.Format("{0:n}", decimal.Round(amtDue - amtPaid, 2))} naira");//PAYMENT_STATUS
+
             }
             else
             {
-                htmlContent = htmlContent.Replace("PAYMENT_STATUS", dnrp.demandNoticeStatus);//PAYMENT_STATUS
-                decimal s = 0;
-                htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Overpaid/balance Due : {String.Format("{0:n}", decimal.Round(s, 2), 2)} naira");//PAYMENT_STATUS
+                htmlContent = htmlContent.Replace("PAYMENT_STATUS", DemandNoticeStatus.PAID.ToString());//PAYMENT_STATUS
+                htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Overpaid : {String.Format("{0:n}", decimal.Round(0, 2))} naira");//PAYMENT_STATUS
             }
 
             if (dnph.amount == 0)

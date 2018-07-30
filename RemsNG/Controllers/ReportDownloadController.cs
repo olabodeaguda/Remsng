@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using RemsNG.Models;
 using RemsNG.ORM;
@@ -24,14 +25,17 @@ namespace RemsNG.Controllers
         private readonly IExcelService excelService;
         private readonly ILcdaService lcdaService;
         private readonly IDNPaymentHistoryService dNPaymentHistoryService;
+        private IHostingEnvironment hostingEnvironment;
         public ReportDownloadController(IReportService _reportService,
             IExcelService _excelService, ILcdaService _lcdaService,
-            IDNPaymentHistoryService _dNPaymentHistoryService)
+            IDNPaymentHistoryService _dNPaymentHistoryService,
+            IHostingEnvironment _hostingEnvironment)
         {
             reportService = _reportService;
             excelService = _excelService;
             lcdaService = _lcdaService;
             dNPaymentHistoryService = _dNPaymentHistoryService;
+            hostingEnvironment = _hostingEnvironment;
         }
 
         [RemsRequirementAttribute("DOWNLOAD_REPORT")]
@@ -70,8 +74,8 @@ namespace RemsNG.Controllers
             ed = ed.AddHours(23);
             ed = ed.AddMinutes(59);
 
-            List<ItemReportSummaryModel> current = await reportService.ByDate(sd, ed);
-            List<ItemReportSummaryModel> previous = await reportService.ByDate(
+            List<ItemReportSummaryModel> current = await reportService.ByDate2(sd, ed);
+            List<ItemReportSummaryModel> previous = await reportService.ByDate2(
                 new DateTime(sd.Year, 1, 1, 0, 0, 0), sd);
 
             if (current.Count < 1)
@@ -215,14 +219,84 @@ namespace RemsNG.Controllers
             Domain domain = await lcdaService.GetDomain(lgda.id);
 
             // byte[] result = await excelService.WriteReportSummary(current, (domain == null ? "Unknown" : domain.domainName), lgda.lcdaName, sd, ed);
-            byte[] result = await excelService.WriteReportSummaryConsolidated(current, 
-                (domain == null ? "Unknown" : domain.domainName), lgda.lcdaName, sd, ed,dnph);
+            byte[] result = await excelService.WriteReportSummaryConsolidated(current,
+                (domain == null ? "Unknown" : domain.domainName), lgda.lcdaName, sd, ed, dnph);
 
             HttpContext.Response.ContentType = "application/octet-stream";
             HttpContext.Response.Body.Write(result, 0, result.Length);
             return new ContentResult();
         }
 
+        [RemsRequirementAttribute("DOWNLOAD_REPORT")]
+        [HttpGet("outstandingbybillnoseperate/{startDate}/{endDate}")]
+        public async Task<object> GetByBIllNumberReport(string startDate, string endDate)
+        {
+            if (string.IsNullOrEmpty(startDate))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Start date is required"
+                });
+            }
+            else if (string.IsNullOrEmpty(endDate))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "End date is required"
+                });
+            }
+            Guid lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
+            Lgda lgda = await lcdaService.Get(lcdaId);
+            if (lgda == null)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.UNKNOWN,
+                    description = $"Log on user unknown"
+                });
+            }
+
+            DateTime sd = DateTime.ParseExact(startDate, "dd-MM-yyyy", null);
+            DateTime ed = DateTime.ParseExact(endDate, "dd-MM-yyyy", null);
+            ed = ed.AddHours(23);
+            ed = ed.AddMinutes(59);
+            List<ItemReportSummaryModel> all = await reportService.ByDate(sd, ed);
+            List<ItemReportSummaryModel> valid = await reportService.ByDate2(sd, ed);
+
+            // getPayment history 
+            string billnums = all.Select(x => x.billingNo).ToArray().FormatString();
+            List<DemandNoticePaymentHistory> dnph = await dNPaymentHistoryService.ByBillingNumbers(billnums);
+
+            if (all.Count < 1)
+            {
+                return NotFound(new Response()
+                {
+                    code = MsgCode_Enum.NOTFOUND,
+                    description = "Zero record(s) found"
+                });
+            }
+
+            Domain domain = await lcdaService.GetDomain(lgda.id);
+
+            var result = await excelService.WriteReportSummaryConsolidatedSeperate(valid,
+                (domain == null ? "Unknown" : domain.domainName), lgda.lcdaName, sd, ed, dnph);
+
+            // var result1 = await System.IO.File.ReadAllBytesAsync(result);
+
+            //HttpContext.Response.ContentType = "application/octet-stream";
+            // HttpContext.Response.Body.Write(result1, 0, result1.Length);
+            //return new ContentResult();
+
+            return Ok(new Response()
+            {
+                code = MsgCode_Enum.SUCCESS,
+                data = result
+            });
+
+
+        }
 
         [RemsRequirementAttribute("DOWNLOAD_REPORT")]
         [HttpGet("outstandingbybillnohtml/{startDate}/{endDate}")]

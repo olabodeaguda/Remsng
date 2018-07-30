@@ -102,6 +102,8 @@ namespace RemsNG.Services
                 {
                     options.Filters.Add(new CorsAuthorizationFilterFactory("CorsPolicy"));
                 });
+
+            #region service DI
             services.AddDbContextPool<RemsDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
             services.AddTransient<IUserService, UserService>();
@@ -142,6 +144,7 @@ namespace RemsNG.Services
             services.AddTransient<IExcelService, ExcelService>();
             services.AddTransient<ISyncService, SyncService>();
             services.AddSingleton<IConfigurationRoot>(provider => Configuration);
+            #endregion
         }
 
         public static IConfigurationSection jwtAppSettingOptions

@@ -167,9 +167,12 @@ namespace RemsNG.Controllers
                     });
                 }
                 List<DNAmountDueModel> paymentDueList = await amountDueMgtService.ByBillingNo(dnph.billingNumber);
+
+
                 if ((dnph.amount + dnph.charges) >= paymentDueList.Sum(x => (x.itemAmount - x.amountPaid )))
                 {
                     amountDueMgtService.CurrentAmountDue(paymentDueList, dnph.amount, true);
+
                     query = amountDueMgtService.PaymentQuery(paymentDueList, dnph,
                        DemandNoticeStatus.PAID.ToString(),User.Identity.Name);
                 }
@@ -177,6 +180,7 @@ namespace RemsNG.Controllers
                 {
                     List<DNAmountDueModel> paymentDueList2 = paymentDueList.Where(p => p.itemAmount > p.amountPaid).ToList();
                     amountDueMgtService.CurrentAmountDue(paymentDueList2, dnph.amount, false);
+
                     query = amountDueMgtService.PaymentQuery(paymentDueList, dnph,
                         DemandNoticeStatus.PART_PAYMENT.ToString(), User.Identity.Name);
                 }

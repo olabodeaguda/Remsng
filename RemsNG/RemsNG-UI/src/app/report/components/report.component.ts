@@ -85,6 +85,33 @@ export class ReportComponent {
             });
     }
 
+    downloadReportBreakDownSeperate() {
+        if (this.startDate.length < 1) {
+            this.toasterService.pop('error', 'Error', 'Start Date is required');
+            return;
+        } else if (this.endDate.length < 1) {
+            this.toasterService.pop('error', 'Error', 'Start Date is required');
+            return;
+        } else if (this.startDate.length < 10) {
+            this.toasterService.pop('error', 'Error', 'Start Date is in the wrong format');
+            return;
+        } else if (this.endDate.length < 10) {
+            this.toasterService.pop('error', 'Error', 'Start Date is required');
+            return;
+        }
+
+        this.isLoading = true;
+        this.reportService.downloadReportBreakDownSeperate(this.startDate, this.endDate)
+            .subscribe(response => {
+                this.isLoading = false;
+                let downloadUrl: string = `/quarterlyreport/${response.data}`;
+                window.open(downloadUrl);
+            }, error => {
+                this.isLoading = false;
+                this.toasterService.pop('error', 'Error', error);
+            });
+    }
+
     search() {
         if (this.startDate.length < 1) {
             this.toasterService.pop('error', 'Error', 'Start Date is required');

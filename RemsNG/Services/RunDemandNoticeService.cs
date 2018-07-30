@@ -532,7 +532,6 @@ namespace RemsNG.Services
             }
         }
 
-
         private async Task MovedUnpaidPenalty(DN_ArrearsModel dN_ArrearsModel)
         {
             Response responseUnpaidPenalty = await demandNoticePenaltyDao.AddUnpaidPenaltyAsync(dN_ArrearsModel);

@@ -17,5 +17,9 @@ namespace RemsNG.Services.Interfaces
 
         Task<byte[]> WriteReportSummaryConsolidated(List<ItemReportSummaryModel> rptLst,
            string domainName, string lcdaName, DateTime startDate, DateTime endDate, List<DemandNoticePaymentHistory> dnph);
+
+
+        Task<string> WriteReportSummaryConsolidatedSeperate(List<ItemReportSummaryModel> rptLst,
+           string domainName, string lcdaName, DateTime startDate, DateTime endDate, List<DemandNoticePaymentHistory> dnph);
     }
 }

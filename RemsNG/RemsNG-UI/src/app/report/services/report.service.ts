@@ -28,6 +28,11 @@ export class ReportService {
         .catch(error => this.dateService.handleError(error));
     }
 
+    downloadReportBreakDownSeperate(startDate: string, endDate: string) {
+        return this.dateService.get('report/outstandingbybillnoseperate/' + startDate + '/' + endDate)
+        .catch(error => this.dateService.handleError(error));
+    }
+
 
     graphRecievables() {
         return this.dateService.get('report/reportreceivables')

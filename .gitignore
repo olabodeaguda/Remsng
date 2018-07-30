@@ -260,3 +260,4 @@ paket-files/
 __pycache__/
 *.pyc
 /RemsNG/wwwroot/zipReports/2938725
+RemsNG/QuaterlyReport/*

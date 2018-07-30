@@ -5,7 +5,7 @@
     <ApplicationIcon>favicon.ico</ApplicationIcon>
     <Authors>Aguda Olabode H</Authors>
     <Company>Maria Opeola and sons</Company>
-    <TypeScriptToolsVersion>2.7</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>2.8</TypeScriptToolsVersion>
     <!--<PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>-->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -2372,7 +2372,7 @@
   <ItemGroup>
     <None Include="RemsNG-UI\.editorconfig" />
     <None Include="RemsNG-UI\.gitignore" />
-    <None Include="RemsNG-UI\assets\bower_components\bootstrap-colorpicker\CONTRIBUTING.md" />
+    <!--<None Include="RemsNG-UI\assets\bower_components\bootstrap-colorpicker\CONTRIBUTING.md" />
     <None Include="RemsNG-UI\assets\bower_components\bootstrap-colorpicker\dist\css\bootstrap-colorpicker.css.map" />
     <None Include="RemsNG-UI\assets\bower_components\bootstrap-colorpicker\dist\css\bootstrap-colorpicker.min.css.map" />
     <None Include="RemsNG-UI\assets\bower_components\bootstrap-colorpicker\dist\js\bootstrap-colorpicker.js" />
@@ -7557,7 +7557,7 @@
     <TypeScriptCompile Include="RemsNG-UI\src\environments\environment.ts" />
     <TypeScriptCompile Include="RemsNG-UI\src\main.ts" />
     <TypeScriptCompile Include="RemsNG-UI\src\polyfills.ts" />
-    <TypeScriptCompile Include="RemsNG-UI\src\typings.d.ts" />
+    <TypeScriptCompile Include="RemsNG-UI\src\typings.d.ts" />-->
   </ItemGroup>
   <ItemGroup>
     <None Update="pdf.js">

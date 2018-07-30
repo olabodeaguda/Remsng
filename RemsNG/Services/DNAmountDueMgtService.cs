@@ -20,14 +20,14 @@ namespace RemsNG.Services
         public async Task<List<DNAmountDueModel>> ByBillingNo(string billingno)
         {
             return await dNAmountDueMgtDao.ByBillingNo(billingno);
-        }        
+        }
 
         public async Task<Response> UpdateAmount(DNAmountDueModel dnamount)
         {
             return await dNAmountDueMgtDao.UpdateAmount(dnamount);
         }
 
-        public void CurrentAmountDue(List<DNAmountDueModel> UnpaidDueList,decimal amountPaid,bool isFullyPaid)
+        public void CurrentAmountDue(List<DNAmountDueModel> UnpaidDueList, decimal amountPaid, bool isFullyPaid)
         {
             if (!isFullyPaid)
             {
@@ -37,8 +37,15 @@ namespace RemsNG.Services
                 {
                     decimal itemShare = (tm.itemAmount - tm.amountPaid) / totalAmountDue;
                     tm.amountInitialPaid = itemShare * amountPaid;
-                    tm.amountPaid = tm.amountPaid + decimal.Round((tm.amountInitialPaid),2);
-                } 
+                    tm.amountPaid = tm.amountPaid + decimal.Round((tm.amountInitialPaid), 2);
+                }
+                decimal totalAmount = UnpaidDueList.Sum(x => x.amountInitialPaid);
+                decimal remaining = amountPaid - totalAmount;
+                if (remaining > 0)
+                {
+                    UnpaidDueList[0].amountInitialPaid = UnpaidDueList[0].amountInitialPaid + remaining;
+                    UnpaidDueList[0].amountInitialPaid = UnpaidDueList[0].amountPaid + remaining; 
+                }
             }
             else
             {
@@ -53,7 +60,7 @@ namespace RemsNG.Services
 
         public string PaymentQuery(List<DNAmountDueModel> paymentDueList, DemandNoticePaymentHistory dnph, string status, string createdby)
         {
-            return dNAmountDueMgtDao.PaymentQuery(paymentDueList, dnph, status,createdby);
+            return dNAmountDueMgtDao.PaymentQuery(paymentDueList, dnph, status, createdby);
         }
     }
 }

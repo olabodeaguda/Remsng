@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
@@ -16,9 +17,11 @@ namespace RemsNG.Services
     public class ExcelService : IExcelService
     {
         ILogger logger;
-        public ExcelService(ILoggerFactory loggerFactory)
+        private IHostingEnvironment hostingEnvironment;
+        public ExcelService(ILoggerFactory loggerFactory, IHostingEnvironment _hostingEnvironment)
         {
             logger = loggerFactory.CreateLogger("Excel Service");
+            hostingEnvironment = _hostingEnvironment;
         }
 
         private void CellStyleHeader(ICell cell, IWorkbook workbook, int fontSize)
@@ -455,6 +458,204 @@ namespace RemsNG.Services
                 logger.LogError(x.Message);
                 return null;
             }
+        }
+
+        public async Task<string> WriteReportSummaryConsolidatedSeperate(List<ItemReportSummaryModel> rptLst,
+          string domainName, string lcdaName, DateTime startDate, DateTime endDate, List<DemandNoticePaymentHistory> dnph)
+        {
+            try
+            {
+                if (rptLst.Count < 1)
+                {
+                    return null;
+                }
+
+                return await Task.Run(() =>
+                {
+                    string[] items = rptLst.Select(x => x.itemDescription).Distinct().OrderBy(x => x).ToArray();
+                    int rowCount = items.Length + 8;
+
+                    IWorkbook workbook = new XSSFWorkbook();
+                    ISheet sheet1 = workbook.CreateSheet("Report Summary");
+
+                    #region sub heading
+                    sheet1.AddMergedRegion(new CellRangeAddress(0, 0, 0, 13));
+                    sheet1.AddMergedRegion(new CellRangeAddress(1, 1, 0, 13));
+                    sheet1.AddMergedRegion(new CellRangeAddress(2, 2, 0, 13));
+                    sheet1.AddMergedRegion(new CellRangeAddress(3, 3, 0, 13));
+
+                    var rowIndex = 0;
+                    IRow rowDomain = sheet1.CreateRow(rowIndex);
+                    rowDomain.Height = 400;
+                    ICell cellDomain = rowDomain.CreateCell(0);
+                    cellDomain.SetCellValue(domainName.ToUpper());
+                    CellStyleHeader(cellDomain, workbook, 13);
+                    rowIndex++;
+
+                    IRow rowLcda = sheet1.CreateRow(rowIndex);
+                    rowLcda.Height = 300;
+                    ICell cellLcda = rowLcda.CreateCell(0);
+                    cellLcda.SetCellValue(lcdaName.ToUpper());
+                    CellStyleHeader(cellLcda, workbook, 10);
+                    rowIndex++;
+
+                    IRow rowTitle1 = sheet1.CreateRow(rowIndex);
+                    rowTitle1.Height = 300;
+                    ICell cellTitle1 = rowTitle1.CreateCell(0);
+                    cellTitle1.SetCellValue($"INTERNALLY GENERATED REVENUE " +
+                        $"FOR THE PERIOD OF {startDate.ToString("dd/MM/yyyy")} - {endDate.ToString("dd/MM/yyyy")}");
+                    CellStyleHeader(cellTitle1, workbook, 10);
+                    rowIndex++;
+
+                    IRow rowTitle2 = sheet1.CreateRow(rowIndex);
+                    rowTitle2.Height = 300;
+                    ICell cellTitle2 = rowTitle2.CreateCell(0);
+                    cellTitle2.SetCellValue("REVENUE APPRAISAL SHEET BREAKDOWN");
+                    CellStyleHeader(cellTitle2, workbook, 10);
+                    rowIndex++;
+
+                    #endregion
+
+                    #region header
+                    IRow rowHeader = sheet1.CreateRow(rowIndex++);
+                    int colCount = 0;
+                    rowHeader.CreateCell(colCount++).SetCellValue("SN");
+                    rowHeader.CreateCell(colCount++).SetCellValue("TAXPAYER'S");
+                    rowHeader.CreateCell(colCount++).SetCellValue("WARD");
+                    rowHeader.CreateCell(colCount++).SetCellValue("ADDRESS");
+                    rowHeader.CreateCell(colCount++).SetCellValue("BILLING NO");
+                    rowHeader.CreateCell(colCount++).SetCellValue("Items");
+                    rowHeader.CreateCell(colCount++).SetCellValue("OUTSTANDING AMOUNT");
+                    #endregion
+
+                    var allitems = rptLst.GroupBy(x => x.billingNo);
+
+                    foreach (var eachGrp in allitems)
+                    {
+                        #region body
+                        colCount = 0;
+                        IRow rowbody = sheet1.CreateRow(rowIndex++);
+                        var firstTaxpayer = eachGrp.FirstOrDefault();
+                        rowbody.CreateCell(colCount++).SetCellValue(rowIndex - 5);
+                        rowbody.CreateCell(colCount++).SetCellValue(firstTaxpayer.taxpayersName);
+                        rowbody.CreateCell(colCount++).SetCellValue(firstTaxpayer.wardName);
+                        rowbody.CreateCell(colCount++).SetCellValue(firstTaxpayer.addressName);
+                        rowbody.CreateCell(colCount++).SetCellValue(eachGrp.Key);
+                        rowbody.CreateCell(colCount++).SetCellValue(string.Join(",", eachGrp.Select(x => x.itemDescription).ToArray()));
+                        rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round(eachGrp.Sum(x => x.itemAmount), 2)));
+                        #endregion
+                    }
+                    IRow rowbody1 = sheet1.CreateRow(rowIndex++);
+                    rowbody1.CreateCell(6).SetCellValue(String.Format("{0:n}", decimal.Round(rptLst.Sum(x => x.itemAmount), 2)));
+
+                    sheet1.AutoSizeColumn(0);
+                    WritePayment(workbook, domainName,
+                        lcdaName, startDate, endDate, dnph);
+
+                    string rootUrl = Directory.GetCurrentDirectory() == null ? @"C:\" : Directory.GetCurrentDirectory();
+                    string pathname = $"{startDate.ToString("dd-MM-yyyy")} to {endDate.ToString("dd-MM-yyyy")} {DateTime.Now.ToString("HHmmss")}.xlsx";
+                    string rootPath = Path.Combine(rootUrl, "QuaterlyReport");
+                    if (!Directory.Exists(rootPath))
+                    {
+                        Directory.CreateDirectory(rootPath);
+
+                    }
+
+                    rootPath = Path.Combine(rootPath, pathname);
+                    if (File.Exists(rootPath))
+                    {
+                        File.Delete(rootPath);
+                    }
+                    using (var file2 = new FileStream(rootPath, FileMode.Create, FileAccess.ReadWrite))
+                    {
+                        workbook.Write(file2);
+                        file2.Close();
+                    }
+
+                    return pathname;
+                });
+            }
+            catch (Exception x)
+            {
+                logger.LogError(x.Message);
+                return null;
+            }
+        }
+
+
+        public void WritePayment(IWorkbook workbook,
+            string domainName, string lcdaName, DateTime startDate, DateTime endDate, List<DemandNoticePaymentHistory> dnph)
+        {
+            ISheet sheet2 = workbook.CreateSheet("Payment Summary");
+
+            #region sub heading
+            sheet2.AddMergedRegion(new CellRangeAddress(0, 0, 0, 13));
+            sheet2.AddMergedRegion(new CellRangeAddress(1, 1, 0, 13));
+            sheet2.AddMergedRegion(new CellRangeAddress(2, 2, 0, 13));
+            sheet2.AddMergedRegion(new CellRangeAddress(3, 3, 0, 13));
+
+            var rowIndex = 0;
+            IRow rowDomain = sheet2.CreateRow(rowIndex);
+            rowDomain.Height = 400;
+            ICell cellDomain = rowDomain.CreateCell(0);
+            cellDomain.SetCellValue(domainName.ToUpper());
+            CellStyleHeader(cellDomain, workbook, 13);
+            rowIndex++;
+
+            IRow rowLcda = sheet2.CreateRow(rowIndex);
+            rowLcda.Height = 300;
+            ICell cellLcda = rowLcda.CreateCell(0);
+            cellLcda.SetCellValue(lcdaName.ToUpper());
+            CellStyleHeader(cellLcda, workbook, 10);
+            rowIndex++;
+
+            IRow rowTitle1 = sheet2.CreateRow(rowIndex);
+            rowTitle1.Height = 300;
+            ICell cellTitle1 = rowTitle1.CreateCell(0);
+            cellTitle1.SetCellValue($"INTERNALLY GENERATED REVENUE " +
+                $"FOR THE PERIOD OF {startDate.ToString("dd/MM/yyyy")} - {endDate.ToString("dd/MM/yyyy")}");
+            CellStyleHeader(cellTitle1, workbook, 10);
+            rowIndex++;
+
+            IRow rowTitle2 = sheet2.CreateRow(rowIndex);
+            rowTitle2.Height = 300;
+            ICell cellTitle2 = rowTitle2.CreateCell(0);
+            cellTitle2.SetCellValue("REVENUE PAYMENT APPRAISAL SHEET BREAKDOWN");
+            CellStyleHeader(cellTitle2, workbook, 10);
+            rowIndex++;
+
+            #endregion
+
+            #region header
+            IRow rowHeader = sheet2.CreateRow(rowIndex++);
+            int colCount = 0;
+            rowHeader.CreateCell(colCount++).SetCellValue("SN");
+            rowHeader.CreateCell(colCount++).SetCellValue("BILLING NUMBER");
+            rowHeader.CreateCell(colCount++).SetCellValue("AMOUNT");
+            rowHeader.CreateCell(colCount++).SetCellValue("PAYMENT MODE");
+            rowHeader.CreateCell(colCount++).SetCellValue("REFERENCE NUMBER");
+            rowHeader.CreateCell(colCount++).SetCellValue("BANK NAME");
+            rowHeader.CreateCell(colCount++).SetCellValue("PAYMENT STATUS");
+            #endregion
+
+            foreach (var tm in dnph)
+            {
+                #region body
+                colCount = 0;
+                IRow rowbody = sheet2.CreateRow(rowIndex++);
+                rowbody.CreateCell(colCount++).SetCellValue(rowIndex - 5);
+                rowbody.CreateCell(colCount++).SetCellValue(tm.billingNumber);
+                rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round(tm.amount, 2)));
+                rowbody.CreateCell(colCount++).SetCellValue(tm.paymentMode);
+                rowbody.CreateCell(colCount++).SetCellValue(tm.referenceNumber);
+                rowbody.CreateCell(colCount++).SetCellValue(tm.bankName);
+                rowbody.CreateCell(colCount++).SetCellValue(tm.paymentStatus);
+                #endregion
+            }
+            IRow rowbody1 = sheet2.CreateRow(rowIndex++);
+            rowbody1.CreateCell(2).SetCellValue(String.Format("{0:n}", decimal.Round(dnph.Sum(x => x.amount), 2)));
+
+            sheet2.AutoSizeColumn(0);
         }
     }
 }

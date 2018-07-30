@@ -105,7 +105,8 @@ namespace RemsNG.Dao
             try
             {
                 long billnumber = await NewBillingNumber();
-                DbResponse dbResponse = await db.DbResponses.FromSql("sp_addDemandNoticeTaxpayer @p0,@p1,@p2,@p3,@p4,@p5,@p6,@p7,@p8,@p9,@p10,@p11,@p12", new object[]{
+                DbResponse dbResponse = await db.DbResponses.FromSql("sp_addDemandNoticeTaxpayer @p0,@p1,@p2,@p3,@p4,@p5,@p6," +
+                    "@p7,@p8,@p9,@p10,@p11,@p12", new object[]{
                 dnt.dnId,
                 dnt.billingYr,
                 dnt.createdBy,
@@ -147,8 +148,10 @@ namespace RemsNG.Dao
 
         public async Task<object> GetDNTaxpayerByBatchIdAsync(string batchId, PageModel pageModel)
         {
-            List<DemandNoticeTaxpayersDetail> results = await db.DemandNoticeTaxpayersDetails.FromSql("sp_getDemandNoticeTaxpayerByBatchNumber @p0,@p1, @p2",
-                new object[] { batchId, pageModel.PageNum, pageModel.PageSize }).ToListAsync();
+            List<DemandNoticeTaxpayersDetail> results = await db.DemandNoticeTaxpayersDetails.FromSql("sp_getDemandNoticeTaxpayerByBatchNumber " +
+                "@p0,@p1, @p2",
+                new object[] { batchId, pageModel.PageNum,
+                    pageModel.PageSize }).ToListAsync();
             var totalCount = 0;
             if (results.Count > 0)
             {
