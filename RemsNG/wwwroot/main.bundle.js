@@ -5942,7 +5942,7 @@ var ReportComponent = (function () {
         this.reportService.downloadReportBreakDownSeperate(this.startDate, this.endDate)
             .subscribe(function (response) {
             _this.isLoading = false;
-            var downloadUrl = "/quarterlyreport/" + response.data;
+            var downloadUrl = "/remsng/quarterlyreport/" + response.data;
             window.open(downloadUrl);
         }, function (error) {
             _this.isLoading = false;

@@ -60,12 +60,17 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("BILLING_YEAR", dnrp.billingYr.ToString());
             htmlContent = htmlContent.Replace("WARD_NAME", dnrp.wardName);
             htmlContent = htmlContent.Replace("REFERENCE_NUMBER", dnph.referenceNumber);
-            htmlContent = htmlContent.Replace("TOTAL_AMOUNT", $"{String.Format("{0:n}", decimal.Round(dnrp.amountPaid, 2))} naira");
+            htmlContent = htmlContent.Replace("PAYMENT_DATE", dnph.dateCreated.Value.ToString("dd-MM-yyyy"));
+
+
             // total amount paid from reciept page
             List<DemandNoticePaymentHistory> dnpHistory = await dNPaymentHistoryService.ByBillingNumber(dnph.billingNumber);
             dnpHistory = dnpHistory.Where(x => x.paymentStatus == "APPROVED").ToList();
             decimal amtPaid = dnpHistory.Sum(x => x.amount);
             decimal amtDue = dnrp.amountDue;
+            dnrp.amountPaid = amtPaid;
+
+            htmlContent = htmlContent.Replace("TOTAL_AMOUNT", $"{String.Format("{0:n}", decimal.Round(dnrp.amountPaid, 2))} naira");
             #region old
             //dnph.amount > dnrp.amountPaid
             //if (dnph.amount > dnrp.amountPaid)
@@ -97,13 +102,15 @@ namespace RemsNG.Services
             else if(amtPaid < amtDue)
             {
                 htmlContent = htmlContent.Replace("PAYMENT_STATUS", DemandNoticeStatus.PART_PAYMENT.ToString());//PAYMENT_STATUS
-                htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Overpaid : {String.Format("{0:n}", decimal.Round(amtDue - amtPaid, 2))} naira");//PAYMENT_STATUS
+                htmlContent = htmlContent.Replace("AMOUNT_REMAINING",
+                    $"Amount Due : {String.Format("{0:n}", decimal.Round(amtDue - amtPaid, 2))} naira");//PAYMENT_STATUS
 
             }
             else
             {
                 htmlContent = htmlContent.Replace("PAYMENT_STATUS", DemandNoticeStatus.PAID.ToString());//PAYMENT_STATUS
-                htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Overpaid : {String.Format("{0:n}", decimal.Round(0, 2))} naira");//PAYMENT_STATUS
+                htmlContent = htmlContent.Replace("AMOUNT_REMAINING",
+                    $"Amount Overpaid : {String.Format("{0:n}", decimal.Round(0, 2))} naira");//PAYMENT_STATUS
             }
 
             if (dnph.amount == 0)
@@ -112,8 +119,6 @@ namespace RemsNG.Services
             }
             else
             {
-                //htmlContent = htmlContent.Replace("AMOUNT_IN_WORD",
-                //    CurrencyWords.ConvertToWords(decimal.Round(dnph.amount, 2).ToString()));
                 htmlContent = htmlContent.Replace("AMOUNT_IN_WORD",
                    CurrencyWords.ConvertToWords(decimal.Round(dnrp.amountPaid, 2).ToString()));
             }

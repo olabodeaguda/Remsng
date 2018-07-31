@@ -13,6 +13,7 @@ using RemsNG.ORM;
 using RemsNG.Security;
 using RemsNG.Services;
 using RemsNG.Services.Interfaces;
+using Serilog;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -91,12 +92,12 @@ namespace RemsNG
 
             app.UseMiddleware(typeof(HangfireMiddleware));
             app.UseMiddleware(typeof(ErrorHandlingMiddleware));
-           
+
             app.UseDefaultFiles();
+
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider(
-            Path.Combine(Directory.GetCurrentDirectory(), "QuaterlyReport")),
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "QuaterlyReport")),
                 RequestPath = "/quarterlyreport"
             });
             app.UseStaticFiles();

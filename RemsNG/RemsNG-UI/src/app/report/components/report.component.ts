@@ -104,7 +104,7 @@ export class ReportComponent {
         this.reportService.downloadReportBreakDownSeperate(this.startDate, this.endDate)
             .subscribe(response => {
                 this.isLoading = false;
-                let downloadUrl: string = `/quarterlyreport/${response.data}`;
+                let downloadUrl: string = `/remsng/quarterlyreport/${response.data}`;
                 window.open(downloadUrl);
             }, error => {
                 this.isLoading = false;
