@@ -1,13 +1,13 @@
-﻿using RemsNG.Services.Interfaces;
+﻿using Microsoft.Extensions.Logging;
+using RemsNG.Dao;
+using RemsNG.Exceptions;
+using RemsNG.Models;
+using RemsNG.ORM;
+using RemsNG.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using RemsNG.Models;
-using RemsNG.ORM;
-using Microsoft.Extensions.Logging;
-using RemsNG.Dao;
-using RemsNG.Exceptions;
 
 namespace RemsNG.Services
 {
@@ -86,6 +86,20 @@ namespace RemsNG.Services
                 lst.Add(tm);
             }
             return lst;
+        }
+
+        public async Task<bool> Delete(Guid taxpayerId)
+        {
+            if (taxpayerId == default(Guid))
+            {
+                throw new UserValidationException("Invalid request");
+            }
+            int result = await taxpayerDao.UpdateStatus(taxpayerId, TaxpayerEnum.DELETED.ToString());
+            if (result >= 0)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

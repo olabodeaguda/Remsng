@@ -26,7 +26,9 @@ namespace RemsNG.Controllers
         private ICompany companyService;
         private IStreetService streetservice;
         public TaxpayerController(ITaxpayerService _taxpayerService, ILcdaService _lcdaService,
-            ILoggerFactory _logger, IAddress address, ICompany _companyservice, IStreetService _streetservice)
+            ILoggerFactory _logger, IAddress address,
+            ICompany _companyservice,
+            IStreetService _streetservice)
         {
             taxpayerService = _taxpayerService;
             lcdaService = _lcdaService;
@@ -63,7 +65,7 @@ namespace RemsNG.Controllers
                     description = "Bad request"
                 });
             }
-
+            
             return await taxpayerService.Search(id, query);
         }
 
@@ -137,7 +139,6 @@ namespace RemsNG.Controllers
             return await taxpayerService.ByStreetId(id, new PageModel() { PageNum = int.Parse(pageNum), PageSize = int.Parse(pageSize) });
         }
 
-
         [Route("bylcdapaged")]
         [HttpGet]
         public async Task<object> ByLcdaPaginated([FromHeader] string pageSize, [FromHeader] string pageNum)
@@ -157,7 +158,6 @@ namespace RemsNG.Controllers
 
             return await taxpayerService.ByLcdaId(id, new PageModel() { PageNum = int.Parse(pageNum), PageSize = int.Parse(pageSize) });
         }
-
 
         [HttpGet("{id}")]
         public async Task<object> Get(Guid id)
@@ -396,6 +396,25 @@ namespace RemsNG.Controllers
                     description = "No changes"
                 });
             }
+        }
+
+        [HttpDelete("{taxpayerId}")]
+        public async Task<IActionResult> Delete(Guid taxpayerId)
+        {
+            bool result = await taxpayerService.Delete(taxpayerId);
+            if (!result)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Bad request"
+                });
+            }
+            return Ok(new Response()
+            {
+                code = MsgCode_Enum.SUCCESS,
+                description = "Taxpayer has been deleted successfully"
+            });
         }
 
         [HttpGet("paymenthistory/{id}")]

@@ -28,8 +28,8 @@ export class TaxPayerGlobalComponent implements OnInit {
     pageModel: PageModel;
     wardlst = [];
     @ViewChild('addModal') addModal: ElementRef;
-    isAddLoading:boolean = false;
-    query:string = '';
+    isAddLoading: boolean = false;
+    query: string = '';
 
     constructor(private activeRoute: ActivatedRoute,
         private streetservice: StreetService,
@@ -56,7 +56,7 @@ export class TaxPayerGlobalComponent implements OnInit {
     }
 
 
-    raisePenalty(id: string){
+    raisePenalty(id: string) {
         this.isLoading = true;
         this.taxpayerservice.raisePenalty(id)
             .subscribe(response => {
@@ -70,7 +70,7 @@ export class TaxPayerGlobalComponent implements OnInit {
     }
 
     searchQuery() {
-        if(this.query.length < 1){
+        if (this.query.length < 1) {
             return;
         }
 
@@ -78,19 +78,19 @@ export class TaxPayerGlobalComponent implements OnInit {
         this.taxpayerservice.search(this.lcdaId, this.query).subscribe(response => {
             this.isLoading = false;
             this.taxpayers = response;
-            this.pageModel.pageNum=1;
-            this.pageModel.totalPageCount=1;
+            this.pageModel.pageNum = 1;
+            this.pageModel.totalPageCount = 1;
         }, error => {
             this.isLoading = false;
         })
 
     }
 
-    wardChanges(wardId:string){
+    wardChanges(wardId: string) {
         this.getStreet(wardId);
     }
 
-    getStreet(wardId:string) {
+    getStreet(wardId: string) {
         if (wardId.length < 1) {
             return
         }
@@ -168,6 +168,9 @@ export class TaxPayerGlobalComponent implements OnInit {
             this.taxpayerModel = data;
             console.log(data);
             jQuery(this.addModal.nativeElement).modal('show');
+        } else if (eventType == 'DELETE') {
+            this.taxpayerModel = data;
+            jQuery(this.addModal.nativeElement).modal('show');
         }
         this.taxpayerModel.eventType = eventType;
     }
@@ -212,6 +215,20 @@ export class TaxPayerGlobalComponent implements OnInit {
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'SUCCESS', result.description);
                     jQuery(this.addModal.nativeElement).modal('hide');
+                }
+            }, error => {
+                jQuery(this.addModal.nativeElement).modal('hide');
+                this.taxpayerModel.isLoading = false;
+                this.toasterService.pop('error', 'Error', error);
+            });
+        } else if (this.taxpayerModel.eventType == 'DELETE') {
+            this.taxpayerservice.delete(this.taxpayerModel).subscribe(response => {
+                this.taxpayerModel.isLoading = false;
+                const result = Object.assign(new ResponseModel(), response);
+                if (result.code === '00') {
+                    this.toasterService.pop('success', 'SUCCESS', result.description);
+                    jQuery(this.addModal.nativeElement).modal('hide');
+                    this.getTaxpayersByLcda();
                 }
             }, error => {
                 jQuery(this.addModal.nativeElement).modal('hide');

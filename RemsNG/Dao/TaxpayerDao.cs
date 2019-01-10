@@ -19,6 +19,7 @@ namespace RemsNG.Dao
         public async Task<Response> Create(Taxpayer taxpayer, bool confirmCompany)
         {
             var r = await Get(taxpayer.streetId, taxpayer.companyId);
+
             if (r != null && confirmCompany)
             {
                 throw new DuplicateCompanyException("Company already exist on the street");
@@ -80,12 +81,20 @@ namespace RemsNG.Dao
 
         public async Task<TaxpayerExtension> ById(Guid id)
         {
-            return await db.Set<TaxpayerExtension>().FromSql("sp_TaxpayerById @p0", new object[] { id }).FirstOrDefaultAsync();
+            var result = await db.Set<TaxpayerExtension>().FromSql("sp_TaxpayerById @p0", new object[] { id }).FirstOrDefaultAsync();
+            if (result == null || result.taxpayerStatus == TaxpayerEnum.DELETED.ToString())
+            {
+                return null;
+            }
+
+            return result;
         }
 
         public async Task<List<TaxpayerExtension>> ByStreetId(Guid streetId)
         {
-            return await db.Set<TaxpayerExtension>().FromSql("sp_TaxpayerByStreetId @p0", new object[] { streetId }).ToListAsync();
+            var result = await db.Set<TaxpayerExtension>().FromSql("sp_TaxpayerByStreetId @p0", new object[] { streetId }).ToListAsync();
+            result = result.Where(x => x.taxpayerStatus == TaxpayerEnum.ACTIVE.ToString()).ToList();
+            return result;
         }
 
         public async Task<object> ByStreetId(Guid streetId, PageModel pageModel)
@@ -99,14 +108,16 @@ namespace RemsNG.Dao
 
             return new
             {
-                data = results,
+                data = results.Where(x => x.taxpayerStatus == TaxpayerEnum.ACTIVE.ToString()).ToList(),
                 totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
             };
         }
 
         public async Task<List<TaxpayerExtension>> ByCompanyId(Guid companyId)
         {
-            return await db.Set<TaxpayerExtension>().FromSql("sp_TaxpayerByCompanyId @p0", new object[] { companyId }).ToListAsync();
+            var results = await db.Set<TaxpayerExtension>().FromSql("sp_TaxpayerByCompanyId @p0", new object[] { companyId }).ToListAsync();
+            results = results.Where(x => x.taxpayerStatus == TaxpayerEnum.ACTIVE.ToString()).ToList();
+            return results;
         }
 
         public async Task<Response> Update(Taxpayer taxpayer)
@@ -138,7 +149,9 @@ namespace RemsNG.Dao
 
         public async Task<List<TaxpayerExtension>> ByLcdaId(Guid lcdaId)
         {
-            return await db.Set<TaxpayerExtension>().FromSql("sp_TaxpayerByLcdaId @p0", new object[] { lcdaId }).ToListAsync();
+            var results = await db.Set<TaxpayerExtension>().FromSql("sp_TaxpayerByLcdaId @p0", new object[] { lcdaId }).ToListAsync();
+            results = results.Where(x => x.taxpayerStatus == TaxpayerEnum.ACTIVE.ToString()).ToList();
+            return results;
         }
 
         public async Task<List<TaxpayerExtension>> Search(Guid lcdaId, string qu)
@@ -181,7 +194,7 @@ namespace RemsNG.Dao
             query = query + (string.IsNullOrEmpty(subQuery) ? "" : " or ") + (string.IsNullOrEmpty(subQuery) ? "" : $" ( {subQuery} ) ");
 
             var results = await db.TaxpayerExtensions.FromSql(query).ToListAsync();
-            return results.Distinct().OrderBy(x => x.firstname).ToList();
+            return results.Distinct().Where(x => x.taxpayerStatus == TaxpayerEnum.ACTIVE.ToString()).OrderBy(x => x.firstname).ToList();
         }
 
         public async Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel)
@@ -195,7 +208,7 @@ namespace RemsNG.Dao
 
             return new
             {
-                data = results,
+                data = results.Where(x => x.taxpayerStatus == TaxpayerEnum.ACTIVE.ToString()).ToList(),
                 totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
             };
         }
@@ -220,6 +233,11 @@ namespace RemsNG.Dao
 
             return await db.DemandNoticePaymentHistories.FromSql(query1).ToListAsync();
         }
-        
+
+        public async Task<int> UpdateStatus(Guid id, string status)
+        {
+            string query = $"update tbl_taxPayer set taxpayerStatus = '{status}' where id = '{id}'";
+            return await db.Database.ExecuteSqlCommandAsync(query);
+        }
     }
 }

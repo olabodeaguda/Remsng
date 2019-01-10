@@ -17,4 +17,10 @@ namespace RemsNG.ORM
         [Required(AllowEmptyStrings = true)]
         public string streetNumber { get; set; }
     }
+
+
+    public enum TaxpayerEnum
+    {
+        ACTIVE, DELETED
+    }
 }

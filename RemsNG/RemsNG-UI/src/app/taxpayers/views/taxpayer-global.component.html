@@ -150,6 +150,11 @@
                                                                 </a>
                                                             </li>
                                                             <li>
+                                                                <a href="javascript:;" (click)="open('DELETE',data)">
+                                                                    <i class="fa fa-remove"></i>Delete
+                                                                </a>
+                                                            </li>
+                                                            <li>
                                                                 <a [routerLink]="['/companyitem',data.streetId,data.id]">
                                                                     <i class="fa fa-user"></i>
                                                                     Items</a>

@@ -99,7 +99,9 @@ export class TaxPayerComponent implements OnInit {
             jQuery(this.addModal.nativeElement).modal('show');
         } else if (eventType == 'EDIT') {
             this.taxpayerModel = data;
-            console.log(data);
+            jQuery(this.addModal.nativeElement).modal('show');
+        }else if (eventType == 'DELETE') {
+            this.taxpayerModel = data;
             jQuery(this.addModal.nativeElement).modal('show');
         }
         this.taxpayerModel.eventType = eventType;
@@ -145,6 +147,20 @@ export class TaxPayerComponent implements OnInit {
                 if (result.code === '00') {
                     this.toasterService.pop('success', 'SUCCESS', result.description);
                     jQuery(this.addModal.nativeElement).modal('hide');
+                }
+            }, error => {
+                jQuery(this.addModal.nativeElement).modal('hide');
+                this.taxpayerModel.isLoading = false;
+                this.toasterService.pop('error', 'Error', error);
+            });
+        }else if (this.taxpayerModel.eventType == 'DELETE') {
+            this.taxpayerservice.delete(this.taxpayerModel).subscribe(response => {
+                this.taxpayerModel.isLoading = false;
+                const result = Object.assign(new ResponseModel(), response);
+                if (result.code === '00') {
+                    this.toasterService.pop('success', 'SUCCESS', result.description);
+                    jQuery(this.addModal.nativeElement).modal('hide');
+                    this.getTaxpayersBystreet();
                 }
             }, error => {
                 jQuery(this.addModal.nativeElement).modal('hide');

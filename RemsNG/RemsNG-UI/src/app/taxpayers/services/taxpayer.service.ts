@@ -15,8 +15,8 @@ export class TaxpayerService {
     }
 
     search(lcdaId: string, search: string) {
-        return this.dataservice.get('taxpayer/search/' + lcdaId+'/'+search)
-        .catch(x => this.dataservice.handleError(x));
+        return this.dataservice.get('taxpayer/search/' + lcdaId + '/' + search)
+            .catch(x => this.dataservice.handleError(x));
     }
 
     byStreet(lcdaId: string, pageModel: PageModel) {
@@ -33,46 +33,51 @@ export class TaxpayerService {
 
 
 
-    add(taxpayer: TaxpayerModel){
-        this.dataservice.addToHeader('confirmcompany',taxpayer.isConfirmCompany?'true':'false');
-        return this.dataservice.post('taxpayer',{
+    add(taxpayer: TaxpayerModel) {
+        this.dataservice.addToHeader('confirmcompany', taxpayer.isConfirmCompany ? 'true' : 'false');
+        return this.dataservice.post('taxpayer', {
             streetId: taxpayer.streetId,
             companyId: taxpayer.companyId,
             streetNumber: taxpayer.streetNumber,
-            surname:taxpayer.surname,
-            firstname:taxpayer.firstname,
+            surname: taxpayer.surname,
+            firstname: taxpayer.firstname,
             lastname: taxpayer.lastname
-        }).catch(x=> this.dataservice.handleError(x));
+        }).catch(x => this.dataservice.handleError(x));
     }
 
-    update(taxpayer: TaxpayerModel){
-        return this.dataservice.put('taxpayer',taxpayer).catch(x=> this.dataservice.handleError(x));
+    update(taxpayer: TaxpayerModel) {
+        return this.dataservice.put('taxpayer', taxpayer).catch(x => this.dataservice.handleError(x));
     }
 
-    getPaymentHistory(taxpayerId){
+    getPaymentHistory(taxpayerId) {
         return this.dataservice
-        .get(`taxpayer/paymenthistory/${taxpayerId}`)
-        .catch(x=> this.dataservice.handleError(x));
+            .get(`taxpayer/paymenthistory/${taxpayerId}`)
+            .catch(x => this.dataservice.handleError(x));
     }
 
-    raisePenalty(taxpayerId){
+    raisePenalty(taxpayerId) {
         return this.dataservice
-        .get(`itempenalty/addpenalty/${taxpayerId}`)
-        .catch(x=> this.dataservice.handleError(x));
+            .get(`itempenalty/addpenalty/${taxpayerId}`)
+            .catch(x => this.dataservice.handleError(x));
     }
-    getTaxpayerId(id){
+    getTaxpayerId(id) {
         return this.dataservice.get(`taxpayer/${id}`)
-        .catch(x=> this.dataservice.handleError(x));
+            .catch(x => this.dataservice.handleError(x));
     }
-    
+
     downloadRpt(url: string) {
         return this.dataservice.getBlob('dndownload/single/' + url)
-        .catch(error => this.dataservice.handleError(error));
+            .catch(error => this.dataservice.handleError(error));
     }
 
-    getTaxPayable(taxpayerId){
+    getTaxPayable(taxpayerId) {
         return this.dataservice
-        .get(`dnt/payable/${taxpayerId}`)
-        .catch(x=> this.dataservice.handleError(x));
+            .get(`dnt/payable/${taxpayerId}`)
+            .catch(x => this.dataservice.handleError(x));
+    }
+
+    delete(taxpayer) {
+        return this.dataservice.delete(`taxpayer/${taxpayer.id}`)
+            .catch(x => this.dataservice.handleError(x));
     }
 }
