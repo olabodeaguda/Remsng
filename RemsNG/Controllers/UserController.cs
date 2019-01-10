@@ -71,7 +71,7 @@ namespace RemsNG.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromHeader]string value)
         {
-            if (DateTime.Now.CompareTo(new DateTime(2019, 5, 30)) > 0)
+            if (DateTime.Now.CompareTo(new DateTime(2019, 2, 27)) > 0)
             {
                 return BadRequest(new Response()
                 {

@@ -5029,7 +5029,7 @@ var LoginComponent = (function () {
     LoginComponent.prototype.setLicence = function () {
         var currentDate = new Date();
         currentDate.setHours(0, 0, 0, 0);
-        var d2 = new Date(2019, 5, 30, 0, 0, 0);
+        var d2 = new Date(2019, 2, 27, 0, 0, 0);
         if (currentDate.getTime() > d2.getTime()) {
             this.isvalid = true;
         }
@@ -5038,6 +5038,7 @@ var LoginComponent = (function () {
         if (diffDays <= 21) {
             this.isNotifyValidy = true;
         }
+        this.isNotifyValidy = true;
     };
     LoginComponent.prototype.signIn = function () {
         var _this = this;

@@ -27,7 +27,7 @@ export class LoginComponent {
     setLicence() {
         const currentDate = new Date();
         currentDate.setHours(0, 0, 0, 0);
-        const d2 = new Date(2019, 5, 30, 0, 0, 0);
+        const d2 = new Date(2019, 2, 27, 0, 0, 0);
         if (currentDate.getTime() > d2.getTime()) {
             this.isvalid = true;
         }
@@ -36,6 +36,7 @@ export class LoginComponent {
         if (diffDays <= 21) {
             this.isNotifyValidy = true;
         }
+        this.isNotifyValidy = true;
     }
 
     signIn() {
