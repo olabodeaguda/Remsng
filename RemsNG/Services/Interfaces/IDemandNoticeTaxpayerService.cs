@@ -15,5 +15,6 @@ namespace RemsNG.Services.Interfaces
         Task<Response> CancelTaxpayerDemandNoticeByBillingNo(string billingNo, string createdBy);
         Task<List<DemandNoticeTaxpayersDetail>> Search(string query);
         Task<bool> BlinkClosesDemandNoticeByCompany(Guid companyId);
+        Task<DemandNoticeTaxpayersDetail[]> GetAllReceivables();
     }
 }

@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RemsNG.Services.Interfaces;
-using RemsNG.Models;
-using RemsNG.Utilities;
-using RemsNG.ORM;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Microsoft.AspNetCore.Authorization;
+using RemsNG.Models;
+using RemsNG.ORM;
 using RemsNG.Security;
+using RemsNG.Services.Interfaces;
+using RemsNG.Utilities;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -397,6 +396,12 @@ namespace RemsNG.Controllers
                     description = "No changes"
                 });
             }
+        }
+
+        [HttpGet("paymenthistory/{id}")]
+        public async Task<IActionResult> PaymentHistory(Guid id)
+        {
+            return Ok(await taxpayerService.PaymentHistory(id));
         }
 
     }

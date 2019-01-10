@@ -16,6 +16,7 @@ namespace RemsNG.ORM
         public Nullable<int> totalSize { get; set; }
         public Guid? wardId { get; set; }
         public Guid? streetId { get; set; }
+        public bool isUnbilled { get; set; }
 
     }
 }

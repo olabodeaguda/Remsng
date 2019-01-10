@@ -4,9 +4,7 @@ using RemsNG.Models;
 using RemsNG.ORM;
 using RemsNG.Utilities;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -213,5 +211,15 @@ namespace RemsNG.Dao
             return await db.lgdas.FromSql(query).FirstOrDefaultAsync();
         }
 
+        public async Task<List<DemandNoticePaymentHistory>> PaymentHistory(Guid taxpayerId)
+        {
+            string query1 = $"select ndh.*,bank.bankName  from tbl_demandNoticePaymentHistory as ndh " +
+                $"inner join tbl_bank bank on bank.id = ndh.bankId " +
+                $"inner join tbl_demandNoticeTaxpayers as dnt on dnt.billingNumber = ndh.billingNumber " +
+                $"where ndh.paymentStatus = 'APPROVED' and  dnt.taxpayerId = '{taxpayerId}' order by ndh.dateCreated desc";
+
+            return await db.DemandNoticePaymentHistories.FromSql(query1).ToListAsync();
+        }
+        
     }
 }

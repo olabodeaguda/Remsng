@@ -130,6 +130,18 @@
                                 (change)="searchModel.runArrears = !searchModel.runArrears" >
                                 <label class="form-check-label" for="runArrears">Process Arrears</label>
                             </div>
+                            <div class="form-check col-sm-3">
+                                <input type="checkbox" class="form-check-input" id="isUnbilled" 
+                                [checked]="searchModel.isUnbilled" 
+                                (change)="searchModel.isUnbilled = !searchModel.isUnbilled" >
+                                <label class="form-check-label" for="isUnbilled">Is Unbilled</label>
+                            </div>
+                            <!-- <div class="form-check col-sm-3">
+                                <input type="checkbox" class="form-check-input" id="runPenalty" 
+                                [checked]="searchModel.runPenalty" 
+                                (change)="searchModel.runPenalty = !searchModel.runPenalty" >
+                                <label class="form-check-label" for="runPenalty">Run Penalty</label>
+                            </div> -->
                             <div class=" col-sm-3">
                                 <div class="btn-group">
                                         <button [ladda]="searchModel.isProcessingRequest" 

@@ -48,4 +48,25 @@ export class TaxpayerService {
     update(taxpayer: TaxpayerModel){
         return this.dataservice.put('taxpayer',taxpayer).catch(x=> this.dataservice.handleError(x));
     }
+
+    getPaymentHistory(taxpayerId){
+        return this.dataservice
+        .get(`taxpayer/paymenthistory/${taxpayerId}`)
+        .catch(x=> this.dataservice.handleError(x));
+    }
+
+    raisePenalty(taxpayerId){
+        return this.dataservice
+        .get(`itempenalty/addpenalty/${taxpayerId}`)
+        .catch(x=> this.dataservice.handleError(x));
+    }
+    getTaxpayerId(id){
+        return this.dataservice.get(`taxpayer/${id}`)
+        .catch(x=> this.dataservice.handleError(x));
+    }
+    
+    downloadRpt(url: string) {
+        return this.dataservice.getBlob('dndownload/single/' + url)
+        .catch(error => this.dataservice.handleError(error));
+    }
 }

@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using RemsNG.Models;
+using RemsNG.ORM;
+using RemsNG.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using RemsNG.ORM;
-using RemsNG.Models;
-using Microsoft.EntityFrameworkCore;
-using RemsNG.Utilities;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
@@ -92,7 +92,7 @@ namespace RemsNG.Dao
             {
                 dbResponse = await db.DbResponses.FromSql("sp_currentMaxBilling").FirstOrDefaultAsync();
             }
-            catch (Exception x)
+            catch (Exception)
             {
                 throw;
             }
@@ -140,7 +140,7 @@ namespace RemsNG.Dao
                     };
                 }
             }
-            catch (Exception X)
+            catch (Exception)
             {
                 throw;
             }
@@ -313,5 +313,26 @@ namespace RemsNG.Dao
             return false;
         }
 
+        public async Task<DemandNoticeTaxpayersDetail[]> GetAllReceivables()
+        {
+            string query = $"select dnt.*,-1 as totalSize  from tbl_demandNoticeTaxpayers as dnt " +
+                $"where dnt.taxpayerId not in (select taxpayerId from tbl_demandNoticePenalty where itemPenaltyStatus != 'PAID') " +
+                $"and dnt.demandNoticeStatus in ('PENDING','PART_PAYMENT')";
+
+            var results = await db.DemandNoticeTaxpayersDetails.FromSql(query).ToArrayAsync();
+            return results;
+        }
+
+        public async Task<DemandNoticeTaxpayersDetail[]> GetAllReceivables(Guid[] taxpayerIds)
+        {
+            string ids = taxpayerIds.Select(x => x.ToString()).ToArray().FormatString();
+
+            string query = $"select dnt.*,-1 as totalSize  from tbl_demandNoticeTaxpayers as dnt " +
+                $"where dnt.taxpayerId not in (select taxpayerId from tbl_demandNoticePenalty where itemPenaltyStatus != 'PAID' and taxpayerId in ({ids}) ) " +
+                $"and dnt.demandNoticeStatus in ('PENDING','PART_PAYMENT') and taxpayerId in ({ids}) and dnt.billingYr = {DateTime.Now.Year - 1}";
+
+            var results = await db.DemandNoticeTaxpayersDetails.FromSql(query).ToArrayAsync();
+            return results;
+        }
     }
 }

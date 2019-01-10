@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace RemsNG.ORM
 {
@@ -18,5 +15,7 @@ namespace RemsNG.ORM
 
         [NotMapped]
         public decimal amountInitialPaid { get; set; }
+
+        public string billingNo { get; set; }
     }
 }

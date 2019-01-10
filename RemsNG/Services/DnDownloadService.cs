@@ -99,7 +99,7 @@ namespace RemsNG.Services
                 htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Overpaid : {String.Format("{0:n}", decimal.Round(amtPaid - amtDue, 2))} naira");//PAYMENT_STATUS
 
             }
-            else if(amtPaid < amtDue)
+            else if (amtPaid < amtDue)
             {
                 htmlContent = htmlContent.Replace("PAYMENT_STATUS", DemandNoticeStatus.PART_PAYMENT.ToString());//PAYMENT_STATUS
                 htmlContent = htmlContent.Replace("AMOUNT_REMAINING",
@@ -174,7 +174,6 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("WARD_NAME", dnrp.wardName);
 
             htmlContent = htmlContent.Replace("ITEMLIST", DemandNoticeComponents.HtmlBuildItems(dnrp));
-            int partialItemCount = 0;
 
             htmlContent = htmlContent.Replace("PATCH2", "");
 
@@ -195,7 +194,15 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("GRAND_TOTAL", String.Format("{0:n}", decimal.Round(gtotal, 2)));
 
             htmlContent = htmlContent.Replace("CHARGES", String.Format("{0:n}", decimal.Round(dnrp.charges, 2)));
-            decimal finalTotal = gtotal + dnrp.charges;
+            decimal amountPaid = 0;
+            List<DemandNoticePaymentHistory> dnpHistory = await dNPaymentHistoryService.ByBillingNumber(billingno);
+            if (dnpHistory.Count > 0)
+            {
+                amountPaid = decimal.Round(dnpHistory.Sum(x => x.amount), 2);
+            }
+
+            htmlContent = htmlContent.Replace("AMOUNT_PAID", String.Format("{0:n}", decimal.Round(amountPaid, 2)));
+            decimal finalTotal = gtotal + dnrp.charges - amountPaid;
             htmlContent = htmlContent.Replace("FINAL_TOTAL", String.Format("{0:n}", decimal.Round(finalTotal, 2)));
 
             if (finalTotal == 0)
@@ -206,6 +213,7 @@ namespace RemsNG.Services
             {
                 htmlContent = htmlContent.Replace("AMOUNT_IN_WORD", CurrencyWords.ConvertToWords(finalTotal.ToString()));
             }
+
             DemandNoticeDownloadHistory dndh = new DemandNoticeDownloadHistory();
             dndh.id = Guid.NewGuid();
             dndh.billingNumber = billingno;

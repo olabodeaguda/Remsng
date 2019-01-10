@@ -9,10 +9,12 @@ import { TaxPayerComponent } from "./components/taxpayer.component";
 import { TaxpayerService } from "./services/taxpayer.service";
 import { StreetModule } from "../street/street.module";
 import { TaxPayerGlobalComponent } from './components/taxpayer-global.component';
+import { TaxpayerPayerHistory } from './components/taxpayer.payment.component';
 
 const appRoutes: Routes = [
     { path: 'taxpayers/:id', component: TaxPayerComponent },
-    { path: 'taxpayersglobal/:id', component: TaxPayerGlobalComponent }
+    { path: 'taxpayersglobal/:id', component: TaxPayerGlobalComponent },
+    { path: 'paymentHistory/:id', component: TaxpayerPayerHistory }
  ];
 
 @NgModule({
@@ -24,11 +26,11 @@ const appRoutes: Routes = [
       RouterModule.forChild(appRoutes)
     ],
     declarations: [
-        TaxPayerComponent,TaxPayerGlobalComponent
+        TaxPayerComponent,TaxPayerGlobalComponent, TaxpayerPayerHistory
     ],
     providers: [ TaxpayerService],
     exports: [
-        TaxPayerComponent,TaxPayerGlobalComponent
+        TaxPayerComponent,TaxPayerGlobalComponent, TaxpayerPayerHistory
     ]
   })
 

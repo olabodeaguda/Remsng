@@ -27,6 +27,7 @@
                             <th style="width:40px;"></th>
                             <th style="width:40px;"></th>
                             <th>Billing Number</th>
+                            <th>Except from Receivables</th>
                             <th>Taxpayers Name</th>
                             <th>Billing Year</th>
                             <th>Address</th>
@@ -56,6 +57,7 @@
                                     </div>
                                 </td>
                                 <td>{{data.billingNumber}}</td>
+                                <td>{{data.isUnbilled?'Yes':'No'}}</td>
                                 <td>{{data.taxpayersName}}</td>
                                 <td>{{data.billingYr}}</td>
                                 <td>{{data.addressName}}</td>

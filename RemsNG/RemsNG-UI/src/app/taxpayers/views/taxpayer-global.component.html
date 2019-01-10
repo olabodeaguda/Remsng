@@ -154,6 +154,15 @@
                                                                     <i class="fa fa-user"></i>
                                                                     Items</a>
                                                             </li>
+                                                            <li>
+                                                                <a target="_blank" [routerLink]="['/paymentHistory',data.id]">
+                                                                    <i class="fa fa-user"></i>
+                                                                    Payment History</a>
+                                                            </li>
+                                                            <li>
+                                                                <a target="_blank" (click)="raisePenalty(data.id)">
+                                                                    Run Penalty</a>
+                                                            </li>
                                                         </ul>
                                                     </div>
 

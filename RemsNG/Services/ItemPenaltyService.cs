@@ -1,20 +1,32 @@
-﻿using RemsNG.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
+using RemsNG.Dao;
+using RemsNG.Exceptions;
 using RemsNG.Models;
 using RemsNG.ORM;
-using RemsNG.Dao;
+using RemsNG.Services.Interfaces;
+using RemsNG.Utilities;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace RemsNG.Services
 {
     public class ItemPenaltyService : IItemPenaltyService
     {
         private ItemPenaltyDao itemPenaltyDao;
-        public ItemPenaltyService(RemsDbContext _db)
+        private IDNAmountDueMgtService _admService;
+        private readonly DemandNoticeTaxpayersDao demandNoticeTaxpayersDao;
+        private readonly DemandNoticePenaltyDao demandNoticePenaltyDao;
+        private readonly ILogger logger;
+        public ItemPenaltyService(RemsDbContext _db
+            , IDNAmountDueMgtService dNAmountDueMgtService,
+            ILoggerFactory loggerFactory)
         {
             itemPenaltyDao = new ItemPenaltyDao(_db);
+            demandNoticeTaxpayersDao = new DemandNoticeTaxpayersDao(_db);
+            _admService = dNAmountDueMgtService;
+            demandNoticePenaltyDao = new DemandNoticePenaltyDao(_db);
+            logger = loggerFactory.CreateLogger("Items penalty");
         }
 
         public async Task<Response> Add(ItemPenalty item)
@@ -45,6 +57,57 @@ namespace RemsNG.Services
         public async Task<Response> UpdateStatus(ItemPenalty item)
         {
             return await itemPenaltyDao.UpdateStatus(item);
+        }
+
+
+        public async Task<Response> RunTaxpayerPenalty(Guid[] taxpayerIds)
+        {
+            var recievables = await demandNoticeTaxpayersDao.GetAllReceivables(taxpayerIds);// unpaid taxpayer
+
+            if (recievables.Length > 0)
+            {
+                var currentDues = await _admService.ByBillingNo(recievables.Select(x => x.billingNumber).ToArray()); // all current due amount of taxpayers
+                string query = string.Empty;
+                foreach (var tm in recievables)
+                {
+                    var res = currentDues.Where(x => x.billingNo == tm.billingNumber);
+                    decimal sumitem = res.Sum(x => x.itemAmount);
+                    decimal sumAmtPaid = res.Sum(x => x.amountPaid);
+                    var amountRemaining = currentDues.Where(x => x.billingNo == tm.billingNumber).Sum(x => (x.itemAmount - x.amountPaid));
+                    if (amountRemaining > 0)
+                    {
+                        DemandNoticeItemPenalty dnp = new DemandNoticeItemPenalty()
+                        {
+                            billingNo = tm.billingNumber,
+                            amountPaid = 0,
+                            billingYr = tm.billingYr,
+                            itemId = Guid.Empty,
+                            itemPenaltyStatus = DemandNoticeStatus.PENDING.ToString(),
+                            originatedYear = tm.billingYr,
+                            taxpayerId = tm.taxpayerId,
+                            totalAmount = amountRemaining * (decimal)0.1
+                        };
+                        query = query + demandNoticePenaltyDao.AddQuery(dnp);
+                    }
+                }
+                if (!string.IsNullOrEmpty(query))
+                {
+                    try
+                    {
+                        return demandNoticePenaltyDao.RunQuery(query);
+                    }
+                    catch (Exception x)
+                    {
+                        logger.LogError(x.Message);
+                        throw new UserValidationException(x.Message);
+                    }
+                }
+            }
+            return new Response()
+            {
+                code = MsgCode_Enum.SUCCESS,
+                description = "No penalty for the selected user"
+            };
         }
     }
 }

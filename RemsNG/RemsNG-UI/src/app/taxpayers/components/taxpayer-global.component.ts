@@ -55,6 +55,20 @@ export class TaxPayerGlobalComponent implements OnInit {
         });
     }
 
+
+    raisePenalty(id: string){
+        this.isLoading = true;
+        this.taxpayerservice.raisePenalty(id)
+            .subscribe(response => {
+                this.isLoading = false;
+                this.toasterService.pop('success', 'Success', response.description);
+            }, error => {
+                this.isLoading = false;
+                const res = error.error;
+                this.toasterService.pop('error', 'Error', res.description);
+            });
+    }
+
     searchQuery() {
         if(this.query.length < 1){
             return;

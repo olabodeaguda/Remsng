@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using RemsNG.ORM;
+﻿using Microsoft.EntityFrameworkCore;
 using RemsNG.Models;
-using Microsoft.EntityFrameworkCore;
+using RemsNG.ORM;
 using RemsNG.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
@@ -73,7 +72,7 @@ namespace RemsNG.Dao
                     };
                 }
             }
-            catch (Exception x)
+            catch (Exception)
             {
 
                 throw;
@@ -87,7 +86,7 @@ namespace RemsNG.Dao
                 List<DemandNoticeItem> demandNotice = await db.DemandNoticeItems.FromSql("sp_penaltyTracker").ToListAsync();
                 return demandNotice;
             }
-            catch (Exception x)
+            catch (Exception)
             {
 
                 throw;
@@ -97,6 +96,14 @@ namespace RemsNG.Dao
         public async Task<List<DemandNoticeItemPenalty>> ByBillingNumber(string billingno)
         {
             string query = $"select tbl_demandNoticePenalty.*,0 as billingYr from tbl_demandNoticePenalty where billingNo = '{billingno}'";
+            List<DemandNoticeItemPenalty> lstdbItem = await db.DemandNoticeItemPenaties
+                .FromSql(query).ToListAsync();
+            return lstdbItem;
+        }
+
+        public async Task<List<DemandNoticeItemPenalty>> ByTaxpayerId(Guid taxpayerId)
+        {
+            string query = $"select tbl_demandNoticePenalty.*,0 as billingYr from tbl_demandNoticePenalty where taxpayerId = '{taxpayerId}'";
             List<DemandNoticeItemPenalty> lstdbItem = await db.DemandNoticeItemPenaties
                 .FromSql(query).ToListAsync();
             return lstdbItem;

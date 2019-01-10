@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using RemsNG.ORM;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using RemsNG.Models;
+using RemsNG.ORM;
 using RemsNG.Utilities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
@@ -18,6 +16,31 @@ namespace RemsNG.Dao
         public async Task<List<DNAmountDueModel>> ByBillingNo(string billingno)
         {
             return await db.DNAmountDueModels.FromSql("sp_getBillingNumberTotalDue @p0", new object[] { billingno }).ToListAsync();
+        }
+
+
+        public async Task<List<DNAmountDueModel>> ByBillingNo(string[] bills)
+        {
+            string bnos = bills.FormatString();
+
+            string query = $"select dn.id,dn.totalAmount as itemAmount,dn.amountPaid,dn.arrearsStatus as itemStatus, " +
+                $"tm.itemDescription,'ARREARS' as category,dn.itemId, dn.billingNo " +
+                $"from tbl_demandNoticeArrears as dn " +
+                $"inner join tbl_item as tm on tm.id = dn.itemId " +
+                $"where dn.billingNo in ({bnos})  and dn.arrearsStatus in ('PART_PAYMENT','PENDING')" +
+                $"union " +
+                $"select dn.id,dn.totalAmount,dn.amountPaid,dn.itemPenaltyStatus as itemStatus, " +
+                $"tm.itemDescription,'PENALTY' as category,dn.itemId, dn.billingNo " +
+                $"from tbl_demandNoticePenalty as dn " +
+                $"inner join tbl_item as tm on tm.id = dn.itemId " +
+                $"where billingNo in ({bnos})  and dn.itemPenaltyStatus in ('PART_PAYMENT','PENDING')" +
+                $"union " +
+                $"select dn.id,dn.itemAmount,dn.amountPaid,dn.itemStatus, " +
+                $"tm.itemDescription,'ITEMS' as category,dn.itemId, dn.billingNo " +
+                $"from tbl_demandNoticeItem as dn " +
+                $"inner join tbl_item as tm on tm.id = dn.itemId " +
+                $"where billingNo in ({bnos})  and dn.itemStatus in ('PART_PAYMENT','PENDING')";
+            return await db.DNAmountDueModels.FromSql(query).ToListAsync();
         }
 
         public async Task<Response> UpdateAmount(DNAmountDueModel dnamount)
@@ -59,8 +82,8 @@ namespace RemsNG.Dao
 
         }
 
-        public string PaymentQuery(List<DNAmountDueModel> paymentDueList, 
-            DemandNoticePaymentHistory dnph,string status, string createdby)
+        public string PaymentQuery(List<DNAmountDueModel> paymentDueList,
+            DemandNoticePaymentHistory dnph, string status, string createdby)
         {
             string query = "";
 

@@ -1,11 +1,11 @@
-﻿using RemsNG.Services.Interfaces;
-using System;
+﻿using RemsNG.Dao;
+using RemsNG.Models;
+using RemsNG.ORM;
+using RemsNG.Services.Interfaces;
+using RemsNG.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using RemsNG.ORM;
-using RemsNG.Dao;
-using RemsNG.Models;
 
 namespace RemsNG.Services
 {
@@ -20,6 +20,11 @@ namespace RemsNG.Services
         public async Task<List<DNAmountDueModel>> ByBillingNo(string billingno)
         {
             return await dNAmountDueMgtDao.ByBillingNo(billingno);
+        }
+
+        public async Task<List<DNAmountDueModel>> ByBillingNo(string[] bills)
+        {
+            return await dNAmountDueMgtDao.ByBillingNo(bills);
         }
 
         public async Task<Response> UpdateAmount(DNAmountDueModel dnamount)
@@ -44,7 +49,7 @@ namespace RemsNG.Services
                 if (remaining > 0)
                 {
                     UnpaidDueList[0].amountInitialPaid = UnpaidDueList[0].amountInitialPaid + remaining;
-                    UnpaidDueList[0].amountInitialPaid = UnpaidDueList[0].amountPaid + remaining; 
+                    UnpaidDueList[0].amountInitialPaid = UnpaidDueList[0].amountPaid + remaining;
                 }
             }
             else

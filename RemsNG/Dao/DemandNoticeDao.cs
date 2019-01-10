@@ -22,14 +22,17 @@ namespace RemsNG.Dao
 
         public async Task<Response> Add(DemandNotice demandNotice)
         {
-            DbResponse dbResponse = await db.DbResponses.FromSql("sp_addDemandNotice @p0,@p1,@p2,@p3,@p4,@p5,@p6,@p7,@p8", new object[] {
+            DbResponse dbResponse = await db.DbResponses.FromSql("sp_addDemandNotice @p0,@p1,@p2,@p3,@p4,@p5,@p6,@p7,@p8,@p9", new object[] {
                 demandNotice.id,
                 demandNotice.query,
                 demandNotice.batchNo,
                 demandNotice.demandNoticeStatus,
                 demandNotice.billingYear,
                 demandNotice.lcdaId,
-                demandNotice.createdBy,demandNotice.wardId,demandNotice.streetId
+                demandNotice.createdBy,
+                demandNotice.wardId,
+                demandNotice.streetId,
+                demandNotice.isUnbilled
             }).FirstOrDefaultAsync();
 
             if (dbResponse.success)

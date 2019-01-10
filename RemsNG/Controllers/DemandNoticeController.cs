@@ -180,6 +180,7 @@ namespace RemsNG.Controllers
             demandNotice.demandNoticeStatus = DemandNoticeStatus.SUBMITTED.ToString();
             demandNotice.wardId = demandNoticeRequest.wardId;
             demandNotice.streetId = demandNoticeRequest.streetId;
+            demandNotice.isUnbilled = demandNoticeRequest.isUnbilled;
 
            Response response = await demandService.Add(demandNotice);
 

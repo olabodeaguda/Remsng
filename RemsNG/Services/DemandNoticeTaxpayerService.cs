@@ -1,14 +1,13 @@
-﻿using RemsNG.Services.Interfaces;
+﻿using RemsNG.Dao;
+using RemsNG.Exceptions;
+using RemsNG.Models;
+using RemsNG.ORM;
+using RemsNG.Services.Interfaces;
+using RemsNG.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using RemsNG.ORM;
-using RemsNG.Dao;
-using RemsNG.Models;
-using RemsNG.Exceptions;
-using RemsNG.Utilities;
-using System.Text;
 
 namespace RemsNG.Services
 {
@@ -104,14 +103,14 @@ namespace RemsNG.Services
 
                 dnrm.banks = await lcdaBankService.Get(lgda.id);
 
-                var penalties = await dnp.ByBillingNumber(billingNo);
+                var penalties = await dnp.ByTaxpayerId(dnrm.taxpayerId);
 
                 dnrm.penalty = penalties.Sum(x => (x.totalAmount));
                 dnrm.amountPaid = dnrm.amountPaid + penalties.Sum(x => x.amountPaid);
 
                 var arrears = await dna.ByBillingNumber(billingNo);
                 dnrm.arrears = arrears.Sum(x => (x.totalAmount));
-                dnrm.amountPaid = dnrm.amountPaid + arrears.Sum(x=>x.amountPaid);
+                dnrm.amountPaid = dnrm.amountPaid + arrears.Sum(x => x.amountPaid);
 
                 LcdaProperty isEnablePayment = ls.FirstOrDefault(x =>
                 x.propertyKey == "ALLOW_PAYMENT_SERVICES" && x.propertyStatus == "ACTIVE");
@@ -135,7 +134,7 @@ namespace RemsNG.Services
 
                 return dnrm;
             }
-            catch (Exception x)
+            catch (Exception)
             {
                 throw;
             }
@@ -164,6 +163,11 @@ namespace RemsNG.Services
         public async Task<bool> BlinkClosesDemandNoticeByCompany(Guid companyId)
         {
             return await dntDao.BlinkClosesDemandNoticeByCompany(companyId);
+        }
+
+        public async Task<DemandNoticeTaxpayersDetail[]> GetAllReceivables()
+        {
+            return await dntDao.GetAllReceivables();
         }
     }
 }

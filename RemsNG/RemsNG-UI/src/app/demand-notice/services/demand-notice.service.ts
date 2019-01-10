@@ -35,7 +35,9 @@ export class DemandNoticeService {
             dateYear: searchModel.dateYear <= 0 ? null : searchModel.dateYear,
             lcdaId: null,
             CloseOldData: searchModel.isClosedData,
-            RunArrears: searchModel.runArrears
+            RunArrears: searchModel.runArrears,
+            IsUnbilled: searchModel.isUnbilled,
+            RunPenalty: searchModel.runPenalty
         };
 
         return this.datataservice.post('demandnotice', s).catch(x => this.datataservice.handleError(x));

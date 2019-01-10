@@ -7,15 +7,18 @@ using RemsNG.Models;
 using RemsNG.ORM;
 using Microsoft.Extensions.Logging;
 using RemsNG.Dao;
+using RemsNG.Exceptions;
 
 namespace RemsNG.Services
 {
     public class TaxpayerService : ITaxpayerService
     {
+        private IDNAmountDueMgtService amountDueMgtService;
         private TaxpayerDao taxpayerDao;
-        public TaxpayerService(RemsDbContext _db, ILoggerFactory loggerFactory)
+        public TaxpayerService(RemsDbContext _db, ILoggerFactory loggerFactory, IDNAmountDueMgtService _amountDueMgtService)
         {
             taxpayerDao = new TaxpayerDao(_db);
+            amountDueMgtService = _amountDueMgtService;
         }
 
         public async Task<List<TaxpayerExtension>> ByCompanyId(Guid companyId)
@@ -66,6 +69,23 @@ namespace RemsNG.Services
         public async Task<Response> Update(Taxpayer taxpayer)
         {
             return await taxpayerDao.Update(taxpayer);
+        }
+
+        public async Task<List<DemandNoticePaymentHistory>> PaymentHistory(Guid id)
+        {
+            if (id == default(Guid))
+            {
+                throw new UserValidationException("Invalid request");
+            }
+            List<DemandNoticePaymentHistory> lst = new List<DemandNoticePaymentHistory>();
+            var result = await taxpayerDao.PaymentHistory(id);
+            foreach (var tm in result)
+            {
+                var r = await amountDueMgtService.ByBillingNo(tm.billingNumber);
+                tm.TotalBillAmount = r.Sum(x => x.itemAmount);
+                lst.Add(tm);
+            }
+            return lst;
         }
     }
 }

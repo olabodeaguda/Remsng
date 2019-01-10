@@ -19,5 +19,6 @@ namespace RemsNG.Services.Interfaces
         Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel);
         Task<Lgda> getLcda(Guid taxpayerId);
         Task<List<TaxpayerExtension>> Search(Guid lcdaId, string qu);
+        Task<List<DemandNoticePaymentHistory>> PaymentHistory(Guid id);
     }
 }

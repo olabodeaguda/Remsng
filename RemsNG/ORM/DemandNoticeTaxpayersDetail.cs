@@ -27,5 +27,6 @@ namespace RemsNG.ORM
         public string demandNoticeStatus { get; set; }
 
         public Nullable<int> totalSize { get; set; }
+        public bool isUnbilled { get; set; }
     }
 }

@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using RemsNG.Services.Interfaces;
 using RemsNG.Models;
-using RemsNG.Utilities;
 using RemsNG.ORM;
 using RemsNG.Security;
+using RemsNG.Services.Interfaces;
+using RemsNG.Utilities;
+using System;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,8 +20,8 @@ namespace RemsNG.Controllers
         private IItemService itemservice;
         public ItemPenaltyController(IItemPenaltyService _itemPenaltyService, IItemService _itemservice)
         {
-            this.itemPenaltyService = _itemPenaltyService;
-            this.itemservice = _itemservice;
+            itemPenaltyService = _itemPenaltyService;
+            itemservice = _itemservice;
         }
 
         [Route("byitem/{itemId}")]
@@ -179,6 +177,30 @@ namespace RemsNG.Controllers
 
             Response response = await itemPenaltyService.UpdateStatus(itemPenalty);
             return Ok(response);
+        }
+
+        [HttpGet("addpenalty/{taxpayerId}")]
+        public async Task<object> AddPenalty(Guid taxpayerId)
+        {
+            if (taxpayerId == Guid.Empty)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Bad Request"
+                });
+            }
+
+            Guid[] tids = { taxpayerId };
+            Response response = await itemPenaltyService.RunTaxpayerPenalty(tids);
+            if (response.code == MsgCode_Enum.SUCCESS)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(response);
+            }
         }
     }
 }
