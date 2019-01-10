@@ -605,7 +605,6 @@ namespace RemsNG.Services
                 string query = string.Empty;
                 foreach (var tm in recievables)
                 {
-
                     var res = currentDues.Where(x => x.billingNo == tm.billingNumber);
                     decimal sumitem = res.Sum(x => x.itemAmount);
                     decimal sumAmtPaid = res.Sum(x => x.amountPaid);

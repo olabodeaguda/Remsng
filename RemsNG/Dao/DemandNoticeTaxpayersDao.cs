@@ -334,5 +334,15 @@ namespace RemsNG.Dao
             var results = await db.DemandNoticeTaxpayersDetails.FromSql(query).ToArrayAsync();
             return results;
         }
+
+        public async Task<List<DemandNoticeTaxpayersDetail>> GetTaxpayerPayables(Guid taxpayerId)
+        {
+            string query = $"select tbl_demandNoticeTaxpayers.*, -1 as totalSize from tbl_demandNoticeTaxpayers " +
+                $"where taxpayerId = '{taxpayerId}' and demandNoticeStatus in ('PART_PAYMENT','PENDING') order by  dateCreated";
+            var results = await db.DemandNoticeTaxpayersDetails
+                .FromSql(query,
+                new object[] { taxpayerId.ToString() }).ToListAsync();
+            return results;
+        }
     }
 }

@@ -168,7 +168,6 @@ namespace RemsNG.Controllers
                 }
                 List<DNAmountDueModel> paymentDueList = await amountDueMgtService.ByBillingNo(dnph.billingNumber);
 
-
                 if ((dnph.amount + dnph.charges) >= paymentDueList.Sum(x => (x.itemAmount - x.amountPaid )))
                 {
                     amountDueMgtService.CurrentAmountDue(paymentDueList, dnph.amount, true);

@@ -4,6 +4,7 @@ using RemsNG.Exceptions;
 using RemsNG.Models;
 using RemsNG.Services.Interfaces;
 using RemsNG.Utilities;
+using System;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -44,7 +45,9 @@ namespace RemsNG.Controllers
         }
 
         [HttpGet("batchno/{batchno}")]
-        public async Task<object> GetByBatchNo([FromRoute]string batchno, [FromHeader] string pageSize, [FromHeader] string pageNum)
+        public async Task<object> GetByBatchNo([FromRoute]string batchno,
+            [FromHeader] string pageSize,
+            [FromHeader] string pageNum)
         {
             pageSize = string.IsNullOrEmpty(pageSize) ? "1" : pageSize;
             pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
@@ -97,6 +100,12 @@ namespace RemsNG.Controllers
             }
             var results = await demandNoticeTaxpayerService.Search(query);
             return Ok(new Response() { code = MsgCode_Enum.SUCCESS, data = results });
+        }
+
+        [HttpGet("payable/{taxpayerId}")]
+        public async Task<IActionResult> TaxpayerPayable(Guid taxpayerId)
+        {
+            return Ok(await demandNoticeTaxpayerService.GetTaxpayerPayables(taxpayerId));
         }
     }
 }

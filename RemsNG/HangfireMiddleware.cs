@@ -24,7 +24,7 @@ namespace RemsNG
             try
             {
                 RecurringJob.AddOrUpdate(() => runDemandNoticeService.RegisterTaxpayer(), Cron.MinuteInterval(2));
-                RecurringJob.AddOrUpdate(() => runDemandNoticeService.TaxpayerPenalty(), Cron.MinuteInterval(2));
+                // RecurringJob.AddOrUpdate(() => runDemandNoticeService.TaxpayerPenalty(), Cron.MinuteInterval(2));
                 RecurringJob.AddOrUpdate(() => runDemandNoticeService.GenerateBulkDemandNotice(), Cron.MinuteInterval(2));
                 RecurringJob.AddOrUpdate("Sync Upstream", () => syncService.SyncUp(), Cron.MinuteInterval(4));
                 RecurringJob.AddOrUpdate("Sync Downstream", () => syncService.SyncDown(), Cron.MinuteInterval(4));

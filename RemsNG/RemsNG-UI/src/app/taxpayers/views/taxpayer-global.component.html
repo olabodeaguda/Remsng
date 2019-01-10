@@ -160,8 +160,13 @@
                                                                     Payment History</a>
                                                             </li>
                                                             <li>
+                                                                <a target="_blank" [routerLink]="['/paymentpayable',data.id]">
+                                                                    <i class="fa fa-file"></i>
+                                                                    Payment Payable</a>
+                                                            </li>
+                                                            <li>
                                                                 <a target="_blank" (click)="raisePenalty(data.id)">
-                                                                    Run Penalty</a>
+                                                                    <i class="fa fa-plus-circle"></i> Run Penalty</a>
                                                             </li>
                                                         </ul>
                                                     </div>

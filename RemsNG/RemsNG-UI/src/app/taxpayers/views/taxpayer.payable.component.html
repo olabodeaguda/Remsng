@@ -1,0 +1,74 @@
+<div class="wrapper hold-transition skin-blue fixed sidebar-mini">
+    <app-hd></app-hd>
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>
+                Taxpayer Management
+                <small>Manage
+                    <b> {{taxpayer?.surname}}</b>.</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="javascript:;">
+                        <i class="fa fa-dashboard"></i> Home</a>
+                </li>
+                <li class="active">Taxpayers Payable</li>
+            </ol>
+        </section>
+        <section>
+            <div class="row">
+                <section class="content" style="border-style:thin">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="box">
+                                <div class="box-header">
+                                    <h3 class="box-title"> Taxpayers Payable</h3>
+                                </div>
+                                <div class="box-body">
+                                    <div class="row">
+                                        <table id="example2" class="table table-bordered table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th>Bill Number</th>
+                                                    <th>Billing Year</th>
+                                                    <th>Ward</th>
+                                                    <th>Payment Status</th>
+                                                    <th>Amount Due</th>
+                                                    <th>Date Created</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let data of taxpayers; let i=index">
+                                                    <td>{{(i+1)}}</td>
+                                                    <td>{{data.billingNumber}}</td>
+                                                    <td>{{data.billingYr}}</td>
+                                                    <td>{{data.wardName}}</td>
+                                                    <td>{{data.demandNoticeStatus}}</td>
+                                                    <td>{{data.amountDue|number:'1.2'}}</td>
+                                                    <td>{{data.dateCreated | date: 'dd-MM-yyyy hh:mm:ss'}}</td>
+                                                    <td>
+                                                        <a href="javascript:;" (click)="downloadDN(data.billingNumber)">
+                                                            <i class="fa fa-download"></i> Download Demand notice
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                <tr *ngIf="taxpayers.length < 1">
+                                                    <td style="width:100%" colspan="9">No record !!!</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </section>
+    </div>
+</div>
+<section></section>
+<ft></ft>
+<div class="loading" *ngIf="isLoading"></div>

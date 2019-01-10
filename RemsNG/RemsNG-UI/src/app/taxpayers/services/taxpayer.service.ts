@@ -69,4 +69,10 @@ export class TaxpayerService {
         return this.dataservice.getBlob('dndownload/single/' + url)
         .catch(error => this.dataservice.handleError(error));
     }
+
+    getTaxPayable(taxpayerId){
+        return this.dataservice
+        .get(`dnt/payable/${taxpayerId}`)
+        .catch(x=> this.dataservice.handleError(x));
+    }
 }

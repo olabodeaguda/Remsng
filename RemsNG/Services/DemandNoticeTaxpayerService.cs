@@ -23,11 +23,12 @@ namespace RemsNG.Services
         private readonly IListPropertyService lpService;
         private readonly IDemandNoticeCharges chargesService;
         private readonly ILcdaService lcdaService;
+        private IDNAmountDueMgtService _admService;
         public DemandNoticeTaxpayerService(RemsDbContext _db,
             IDemandNoticeItemService _dnItemService, ITaxpayerService _taxpayerService,
              IImageService _imageService, ILcdaBankService _lcdaBankService,
              IListPropertyService _lpService,
-            IDemandNoticeCharges _chargesService, ILcdaService _lcdaService)
+            IDemandNoticeCharges _chargesService, ILcdaService _lcdaService, IDNAmountDueMgtService admService)
         {
             dntDao = new DemandNoticeTaxpayersDao(_db);
             dnItemService = _dnItemService;
@@ -39,6 +40,7 @@ namespace RemsNG.Services
             lpService = _lpService;
             chargesService = _chargesService;
             lcdaService = _lcdaService;
+            _admService = admService;
         }
 
         public async Task<DemandNoticeReportModel> ByBillingNo(string billingNo)
@@ -168,6 +170,33 @@ namespace RemsNG.Services
         public async Task<DemandNoticeTaxpayersDetail[]> GetAllReceivables()
         {
             return await dntDao.GetAllReceivables();
+        }
+
+        public async Task<List<object>> GetTaxpayerPayables(Guid taxpayerId)
+        {
+            if (taxpayerId == default(Guid))
+            {
+                throw new UserValidationException("bad request");
+            }
+
+            var result = await dntDao.GetTaxpayerPayables(taxpayerId);
+            List<object> lstPayables = new List<object>();
+            foreach (var tm in result)
+            {
+                var currentDue = await _admService.ByBillingNo(tm.billingNumber);
+                decimal amtDue = currentDue.Sum(x => (x.itemAmount - x.amountPaid));
+                lstPayables.Add(new
+                {
+                    billingNumber = tm.billingNumber,
+                    billingYr = tm.billingYr,
+                    wardName = tm.wardName,
+                    demandNoticeStatus = tm.demandNoticeStatus,
+                    amountDue = amtDue,
+                    dateCreated = tm.dateCreated
+                });
+            }
+
+            return lstPayables;
         }
     }
 }
