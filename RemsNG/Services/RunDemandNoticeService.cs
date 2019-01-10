@@ -99,12 +99,6 @@ namespace RemsNG.Services
                     string domainName = string.Empty;
                     if (taxpayers.Count > 0)
                     {
-                        //if (demandNoticeRequest.RunPenalty)
-                        //{
-                        //    Guid[] taxpayerIds = taxpayers.Select(x => x.id).ToArray();
-                        //    await RunTaxpayerPenalty(taxpayerIds);
-                        //}
-
                         Lgda lcda = await lcdaService.Get(demandNoticeRequest);
                         if (lcda != null)
                         {
@@ -169,6 +163,7 @@ namespace RemsNG.Services
 
                                 if (response1.code == MsgCode_Enum.SUCCESS)
                                 {
+                                    await RunTaxpayerPenalty(new Guid[] { tm.id });
                                     dntd.billingNumber = response1.data.ToString().Trim();
                                     //run arrears 
                                     if (demandNoticeRequest.RunArrears)
@@ -646,5 +641,6 @@ namespace RemsNG.Services
                 }
             }
         }
+      
     }
 }

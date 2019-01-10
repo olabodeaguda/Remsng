@@ -42,7 +42,7 @@ namespace RemsNG.Dao
                 $"where billingNo in ({bnos})  and dn.itemStatus in ('PART_PAYMENT','PENDING')";
             return await db.DNAmountDueModels.FromSql(query).ToListAsync();
         }
-
+        
         public async Task<Response> UpdateAmount(DNAmountDueModel dnamount)
         {
             int count = 0;
