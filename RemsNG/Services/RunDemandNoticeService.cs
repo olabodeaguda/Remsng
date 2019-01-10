@@ -163,7 +163,10 @@ namespace RemsNG.Services
 
                                 if (response1.code == MsgCode_Enum.SUCCESS)
                                 {
-                                    await RunTaxpayerPenalty(new Guid[] { tm.id });
+                                    if (demandNoticeRequest.RunPenalty)
+                                    {
+                                        await RunTaxpayerPenalty(tm.id, dntd.billingNumber, dntd.billingYr);
+                                    }
                                     dntd.billingNumber = response1.data.ToString().Trim();
                                     //run arrears 
                                     if (demandNoticeRequest.RunArrears)
@@ -641,6 +644,59 @@ namespace RemsNG.Services
                 }
             }
         }
-      
+
+        public async Task RunTaxpayerPenalty(Guid taxpayerId, string billingNumber, int billingYr)
+        {
+            Guid[] taxpayerIds = new Guid[] { taxpayerId };
+            var recievables = await demandNoticeTaxpayersDao.GetAllReceivables(taxpayerIds);// unpaid taxpayer
+
+            if (recievables.Length > 0)
+            {
+                var currentDues = await _admService.ByBillingNo(recievables.Select(x => x.billingNumber).ToArray()); // all current due amount of taxpayers
+                string query = string.Empty;
+                foreach (var tm in recievables)
+                {
+                    var res = currentDues.Where(x => x.billingNo == tm.billingNumber);
+                    decimal sumitem = res.Sum(x => x.itemAmount);
+                    decimal sumAmtPaid = res.Sum(x => x.amountPaid);
+                    var amountRemaining = currentDues.Where(x => x.billingNo == tm.billingNumber).Sum(x => (x.itemAmount - x.amountPaid));
+                    if (amountRemaining > 0)
+                    {
+                        DemandNoticeItemPenalty dnp = new DemandNoticeItemPenalty()
+                        {
+                            billingNo = billingNumber,
+                            amountPaid = 0,
+                            billingYr = billingYr,
+                            itemId = Guid.Empty,
+                            itemPenaltyStatus = DemandNoticeStatus.PENDING.ToString(),
+                            originatedYear = tm.billingYr,
+                            taxpayerId = tm.taxpayerId,
+                            totalAmount = amountRemaining * (decimal)(0.1)
+                        };
+                        query = query + demandNoticePenaltyDao.AddQuery(dnp);
+                    }
+                }
+                if (!string.IsNullOrEmpty(query))
+                {
+                    try
+                    {
+                        Response response = demandNoticePenaltyDao.RunQuery(query);
+                        if (response.code == MsgCode_Enum.SUCCESS)
+                        {
+                            logger.LogInformation("Error running penalty " + response.description);
+                        }
+                        else
+                        {
+                            logger.LogInformation("Error running penalty " + response.description);
+                        }
+                    }
+                    catch (Exception x)
+                    {
+                        logger.LogError(x.Message);
+                    }
+                }
+            }
+        }
+
     }
 }
