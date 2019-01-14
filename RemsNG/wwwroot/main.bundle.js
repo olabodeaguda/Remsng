@@ -5038,7 +5038,7 @@ var LoginComponent = (function () {
         if (diffDays <= 21) {
             this.isNotifyValidy = true;
         }
-        // this.isNotifyValidy = true;
+        this.isNotifyValidy = true;
     };
     LoginComponent.prototype.signIn = function () {
         var _this = this;
