@@ -1,4 +1,5 @@
-<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" #downRequestPrompt>
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    #downRequestPrompt>
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -19,6 +20,48 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    #PromptConstraint>
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Select Constraints</h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div class="box-body">
+                    <div class="form-check col-sm-12">
+                        <input type="checkbox" class="form-check-input" id="isClosedData" [checked]="searchModel.isClosedData"
+                            (change)="searchModel.isClosedData = !searchModel.isClosedData">
+                        <label class="form-check-label" for="isClosedData">Closed Previous record(s)</label>
+                    </div>
+                    <div class="form-check col-sm-12">
+                        <input type="checkbox" class="form-check-input" id="runArrears" [checked]="searchModel.runArrears"
+                            (change)="searchModel.runArrears = !searchModel.runArrears">
+                        <label class="form-check-label" for="runArrears">Process Arrears</label>
+                    </div>
+                    <div class="form-check col-sm-12">
+                        <input type="checkbox" class="form-check-input" id="isUnbilled" [checked]="searchModel.isUnbilled"
+                            (change)="searchModel.isUnbilled = !searchModel.isUnbilled">
+                        <label class="form-check-label" for="isUnbilled">Is Unbilled</label>
+                    </div>
+                    <div class="form-check col-sm-12">
+                        <input type="checkbox" class="form-check-input" id="runPenalty" [checked]="searchModel.runPenalty"
+                            (change)="searchModel.runPenalty = !searchModel.runPenalty">
+                        <label class="form-check-label" for="runPenalty">Run Penalty</label>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <!--<button [ladda]="isLoadingMini" type="submit" class="btn btn-success" (click)="addRaiseRequest()">Submit</button>-->
+                    <button [ladda]="searchModel.isProcessingRequest" type="submit" class="btn btn-primary" (click)="submitDemandRequest()">Run</button>
+                    <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="modal fade" role="dialog" id="addModal" #downloadRequestModal>
     <div class=" modal-dialog ">
@@ -94,12 +137,12 @@
                         <div class="col-xs-12">
                             <div class="form-group col-md-3">
                                 <label for="wardId">Select Ward</label>
-                                <select (change)="loadStreets($event.target.value)" name="wardId" class="form-control" [(ngModel)]="searchModel.wardId">
+                                <select (change)="loadStreets($event.target.value)" name="wardId" class="form-control"
+                                    [(ngModel)]="searchModel.wardId">
                                     <option>Select Ward</option>
                                     <option *ngFor="let data of wardLst;" [ngValue]="data.id">{{data.wardName}}({{data.lcdaName}})</option>
                                 </select>
                             </div>
-
                             <div class="form-group col-md-3">
                                 <label for="streetId">Select Street</label>
                                 <select name="streetId" class="form-control" [(ngModel)]="searchModel.streetId">
@@ -110,7 +153,7 @@
                             <div class="form-group col-md-3">
                                 <label for="dateYear">Select Year</label>
                                 <select name="dateYear" class="form-control" [(ngModel)]="searchModel.dateYear">
-                                    <option>Select Year</option>
+                                    <option selected="selected">Select Year</option>
                                     <option *ngFor="let data of yrLst;" [ngValue]="data">{{data}}</option>
                                 </select>
                             </div>
@@ -118,36 +161,11 @@
                     </div>
                     <div class="row">
                         <div class="col-xs-12">
-                            <div class="form-check col-sm-3">
-                                <input type="checkbox" class="form-check-input" id="isClosedData" 
-                                [checked]="searchModel.isClosedData" 
-                                (change)="searchModel.isClosedData = !searchModel.isClosedData" >
-                                <label class="form-check-label" for="isClosedData">Closed Previous record(s)</label>
-                            </div>
-                            <div class="form-check col-sm-3">
-                                <input type="checkbox" class="form-check-input" id="runArrears" 
-                                [checked]="searchModel.runArrears" 
-                                (change)="searchModel.runArrears = !searchModel.runArrears" >
-                                <label class="form-check-label" for="runArrears">Process Arrears</label>
-                            </div>
-                            <div class="form-check col-sm-3">
-                                <input type="checkbox" class="form-check-input" id="isUnbilled" 
-                                [checked]="searchModel.isUnbilled" 
-                                (change)="searchModel.isUnbilled = !searchModel.isUnbilled" >
-                                <label class="form-check-label" for="isUnbilled">Is Unbilled</label>
-                            </div>
-                             <div class="form-check col-sm-3">
-                                <input type="checkbox" class="form-check-input" id="runPenalty" 
-                                [checked]="searchModel.runPenalty" 
-                                (change)="searchModel.runPenalty = !searchModel.runPenalty" >
-                                <label class="form-check-label" for="runPenalty">Run Penalty</label>
-                            </div>
                             <div class=" col-sm-3">
                                 <div class="btn-group">
-                                        <button [ladda]="searchModel.isProcessingRequest" 
-                                        type="submit" class="btn btn-primary" (click)="submitDemandRequest()">Run</button>
-                                        <button [ladda]="searchModel.isLoading" 
-                                    type="submit" class="btn btn-primary" (click)="searchDemandNotice()">Search</button>
+                                    <button type="submit" class="btn btn-primary" (click)="openConstraint()">Run</button>
+                                    <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary"
+                                        (click)="searchDemandNotice()">Search</button>
                                 </div>
                             </div>
                         </div>
@@ -169,7 +187,8 @@
                                     <tr *ngFor="let data of demandNoticeLst; let i=index">
                                         <td>
                                             <div class="btn-group">
-                                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <button type="button" class="btn btn-default dropdown-toggle"
+                                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     Action
                                                     <span class="caret"></span>
                                                 </button>
@@ -218,7 +237,8 @@
                                                         </a>
                                                     </li>
                                                     <li>
-                                                        <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}} </span>
+                                                        <span aria-hidden="true">{{pageModel.pageNum}} of
+                                                            {{pageModel.totalPageCount}} </span>
                                                     </li>
                                                 </ul>
                                             </nav>

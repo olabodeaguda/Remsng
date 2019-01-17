@@ -29,9 +29,10 @@ export class DemandNoticeComponent implements OnInit {
     pageModel: PageModel;
     isLoading: boolean = false;
     downloadRequestmodel: DownloadRequestModel;
-    batchNo:string;
+    batchNo: string;//
     @ViewChild('downRequestPrompt') downRequestPromptModal: ElementRef;
     @ViewChild('downloadRequestModal') downloadRequestModal: ElementRef;
+    @ViewChild('PromptConstraint') PromptConstraint: ElementRef;
     isLoadingMini: boolean = false;
     dowloadRequestList = [];
 
@@ -58,13 +59,16 @@ export class DemandNoticeComponent implements OnInit {
         // }, 30000);
         this.getWards();
     }
+    openConstraint() {
+        jQuery(this.PromptConstraint.nativeElement).modal('show');
+    }
 
     downloadDN(url: string) {
         this.isLoadingMini = true;
         this.demandnoticeservice.downloadRpt(url).map(response => {
-              this.isLoadingMini = false;
-             let blob = response;
-             FileSaver.saveAs(blob, url + '.zip');
+            this.isLoadingMini = false;
+            let blob = response;
+            FileSaver.saveAs(blob, url + '.zip');
         }, error => {
             this.isLoadingMini = false;
             this.toasterService.pop('error', 'Download Error', error);
@@ -78,7 +82,7 @@ export class DemandNoticeComponent implements OnInit {
         }
 
         this.isLoading = true;
-        this.demandnoticeservice.searchDemandNotice(this.searchModel,this.pageModel).subscribe(
+        this.demandnoticeservice.searchDemandNotice(this.searchModel, this.pageModel).subscribe(
             response => {
                 const objschema = { data: [], totalPageCount: 0 };
                 const res = Object.assign(objschema, response);
@@ -90,7 +94,7 @@ export class DemandNoticeComponent implements OnInit {
                 this.isLoading = false;
                 this.toasterService.pop('error', 'Error', error);
             });
-        
+
     }
 
     submitDemandRequest() {
@@ -102,6 +106,7 @@ export class DemandNoticeComponent implements OnInit {
         this.searchModel.isProcessingRequest = true;
         this.demandnoticeservice.add(this.searchModel).subscribe(
             response => {
+                jQuery(this.PromptConstraint.nativeElement).modal('hide');
                 this.searchModel.isProcessingRequest = false;
                 if (response.code === '00') {
                     this.toasterService.pop('success', 'Success', response.description);
@@ -111,6 +116,7 @@ export class DemandNoticeComponent implements OnInit {
                 }
             },
             error => {
+                jQuery(this.PromptConstraint.nativeElement).modal('hide');
                 this.searchModel.isProcessingRequest = false;
                 this.toasterService.pop('error', 'Error', error);
             });
@@ -132,56 +138,56 @@ export class DemandNoticeComponent implements OnInit {
         });
     }
 
-    open(target: string,data:any){
-        if(target === 'RAISE_REQUEST'){
-            if(data.batchNo.length <= 0){
+    open(target: string, data: any) {
+        if (target === 'RAISE_REQUEST') {
+            if (data.batchNo.length <= 0) {
                 return;
             }
             this.batchNo = data.batchNo;
             jQuery(this.downRequestPromptModal.nativeElement).modal('show');
-        } else if(target === 'DOWNLOAD_REQUEST'){
-            if(data.batchNo.length <= 0){
+        } else if (target === 'DOWNLOAD_REQUEST') {
+            if (data.batchNo.length <= 0) {
                 return;
             }
             this.batchNo = data.batchNo;
             jQuery(this.downloadRequestModal.nativeElement).modal('show');
 
             this.getRaisedRequest(this.batchNo);
-            setInterval(() =>{
+            setInterval(() => {
                 this.getRaisedRequest(this.batchNo);
-            },3000);
+            }, 3000);
         }
     }
 
-    getRaisedRequest(batchId:string){
-       // this.isLoading = true;
+    getRaisedRequest(batchId: string) {
+        // this.isLoading = true;
         this.demandnoticeservice.getRaisedRequest(batchId)
-        .subscribe(response=>{
-          //  this.isLoading = false;
-            this.dowloadRequestList= response;
-        },error=>{
-           // this.isLoading = false;
-        })
+            .subscribe(response => {
+                //  this.isLoading = false;
+                this.dowloadRequestList = response;
+            }, error => {
+                // this.isLoading = false;
+            })
     }
 
-    addRaiseRequest(){
-        if(this.batchNo.length <= 0){
+    addRaiseRequest() {
+        if (this.batchNo.length <= 0) {
             return;
         }
         this.isLoadingMini = true;
         this.demandnoticeservice.adDownloadRequest(this.batchNo)
-        .subscribe(response=>{
-            this.isLoadingMini = false;
-                if(response.code === '00'){
-                    this.toasterService.pop("success","Sucess",response.description);
+            .subscribe(response => {
+                this.isLoadingMini = false;
+                if (response.code === '00') {
+                    this.toasterService.pop("success", "Sucess", response.description);
                     jQuery(this.downRequestPromptModal.nativeElement).modal('hide');
-                }else {
-                    this.toasterService.pop("error","Error",response.description);
+                } else {
+                    this.toasterService.pop("error", "Error", response.description);
                 }
-        },error=>{
-            this.isLoadingMini = false;
-            this.toasterService.pop("error","Error",error);
-        })
+            }, error => {
+                this.isLoadingMini = false;
+                this.toasterService.pop("error", "Error", error);
+            })
     }
 
     getStreet(wardId: string) {
@@ -216,7 +222,7 @@ export class DemandNoticeComponent implements OnInit {
             this.demandNoticeLst = res.data;
             this.pageModel.totalPageCount = res.totalPageCount;
         }, error => {
-          //  this.toasterService.pop('error', 'Error', error);
+            //  this.toasterService.pop('error', 'Error', error);
         })
     }
 
