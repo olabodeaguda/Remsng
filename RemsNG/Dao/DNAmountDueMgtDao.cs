@@ -3,6 +3,7 @@ using RemsNG.Models;
 using RemsNG.ORM;
 using RemsNG.Utilities;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace RemsNG.Dao
@@ -15,7 +16,26 @@ namespace RemsNG.Dao
 
         public async Task<List<DNAmountDueModel>> ByBillingNo(string billingno)
         {
-            return await db.DNAmountDueModels.FromSql("sp_getBillingNumberTotalDue @p0", new object[] { billingno }).ToListAsync();
+            var result = await db.DNAmountDueModels.FromSql("sp_getBillingNumberTotalDue @p0", new object[] { billingno }).ToListAsync();
+            List<DNAmountDueModel> lst = new List<DNAmountDueModel>();
+
+            foreach (var tm in result)
+            {
+                if (tm.category != "ARREARS")
+                {
+                    lst.Add(tm);
+                }
+                else
+                {
+                    var res = lst.FirstOrDefault(x => x.billingNo == tm.billingNo && tm.category == "ARREARS");
+                    if (res == null)
+                    {
+                        lst.Add(tm);
+                    }
+                }
+            }
+
+            return lst;
         }
 
 
@@ -40,9 +60,28 @@ namespace RemsNG.Dao
                 $"from tbl_demandNoticeItem as dn " +
                 $"inner join tbl_item as tm on tm.id = dn.itemId " +
                 $"where billingNo in ({bnos})  and dn.itemStatus in ('PART_PAYMENT','PENDING')";
-            return await db.DNAmountDueModels.FromSql(query).ToListAsync();
+            var result = await db.DNAmountDueModels.FromSql(query).ToListAsync();
+            List<DNAmountDueModel> lst = new List<DNAmountDueModel>();
+
+            foreach (var tm in result)
+            {
+                if (tm.category != "ARREARS")
+                {
+                    lst.Add(tm);
+                }
+                else
+                {
+                    var res = lst.FirstOrDefault(x => x.billingNo == tm.billingNo && tm.category == "ARREARS");
+                    if (res == null)
+                    {
+                        lst.Add(tm);
+                    }
+                }
+            }
+
+            return lst;
         }
-        
+
         public async Task<Response> UpdateAmount(DNAmountDueModel dnamount)
         {
             int count = 0;

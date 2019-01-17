@@ -4,6 +4,7 @@ using RemsNG.ORM;
 using RemsNG.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace RemsNG.Dao
@@ -162,7 +163,16 @@ namespace RemsNG.Dao
         {
             List<DemandNoticeArrears> lstdbItem = await db.DemandNoticeArrearss
                 .FromSql($"select tbl_demandNoticeArrears.*, 0 as billingYr from tbl_demandNoticeArrears where billingNo = {billingno}").ToListAsync();
-            return lstdbItem;
+            List<DemandNoticeArrears> lst = new List<DemandNoticeArrears>();
+            foreach (var tm in lstdbItem)
+            {
+                var t = lst.FirstOrDefault(x => x.billingNo == tm.billingNo);
+                if (t == null)
+                {
+                    lst.Add(tm);
+                }
+            }
+            return lst;
         }
 
         public string AddQuery(DemandNoticeArrears dna)
