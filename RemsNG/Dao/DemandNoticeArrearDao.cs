@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using RemsNG.ORM;
+﻿using Microsoft.EntityFrameworkCore;
 using RemsNG.Models;
-using Microsoft.EntityFrameworkCore;
+using RemsNG.ORM;
 using RemsNG.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
@@ -44,7 +43,7 @@ namespace RemsNG.Dao
                     };
                 }
             }
-            catch (Exception x)
+            catch (Exception)
             {
                 throw;
             }
@@ -79,7 +78,7 @@ namespace RemsNG.Dao
                     };
                 }
             }
-            catch (Exception x)
+            catch (Exception)
             {
 
                 throw;
@@ -115,7 +114,7 @@ namespace RemsNG.Dao
                     };
                 }
             }
-            catch (Exception x)
+            catch (Exception)
             {
 
                 throw;
@@ -152,7 +151,7 @@ namespace RemsNG.Dao
                     };
                 }
             }
-            catch (Exception x)
+            catch (Exception)
             {
 
                 throw;
@@ -166,14 +165,19 @@ namespace RemsNG.Dao
             return lstdbItem;
         }
 
-        public async Task<bool> AddArrears(DemandNoticeArrears dna)
+        public string AddQuery(DemandNoticeArrears dna)
         {
-            string query = $"insert into tbl_demandNoticeArrears(id,billingNo,taxpayerId,totalAmount," +
+            return $"insert into tbl_demandNoticeArrears(id,billingNo,taxpayerId,totalAmount," +
                 $" amountPaid,itemId,originatedYear," +
                 $"billingYear,arrearsStatus,createdBy,dateCreated) values(" +
                 $"'{Guid.NewGuid()}','{dna.billingNo}','{dna.taxpayerId}','{dna.totalAmount}',0," +
                 $"'{dna.itemId}','{dna.originatedYear}','{dna.billingYr}','{dna.arrearsStatus}'," +
-                $"'{dna.createdBy}',getdate())";
+                $"'{dna.createdBy}',getdate());";
+        }
+
+        public async Task<bool> AddArrears(DemandNoticeArrears dna)
+        {
+            string query = AddQuery(dna);
 
             int count = await db.Database.ExecuteSqlCommandAsync(query);
             if (count > 0)
@@ -183,5 +187,17 @@ namespace RemsNG.Dao
 
             return false;
         }
+
+        public async Task<bool> AddArrears(string query)
+        {
+            int count = await db.Database.ExecuteSqlCommandAsync(query);
+            if (count > 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
     }
 }

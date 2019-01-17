@@ -117,12 +117,14 @@ namespace RemsNG.Dao
 
         public async Task<object> ByWardpaginated(Guid wardId, Models.PageModel pageModel)
         {
-           var results = await db.Streets.Where(x => x.wardId == wardId).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToListAsync();
-            var totalCount = await db.Streets.CountAsync();
+           var results = await db.Streets.Where(x => x.wardId == wardId)
+                .Skip((pageModel.PageNum - 1) * pageModel.PageSize)
+                .Take(pageModel.PageSize).ToListAsync();
+            var totalCount = await db.Streets.Where(x => x.wardId == wardId).CountAsync();
             return new
             {
                 data = results,
-                totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
+                totalPageCount = totalCount//(totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
             };
         }
 

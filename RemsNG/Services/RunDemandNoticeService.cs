@@ -163,20 +163,16 @@ namespace RemsNG.Services
 
                                 if (response1.code == MsgCode_Enum.SUCCESS)
                                 {
+                                    if (demandNoticeRequest.RunArrears)
+                                    {
+                                        await RunArrears(dntd, dntd.billingNumber);
+                                    }
+
                                     if (demandNoticeRequest.RunPenalty)
                                     {
                                         await RunTaxpayerPenalty(tm.id, dntd.billingNumber, dntd.billingYr);
                                     }
                                     dntd.billingNumber = response1.data.ToString().Trim();
-                                    //run arrears 
-                                    if (demandNoticeRequest.RunArrears)
-                                    {
-                                        await RunArrears(dntd);
-                                    }
-                                    else
-                                    {
-                                        await RunArrears2(dntd);
-                                    }
 
                                     await RunDemandNoticeItem(dntd); //run items
                                 }
@@ -396,64 +392,7 @@ namespace RemsNG.Services
             }
         }
 
-        public async Task TaxpayerPenalty()
-        {
-            // scan through demandnoticeitem() check the year/penalty duration compare, if passed then create penalty
-
-            //List<DemandNoticeItem> demandNoticeItem = await demandNoticePenaltyDao.OverDueDemandNotice();
-
-            //string query = string.Empty;
-            //string ids = string.Empty;
-            //foreach (var tm in demandNoticeItem)
-            //{
-            //    DateTime dt = tm.dateCreated.Value;
-            //    DateTime startDuration = new DateTime(dt.Year, dt.Month, dt.Day);
-            //    List<string> lstOfdurations = CommonList.CurrentDurations(startDuration);
-
-            //    if (!lstOfdurations.Contains(tm.duration))
-            //    {
-            //        continue;
-            //    }
-
-            //    ids = ids + $"{tm.id}|";
-            //    // add to demand notice penalty
-            //    DemandNoticeItemPenalty dnp = new DemandNoticeItemPenalty()
-            //    {
-            //        billingNo = tm.billingNo,
-            //        amountPaid = 0,
-            //        billingYr = tm.billingYr,
-            //        itemId = tm.itemId,
-            //        itemPenaltyStatus = DemandNoticeStatus.PENDING.ToString(),
-            //        originatedYear = tm.billingYr,
-            //        taxpayerId = tm.taxpayerId,
-            //        totalAmount = tm.penaltyAmount.Value
-            //    };
-            //    query = query + demandNoticePenaltyDao.AddQuery(dnp);
-            //}
-
-            //if (!string.IsNullOrEmpty(query))
-            //{
-            //    try
-            //    {
-            //        Response response = demandNoticePenaltyDao.RunQuery(query);
-            //        if (response.code == MsgCode_Enum.SUCCESS)
-            //        {
-            //            logger.LogInformation($"Ids: {ids}, description: {response.description}");
-            //        }
-            //        else
-            //        {
-            //            logger.LogError($"Ids: {ids}, description: {response.description}");
-            //        }
-            //    }
-            //    catch (Exception x)
-            //    {
-            //        logger.LogError(x.Message);
-            //    }
-            //}
-
-        }
-
-        private async Task RunArrears(DemandNoticeTaxpayersDetail dntd)
+        private async Task RunArrears1(DemandNoticeTaxpayersDetail dntd)
         {
             DN_ArrearsModel dN_ArrearsModel = new DN_ArrearsModel()
             {
@@ -494,7 +433,7 @@ namespace RemsNG.Services
                 bool result = await errorDao.Add(error);
             }
 
-            await MovedUnpaidPenalty(dN_ArrearsModel);
+            // await MovedUnpaidPenalty(dN_ArrearsModel);
         }
 
         private async Task RunArrears2(DemandNoticeTaxpayersDetail dntd)
@@ -537,6 +476,41 @@ namespace RemsNG.Services
                 };
                 bool result = await errorDao.Add(error);
             }
+        }
+
+        private async Task<bool> RunArrears(DemandNoticeTaxpayersDetail dntd, string billNumber)
+        {
+            List<DemandNoticeItem> items = await demandNoticeItemDao.UnpaidBillsByTaxpayerId(dntd.taxpayerId, billNumber);
+            if (items.Count > 0)
+            {
+                string query = string.Empty;
+                foreach (var item in items)
+                {
+                    DemandNoticeArrears dna = new DemandNoticeArrears()
+                    {
+                        amountPaid = item.amountPaid,
+                        arrearsStatus = DemandNoticeStatus.PENDING.ToString(),
+                        billingNo = billNumber,
+                        billingYr = dntd.billingYr,
+                        createdBy = "Application",
+                        id = Guid.NewGuid(),
+                        itemId = item.id,
+                        originatedYear = item.billingYr,
+                        taxpayerId = item.taxpayerId,
+                        totalAmount = item.itemAmount
+                    };
+                    query = query + demandNoticeArrearDao.AddQuery(dna);
+                    query = query + $"update tbl_demandNoticeItem set itemStatus='MOVE_TO_ARREARS' where id='{item.id}';";
+                    query = query + $"update tbl_demandNoticeArrears set billingNo = '{billNumber}' " +
+                        $"where (taxpayerId = '{item.taxpayerId}' or billingNo='{item.billingNo}' ) and arrearsStatus in ('PENDING','PART_PAYMENT')";
+                }
+
+                if (!string.IsNullOrEmpty(query))
+                {
+                    return await demandNoticeArrearDao.AddArrears(query);
+                }
+            }
+            return false;
         }
 
         private async Task MovedUnpaidPenalty(DN_ArrearsModel dN_ArrearsModel)
@@ -588,58 +562,6 @@ namespace RemsNG.Services
                     if (!result)
                     {
                         logger.LogError("no record(s)");
-                    }
-                }
-            }
-        }
-
-        public async Task RunTaxpayerPenalty(Guid[] taxpayerIds)
-        {
-            var recievables = await demandNoticeTaxpayersDao.GetAllReceivables(taxpayerIds);// unpaid taxpayer
-
-            if (recievables.Length > 0)
-            {
-                var currentDues = await _admService.ByBillingNo(recievables.Select(x => x.billingNumber).ToArray()); // all current due amount of taxpayers
-                string query = string.Empty;
-                foreach (var tm in recievables)
-                {
-                    var res = currentDues.Where(x => x.billingNo == tm.billingNumber);
-                    decimal sumitem = res.Sum(x => x.itemAmount);
-                    decimal sumAmtPaid = res.Sum(x => x.amountPaid);
-                    var amountRemaining = currentDues.Where(x => x.billingNo == tm.billingNumber).Sum(x => (x.itemAmount - x.amountPaid));
-                    if (amountRemaining > 0)
-                    {
-                        DemandNoticeItemPenalty dnp = new DemandNoticeItemPenalty()
-                        {
-                            billingNo = tm.billingNumber,
-                            amountPaid = 0,
-                            billingYr = tm.billingYr,
-                            itemId = Guid.Empty,
-                            itemPenaltyStatus = DemandNoticeStatus.PENDING.ToString(),
-                            originatedYear = tm.billingYr,
-                            taxpayerId = tm.taxpayerId,
-                            totalAmount = amountRemaining * (decimal)(0.1)
-                        };
-                        query = query + demandNoticePenaltyDao.AddQuery(dnp);
-                    }
-                }
-                if (!string.IsNullOrEmpty(query))
-                {
-                    try
-                    {
-                        Response response = demandNoticePenaltyDao.RunQuery(query);
-                        if (response.code == MsgCode_Enum.SUCCESS)
-                        {
-                            logger.LogInformation("Error running penalty " + response.description);
-                        }
-                        else
-                        {
-                            logger.LogInformation("Error running penalty " + response.description);
-                        }
-                    }
-                    catch (Exception x)
-                    {
-                        logger.LogError(x.Message);
                     }
                 }
             }

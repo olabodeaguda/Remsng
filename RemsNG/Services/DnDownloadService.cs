@@ -53,6 +53,8 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("LCDA_STATE", dnrp.lcdaState);
             htmlContent = htmlContent.Replace("LAGOSLOGO", $"{rootUrl}/images/lagoslogo.jpg");
             htmlContent = htmlContent.Replace("LCDA_LOGO", $"{rootUrl}/images/{dnrp.lcdaLogoFileName}");
+            htmlContent = htmlContent.Replace("BKIMAGE", $"{rootUrl}/templates/lagoslogo.jpeg");
+
             htmlContent = htmlContent.Replace("BILL_NO", $"{(sector != null ? sector.prefix : "")}{dnrp.billingNumber}");
             htmlContent = htmlContent.Replace("PAYER_NAME", dnrp.taxpayersName);
             htmlContent = htmlContent.Replace("PAYER_ADDRESS", dnrp.addressName);
@@ -146,7 +148,8 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("LCDA_STATE", dnrp.lcdaState);
             htmlContent = htmlContent.Replace("LAGOSLOGO", $"{rootUrl}/images/lagoslogo.jpg");
             htmlContent = htmlContent.Replace("LCDA_LOGO", $"{rootUrl}/images/{dnrp.lcdaLogoFileName}");
-            htmlContent = htmlContent.Replace("dated", DateTime.Now.ToString("dd-MM-yyyy HH:mm"));
+            htmlContent = htmlContent.Replace("dated", DateTime.Now.ToString("dd-MM-yyyy HH:mm"));//./templates/lcdaLogo.jpeg
+            htmlContent = htmlContent.Replace("BKIMAGE", $"{rootUrl}/templates/lcdaLogo.jpeg");
 
             if (dnrp.billingNumber.Length < 5)
             {
@@ -196,6 +199,7 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("CHARGES", String.Format("{0:n}", decimal.Round(dnrp.charges, 2)));
             decimal amountPaid = 0;
             List<DemandNoticePaymentHistory> dnpHistory = await dNPaymentHistoryService.ByBillingNumber(billingno);
+            dnpHistory = dnpHistory.Where(x => x.paymentStatus == "APPROVED").ToList();
             if (dnpHistory.Count > 0)
             {
                 amountPaid = decimal.Round(dnpHistory.Sum(x => x.amount), 2);
