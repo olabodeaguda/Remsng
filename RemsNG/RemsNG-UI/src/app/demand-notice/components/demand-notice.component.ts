@@ -49,14 +49,7 @@ export class DemandNoticeComponent implements OnInit {
 
     ngOnInit(): void {
         this.yrLst = this.appsettings.getYearList();
-
         this.getDemandNotice();
-        // setInterval(() => {
-        //     const currentUrl = this.router.url;
-        //     if (currentUrl === '/demandnotice') {
-        //     this.getDemandNotice2();
-        //     }
-        // }, 30000);
         this.getWards();
     }
     openConstraint() {
@@ -102,6 +95,9 @@ export class DemandNoticeComponent implements OnInit {
             this.toasterService.pop('error', 'Error', 'Billing year is required')
             return;
         }
+        if (this.searchModel.runArrearsCategory > 0) {
+            this.searchModel.runArrears = true;
+        }
 
         this.searchModel.isProcessingRequest = true;
         this.demandnoticeservice.add(this.searchModel).subscribe(
@@ -111,6 +107,7 @@ export class DemandNoticeComponent implements OnInit {
                 if (response.code === '00') {
                     this.toasterService.pop('success', 'Success', response.description);
                     this.getDemandNotice();
+                    this.searchModel = new DemandNoticeSearch();
                 } else {
                     this.toasterService.pop('error', 'Error', response.description);
                 }

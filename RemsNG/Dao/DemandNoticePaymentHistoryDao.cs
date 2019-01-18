@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using RemsNG.Models;
+using RemsNG.ORM;
+using RemsNG.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using RemsNG.ORM;
-using RemsNG.Models;
-using Microsoft.EntityFrameworkCore;
-using RemsNG.Utilities;
 
 namespace RemsNG.Dao
 {
@@ -131,7 +131,7 @@ namespace RemsNG.Dao
         {
             string query = "select dnph.*,bank.bankName from tbl_demandNoticePaymentHistory as dnph " +
                 $"inner join tbl_bank bank on bank.id = dnph.bankId where dnph.id = '{id}'";
-            
+
             return await db.DemandNoticePaymentHistories.FromSql(query).FirstOrDefaultAsync();
         }
 
@@ -153,5 +153,18 @@ namespace RemsNG.Dao
             };
         }
 
+        public async Task<List<DemandNoticePaymentHistory>> ApprovedPaymentHistory(Guid ownerId, int currentYr)
+        {
+            string query = $"select tbl_demandNoticePaymentHistory.*,bank.bankName from tbl_demandNoticePaymentHistory " +
+                $"inner join tbl_bank bank on bank.id = tbl_demandNoticePaymentHistory.bankId " +
+                $"inner join tbl_demandNoticeTaxpayers on tbl_demandNoticeTaxpayers.taxpayerId = tbl_demandNoticePaymentHistory.ownerId " +
+                $"where tbl_demandNoticePaymentHistory.ownerId = '{ownerId}' and tbl_demandNoticeTaxpayers.billingYr = {currentYr} " +
+                $"and paymentStatus = 'APPROVED'";
+            var result = await db.DemandNoticePaymentHistories.FromSql(query).ToListAsync();
+            return result
+                .GroupBy(x => x.id)
+                .Select(p => p.First())
+                .ToList();
+        }
     }
 }

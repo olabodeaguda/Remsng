@@ -9,6 +9,7 @@ export class DemandNoticeSearch {
     billingNo: string = '';
     isClosedData: boolean = false;
     runArrears: boolean = false;
+    runArrearsCategory: number = -1;
     isUnbilled: boolean = false;
     runPenalty: boolean = false;
 }

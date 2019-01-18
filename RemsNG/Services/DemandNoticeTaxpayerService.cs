@@ -13,6 +13,7 @@ namespace RemsNG.Services
 {
     public class DemandNoticeTaxpayerService : IDemandNoticeTaxpayerService
     {
+        private readonly DemandNoticePaymentHistoryDao _dphDao;
         private DemandNoticeTaxpayersDao dntDao;
         private IDemandNoticeItemService dnItemService;
         private DemandNoticeArrearDao dna;
@@ -31,6 +32,7 @@ namespace RemsNG.Services
             IDemandNoticeCharges _chargesService, ILcdaService _lcdaService, IDNAmountDueMgtService admService)
         {
             dntDao = new DemandNoticeTaxpayersDao(_db);
+            _dphDao = new DemandNoticePaymentHistoryDao(_db);
             dnItemService = _dnItemService;
             dna = new DemandNoticeArrearDao(_db);
             dnp = new DemandNoticePenaltyDao(_db);
@@ -107,12 +109,14 @@ namespace RemsNG.Services
 
                 var penalties = await dnp.ByTaxpayerId(dnrm.taxpayerId);
 
-                dnrm.penalty = penalties.Sum(x => (x.totalAmount));
+                dnrm.penalty = penalties.Sum(x => (x.totalAmount - x.amountPaid));
                 dnrm.amountPaid = dnrm.amountPaid + penalties.Sum(x => x.amountPaid);
 
                 var arrears = await dna.ByBillingNumber(billingNo);
-                dnrm.arrears = arrears.Sum(x => (x.totalAmount));
-                dnrm.amountPaid = dnrm.amountPaid + arrears.Sum(x => x.amountPaid);
+                dnrm.arrears = arrears.Sum(x => (x.totalAmount - x.amountPaid));
+                var amtDue = await _dphDao.ByBillingNumber(billingNo);
+
+                dnrm.amountPaid = amtDue.Sum(x => x.amount);//dnrm.amountPaid + arrears.Sum(x => x.amountPaid);
 
                 LcdaProperty isEnablePayment = ls.FirstOrDefault(x =>
                 x.propertyKey == "ALLOW_PAYMENT_SERVICES" && x.propertyStatus == "ACTIVE");

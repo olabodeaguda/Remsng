@@ -17,25 +17,7 @@ namespace RemsNG.Dao
         public async Task<List<DNAmountDueModel>> ByBillingNo(string billingno)
         {
             var result = await db.DNAmountDueModels.FromSql("sp_getBillingNumberTotalDue @p0", new object[] { billingno }).ToListAsync();
-            List<DNAmountDueModel> lst = new List<DNAmountDueModel>();
-
-            foreach (var tm in result)
-            {
-                if (tm.category != "ARREARS")
-                {
-                    lst.Add(tm);
-                }
-                else
-                {
-                    var res = lst.FirstOrDefault(x => x.billingNo == tm.billingNo && tm.category == "ARREARS");
-                    if (res == null)
-                    {
-                        lst.Add(tm);
-                    }
-                }
-            }
-
-            return lst;
+            return result;
         }
 
 
@@ -71,7 +53,7 @@ namespace RemsNG.Dao
                 }
                 else
                 {
-                    var res = lst.FirstOrDefault(x => x.billingNo == tm.billingNo && tm.category == "ARREARS");
+                    var res = lst.FirstOrDefault(x => x.billingNo == tm.billingNo && tm.category == "ARREARS" && x.itemAmount == tm.itemAmount);
                     if (res == null)
                     {
                         lst.Add(tm);

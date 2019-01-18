@@ -51,13 +51,20 @@ namespace RemsNG.Dao
             return lstdbItem;
         }
 
-        public async Task<List<DemandNoticeItem>> UnpaidBillsByTaxpayerId(Guid taxpayerId, string billNumber)
+        public async Task<List<DemandNoticeItem>> UnpaidBillsByTaxpayerId(Guid taxpayerId, string billNumber, int billingYr)
         {
-            string query = $"select tbl_demandNoticeItem.*,0.0 as penaltyAmount,'nil' as duration,-1 " +
-                    $" as billingYr from tbl_demandNoticeItem " +
-                    $"where id not in (select itemId from tbl_demandNoticeArrears where taxpayerId = '{taxpayerId}')  " +
-                    $"and billingNo <> '{billNumber}' " +
-                    $"and itemStatus in ('PENDING','PART_PAYMENT') and taxpayerId = '{taxpayerId}'";
+            string query = $"select tbl_demandNoticeItem.*,0.0 as penaltyAmount,'nil' as duration,billingYr as billingYr from tbl_demandNoticeItem " +
+                $"inner join tbl_demandNoticeTaxpayers on tbl_demandNoticeTaxpayers.taxpayerId = tbl_demandNoticeItem.taxpayerId " +
+                $"where billingYr={billingYr} and itemStatus in ('PENDING','PART_PAYMENT') " +
+                $"and tbl_demandNoticeItem.taxpayerId = '{taxpayerId}' and billingNo <> '{billNumber}'";
+
+
+            //string query1 = $"select tbl_demandNoticeItem.*,0.0 as penaltyAmount,'nil' as duration,-1 " +
+            //        $" as billingYr from tbl_demandNoticeItem " +
+            //        $"where id not in (select itemId from tbl_demandNoticeArrears where taxpayerId = '{taxpayerId}')  " +
+            //        $"and billingNo <> '{billNumber}' " +
+            //        $"and itemStatus in ('PENDING','PART_PAYMENT') and taxpayerId = '{taxpayerId}'";
+
             List<DemandNoticeItem> lstdbItem = await db.DemandNoticeItems.
                     FromSql(query).ToListAsync();
             return lstdbItem;

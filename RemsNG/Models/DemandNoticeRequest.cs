@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace RemsNG.Models
 {
@@ -25,6 +22,7 @@ namespace RemsNG.Models
         public bool isUnbilled { get; set; }
 
         public bool RunPenalty { get; set; } = false;
+        public int RunArrearsCategory { get; set; }
     }
 }
 

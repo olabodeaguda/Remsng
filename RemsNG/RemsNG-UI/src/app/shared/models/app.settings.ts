@@ -44,7 +44,7 @@ export class AppSettings {
         const nm: number = new Date().getFullYear();
         let s: number[] = [];
 
-        for (let i: number = (nm + 1); i >= initalNum; i--) {
+        for (let i: number = (nm); i >= initalNum; i--) {
             s.push(i);
         }
         return s;

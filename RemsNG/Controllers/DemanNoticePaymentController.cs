@@ -186,6 +186,7 @@ namespace RemsNG.Controllers
             }
 
             query = query + $"update tbl_demandNoticeTaxpayers set isUnbilled= 0 where billingNumber = '{dnph.billingNumber}' ";
+           
 
             if (!string.IsNullOrEmpty(query))
             {

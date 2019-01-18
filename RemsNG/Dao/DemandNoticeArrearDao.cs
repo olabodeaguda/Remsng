@@ -162,17 +162,26 @@ namespace RemsNG.Dao
         public async Task<List<DemandNoticeArrears>> ByBillingNumber(string billingno)
         {
             List<DemandNoticeArrears> lstdbItem = await db.DemandNoticeArrearss
-                .FromSql($"select tbl_demandNoticeArrears.*, 0 as billingYr from tbl_demandNoticeArrears where billingNo = {billingno}").ToListAsync();
+                .FromSql($"select tbl_demandNoticeArrears.*, 0 as billingYr from tbl_demandNoticeArrears " +
+                $"where billingNo = '{billingno}'  and arrearsStatus in ('PENDING','PART_PAYMENT')").ToListAsync();
             List<DemandNoticeArrears> lst = new List<DemandNoticeArrears>();
             foreach (var tm in lstdbItem)
             {
-                var t = lst.FirstOrDefault(x => x.billingNo == tm.billingNo);
+                var t = lst.FirstOrDefault(x => x.billingNo == tm.billingNo && x.totalAmount == tm.totalAmount);
                 if (t == null)
                 {
                     lst.Add(tm);
                 }
             }
             return lst;
+        }
+
+        public async Task<List<DemandNoticeArrears>> ByTaxpayer(Guid taxpayerId)
+        {
+            string query = $"select tbl_demandNoticeArrears.*, 0 as billingYr " +
+                $"from tbl_demandNoticeArrears where taxpayerId = '{taxpayerId}' and arrearsStatus in ('PENDING','PART_PAYMENT')";
+
+            return await db.DemandNoticeArrearss.FromSql(query).ToListAsync();
         }
 
         public string AddQuery(DemandNoticeArrears dna)

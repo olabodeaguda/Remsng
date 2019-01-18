@@ -19,7 +19,8 @@ namespace RemsNG.Services
 {
     public class RunDemandNoticeService : IRunDemandNoticeService
     {
-        private IDNAmountDueMgtService _admService;
+        private readonly DemandNoticePaymentHistoryDao _dnpHisotryDao;
+        private readonly IDNAmountDueMgtService _admService;
         private readonly TaxpayerDao taxpayerDao;
         private readonly DemandNoticeDao demandNoticeDao;
         private readonly DemandNoticeTaxpayersDao demandNoticeTaxpayersDao;
@@ -55,7 +56,8 @@ namespace RemsNG.Services
             IListPropertyService _listPropertyService,
             IHttpContextAccessor _httpContextAccessor,
             INodeServices _nodeServices, IHostingEnvironment _hostingEnvironment,
-            IServiceProvider _serviceProvider, IDNAmountDueMgtService dNAmountDueMgtService)
+            IServiceProvider _serviceProvider,
+            IDNAmountDueMgtService dNAmountDueMgtService)
         {
             logger = loggerFactory.CreateLogger("Demand Notice Jobs");
             nodeServices = _nodeServices;
@@ -82,6 +84,7 @@ namespace RemsNG.Services
             httpContextAccessor = _httpContextAccessor;
             taxpayerService = _taxpayerService;
             _admService = dNAmountDueMgtService;
+            _dnpHisotryDao = new DemandNoticePaymentHistoryDao(_db);
         }
 
         public async Task RegisterTaxpayer()
@@ -163,16 +166,16 @@ namespace RemsNG.Services
 
                                 if (response1.code == MsgCode_Enum.SUCCESS)
                                 {
+                                    dntd.billingNumber = response1.data.ToString().Trim();
                                     if (demandNoticeRequest.RunArrears)
                                     {
-                                        await RunArrears(dntd, dntd.billingNumber);
+                                        await RunArrears(dntd, dntd.billingNumber, demandNoticeRequest.RunArrearsCategory);
                                     }
 
                                     if (demandNoticeRequest.RunPenalty)
                                     {
                                         await RunTaxpayerPenalty(tm.id, dntd.billingNumber, dntd.billingYr);
                                     }
-                                    dntd.billingNumber = response1.data.ToString().Trim();
 
                                     await RunDemandNoticeItem(dntd); //run items
                                 }
@@ -478,39 +481,69 @@ namespace RemsNG.Services
             }
         }
 
-        private async Task<bool> RunArrears(DemandNoticeTaxpayersDetail dntd, string billNumber)
+        private async Task<bool> RunArrears(DemandNoticeTaxpayersDetail dntd, string billNumber, int arrearCategory)
         {
-            List<DemandNoticeItem> items = await demandNoticeItemDao.UnpaidBillsByTaxpayerId(dntd.taxpayerId, billNumber);
-            if (items.Count > 0)
+            int billingYr = arrearCategory > 3 ? dntd.billingYr - 1 : dntd.billingYr;
+            try
             {
-                string query = string.Empty;
-                foreach (var item in items)
-                {
-                    DemandNoticeArrears dna = new DemandNoticeArrears()
-                    {
-                        amountPaid = item.amountPaid,
-                        arrearsStatus = DemandNoticeStatus.PENDING.ToString(),
-                        billingNo = billNumber,
-                        billingYr = dntd.billingYr,
-                        createdBy = "Application",
-                        id = Guid.NewGuid(),
-                        itemId = item.id,
-                        originatedYear = item.billingYr,
-                        taxpayerId = item.taxpayerId,
-                        totalAmount = item.itemAmount
-                    };
-                    query = query + demandNoticeArrearDao.AddQuery(dna);
-                    query = query + $"update tbl_demandNoticeItem set itemStatus='MOVE_TO_ARREARS' where id='{item.id}';";
-                    query = query + $"update tbl_demandNoticeArrears set billingNo = '{billNumber}' " +
-                        $"where (taxpayerId = '{item.taxpayerId}' or billingNo='{item.billingNo}' ) and arrearsStatus in ('PENDING','PART_PAYMENT')";
-                }
 
-                if (!string.IsNullOrEmpty(query))
+                List<DemandNoticeItem> items = await demandNoticeItemDao.UnpaidBillsByTaxpayerId(dntd.taxpayerId, billNumber, billingYr);
+                if (items.Count > 0)
                 {
-                    return await demandNoticeArrearDao.AddArrears(query);
+                    string oldBillnumber = items.FirstOrDefault().billingNo;
+                    List<DemandNoticePaymentHistory> payments = await _dnpHisotryDao.ApprovedPaymentHistory(dntd.taxpayerId, billingYr);
+                    var arrears = await demandNoticeArrearDao.ByTaxpayer(dntd.taxpayerId);
+
+                    decimal amountDue = items.Sum(x => x.itemAmount) + arrears.Sum(x => x.totalAmount)
+                         - payments.Sum(x => x.amount);
+
+                    if (amountDue > 0)
+                    {
+                        DemandNoticeArrears dna = new DemandNoticeArrears()
+                        {
+                            amountPaid = payments.Sum(x => x.amount),
+                            arrearsStatus = DemandNoticeStatus.PENDING.ToString(),
+                            billingNo = billNumber,
+                            billingYr = dntd.billingYr,
+                            createdBy = "Application",
+                            id = Guid.NewGuid(),
+                            itemId = dntd.taxpayerId,
+                            originatedYear = billingYr,
+                            taxpayerId = dntd.taxpayerId,
+                            totalAmount = amountDue
+                        };
+
+                        string query = string.Empty;
+                        query = query + demandNoticeArrearDao.AddQuery(dna);
+                        string itemQ = items.Select(x => x.id.ToString()).ToArray().FormatString();
+                        if (!string.IsNullOrEmpty(itemQ))
+                        {
+                            query = query + $"update tbl_demandNoticeItem set itemStatus='MOVE_TO_ARREARS' " +
+                                        $"where id in ({itemQ});";
+                        }
+
+                        if (arrears.Count > 0)
+                        {
+                            string arrearsQ = arrears.Select(x => x.id.ToString()).ToArray().FormatString();
+                            query = query + $"update tbl_demandNoticeArrears set arrearsStatus = 'MOVED' " +
+                                              $"where id in ({arrearsQ});";
+                        }
+
+                        query = query + $"update tbl_demandNoticeTaxpayers set demandNoticeStatus = 'CLOSED' where billingNumber = '{oldBillnumber}'";
+
+                        if (!string.IsNullOrEmpty(query))
+                        {
+                            return await demandNoticeArrearDao.AddArrears(query);
+                        }
+                    }
                 }
+                return true;
             }
-            return false;
+            catch (Exception)
+            {
+                return false;
+            }
+
         }
 
         private async Task MovedUnpaidPenalty(DN_ArrearsModel dN_ArrearsModel)
