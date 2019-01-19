@@ -26,9 +26,9 @@ namespace RemsNG.Dao
             string bnos = bills.FormatString();
 
             string query = $"select dn.id,dn.totalAmount as itemAmount,dn.amountPaid,dn.arrearsStatus as itemStatus, " +
-                $"tm.itemDescription,'ARREARS' as category,dn.itemId, dn.billingNo " +
+                $"'description' as itemDescription,'ARREARS' as category,dn.itemId, dn.billingNo " +
                 $"from tbl_demandNoticeArrears as dn " +
-                $"inner join tbl_item as tm on tm.id = dn.itemId " +
+                //$"inner join tbl_item as tm on tm.id = dn.itemId " +
                 $"where dn.billingNo in ({bnos})  and dn.arrearsStatus in ('PART_PAYMENT','PENDING')" +
                 $"union " +
                 $"select dn.id,dn.totalAmount,dn.amountPaid,dn.itemPenaltyStatus as itemStatus, " +
@@ -42,26 +42,7 @@ namespace RemsNG.Dao
                 $"from tbl_demandNoticeItem as dn " +
                 $"inner join tbl_item as tm on tm.id = dn.itemId " +
                 $"where billingNo in ({bnos})  and dn.itemStatus in ('PART_PAYMENT','PENDING')";
-            var result = await db.DNAmountDueModels.FromSql(query).ToListAsync();
-            List<DNAmountDueModel> lst = new List<DNAmountDueModel>();
-
-            foreach (var tm in result)
-            {
-                if (tm.category != "ARREARS")
-                {
-                    lst.Add(tm);
-                }
-                else
-                {
-                    var res = lst.FirstOrDefault(x => x.billingNo == tm.billingNo && tm.category == "ARREARS" && x.itemAmount == tm.itemAmount);
-                    if (res == null)
-                    {
-                        lst.Add(tm);
-                    }
-                }
-            }
-
-            return lst;
+            return await db.DNAmountDueModels.FromSql(query).ToListAsync();
         }
 
         public async Task<Response> UpdateAmount(DNAmountDueModel dnamount)

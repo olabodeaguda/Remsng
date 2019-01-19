@@ -239,5 +239,35 @@ namespace RemsNG.Dao
             string query = $"update tbl_taxPayer set taxpayerStatus = '{status}' where id = '{id}'";
             return await db.Database.ExecuteSqlCommandAsync(query);
         }
+
+        public async Task<List<TaxpayerExtension>> SearchInStreet(Guid streetid, string queryParams)
+        {
+            string[] str = queryParams.Split(new char[] { ' ' });
+            string query = string.Empty;
+
+            for (int i = 0; i < str.Length; i++)
+            {
+                query = query + $"select tbl_taxPayer.*,tbl_company.companyName as companyName, " +
+                  $" tbl_Address.addressnumber as streetNumber,0 as totalSize from tbl_taxPayer " +
+                  $"inner join tbl_address on tbl_address.ownerId = tbl_taxPayer.id " +
+                  $"inner join tbl_company on tbl_company.id = tbl_taxPayer.companyId " +
+                  $"inner join tbl_street on tbl_street.id = tbl_taxPayer.streetId " +
+                  $"where (tbl_taxPayer.firstname like '%{str[i]}%' or tbl_taxPayer.lastname like '%{str[i]}%' " +
+                  $"or tbl_taxPayer.surname like '%{str[i]}%') and tbl_street.id = '{streetid}' ";
+
+                if (i < (str.Length - 1))
+                {
+                    query = query + " union ";
+                }
+            }
+            var results = await db.TaxpayerExtensions.FromSql(query).ToListAsync();
+
+            var re = results
+                .GroupBy(x => x.id)
+                .Select(p => p.FirstOrDefault())
+                .ToList();
+
+            return re;
+        }
     }
 }

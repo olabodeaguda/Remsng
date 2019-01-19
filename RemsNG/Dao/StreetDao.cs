@@ -15,7 +15,7 @@ namespace RemsNG.Dao
         private readonly ILogger logger;
         public StreetDao(RemsDbContext _db, ILoggerFactory loggerFactory) : base(_db)
         {
-            this.logger = loggerFactory.CreateLogger("LCDA Dao");
+            logger = loggerFactory.CreateLogger("LCDA Dao");
         }
 
         public StreetDao(RemsDbContext _db) : base(_db)
@@ -112,14 +112,14 @@ namespace RemsNG.Dao
 
         public async Task<List<Street>> ByWard(Guid wardId)
         {
-            return await db.Streets.Where(x => x.wardId == wardId).OrderBy(x=>x.streetName).ToListAsync();
+            return await db.Streets.Where(x => x.wardId == wardId).OrderBy(x => x.streetName).ToListAsync();
         }
 
         public async Task<object> ByWardpaginated(Guid wardId, Models.PageModel pageModel)
         {
-           var results = await db.Streets.Where(x => x.wardId == wardId)
-                .Skip((pageModel.PageNum - 1) * pageModel.PageSize)
-                .Take(pageModel.PageSize).ToListAsync();
+            var results = await db.Streets.Where(x => x.wardId == wardId)
+                 .Skip((pageModel.PageNum - 1) * pageModel.PageSize)
+                 .Take(pageModel.PageSize).ToListAsync();
             var totalCount = await db.Streets.Where(x => x.wardId == wardId).CountAsync();
             return new
             {
@@ -135,7 +135,7 @@ namespace RemsNG.Dao
 
         public async Task<List<Street>> ByLcda(Guid lcdaId)
         {
-            return await db.Streets.FromSql("sp_streetbyLcda @p0",new object[] { lcdaId }).ToListAsync();
+            return await db.Streets.FromSql("sp_streetbyLcda @p0", new object[] { lcdaId }).ToListAsync();
         }
 
         public async Task<Domain> GetDomain(Guid streetId)
@@ -147,6 +147,11 @@ namespace RemsNG.Dao
                 $" where tbl_street.id = '{streetId}'";
 
             return await db.Domains.FromSql(query).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<Street>> SearchStreet(Guid wardId, string searchName)
+        {
+            return await db.Streets.Where(x => x.wardId == wardId && x.streetName.Contains(searchName)).ToListAsync();
         }
     }
 }

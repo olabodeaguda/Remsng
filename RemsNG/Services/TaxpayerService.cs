@@ -101,5 +101,10 @@ namespace RemsNG.Services
             }
             return false;
         }
+
+        public async Task<List<TaxpayerExtension>> SearchInStreet(Guid streetId, string query)
+        {
+            return await taxpayerDao.SearchInStreet(streetId, query);
+        }
     }
 }

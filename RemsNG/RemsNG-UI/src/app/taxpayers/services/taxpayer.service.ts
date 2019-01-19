@@ -19,6 +19,12 @@ export class TaxpayerService {
             .catch(x => this.dataservice.handleError(x));
     }
 
+
+    searchInStreet(wardid: string, search: string) {
+        return this.dataservice.get(`taxpayer/searchinstreet/${wardid}?query=${search}`)
+            .catch(x => this.dataservice.handleError(x));
+    }
+
     byStreet(lcdaId: string, pageModel: PageModel) {
         this.dataservice.addToHeader('pageNum', pageModel.pageNum.toString());
         this.dataservice.addToHeader('pageSize', pageModel.pageSize.toString());

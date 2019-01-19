@@ -7,6 +7,7 @@ import { StreetModel } from "../models/street.model";
 import { PageModel } from "../../shared/models/page.model";
 import { ActivatedRoute } from '@angular/router';
 import { ResponseModel } from "../../shared/models/response.model";
+import { isNullOrUndefined } from 'util';
 declare var jQuery: any;
 
 @Component({
@@ -22,7 +23,7 @@ export class StreetComponent implements OnInit {
     pageModel: PageModel;
     @ViewChild('addModal') addModal: ElementRef;
     @ViewChild('changestatus') changestatusModal: ElementRef;
-
+    query;
     constructor(private activeRoute: ActivatedRoute,
         private streetservice: StreetService,
         private wardService: WardService, private toasterService: ToasterService) {
@@ -64,6 +65,25 @@ export class StreetComponent implements OnInit {
             } else {
                 this.pageModel.pageNum -= 1;
             }
+        }, error => {
+            this.isLoading = false;
+            this.toasterService.pop('error', 'Error', error);
+        })
+    }
+
+    searchQuery() {
+        if (this.wardmodel.id.length < 1) {
+            return;
+        }
+
+        if (isNullOrUndefined(this.query)) {
+            return
+        }
+
+        this.isLoading = true;
+        this.streetservice.search(this.wardmodel.id, this.query).subscribe(response => {
+            this.isLoading = false;
+            this.streetModels = Object.assign([], response);
         }, error => {
             this.isLoading = false;
             this.toasterService.pop('error', 'Error', error);

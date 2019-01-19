@@ -65,7 +65,7 @@ namespace RemsNG.Controllers
                     description = "Bad request"
                 });
             }
-            
+
             return await taxpayerService.Search(id, query);
         }
 
@@ -421,6 +421,26 @@ namespace RemsNG.Controllers
         public async Task<IActionResult> PaymentHistory(Guid id)
         {
             return Ok(await taxpayerService.PaymentHistory(id));
+        }
+        [Route("searchinstreet/{streetId}")]
+        [HttpGet]
+        public async Task<IActionResult> SearchInStreet(Guid streetId, string query)
+        {
+            if (streetId == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Bad request"
+                });
+            }
+
+            if (string.IsNullOrEmpty(query))
+            {
+                return Ok(await taxpayerService.ByStreetId(streetId));
+            }
+
+            return Ok(await taxpayerService.SearchInStreet(streetId, query));
         }
 
     }

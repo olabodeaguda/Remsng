@@ -21,5 +21,6 @@ namespace RemsNG.Services.Interfaces
         Task<List<TaxpayerExtension>> Search(Guid lcdaId, string qu);
         Task<List<DemandNoticePaymentHistory>> PaymentHistory(Guid id);
         Task<bool> Delete(Guid taxpayerId);
+        Task<List<TaxpayerExtension>> SearchInStreet(Guid streetId, string query);
     }
 }

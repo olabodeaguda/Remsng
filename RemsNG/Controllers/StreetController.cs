@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using RemsNG.Services.Interfaces;
-using RemsNG.ORM;
 using RemsNG.Models;
+using RemsNG.ORM;
+using RemsNG.Services.Interfaces;
 using RemsNG.Utilities;
+using System;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -163,7 +161,24 @@ namespace RemsNG.Controllers
             return Ok(response);
         }
 
+        [Route("search/{wardid}")]
+        [HttpGet]
+        public async Task<IActionResult> GetStreet(Guid wardid, [FromQuery] string query)
+        {
+            if (wardid == default(Guid))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "bad request"
+                });
+            }
+            if (string.IsNullOrEmpty(query))
+            {
+                return Ok(await streetService.ByWard(wardid));
+            }
 
-
+            return Ok(await streetService.Search(wardid, query));
+        }
     }
 }

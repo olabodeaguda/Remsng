@@ -14,24 +14,24 @@
                         <div class="form-group">
                             <label for="surname">Surname</label>
                             <input name="surname" type="text" class="form-control" [(ngModel)]="taxpayerModel.surname" />
-                        </div>  
+                        </div>
                         <div class="form-group">
                             <label for="firstname">First Name</label>
                             <input name="firstname" type="text" class="form-control" [(ngModel)]="taxpayerModel.firstname" />
-                        </div>  
+                        </div>
                         <div class="form-group">
                             <label for="lastname">Last Name</label>
                             <input name="lastname" type="text" class="form-control" [(ngModel)]="taxpayerModel.lastname" />
-                        </div>  
+                        </div>
                         <div class="form-group">
                             <label for="streetNumber">Address Number</label>
                             <input name="streetNumber" type="text" class="form-control" [(ngModel)]="taxpayerModel.streetNumber" />
-                        </div>                                             
+                        </div>
 
                         <div class="form-group">
                             <label for="companyId">Select Company</label>
                             <select id="companyId" name="lcdaId" class="form-control" [(ngModel)]="taxpayerModel.companyId">
-                                    <option>Select Company</option>
+                                <option>Select Company</option>
                                 <option *ngFor="let data of companies;" [ngValue]="data.id">{{data.companyName}}</option>
                             </select>
                         </div>
@@ -48,116 +48,132 @@
 
 
 <section class="content">
-<div class="wrapper hold-transition skin-blue fixed sidebar-mini">
-    <app-hd></app-hd>
-    <div class="content-wrapper">
-        <section class="content-header">
-            <h1>
-                Taxpayer Management
-                <small>Manage
-                    <b> {{streetModel?.streetName}}</b>.</small>
-            </h1>
-            <ol class="breadcrumb">
-                <li><a href="javascript:;"><i class="fa fa-dashboard"></i> Home</a></li>
-                <li><a [routerLink]="['/street',streetModel.wardId]">Streets</a></li>
-                <li class="active">Taxpayers</li>
-              </ol>
-        </section>
-        <div class="row">
-            <section class="content" style="border-style:thin">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="box">
-                            <div class="box-header">
-                                <h3 class="box-title"> {{streetModel?.streetName}} Taxpayers List</h3>
-                            </div>
-                            <div class="box-body">
-                                <p>
-                                    <button class="btn btn-primary" (click)="open('ADD',null)">
-                                        <i class="fa fa-plus"></i> Add</button>
-                                </p>
-                                <table id="example2" class="table table-bordered table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th style="width:120px;"></th>
-                                            <th style="width:50px;"></th>
-                                            <th>Taxpayers name</th>
-                                            <th>company Name</th>
-                                            <th>Status</th>
-                                            <th>Last Modified by</th>
-                                            <th>Last Modified Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr *ngFor="let data of taxpayers; let i=index">
-                                            <td>
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                        Action
-                                                        <span class="caret"></span>
-                                                    </button>
-                                                    <ul class="dropdown-menu">
-                                                        <li>
-                                                            <a href="javascript:;" (click)="open('EDIT',data)">
-                                                                <i class="fa fa-edit"></i>Edit
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="javascript:;" (click)="open('DELETE',data)">
-                                                                <i class="fa fa-remove"></i>Delete
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a [routerLink]="['/companyitem',streetModel.id,data.id]">
-                                                                <i class="fa fa-user"></i>
-                                                                Items</a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                            <td>{{(pageModel.pageSize*(pageModel.pageNum - 1))+(i+1)}}</td>
-                                            <td>{{data.surname}} {{data.firstname}} {{data.lastname}}</td>
-                                            <td>{{data.companyName}}</td>
-                                            <td>{{data.taxpayerStatus}}</td>
-                                            <td>{{data.lastmodifiedby?.length > 1? data.lastmodifiedby: data.createdBy}}</td>
-                                            <td>{{(data.lastModifiedDate?.length === '' ?data.lastModifiedDate :data.dateCreated)| date}}</td>
-                                        </tr>
-                                        <tr *ngIf="taxpayers.length < 1">
-                                            <td style="width:100%" colspan="9">No record !!!</td>
-                                        </tr>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td colspan="5">
-                                                <nav *ngIf="taxpayers.length > 0">
-                                                    <ul class="pagination">
-                                                        <li>
-                                                            <a aria-label="Previous" (click)="previous()">
-                                                                <span aria-hidden="true">Previous</span>
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a aria-label="Next" (click)="next()">
-                                                                <span aria-hidden="true">Next </span>
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <span aria-hidden="true">{{pageModel.pageNum}} of {{pageModel.totalPageCount}} </span>
-                                                        </li>
-                                                    </ul>
-                                                </nav>
-                                            </td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
+    <div class="wrapper hold-transition skin-blue fixed sidebar-mini">
+        <app-hd></app-hd>
+        <div class="content-wrapper">
+            <section class="content-header">
+                <h1>
+                    Taxpayer Management
+                    <small>Manage
+                        <b> {{streetModel?.streetName}}</b>.</small>
+                </h1>
+                <ol class="breadcrumb">
+                    <li><a href="javascript:;"><i class="fa fa-dashboard"></i> Home</a></li>
+                    <li><a [routerLink]="['/street',streetModel.wardId]">Streets</a></li>
+                    <li class="active">Taxpayers</li>
+                </ol>
+            </section>
+            <div class="row">
+                <section class="content" style="border-style:thin">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="box">
+                                <div class="box-header">
+                                    <h3 class="box-title"> {{streetModel?.streetName}} Taxpayers List</h3>
+                                </div>
+                                <div class="box-body">
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <button class="btn btn-primary" (click)="open('ADD',null)">
+                                                <i class="fa fa-plus"></i> Add</button>
+                                        </div>
+                                        <div class="col-sm-9 pull-right">
+                                            <div class="form-group col-md-3">
+                                                <label for="wardId">Enter query</label>
+                                                <input name="query" class="form-control" [(ngModel)]="query" />
+                                            </div>
+                                            <div class="col-md-3">
+                                                <br />
+                                                <button class="btn btn-primary" (click)="searchQuery()"> Search</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <table id="example2" class="table table-bordered table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:120px;"></th>
+                                                <th style="width:50px;"></th>
+                                                <th>Taxpayers name</th>
+                                                <th>company Name</th>
+                                                <th>Status</th>
+                                                <th>Last Modified by</th>
+                                                <th>Last Modified Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let data of taxpayers; let i=index">
+                                                <td>
+                                                    <div class="btn-group">
+                                                        <button type="button" class="btn btn-default dropdown-toggle"
+                                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            Action
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li>
+                                                                <a href="javascript:;" (click)="open('EDIT',data)">
+                                                                    <i class="fa fa-edit"></i>Edit
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a href="javascript:;" (click)="open('DELETE',data)">
+                                                                    <i class="fa fa-remove"></i>Delete
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a [routerLink]="['/companyitem',streetModel.id,data.id]">
+                                                                    <i class="fa fa-user"></i>
+                                                                    Items</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </td>
+                                                <td>{{(pageModel.pageSize*(pageModel.pageNum - 1))+(i+1)}}</td>
+                                                <td>{{data.surname}} {{data.firstname}} {{data.lastname}}</td>
+                                                <td>{{data.companyName}}</td>
+                                                <td>{{data.taxpayerStatus}}</td>
+                                                <td>{{data.lastmodifiedby?.length > 1? data.lastmodifiedby:
+                                                    data.createdBy}}</td>
+                                                <td>{{(data.lastModifiedDate?.length === '' ?data.lastModifiedDate
+                                                    :data.dateCreated)| date}}</td>
+                                            </tr>
+                                            <tr *ngIf="taxpayers.length < 1">
+                                                <td style="width:100%" colspan="9">No record !!!</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="5">
+                                                    <nav *ngIf="taxpayers.length > 0">
+                                                        <ul class="pagination">
+                                                            <li>
+                                                                <a aria-label="Previous" (click)="previous()">
+                                                                    <span aria-hidden="true">Previous</span>
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a aria-label="Next" (click)="next()">
+                                                                    <span aria-hidden="true">Next </span>
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <span aria-hidden="true">{{pageModel.pageNum}} of
+                                                                    {{pageModel.totalPageCount}} </span>
+                                                            </li>
+                                                        </ul>
+                                                    </nav>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </div>
     </div>
-</div>
 </section>
 <section class="content"></section>
 <ft></ft>

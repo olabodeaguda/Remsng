@@ -329,7 +329,8 @@ namespace RemsNG.Dao
             string ids = taxpayerIds.Select(x => x.ToString()).ToArray().FormatString();
 
             string query = $"select dnt.*,-1 as totalSize  from tbl_demandNoticeTaxpayers as dnt " +
-                $"where dnt.taxpayerId not in (select taxpayerId from tbl_demandNoticePenalty where itemPenaltyStatus != 'PAID' and taxpayerId in ({ids}) ) " +
+                $"where dnt.taxpayerId not in " +
+                $"(select taxpayerId from tbl_demandNoticePenalty where itemPenaltyStatus != 'PAID' and taxpayerId in ({ids}) ) " +
                 $"and dnt.demandNoticeStatus in ('PENDING','PART_PAYMENT') and taxpayerId in ({ids}) and dnt.billingYr = {DateTime.Now.Year - 1}";
 
             var results = await db.DemandNoticeTaxpayersDetails.FromSql(query).ToArrayAsync();

@@ -167,14 +167,14 @@ namespace RemsNG.Services
                                 if (response1.code == MsgCode_Enum.SUCCESS)
                                 {
                                     dntd.billingNumber = response1.data.ToString().Trim();
-                                    if (demandNoticeRequest.RunArrears)
-                                    {
-                                        await RunArrears(dntd, dntd.billingNumber, demandNoticeRequest.RunArrearsCategory);
-                                    }
-
                                     if (demandNoticeRequest.RunPenalty)
                                     {
                                         await RunTaxpayerPenalty(tm.id, dntd.billingNumber, dntd.billingYr);
+                                    }
+
+                                    if (demandNoticeRequest.RunArrears)
+                                    {
+                                        await RunArrears(dntd, dntd.billingNumber, demandNoticeRequest.RunArrearsCategory);
                                     }
 
                                     await RunDemandNoticeItem(dntd); //run items
@@ -486,15 +486,16 @@ namespace RemsNG.Services
             int billingYr = arrearCategory > 3 ? dntd.billingYr - 1 : dntd.billingYr;
             try
             {
-
                 List<DemandNoticeItem> items = await demandNoticeItemDao.UnpaidBillsByTaxpayerId(dntd.taxpayerId, billNumber, billingYr);
                 if (items.Count > 0)
                 {
                     string oldBillnumber = items.FirstOrDefault().billingNo;
                     List<DemandNoticePaymentHistory> payments = await _dnpHisotryDao.ApprovedPaymentHistory(dntd.taxpayerId, billingYr);
                     var arrears = await demandNoticeArrearDao.ByTaxpayer(dntd.taxpayerId);
+                    var penalty = await demandNoticePenaltyDao.ByTaxpayerId(dntd.taxpayerId, billingYr);
 
                     decimal amountDue = items.Sum(x => x.itemAmount) + arrears.Sum(x => x.totalAmount)
+                        + penalty.Sum(x => x.totalAmount)
                          - payments.Sum(x => x.amount);
 
                     if (amountDue > 0)
@@ -605,32 +606,34 @@ namespace RemsNG.Services
             Guid[] taxpayerIds = new Guid[] { taxpayerId };
             var recievables = await demandNoticeTaxpayersDao.GetAllReceivables(taxpayerIds);// unpaid taxpayer
 
-            if (recievables.Length > 0)
+            var recievable = recievables.FirstOrDefault();
+            List<DemandNoticeItem> items =
+                    await demandNoticeItemDao.UnpaidBillsByTaxpayerId(taxpayerId, billingNumber, billingYr - 1);
+            if (recievable != null && items.Count > 0)
             {
-                var currentDues = await _admService.ByBillingNo(recievables.Select(x => x.billingNumber).ToArray()); // all current due amount of taxpayers
+                List<DemandNoticePaymentHistory> payments = await _dnpHisotryDao.ApprovedPaymentHistory(taxpayerId, billingYr);
+                var arrears = await demandNoticeArrearDao.ByTaxpayer(taxpayerId);
+                decimal amountDue = items.Sum(x => x.itemAmount) + arrears.Sum(x => x.totalAmount)
+                     - payments.Sum(x => x.amount);
+
                 string query = string.Empty;
-                foreach (var tm in recievables)
+                if (amountDue > 0)
                 {
-                    var res = currentDues.Where(x => x.billingNo == tm.billingNumber);
-                    decimal sumitem = res.Sum(x => x.itemAmount);
-                    decimal sumAmtPaid = res.Sum(x => x.amountPaid);
-                    var amountRemaining = currentDues.Where(x => x.billingNo == tm.billingNumber).Sum(x => (x.itemAmount - x.amountPaid));
-                    if (amountRemaining > 0)
+                    DemandNoticeItemPenalty dnp = new DemandNoticeItemPenalty()
                     {
-                        DemandNoticeItemPenalty dnp = new DemandNoticeItemPenalty()
-                        {
-                            billingNo = billingNumber,
-                            amountPaid = 0,
-                            billingYr = billingYr,
-                            itemId = Guid.Empty,
-                            itemPenaltyStatus = DemandNoticeStatus.PENDING.ToString(),
-                            originatedYear = tm.billingYr,
-                            taxpayerId = tm.taxpayerId,
-                            totalAmount = amountRemaining * (decimal)(0.1)
-                        };
-                        query = query + demandNoticePenaltyDao.AddQuery(dnp);
-                    }
+                        billingNo = billingNumber,
+                        amountPaid = 0,
+                        billingYr = billingYr,
+                        itemId = Guid.Empty,
+                        itemPenaltyStatus = DemandNoticeStatus.PENDING.ToString(),
+                        originatedYear = recievable.billingYr,
+                        taxpayerId = taxpayerId,
+                        totalAmount = amountDue * (decimal)(0.1)
+                    };
+
+                    query = query + demandNoticePenaltyDao.AddQuery(dnp);
                 }
+
                 if (!string.IsNullOrEmpty(query))
                 {
                     try

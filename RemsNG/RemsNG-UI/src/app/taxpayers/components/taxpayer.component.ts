@@ -17,7 +17,7 @@ declare var jQuery: any;
 })
 
 export class TaxPayerComponent implements OnInit {
-
+    query;
     companies = [];
     streets = [];
     taxpayerModel: TaxpayerModel;
@@ -92,6 +92,22 @@ export class TaxPayerComponent implements OnInit {
         })
     }
 
+    searchQuery() {
+        if (this.streetModel.id.length < 1) {
+            return
+        }
+
+
+        this.isLoading = true;
+        this.taxpayerservice.searchInStreet(this.streetModel.id, this.query)
+            .subscribe(response => {
+                this.isLoading = false;
+                this.taxpayers = response;
+            }, error => {
+                this.isLoading = false;
+            })
+    }
+
     open(eventType: string, data: any) {
         if (eventType == 'ADD') {
             this.taxpayerModel = new TaxpayerModel();
@@ -100,7 +116,7 @@ export class TaxPayerComponent implements OnInit {
         } else if (eventType == 'EDIT') {
             this.taxpayerModel = data;
             jQuery(this.addModal.nativeElement).modal('show');
-        }else if (eventType == 'DELETE') {
+        } else if (eventType == 'DELETE') {
             this.taxpayerModel = data;
             jQuery(this.addModal.nativeElement).modal('show');
         }
@@ -153,7 +169,7 @@ export class TaxPayerComponent implements OnInit {
                 this.taxpayerModel.isLoading = false;
                 this.toasterService.pop('error', 'Error', error);
             });
-        }else if (this.taxpayerModel.eventType == 'DELETE') {
+        } else if (this.taxpayerModel.eventType == 'DELETE') {
             this.taxpayerservice.delete(this.taxpayerModel).subscribe(response => {
                 this.taxpayerModel.isLoading = false;
                 const result = Object.assign(new ResponseModel(), response);

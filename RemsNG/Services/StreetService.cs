@@ -1,12 +1,11 @@
-﻿using RemsNG.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
+using RemsNG.Dao;
 using RemsNG.Models;
 using RemsNG.ORM;
-using Microsoft.Extensions.Logging;
-using RemsNG.Dao;
+using RemsNG.Services.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RemsNG.Services
 {
@@ -61,5 +60,11 @@ namespace RemsNG.Services
         {
             return await streetDao.Update(street);
         }
+
+        public async Task<List<Street>> Search(Guid wardId, string searchName)
+        {
+            return await streetDao.SearchStreet(wardId, searchName);
+        }
+
     }
 }

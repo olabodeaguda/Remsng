@@ -109,6 +109,15 @@ namespace RemsNG.Dao
             return lstdbItem;
         }
 
+        public async Task<List<DemandNoticeItemPenalty>> ByTaxpayerId(Guid taxpayerId, int billingYr)
+        {
+            string query = $"select tbl_demandNoticePenalty.*,0 as billingYr from tbl_demandNoticePenalty " +
+                $"where taxpayerId = '{taxpayerId}' and billingYear = {billingYr}";
+            List<DemandNoticeItemPenalty> lstdbItem = await db.DemandNoticeItemPenaties
+                .FromSql(query).ToListAsync();
+            return lstdbItem;
+        }
+
     }
 }
 
