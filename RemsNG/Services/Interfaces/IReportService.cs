@@ -1,4 +1,5 @@
-﻿using RemsNG.ORM;
+﻿using RemsNG.Models;
+using RemsNG.ORM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,8 @@ namespace RemsNG.Services.Interfaces
             List<ItemReportSummaryModel> previousYearList);
         Task<List<ChartReport>> ReportByCurrentYear();
         Task<string> HtmlByDate(List<ItemReportSummaryModel> rptLst);
+        Task<List<DemandNoticeItemExt>> ReportitemsByCategory(DateTime startDate, DateTime endDate);
+        Task<List<DemandNoticeArrearsExt>> ReportArrearsByCategory(DateTime startDate, DateTime endDate);
+        Task<List<DemandNoticeItemPenaltyExt>> ReportPenaltyByCategory(DateTime startDate, DateTime endDate);
     }
 }

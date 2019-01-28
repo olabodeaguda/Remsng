@@ -12,6 +12,7 @@ import { DemandNoticePaymentService } from "../services/demand-notice-payment.se
 import { ItemService } from "../../items/services/item.service";
 import { DemandNoticeService } from "../services/demand-notice.service";
 import { IMyDateModel, IMyDpOptions } from "mydatepicker";
+import { isNullOrUndefined } from "util";
 declare var jQuery: any;
 
 @Component({
@@ -34,6 +35,8 @@ export class DemandNoticeSearchComponent implements OnInit {
     @ViewChild('paymentModal') paymentModal: ElementRef;
     @ViewChild('cancelDemandNoticeModal') cancelDemandNoticeModal: ElementRef;
     @ViewChild('paymentListModal') paymentListModal: ElementRef;
+    @ViewChild('UnbilledModal') unbilledModal: ElementRef;
+    selectDemandNotice;
     dnpModel: DemandNoticePaymentModel = new DemandNoticePaymentModel();
     isLoadingMini: boolean = false;
     isLoadingPayment: boolean = false;
@@ -95,6 +98,57 @@ export class DemandNoticeSearchComponent implements OnInit {
     openCancel(billingno: string) {
         this.dnpModel.billingNumber = billingno;
         jQuery(this.cancelDemandNoticeModal.nativeElement).modal('show');
+    }
+    openUnbilled(data) {
+        this.selectDemandNotice = data;
+        console.log(data);
+        jQuery(this.unbilledModal.nativeElement).modal('show');
+    }
+
+    submitUnbilled() {
+        if (isNullOrUndefined(this.selectDemandNotice)) {
+            return;
+        }
+        this.isLoadingMini = true;
+        if (this.selectDemandNotice.isUnbilled) {
+            this.dnService.MovetoBills(this.selectDemandNotice.billingNumber)
+            .subscribe(response => {
+                this.isLoadingMini = false;
+                if (response.code === '00') {
+                    this.toasterService.pop('success', response.description);
+                    jQuery(this.unbilledModal.nativeElement).modal('hide');
+                    this.searchModel.billingNo = this.selectDemandNotice.billingNumber;
+                    this.search();
+                } else {
+                    this.toasterService.pop('error', 'Error!!!', response.description);
+                }
+            }, error => {
+                this.isLoadingMini = false;
+                jQuery(this.unbilledModal.nativeElement).modal('hide');
+                this.toasterService.pop('error', 'Error', error);
+            })
+        } else {
+            this.dnService.MovetoUnBills(this.selectDemandNotice.billingNumber)
+                .subscribe(response => {
+                    this.isLoadingMini = false;
+                    if (response.code === '00') {
+                        this.toasterService.pop('success', response.description);
+                        this.isLoadingMini = false;
+                        jQuery(this.unbilledModal.nativeElement).modal('hide');
+                        this.searchModel.billingNo = this.selectDemandNotice.billingNumber;
+                        this.search();
+                    } else {
+                        this.toasterService.pop('error', 'Error!!!', response.description);
+                    }
+                }, error => {
+                    this.isLoadingMini = false;
+                    jQuery(this.unbilledModal.nativeElement).modal('hide');
+                    this.toasterService.pop('error', 'Error', error);
+                })
+        }
+
+
+
     }
 
     submitCancel() {
@@ -184,6 +238,7 @@ export class DemandNoticeSearchComponent implements OnInit {
             .subscribe(response => {
                 this.searchModel.isLoading = false;
                 if (response.code === '00') {
+                    this.taxpayersLst = [];
                     this.taxpayersLst = response.data;
                 }
                 if (this.taxpayersLst.length < 1) {

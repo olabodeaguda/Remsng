@@ -17,5 +17,7 @@ namespace RemsNG.Services.Interfaces
         Task<bool> BlinkClosesDemandNoticeByCompany(Guid companyId);
         Task<DemandNoticeTaxpayersDetail[]> GetAllReceivables();
         Task<List<object>> GetTaxpayerPayables(Guid taxpayerId);
+        Task<bool> MoveToBill(string billno);
+        Task<bool> MoveToUnBills(string billno);
     }
 }

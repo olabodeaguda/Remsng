@@ -23,6 +23,11 @@ export class ReportService {
         .catch(error => this.dateService.handleError(error));
     }
 
+    downloadReportByCategory(startDate: string, endDate: string) {
+        return this.dateService.getBlob('report/category/' + startDate + '/' + endDate)
+        .catch(error => this.dateService.handleError(error));
+    }
+
     downloadReportBreakDownhtml(startDate: string, endDate: string) {
         return this.dateService.get('report/outstandingbybillnohtml/' + startDate + '/' + endDate)
         .catch(error => this.dateService.handleError(error));

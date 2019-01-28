@@ -1,4 +1,5 @@
-﻿using RemsNG.ORM;
+﻿using RemsNG.Models;
+using RemsNG.ORM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,5 +22,8 @@ namespace RemsNG.Services.Interfaces
 
         Task<string> WriteReportSummaryConsolidatedSeperate(List<ItemReportSummaryModel> rptLst,
            string domainName, string lcdaName, DateTime startDate, DateTime endDate, List<DemandNoticePaymentHistory> dnph);
+        Task<byte[]> WriteReportCategory(string domainName, string lcdaName, DateTime startDate,
+            DateTime endDate, List<DemandNoticeItemExt> dnitem, List<DemandNoticeItemPenaltyExt> dnPenalty,
+            List<DemandNoticeArrearsExt> dnArrears);
     }
 }

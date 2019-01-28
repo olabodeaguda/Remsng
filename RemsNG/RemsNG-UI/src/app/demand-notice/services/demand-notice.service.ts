@@ -99,4 +99,12 @@ export class DemandNoticeService {
         return this.datataservice.get('dnt/error/' + id).catch(x => this.datataservice.handleError(x));
     }
 
+    MovetoBills(billno) {
+        return this.datataservice.get('dnt/movetobill/' + billno).catch(x => this.datataservice.handleError(x));
+    }
+
+    MovetoUnBills(billno) {
+        return this.datataservice.get('dnt/movetoUnbill/' + billno).catch(x => this.datataservice.handleError(x));
+    }
+
 }

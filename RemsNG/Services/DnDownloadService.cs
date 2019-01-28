@@ -64,9 +64,8 @@ namespace RemsNG.Services
             htmlContent = htmlContent.Replace("REFERENCE_NUMBER", dnph.referenceNumber);
             htmlContent = htmlContent.Replace("PAYMENT_DATE", dnph.dateCreated.Value.ToString("dd-MM-yyyy"));
 
-
             // total amount paid from reciept page
-            List<DemandNoticePaymentHistory> dnpHistory = await dNPaymentHistoryService.ByBillingNumber(dnph.billingNumber);
+            List<DemandNoticePaymentHistoryExt> dnpHistory = await dNPaymentHistoryService.ByBillingNumber(dnph.billingNumber);
             dnpHistory = dnpHistory.Where(x => x.paymentStatus == "APPROVED").ToList();
             decimal amtPaid = dnpHistory.Sum(x => x.amount);
             decimal amtDue = dnrp.amountDue;
@@ -198,7 +197,7 @@ namespace RemsNG.Services
 
             htmlContent = htmlContent.Replace("CHARGES", String.Format("{0:n}", decimal.Round(dnrp.charges, 2)));
             decimal amountPaid = 0;
-            List<DemandNoticePaymentHistory> dnpHistory = await dNPaymentHistoryService.ByBillingNumber(billingno);
+            List<DemandNoticePaymentHistoryExt> dnpHistory = await dNPaymentHistoryService.ByBillingNumber(billingno);
             dnpHistory = dnpHistory.Where(x => x.paymentStatus == "APPROVED").ToList();
             if (dnpHistory.Count > 0)
             {
@@ -217,6 +216,10 @@ namespace RemsNG.Services
             {
                 htmlContent = htmlContent.Replace("AMOUNT_IN_WORD", CurrencyWords.ConvertToWords(finalTotal.ToString()));
             }
+
+            var prepayment = await dNPaymentHistoryService.GetPrepaymentByTaxpayerId(dnrp.taxpayerId);
+
+            htmlContent = htmlContent.Replace("PREPAYMENT", $"{String.Format("{0:n}", decimal.Round((prepayment == null ? 0 : prepayment.amount), 2))} naira");
 
             DemandNoticeDownloadHistory dndh = new DemandNoticeDownloadHistory();
             dndh.id = Guid.NewGuid();

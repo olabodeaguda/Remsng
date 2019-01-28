@@ -58,17 +58,21 @@ namespace RemsNG.Dao
                 $"where billingYr={billingYr} and itemStatus in ('PENDING','PART_PAYMENT') " +
                 $"and tbl_demandNoticeItem.taxpayerId = '{taxpayerId}' and billingNo <> '{billNumber}'";
 
-
-            //string query1 = $"select tbl_demandNoticeItem.*,0.0 as penaltyAmount,'nil' as duration,-1 " +
-            //        $" as billingYr from tbl_demandNoticeItem " +
-            //        $"where id not in (select itemId from tbl_demandNoticeArrears where taxpayerId = '{taxpayerId}')  " +
-            //        $"and billingNo <> '{billNumber}' " +
-            //        $"and itemStatus in ('PENDING','PART_PAYMENT') and taxpayerId = '{taxpayerId}'";
-
             List<DemandNoticeItem> lstdbItem = await db.DemandNoticeItems.
                     FromSql(query).ToListAsync();
             return lstdbItem;
         }
 
+        public async Task<List<DemandNoticeItemExt>> ReportByCategory(DateTime fromDate, DateTime toDate)
+        {
+            DateTime startDate = new DateTime(fromDate.Year, fromDate.Month, fromDate.Day, 0, 0, 0);
+            DateTime endDate = new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59);
+
+            List<DemandNoticeItemExt> lst =
+                await db.DemandNoticeItemExts.FromSql("sp_getByCategoryDate @p0,@p1",
+                new object[] { startDate, endDate }).ToListAsync();
+
+            return lst;
+        }
     }
 }

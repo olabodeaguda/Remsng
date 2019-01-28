@@ -32,7 +32,8 @@ namespace RemsNG.Services
             return await dNAmountDueMgtDao.UpdateAmount(dnamount);
         }
 
-        public void CurrentAmountDue(List<DNAmountDueModel> UnpaidDueList, decimal amountPaid, bool isFullyPaid)
+        public void CurrentAmountDue(List<DNAmountDueModel> UnpaidDueList, 
+            decimal amountPaid, bool isFullyPaid)
         {
             if (!isFullyPaid)
             {

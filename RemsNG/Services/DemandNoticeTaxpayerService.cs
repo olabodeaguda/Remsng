@@ -202,5 +202,14 @@ namespace RemsNG.Services
 
             return lstPayables;
         }
+
+        public async Task<bool> MoveToBill(string billno)
+        {
+            return await dntDao.MoveToBills(billno);
+        }
+        public async Task<bool> MoveToUnBills(string billno)
+        {
+            return await dntDao.MoveToUnBills(billno);
+        }
     }
 }

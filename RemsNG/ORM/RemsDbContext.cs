@@ -41,6 +41,9 @@ namespace RemsNG.ORM
         public DbSet<Error> Errors { get; set; }
         public DbSet<DemandNoticeTaxpayersDetail> DemandNoticeTaxpayersDetails { get; set; }
         public DbSet<DemandNoticeItem> DemandNoticeItems { get; set; }
+        public DbSet<DemandNoticeItemExt> DemandNoticeItemExts { get; set; }
+        public DbSet<DemandNoticeArrearsExt> DemandNoticeArrearsExts { get; set; }
+        public DbSet<DemandNoticeItemPenaltyExt> DemandNoticeItemPenaltyExts { get; set; }
         public DbSet<DemandNoticeItemExtension> DemandNoticeItemExtensions { get; set; }
         public DbSet<State> States { get; set; }
         public DbSet<Images> Imagess { get; set; }
@@ -58,6 +61,7 @@ namespace RemsNG.ORM
         public DbSet<ChartReport> ChartReports { get; set; }
         public DbSet<DnError> DnErroor{ get; set; }
         public DbSet<SyncDataModel> SyncDataModels { get; set; }
+        public DbSet<Prepayment> Prepayments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -91,7 +95,7 @@ namespace RemsNG.ORM
             modelBuilder.Entity<DemandNoticeDownloadHistory>().ToTable("tbl_DemandNoticeDownloadHistory");
             modelBuilder.Entity<BatchDemandNoticeModel>().ToTable("tbl_batchDownloadRequest");
             modelBuilder.Entity<LcdaProperty>().ToTable("tbl_LcdaProperty");
-            modelBuilder.Entity<LcdaProperty>().ToTable("tbl_LcdaProperty");
+            modelBuilder.Entity<Prepayment>().ToTable("tbl_prepayment");
         }
     }
 }

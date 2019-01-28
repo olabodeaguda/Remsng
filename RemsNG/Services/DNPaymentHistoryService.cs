@@ -1,20 +1,21 @@
-﻿using RemsNG.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using RemsNG.Dao;
 using RemsNG.Models;
 using RemsNG.ORM;
-using RemsNG.Dao;
+using RemsNG.Services.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RemsNG.Services
 {
     public class DNPaymentHistoryService : IDNPaymentHistoryService
     {
+        private DNPaymentHistoryDao _dnpDao;
         private DemandNoticePaymentHistoryDao dnph;
         public DNPaymentHistoryService(RemsDbContext _db)
         {
             dnph = new DemandNoticePaymentHistoryDao(_db);
+            _dnpDao = new DNPaymentHistoryDao(_db);
         }
         public async Task<Response> AddAsync(DemandNoticePaymentHistory dnphModel)
         {
@@ -31,7 +32,7 @@ namespace RemsNG.Services
             return await dnph.UpdateStatusAsync(dnphModel);
         }
 
-        public async Task<List<DemandNoticePaymentHistory>> ByBillingNumber(string billingnumber)
+        public async Task<List<DemandNoticePaymentHistoryExt>> ByBillingNumber(string billingnumber)
         {
             return await dnph.ByBillingNumber(billingnumber);
         }
@@ -54,6 +55,11 @@ namespace RemsNG.Services
         public async Task<DemandNoticePaymentHistory> ByIdExtended(Guid id)
         {
             return await dnph.ByIdExtended(id);
+        }
+
+        public async Task<Prepayment> GetPrepaymentByTaxpayerId(Guid taxpayerId)
+        {
+            return await _dnpDao.Get(taxpayerId);
         }
     }
 }

@@ -20,5 +20,6 @@ namespace RemsNG.Models
         public int totalSize { get; set; }
         public int billingYear { get; set; }
         public DateTime dateCreated { get; set; }
+        public string taxpayersName { get; set; }
     }
 }

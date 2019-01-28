@@ -118,6 +118,19 @@ namespace RemsNG.Dao
             return lstdbItem;
         }
 
+
+        public async Task<List<DemandNoticeItemPenaltyExt>> ReportByCategory(DateTime fromDate, DateTime toDate)
+        {
+            DateTime startDate = new DateTime(fromDate.Year, fromDate.Month, fromDate.Day, 0, 0, 0);
+            DateTime endDate = new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59);
+
+            List<DemandNoticeItemPenaltyExt> lst =
+                await db.DemandNoticeItemPenaltyExts.FromSql("sp_getPenaltyByCategoryDate @p0,@p1",
+                new object[] { startDate, endDate }).ToListAsync();
+
+            return lst;
+        }
+
     }
 }
 

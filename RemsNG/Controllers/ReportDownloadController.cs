@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using RemsNG.Models;
@@ -12,6 +6,10 @@ using RemsNG.ORM;
 using RemsNG.Security;
 using RemsNG.Services.Interfaces;
 using RemsNG.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -364,7 +362,6 @@ namespace RemsNG.Controllers
             }
         }
 
-
         [HttpGet("reportreceivables")]
         public async Task<object> GetReport()
         {
@@ -386,6 +383,56 @@ namespace RemsNG.Controllers
                 label = x.wardName,
                 value = x.amountPaid
             }));
+        }
+
+        [HttpGet("category/{startDate}/{endDate}")]
+        public async Task<IActionResult> GetByCategoryReport(string startDate, string endDate)
+        {
+            if (string.IsNullOrEmpty(startDate))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Start date is required"
+                });
+            }
+            else if (string.IsNullOrEmpty(endDate))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "End date is required"
+                });
+            }
+
+            DateTime sd = DateTime.ParseExact(startDate, "dd-MM-yyyy", null);
+            DateTime ed = DateTime.ParseExact(endDate, "dd-MM-yyyy", null);
+            ed = ed.AddHours(23);
+            ed = ed.AddMinutes(59);
+
+            List<DemandNoticeItemExt> dnitem = await reportService.ReportitemsByCategory(sd, ed);
+            List<DemandNoticeItemPenaltyExt> dnPenalty = await reportService.ReportPenaltyByCategory(sd, ed);
+            List<DemandNoticeArrearsExt> dnArrears = await reportService.ReportArrearsByCategory(sd, ed);
+
+            Guid lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
+            Lgda lgda = await lcdaService.Get(lcdaId);
+            if (lgda == null)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.UNKNOWN,
+                    description = $"Log on user unknown"
+                });
+            }
+
+            Domain domain = await lcdaService.GetDomain(lgda.id);
+
+            var result = await excelService.WriteReportCategory(
+               (domain == null ? "Unknown" : domain.domainName), lgda.lcdaName, sd, ed, dnitem, dnPenalty, dnArrears);
+
+            HttpContext.Response.ContentType = "application/octet-stream";
+            HttpContext.Response.Body.Write(result, 0, result.Length);
+            return new ContentResult();
         }
     }
 }

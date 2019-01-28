@@ -340,11 +340,24 @@ namespace RemsNG.Dao
         public async Task<List<DemandNoticeTaxpayersDetail>> GetTaxpayerPayables(Guid taxpayerId)
         {
             string query = $"select tbl_demandNoticeTaxpayers.*, -1 as totalSize from tbl_demandNoticeTaxpayers " +
-                $"where taxpayerId = '{taxpayerId}' and demandNoticeStatus in ('PART_PAYMENT','PENDING') order by  dateCreated";
+                $"where taxpayerId = '{taxpayerId}' and demandNoticeStatus in ('PART_PAYMENT','PENDING','PAID','CLOSED') order by  dateCreated";
             var results = await db.DemandNoticeTaxpayersDetails
                 .FromSql(query,
                 new object[] { taxpayerId.ToString() }).ToListAsync();
             return results;
+        }
+
+        public async Task<bool> MoveToBills(string billno)
+        {
+            string query = $"Update tbl_demandNoticeTaxpayers set isUnbilled = 0 where billingNumber ='{billno}'";
+            int count = await db.Database.ExecuteSqlCommandAsync(query);
+            return count > 0;
+        }
+        public async Task<bool> MoveToUnBills(string billno)
+        {
+            string query = $"Update tbl_demandNoticeTaxpayers set isUnbilled = 1 where billingNumber ='{billno}'";
+            int count = await db.Database.ExecuteSqlCommandAsync(query);
+            return count > 0;
         }
     }
 }

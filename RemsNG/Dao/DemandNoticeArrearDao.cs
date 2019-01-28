@@ -218,5 +218,17 @@ namespace RemsNG.Dao
             return false;
         }
 
+        public async Task<List<DemandNoticeArrearsExt>> ReportByCategory(DateTime fromDate, DateTime toDate)
+        {
+            DateTime startDate = new DateTime(fromDate.Year, fromDate.Month, fromDate.Day, 0, 0, 0);
+            DateTime endDate = new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59);
+
+            List<DemandNoticeArrearsExt> lst =
+                await db.DemandNoticeArrearsExts.FromSql("sp_getArrearsByCategoryDate @p0,@p1",
+                new object[] { startDate, endDate }).ToListAsync();
+
+            return lst;
+        }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using RemsNG.Dao;
+using RemsNG.Models;
 using RemsNG.ORM;
 using RemsNG.Services.Interfaces;
 using System;
@@ -10,10 +11,16 @@ namespace RemsNG.Services
 {
     public class ReportService : IReportService
     {
+        private readonly DemandNoticePenaltyDao dnPenaltyDao;
+        private readonly DemandNoticeArrearDao dnArrearsDao;
+        private readonly DemandNoticeItemDao dnitemDao;
         private readonly ReportDao reportDao;
         public ReportService(RemsDbContext _db)
         {
             reportDao = new ReportDao(_db);
+            dnitemDao = new DemandNoticeItemDao(_db);
+            dnArrearsDao = new DemandNoticeArrearDao(_db);
+            dnPenaltyDao = new DemandNoticePenaltyDao(_db);
         }
 
         public async Task<List<ItemReportSummaryModel>> ByDate(DateTime startDate, DateTime endDate)
@@ -185,6 +192,19 @@ namespace RemsNG.Services
         {
             List<ItemReportSummaryModel> datas = await ByDate(startDate, endDate);
 
+        }
+
+        public async Task<List<DemandNoticeItemExt>> ReportitemsByCategory(DateTime startDate, DateTime endDate)
+        {
+            return await dnitemDao.ReportByCategory(startDate, endDate);
+        }
+        public async Task<List<DemandNoticeArrearsExt>> ReportArrearsByCategory(DateTime startDate, DateTime endDate)
+        {
+            return await dnArrearsDao.ReportByCategory(startDate, endDate);
+        }
+        public async Task<List<DemandNoticeItemPenaltyExt>> ReportPenaltyByCategory(DateTime startDate, DateTime endDate)
+        {
+            return await dnPenaltyDao.ReportByCategory(startDate, endDate);
         }
     }
 }

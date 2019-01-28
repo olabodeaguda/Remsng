@@ -103,12 +103,16 @@ namespace RemsNG.Dao
             }
         }
 
-        public async Task<List<DemandNoticePaymentHistory>> ByBillingNumber(string billingnumber)
+        public async Task<List<DemandNoticePaymentHistoryExt>> ByBillingNumber(string billingnumber)
         {
-            string query = "select dnph.*,bank.bankName from tbl_demandNoticePaymentHistory as dnph " +
-                $"inner join tbl_bank bank on bank.id = dnph.bankId where billingNumber = '{billingnumber}'";
+            //string query = $"select dnph.*,bank.bankName from tbl_demandNoticePaymentHistory as dnph " +
+            //    $"inner join tbl_bank bank on bank.id = dnph.bankId where billingNumber = '{billingnumber}'";
 
-            return await db.DemandNoticePaymentHistories.FromSql(query).ToListAsync();
+            string query = $"select dnph.*,-1 as totalSize,dnp.billingYr as billingYear, " +
+                $"dnp.taxpayersName from tbl_demandNoticePaymentHistory as dnph " +
+                $"inner join tbl_demandNoticeTaxpayers as dnp on dnp.billingNumber = dnph.billingNumber where dnph.billingNumber = '{billingnumber}'";
+
+            return await db.DemandNoticePaymentHistoryExts.FromSql(query).ToListAsync();
         }
 
         public async Task<List<DemandNoticePaymentHistory>> ByBillingNumbers(string billingnumber)

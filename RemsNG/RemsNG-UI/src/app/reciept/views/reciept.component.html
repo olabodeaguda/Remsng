@@ -75,6 +75,7 @@
                                             <thead>
                                                 <th style="width:120px;"></th>
                                                 <th>Billing Number</th>
+                                                <th>Taxpayer's Name</th>
                                                 <th>Amount</th>
                                                 <th>charges</th>
                                                 <th>Total Amount Due</th>
@@ -109,6 +110,7 @@
                                                         </div>
                                                     </td>
                                                     <td>{{data.billingNumber}}</td>
+                                                    <td>{{data.taxpayersName}}</td>
                                                     <td>{{data.amount|number:'1.2'}}</td>
                                                     <td>{{data.charges|number:'1.2'}}</td>
                                                     <td>{{(data.amount + data.charges)|number:'1.2'}}</td>

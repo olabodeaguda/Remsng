@@ -112,18 +112,18 @@ namespace RemsNG.Services
                             }
                         }
 
-                        if (demandNoticeRequest.CloseOldData)
-                        {
-                            string[] taxpyIds = taxpayers.Select(x => string.Format("'{0}'", x.id)).ToArray();
-                            await ClosedDDTaxpayers(taxpyIds, demandNotice.billingYear);
-                            Error error = new Error()
-                            {
-                                errorType = ErrorType.DEMAND_NOTICE.ToString(),
-                                errorvalue = $"{lcda.lcdaName} has been closed. Created by {demandNotice.createdBy}",
-                                ownerId = demandNotice.id
-                            };
-                            bool result = await errorDao.Add(error);
-                        }
+                        //if (demandNoticeRequest.CloseOldData)
+                        //{
+                        //    string[] taxpyIds = taxpayers.Select(x => string.Format("'{0}'", x.id)).ToArray();
+                        //    await ClosedDDTaxpayers(taxpyIds, demandNotice.billingYear);
+                        //    Error error = new Error()
+                        //    {
+                        //        errorType = ErrorType.DEMAND_NOTICE.ToString(),
+                        //        errorvalue = $"{lcda.lcdaName} has been closed. Created by {demandNotice.createdBy}",
+                        //        ownerId = demandNotice.id
+                        //    };
+                        //    bool result = await errorDao.Add(error);
+                        //}
 
                         List<DemandNoticeTaxpayersDetail> dt =
                             await demandNoticeTaxpayersDao.getTaxpayerByIds(taxpayers

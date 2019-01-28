@@ -3,13 +3,13 @@ using Microsoft.Extensions.Logging;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
+using RemsNG.Models;
 using RemsNG.ORM;
 using RemsNG.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RemsNG.Services
@@ -656,6 +656,128 @@ namespace RemsNG.Services
             rowbody1.CreateCell(2).SetCellValue(String.Format("{0:n}", decimal.Round(dnph.Sum(x => x.amount), 2)));
 
             sheet2.AutoSizeColumn(0);
+        }
+
+        public async Task<byte[]> WriteReportCategory(string domainName, string lcdaName, DateTime startDate,
+            DateTime endDate, List<DemandNoticeItemExt> dnitem, List<DemandNoticeItemPenaltyExt> dnPenalty,
+            List<DemandNoticeArrearsExt> dnArrears)
+        {
+            return await Task.Run(() =>
+            {
+                IWorkbook workbook = new XSSFWorkbook();
+                if (dnitem.Count < 1)
+                {
+                    return null;
+                }
+
+                var result = dnitem.GroupBy(x => x.category);
+
+                foreach (var tm in result)
+                {
+                    var rptCategory = tm.ToList();
+                    // int rowCount = 0;
+                    ISheet sheet1 = workbook.CreateSheet(tm.Key);
+
+                    #region sub heading
+                    sheet1.AddMergedRegion(new CellRangeAddress(0, 0, 0, 4));
+                    sheet1.AddMergedRegion(new CellRangeAddress(1, 1, 0, 4));
+                    sheet1.AddMergedRegion(new CellRangeAddress(2, 2, 0, 4));
+                    sheet1.AddMergedRegion(new CellRangeAddress(3, 3, 0, 4));
+
+                    var rowIndex = 0;
+                    IRow rowDomain = sheet1.CreateRow(rowIndex);
+                    rowDomain.Height = 400;
+                    ICell cellDomain = rowDomain.CreateCell(0);
+                    cellDomain.SetCellValue(domainName.ToUpper());
+                    CellStyleHeader(cellDomain, workbook, 13);
+                    rowIndex++;
+
+                    IRow rowLcda = sheet1.CreateRow(rowIndex);
+                    rowLcda.Height = 300;
+                    ICell cellLcda = rowLcda.CreateCell(0);
+                    cellLcda.SetCellValue(lcdaName.ToUpper());
+                    CellStyleHeader(cellLcda, workbook, 10);
+                    rowIndex++;
+
+                    IRow rowTitle1 = sheet1.CreateRow(rowIndex);
+                    rowTitle1.Height = 300;
+                    ICell cellTitle1 = rowTitle1.CreateCell(0);
+                    cellTitle1.SetCellValue($"INTERNALLY GENERATED REVENUE " +
+                        $"FOR THE PERIOD OF {startDate.ToString("dd/MM/yyyy")} - {endDate.ToString("dd/MM/yyyy")}");
+                    CellStyleHeader(cellTitle1, workbook, 10);
+                    rowIndex++;
+
+                    IRow rowTitle2 = sheet1.CreateRow(rowIndex);
+                    rowTitle2.Height = 300;
+                    ICell cellTitle2 = rowTitle2.CreateCell(0);
+                    cellTitle2.SetCellValue("REVENUE APPRAISAL SHEET BREAKDOWN");
+                    CellStyleHeader(cellTitle2, workbook, 10);
+                    rowIndex++;
+
+                    #endregion
+
+                    var rptWard = rptCategory.GroupBy(x => x.wardName);
+                    foreach (var rmp in rptWard)
+                    {
+                        IRow rowWardTitle = sheet1.CreateRow(rowIndex++);
+                        rowWardTitle.Height = 400;
+                        ICell cellWardTitle = rowWardTitle.CreateCell(0);
+                        cellWardTitle.SetCellValue(rmp.Key.ToUpper());
+                        CellStyleHeader(cellWardTitle, workbook, 13);
+                        rowIndex++;
+
+                        var rptWardData = rmp.ToList();
+
+                        #region header
+                        IRow rowHeader = sheet1.CreateRow(rowIndex++);
+                        rowHeader.CreateCell(0).SetCellValue("SN");
+                        rowHeader.CreateCell(1).SetCellValue("Item");
+                        rowHeader.CreateCell(2).SetCellValue("Amount  Due");
+                        rowHeader.CreateCell(3).SetCellValue("Amount Paid");
+                        #endregion
+
+
+                        int cc = 0;
+                        foreach (var t in rptWardData.GroupBy(x => x.itemName))
+                        {
+                            IRow rowHeader1 = sheet1.CreateRow(rowIndex++);
+                            rowHeader1.CreateCell(0).SetCellValue(cc + 1);
+                            rowHeader1.CreateCell(1).SetCellValue(t.Key);
+                            rowHeader1.CreateCell(2).SetCellValue(String.Format("{0:n}", decimal.Round(t.Sum(x => x.itemAmount), 2)));
+                            rowHeader1.CreateCell(3).SetCellValue(String.Format("{0:n}", decimal.Round(t.Sum(x => x.amountPaid), 2)));
+                            cc++;
+                        }
+
+                        var arrears = dnArrears.Where(x => x.wardName == rmp.Key && x.category == tm.Key);
+                        if (arrears.Count() > 0)
+                        {
+
+                            IRow rowHeader1 = sheet1.CreateRow(rowIndex++);
+                            rowHeader1.CreateCell(0).SetCellValue(cc + 1);
+                            rowHeader1.CreateCell(1).SetCellValue("Arrears");
+                            rowHeader1.CreateCell(2).SetCellValue(String.Format("{0:n}", decimal.Round(arrears.Sum(x => x.totalAmount), 2)));
+                            rowHeader1.CreateCell(3).SetCellValue(String.Format("{0:n}", decimal.Round(arrears.Sum(x => x.amountPaid), 2)));
+                            cc++;
+                        }
+
+                        var penalty = dnPenalty.Where(x => x.wardName == rmp.Key && x.category == tm.Key);
+                        if (penalty.Count() > 0)
+                        {
+
+                            IRow rowHeader1 = sheet1.CreateRow(rowIndex++);
+                            rowHeader1.CreateCell(0).SetCellValue(cc + 1);
+                            rowHeader1.CreateCell(1).SetCellValue("Penalty");
+                            rowHeader1.CreateCell(2).SetCellValue(String.Format("{0:n}", decimal.Round(penalty.Sum(x => x.totalAmount), 2)));
+                            rowHeader1.CreateCell(3).SetCellValue(String.Format("{0:n}", decimal.Round(penalty.Sum(x => x.amountPaid), 2)));
+                            cc++;
+                        }
+                    }
+                }
+
+                MemoryStream memo = new MemoryStream();
+                workbook.Write(memo);
+                return memo.ToArray();
+            });
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿create procedure sp_TotalDueByBillNumbers
+﻿alter procedure sp_TotalDueByBillNumbers
 (
 	@billingno varchar(50)
 

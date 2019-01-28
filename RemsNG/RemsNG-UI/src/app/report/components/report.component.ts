@@ -172,4 +172,30 @@ export class ReportComponent {
             });
     }
 
+    downloadByCategory() {
+        if (this.startDate.length < 1) {
+            this.toasterService.pop('error', 'Error', 'Start Date is required');
+            return;
+        } else if (this.endDate.length < 1) {
+            this.toasterService.pop('error', 'Error', 'Start Date is required');
+            return;
+        } else if (this.startDate.length < 10) {
+            this.toasterService.pop('error', 'Error', 'Start Date is in the wrong format');
+            return;
+        } else if (this.endDate.length < 10) {
+            this.toasterService.pop('error', 'Error', 'Start Date is required');
+            return;
+        }
+
+        this.isLoading = true;
+        this.reportService.downloadReportByCategory(this.startDate, this.endDate)
+            .subscribe(response => {
+                this.isLoading = false;
+                FileSaver.saveAs(response, this.startDate + '-' + this.endDate + 'report' + '.xlsx');
+            }, error => {
+                this.isLoading = false;
+                this.toasterService.pop('error', 'Error', error);
+            });
+    }
+
 }

@@ -35,7 +35,6 @@ namespace RemsNG.Controllers
             logger = loggerFactory.CreateLogger<UserController>();
         }
 
-
         [Route("{id}")]
         public async Task<IActionResult> Get([FromRoute] Guid id)
         {
@@ -76,7 +75,7 @@ namespace RemsNG.Controllers
                 return BadRequest(new Response()
                 {
                     code = MsgCode_Enum.FAIL,
-                    description = $"Licesnce expired. Please contact your administrator for renewal"
+                    description = $"Licence expired. Please contact your administrator for renewal"
                 });
             }
             byte[] obj = Convert.FromBase64String(value);

@@ -107,5 +107,97 @@ namespace RemsNG.Controllers
         {
             return Ok(await demandNoticeTaxpayerService.GetTaxpayerPayables(taxpayerId));
         }
+
+        [HttpGet("movetobill/{billno}")]
+        public async Task<IActionResult> MovetoBill(string billno)
+        {
+            if (string.IsNullOrEmpty(billno))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Bill number is required"
+                });
+            }
+            var r = await demandNoticeTaxpayerService.TaxpayerMiniByBillingNo(billno);
+            if (r == null)
+            {
+                return NotFound(new Response()
+                {
+                    code = MsgCode_Enum.NOTFOUND,
+                    description = $"{billno} can not be found"
+                });
+            }
+
+            if (!r.isUnbilled)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = $"{billno} is already been moved to billed"
+                });
+            }
+
+            bool result = await demandNoticeTaxpayerService.MoveToBill(billno);
+            if (result)
+            {
+                return Ok(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = "request was succesful"
+                });
+            }
+            return BadRequest(new Response()
+            {
+                code = MsgCode_Enum.FAIL,
+                description = "Request failed.Please try again"
+            });
+        }
+
+        [HttpGet("movetoUnbill/{billno}")]
+        public async Task<IActionResult> MovetoUnBill(string billno)
+        {
+            if (string.IsNullOrEmpty(billno))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Bill number is required"
+                });
+            }
+            var r = await demandNoticeTaxpayerService.TaxpayerMiniByBillingNo(billno);
+            if (r == null)
+            {
+                return NotFound(new Response()
+                {
+                    code = MsgCode_Enum.NOTFOUND,
+                    description = $"{billno} can not be found"
+                });
+            }
+
+            if (r.isUnbilled)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = $"{billno} is already unbilled"
+                });
+            }
+
+            bool result = await demandNoticeTaxpayerService.MoveToUnBills(billno);
+            if (result)
+            {
+                return Ok(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = "request was succesful"
+                });
+            }
+            return BadRequest(new Response()
+            {
+                code = MsgCode_Enum.FAIL,
+                description = "Request failed.Please try again"
+            });
+        }
     }
 }

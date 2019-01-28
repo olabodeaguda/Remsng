@@ -1,16 +1,16 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using RemsNG.Exceptions;
+using RemsNG.Models;
+using RemsNG.ORM;
+using RemsNG.Security;
+using RemsNG.Services.Interfaces;
+using RemsNG.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using RemsNG.Services.Interfaces;
-using RemsNG.ORM;
-using RemsNG.Models;
-using RemsNG.Exceptions;
-using RemsNG.Utilities;
-using RemsNG.Security;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Logging;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -39,7 +39,7 @@ namespace RemsNG.Controllers
         }
 
         [HttpGet("{billingNumber}")]
-        public async Task<List<DemandNoticePaymentHistory>> Get(string billingNumber)
+        public async Task<List<DemandNoticePaymentHistoryExt>> Get(string billingNumber)
         {
             return await dNPaymentHistoryService.ByBillingNumber(billingNumber);
         }
@@ -72,7 +72,7 @@ namespace RemsNG.Controllers
             {
                 value.dateCreated = DateTime.Now;
             }
-            
+
             var taxpayeD = await demandNoticeTaxpayerService.TaxpayerMiniByBillingNo(value.billingNumber);
             if (taxpayeD == null)
             {
@@ -157,6 +157,13 @@ namespace RemsNG.Controllers
             }
             else
             {
+                var txpayer = await demandNoticeTaxpayerService.TaxpayerMiniByBillingNo(dnph.billingNumber);
+                var prepay = await dNPaymentHistoryService.GetPrepaymentByTaxpayerId(txpayer.taxpayerId);
+                if (prepay != null)
+                {
+                    dnph.amount = dnph.amount + prepay.amount;
+                    query = query + $"update tbl_prepayment set prepaymentStatus = 'CLOSED' where id= {prepay.id};";
+                }
                 if ((dnph.amount + dnph.charges) < 1)
                 {
                     logger.LogWarning("Payment amount must be more than zero", dnph);
@@ -168,25 +175,37 @@ namespace RemsNG.Controllers
                 }
                 List<DNAmountDueModel> paymentDueList = await amountDueMgtService.ByBillingNo(dnph.billingNumber);
 
-                if ((dnph.amount + dnph.charges) >= paymentDueList.Sum(x => (x.itemAmount - x.amountPaid )))
+                if ((dnph.amount + dnph.charges) == paymentDueList.Sum(x => (x.itemAmount - x.amountPaid)))
                 {
                     amountDueMgtService.CurrentAmountDue(paymentDueList, dnph.amount, true);
 
-                    query = amountDueMgtService.PaymentQuery(paymentDueList, dnph,
-                       DemandNoticeStatus.PAID.ToString(),User.Identity.Name);
+                    query = query + amountDueMgtService.PaymentQuery(paymentDueList, dnph,
+                       DemandNoticeStatus.PAID.ToString(), User.Identity.Name);
+                }
+                else if ((dnph.amount + dnph.charges) > paymentDueList.Sum(x => (x.itemAmount - x.amountPaid)))
+                {
+                    decimal rmain = (dnph.amount + dnph.charges) - paymentDueList.Sum(x => (x.itemAmount - x.amountPaid));
+
+                    amountDueMgtService.CurrentAmountDue(paymentDueList, (dnph.amount + dnph.charges) - rmain, true);
+                    query = query + amountDueMgtService.PaymentQuery(paymentDueList, dnph,
+                       DemandNoticeStatus.PAID.ToString(), User.Identity.Name);
+                   
+
+                    //over payment by taxpayer 
+                    query = query + $"insert into tbl_prepayment(taxpayerId,amount,datecreated) values('{txpayer.taxpayerId}','{rmain}',getdate());";
                 }
                 else
                 {
                     List<DNAmountDueModel> paymentDueList2 = paymentDueList.Where(p => p.itemAmount > p.amountPaid).ToList();
                     amountDueMgtService.CurrentAmountDue(paymentDueList2, dnph.amount, false);
 
-                    query = amountDueMgtService.PaymentQuery(paymentDueList, dnph,
+                    query = query + amountDueMgtService.PaymentQuery(paymentDueList, dnph,
                         DemandNoticeStatus.PART_PAYMENT.ToString(), User.Identity.Name);
                 }
             }
 
             query = query + $"update tbl_demandNoticeTaxpayers set isUnbilled= 0 where billingNumber = '{dnph.billingNumber}' ";
-           
+
 
             if (!string.IsNullOrEmpty(query))
             {
