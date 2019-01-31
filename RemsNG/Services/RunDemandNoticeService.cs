@@ -19,6 +19,7 @@ namespace RemsNG.Services
 {
     public class RunDemandNoticeService : IRunDemandNoticeService
     {
+        private readonly DNPaymentHistoryDao _dnPaymentHistoryDao;
         private readonly DemandNoticePaymentHistoryDao _dnpHisotryDao;
         private readonly IDNAmountDueMgtService _admService;
         private readonly TaxpayerDao taxpayerDao;
@@ -85,6 +86,7 @@ namespace RemsNG.Services
             taxpayerService = _taxpayerService;
             _admService = dNAmountDueMgtService;
             _dnpHisotryDao = new DemandNoticePaymentHistoryDao(_db);
+            _dnPaymentHistoryDao = new DNPaymentHistoryDao(_db);
         }
 
         public async Task RegisterTaxpayer()
@@ -536,6 +538,16 @@ namespace RemsNG.Services
                         {
                             return await demandNoticeArrearDao.AddArrears(query);
                         }
+                    }
+                    else if (amountDue < 0)
+                    {
+                        // register the prepayment
+                        //await _dnPaymentHistoryDao.AddPrepaymentForAlreadyRegisterdAmount(new Prepayment()
+                        //{
+                        //    amount = amountDue * -1,
+                        //    prepaymentStatus = "ACTIVE",
+                        //    taxpayerId = dntd.taxpayerId
+                        //});
                     }
                 }
                 return true;

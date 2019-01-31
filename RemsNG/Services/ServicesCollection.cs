@@ -104,8 +104,7 @@ namespace RemsNG.Services
                 });
 
             #region service DI
-            services.AddDbContextPool<RemsDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
+           
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IDomainService, DomainService>();
             services.AddTransient<ILcdaService, LcdaService>();

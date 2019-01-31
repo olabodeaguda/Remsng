@@ -203,9 +203,21 @@ namespace RemsNG.Services
             {
                 amountPaid = decimal.Round(dnpHistory.Sum(x => x.amount), 2);
             }
+            decimal finalTotal = gtotal + dnrp.charges - amountPaid;
+            var prepayment = await dNPaymentHistoryService.GetPrepaymentByTaxpayerId(dnrp.taxpayerId);
+            if (finalTotal < 0)
+            {
+                // register the prepayment
+                prepayment = await dNPaymentHistoryService.AddPrepaymentForAlreadyRegisterdAmount(new Prepayment()
+                {
+                    amount = finalTotal * -1,
+                    prepaymentStatus = "ACTIVE",
+                    taxpayerId = dnrp.taxpayerId
+                });
+            }
+
 
             htmlContent = htmlContent.Replace("AMOUNT_PAID", String.Format("{0:n}", decimal.Round(amountPaid, 2)));
-            decimal finalTotal = gtotal + dnrp.charges - amountPaid;
             htmlContent = htmlContent.Replace("FINAL_TOTAL", String.Format("{0:n}", decimal.Round(finalTotal, 2)));
 
             if (finalTotal == 0)
@@ -217,7 +229,7 @@ namespace RemsNG.Services
                 htmlContent = htmlContent.Replace("AMOUNT_IN_WORD", CurrencyWords.ConvertToWords(finalTotal.ToString()));
             }
 
-            var prepayment = await dNPaymentHistoryService.GetPrepaymentByTaxpayerId(dnrp.taxpayerId);
+
 
             htmlContent = htmlContent.Replace("PREPAYMENT", $"{String.Format("{0:n}", decimal.Round((prepayment == null ? 0 : prepayment.amount), 2))} naira");
 

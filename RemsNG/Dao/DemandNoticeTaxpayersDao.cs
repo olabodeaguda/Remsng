@@ -359,5 +359,17 @@ namespace RemsNG.Dao
             int count = await db.Database.ExecuteSqlCommandAsync(query);
             return count > 0;
         }
+
+        public async Task<List<DemandNoticeTaxpayersDetail>> GetAllUnbilledDemandNotice(string batchno)
+        {
+            string query = $"select tbl_demandNoticeTaxpayers.*, -1 as totalSize  " +
+                $"from tbl_demandNoticeTaxpayers " +
+                $"inner join tbl_taxPayer on tbl_taxPayer.id = tbl_demandNoticeTaxpayers.taxpayerId " +
+                $"inner join tbl_street on  tbl_street.wardId = tbl_taxPayer.streetId " +
+                $"inner join tbl_ward on tbl_ward.id = tbl_street.wardId " +
+                $"where isUnbilled = 1";
+
+            return await db.DemandNoticeTaxpayersDetails.FromSql(query).ToListAsync();
+        }
     }
 }

@@ -18,5 +18,6 @@ namespace RemsNG.Services.Interfaces
         Task<DemandNoticePaymentHistory> ByIdExtended(Guid id);
         Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel);
         Task<Prepayment> GetPrepaymentByTaxpayerId(Guid taxpayerId);
+        Task<Prepayment> AddPrepaymentForAlreadyRegisterdAmount(Prepayment prepayment);
     }
 }

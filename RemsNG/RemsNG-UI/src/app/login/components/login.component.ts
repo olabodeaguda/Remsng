@@ -36,7 +36,7 @@ export class LoginComponent {
         if (diffDays <= 21) {
             this.isNotifyValidy = true;
         }
-        this.isNotifyValidy = true;
+        //this.isNotifyValidy = true;
     }
 
     signIn() {

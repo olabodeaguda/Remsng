@@ -55,7 +55,7 @@ namespace RemsNG.Dao
         {
             string query = $"select tbl_demandNoticeItem.*,0.0 as penaltyAmount,'nil' as duration,billingYr as billingYr from tbl_demandNoticeItem " +
                 $"inner join tbl_demandNoticeTaxpayers on tbl_demandNoticeTaxpayers.taxpayerId = tbl_demandNoticeItem.taxpayerId " +
-                $"where billingYr={billingYr} and itemStatus in ('PENDING','PART_PAYMENT') " +
+                $"where billingYr={billingYr} and tbl_demandNoticeTaxpayers.demandNoticeStatus in ('PENDING','PART_PAYMENT') " +
                 $"and tbl_demandNoticeItem.taxpayerId = '{taxpayerId}' and billingNo <> '{billNumber}'";
 
             List<DemandNoticeItem> lstdbItem = await db.DemandNoticeItems.

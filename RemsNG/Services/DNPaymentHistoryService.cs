@@ -21,45 +21,42 @@ namespace RemsNG.Services
         {
             return await dnph.AddAsync(dnphModel);
         }
-
         public async Task<Response> UpdateAsync(DemandNoticePaymentHistory dnphModel)
         {
             return await dnph.UpdateAsync(dnphModel);
         }
-
         public async Task<Response> UpdateStatusAsync(DemandNoticePaymentHistory dnphModel)
         {
             return await dnph.UpdateStatusAsync(dnphModel);
         }
-
         public async Task<List<DemandNoticePaymentHistoryExt>> ByBillingNumber(string billingnumber)
         {
             return await dnph.ByBillingNumber(billingnumber);
         }
-
         public async Task<List<DemandNoticePaymentHistory>> ByBillingNumbers(string billingnumber)
         {
             return await dnph.ByBillingNumbers(billingnumber);
         }
-
         public async Task<DemandNoticePaymentHistory> ById(Guid id)
         {
             return await dnph.ById(id);
         }
-
         public async Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel)
         {
             return await dnph.ByLcdaId(lcdaId, pageModel);
         }
-
         public async Task<DemandNoticePaymentHistory> ByIdExtended(Guid id)
         {
             return await dnph.ByIdExtended(id);
         }
-
         public async Task<Prepayment> GetPrepaymentByTaxpayerId(Guid taxpayerId)
         {
             return await _dnpDao.Get(taxpayerId);
+        }
+
+        public async Task<Prepayment> AddPrepaymentForAlreadyRegisterdAmount(Prepayment prepayment)
+        {
+            return await _dnpDao.AddPrepaymentForAlreadyRegisterdAmount(prepayment);
         }
     }
 }
