@@ -1,16 +1,13 @@
-﻿using Hangfire;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using RemsNG.Models;
-using RemsNG.ORM;
 using RemsNG.Security;
 using RemsNG.Services.Interfaces;
 using System;
@@ -26,8 +23,8 @@ namespace RemsNG.Services
 
         public static IConfigurationRoot Configuration
         {
-            get { return _Configuration; }
-            set { _Configuration = value; }
+            get => _Configuration;
+            set => _Configuration = value;
         }
 
         public static void Initialize(IServiceCollection services, IConfigurationRoot config,
@@ -104,7 +101,7 @@ namespace RemsNG.Services
                 });
 
             #region service DI
-           
+
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IDomainService, DomainService>();
             services.AddTransient<ILcdaService, LcdaService>();
@@ -143,16 +140,11 @@ namespace RemsNG.Services
             services.AddTransient<IExcelService, ExcelService>();
             services.AddTransient<ISyncService, SyncService>();
             services.AddSingleton<IConfigurationRoot>(provider => Configuration);
+            services.AddSingleton(config.GetSection("BankCategory").Get<BankCategory>());
             #endregion
         }
 
-        public static IConfigurationSection jwtAppSettingOptions
-        {
-            get
-            {
-                return Configuration.GetSection(nameof(JwtIssuerOptions));
-            }
-        }
+        public static IConfigurationSection jwtAppSettingOptions => Configuration.GetSection(nameof(JwtIssuerOptions));
 
         public static TokenValidationParameters tokenValidationParameters()
         {

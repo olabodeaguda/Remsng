@@ -1,8 +1,7 @@
 ﻿using RemsNG.Models;
+using RemsNG.ORM;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace RemsNG.Utilities
 {
@@ -29,6 +28,28 @@ namespace RemsNG.Utilities
             foreach (var tm in dnrm.banks)
             {
                 htmlmarkup = htmlmarkup + $"<li>{tm.bankName}:{tm.bankAccount}</li>";
+            }
+
+            return htmlmarkup;
+        }
+        public static string HtmlBuildBanks(DemandNoticeReportModel dnrm, BankCategory bankCategory, TaxpayerCategory taxpayerCategory)
+        {
+            string htmlmarkup = string.Empty;
+            if (bankCategory.CatgoryName.ToLower() == taxpayerCategory.taxpayerCategoryName.ToLower())
+            {
+                var t = dnrm.banks.FirstOrDefault(x => x.bankId == bankCategory.BankId);
+                if (t != null)
+                {
+                    htmlmarkup = htmlmarkup + $"<li>{t.bankName}:{t.bankAccount}</li>";
+                }
+            }
+            else
+            {
+                var r = dnrm.banks.Where(x => x.bankId != bankCategory.BankId);
+                foreach (var tm in r)
+                {
+                    htmlmarkup = htmlmarkup + $"<li>{tm.bankName}:{tm.bankAccount}</li>";
+                }
             }
 
             return htmlmarkup;

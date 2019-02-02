@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data.Entities;
 using RemsNG.Data.Entities;
 using System;
 using System.Collections.Generic;
@@ -50,6 +51,7 @@ namespace RemsNG.Data
         public DbSet<UserLcda> UserLcdas { get; set; }
         public DbSet<UserRole> userRoles { get; set; }
         public DbSet<Ward> Wards { get; set; }
+        public DbSet<Prepayment> Prepayments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

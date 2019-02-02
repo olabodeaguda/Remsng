@@ -1,12 +1,11 @@
-﻿using RemsNG.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
+using RemsNG.Dao;
 using RemsNG.Models;
 using RemsNG.ORM;
-using Microsoft.Extensions.Logging;
-using RemsNG.Dao;
+using RemsNG.Services.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RemsNG.Services
 {
@@ -51,6 +50,11 @@ namespace RemsNG.Services
         public async Task<Response> Update(TaxpayerCategory taxpayerCategory)
         {
             return await taxpayerCatgoryDao.Update(taxpayerCategory);
+        }
+
+        public async Task<TaxpayerCategory> GetTaxpayerCategory(Guid taxpayerId)
+        {
+            return await taxpayerCatgoryDao.GetTaxpayerCategory(taxpayerId);
         }
     }
 }

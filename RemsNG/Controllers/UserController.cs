@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Text;
-using RemsNG.Models;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using RemsNG.Exceptions;
+using RemsNG.Models;
+using RemsNG.ORM;
+using RemsNG.Security;
 using RemsNG.Services.Interfaces;
 using RemsNG.Utilities;
-using RemsNG.ORM;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Authorization;
-using RemsNG.Exceptions;
-using RemsNG.Security;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace RemsNG.Controllers
 {
@@ -47,7 +47,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            User user = await this.userService.Get(id);
+            User user = await userService.Get(id);
             user.passwordHash = null;
 
             if (user == null)
@@ -171,7 +171,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            bool result = await this.userService.AssignLGDA(userLcda);
+            bool result = await userService.AssignLGDA(userLcda);
             if (result)
             {
                 return Ok(new Response()

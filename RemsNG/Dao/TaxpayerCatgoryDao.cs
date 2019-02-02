@@ -122,7 +122,20 @@ namespace RemsNG.Dao
 
         }
 
-        public async Task<object> GetByNameAndLcdaId(Guid lcdaid, string name) =>
-            await db.TaxPayersCategories.FirstOrDefaultAsync(x => x.lcdaId == lcdaid && x.taxpayerCategoryName.ToLower() == name);
+        public async Task<object> GetByNameAndLcdaId(Guid lcdaid, string name)
+        {
+            return await db.TaxPayersCategories.FirstOrDefaultAsync(x => x.lcdaId == lcdaid && x.taxpayerCategoryName.ToLower() == name);
+        }
+
+        public async Task<TaxpayerCategory> GetTaxpayerCategory(Guid taxpayerId)
+        {
+            string query = $"select tbl_taxpayerCategory.* from tbl_taxPayer " +
+                $"inner join tbl_company on tbl_company.id = tbl_taxPayer.companyId " +
+                $"inner join tbl_taxpayerCategory on tbl_taxpayerCategory.id = tbl_company.categoryId " +
+                $"where tbl_taxPayer.id='{taxpayerId}' ";
+
+            var result = await db.TaxPayersCategories.FromSql(query).FirstOrDefaultAsync();
+            return result;
+        }
     }
 }

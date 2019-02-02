@@ -20,13 +20,17 @@ namespace RemsNG.Services
         private IListPropertyService listPropertyService;
         private ISectorService sectorService;
         private IDNAmountDueMgtService amountDueMgtService;
+        private ITaxpayerCategoryService _taxService;
+        private readonly BankCategory _bankCategory;
         public DnDownloadService(IDemandNoticeTaxpayerService _dnts,
             IDemandNoticeCharges _chargesService,
             IDemandNoticeDownloadHistory _demandNoticeDownloadHistory,
             ILcdaService _lcdaService,
             IListPropertyService _listPropertyService,
             ISectorService _sectorService, IDNAmountDueMgtService _amountDueMgtService,
-            IDNPaymentHistoryService _dNPaymentHistoryService)
+            IDNPaymentHistoryService _dNPaymentHistoryService,
+            BankCategory bankCategory, ITaxpayerCategoryService taxService
+            )
         {
             dnts = _dnts;
             chargesService = _chargesService;
@@ -36,6 +40,8 @@ namespace RemsNG.Services
             sectorService = _sectorService;
             amountDueMgtService = _amountDueMgtService;
             dNPaymentHistoryService = _dNPaymentHistoryService;
+            _taxService = taxService;
+            _bankCategory = bankCategory;
         }
 
         public async Task<string> PopulateReceiptHtml(string htmlContent, string rootUrl,
@@ -179,7 +185,10 @@ namespace RemsNG.Services
 
             htmlContent = htmlContent.Replace("PATCH2", "");
 
-            htmlContent = htmlContent.Replace("BANKLIST", DemandNoticeComponents.HtmlBuildBanks(dnrp));
+            var taxCategory = await _taxService.GetTaxpayerCategory(dnrp.taxpayerId);
+            htmlContent = htmlContent.Replace("TAXPAYERCATEGORY", taxCategory.taxpayerCategoryName);
+
+            htmlContent = htmlContent.Replace("BANKLIST", DemandNoticeComponents.HtmlBuildBanks(dnrp, _bankCategory, taxCategory));
             htmlContent = htmlContent.Replace("ARREARS_AMMOUNT", String.Format("{0:n}", decimal.Round(dnrp.arrears, 2)));
             htmlContent = htmlContent.Replace("PENALTY_AMOUNT", String.Format("{0:n}", decimal.Round(dnrp.penalty, 2)));
 
@@ -288,6 +297,5 @@ namespace RemsNG.Services
 
             return CommonList.ReceiptTemplate((allowHeader == null ? "0" : allowHeader.propertyValue));
         }
-
     }
 }

@@ -18,11 +18,18 @@ namespace RemsNG.Dao
 
         public async Task<Response> Create(Taxpayer taxpayer, bool confirmCompany)
         {
-            var r = await Get(taxpayer.streetId, taxpayer.companyId);
+            var r = (Taxpayer)await Get(taxpayer.streetId, taxpayer.companyId);
 
             if (r != null && confirmCompany)
             {
                 throw new DuplicateCompanyException("Company already exist on the street");
+            }
+
+            if (taxpayer.lastname == r.lastname && 
+                taxpayer.surname == r.surname 
+                && taxpayer.firstname == r.firstname)
+            {
+                throw new DuplicateCompanyException("Taxpayer already exist");
             }
 
             DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addTaxpayer @p0,@p1,@p2,@p3,@p4,@p5,@p6,@p7", new object[] {
