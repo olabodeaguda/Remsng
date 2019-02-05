@@ -85,3 +85,39 @@ IF @pageSize = 0 or @pageSize>100
                  OFFSET @PageSize * (@PageNum - 1) ROWS
                  FETCH NEXT @PageSize ROWS ONLY;
 end
+go
+
+
+  ALTER procedure [dbo].[sp_addTaxpayerDemandNoticeItem](
+	@demandNoticeId uniqueidentifier,
+	@taxpayerId uniqueidentifier,
+	@billinYr int,
+	@createdBy varchar(100)
+  )
+  as
+  begin
+	  declare @msg varchar(100);
+	  declare @success bit;
+		insert into tbl_demandNoticeItem(id,dn_taxpayersDetailsId,taxpayerId,itemId,itemName,itemAmount,
+		itemStatus,billingNo,amountPaid,createdBy)
+		select NEWID(),@demandNoticeId,tbl_demandNoticeTaxpayers.taxpayerId,tbl_companyItem.itemId,tbl_item.itemDescription
+		,tbl_companyItem.amount,'PENDING',tbl_demandNoticeTaxpayers.billingNumber,0.0,@createdBy 
+		from tbl_demandNoticeTaxpayers(nolock)
+		inner join tbl_companyItem on tbl_companyItem.taxpayerId = tbl_demandNoticeTaxpayers.taxpayerId
+		inner join tbl_item on tbl_item.id = tbl_companyItem.itemId
+		 where tbl_demandNoticeTaxpayers.billingYr = @billinYr and tbl_companyItem.companyStatus = 'ACTIVE' and 
+		 tbl_demandNoticeTaxpayers.dnId = @demandNoticeId and tbl_demandNoticeTaxpayers.taxpayerId = @taxpayerId and tbl_item.itemStatus= 'ACTIVE';
+
+		 if @@rowcount > 0
+		 begin
+			set @msg = 'Request was successfully';
+			set @success = 1;
+		 end
+		 else
+		 begin
+			set @msg = 'Zero rows affected';
+			set @success = 0;
+		 end
+
+		 select newid() as id,@msg as msg,@success as success;
+  end

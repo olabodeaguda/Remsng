@@ -24,12 +24,14 @@ namespace RemsNG.Dao
             {
                 throw new DuplicateCompanyException("Company already exist on the street");
             }
-
-            if (taxpayer.lastname == r.lastname && 
-                taxpayer.surname == r.surname 
-                && taxpayer.firstname == r.firstname)
+            if (r != null)
             {
-                throw new DuplicateCompanyException("Taxpayer already exist");
+                if (taxpayer.lastname == r.lastname &&
+                    taxpayer.surname == r.surname
+                    && taxpayer.firstname == r.firstname)
+                {
+                    throw new DuplicateCompanyException("Taxpayer already exist");
+                } 
             }
 
             DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addTaxpayer @p0,@p1,@p2,@p3,@p4,@p5,@p6,@p7", new object[] {

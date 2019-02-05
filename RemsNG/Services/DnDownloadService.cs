@@ -76,6 +76,11 @@ namespace RemsNG.Services
             decimal amtPaid = dnpHistory.Sum(x => x.amount);
             decimal amtDue = dnrp.amountDue;
             dnrp.amountPaid = amtPaid;
+            if (dnpHistory.Count > 0)
+            {
+                var tt = dnpHistory.OrderByDescending(x => x.dateCreated).FirstOrDefault();
+                htmlContent = htmlContent.Replace("PAYMENT_DATE", tt.dateCreated.ToString("dd-MM-yyyy"));
+            }
 
             htmlContent = htmlContent.Replace("TOTAL_AMOUNT", $"{String.Format("{0:n}", decimal.Round(dnrp.amountPaid, 2))} naira");
             #region old
@@ -223,8 +228,11 @@ namespace RemsNG.Services
                     prepaymentStatus = "ACTIVE",
                     taxpayerId = dnrp.taxpayerId
                 });
+                //if (prepayment != null && finalTotal > 0)
+                //{
+                //    finalTotal = finalTotal ;
+                //}
             }
-
 
             htmlContent = htmlContent.Replace("AMOUNT_PAID", String.Format("{0:n}", decimal.Round(amountPaid, 2)));
             htmlContent = htmlContent.Replace("FINAL_TOTAL", String.Format("{0:n}", decimal.Round(finalTotal, 2)));
