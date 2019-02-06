@@ -219,19 +219,16 @@ namespace RemsNG.Services
             }
             decimal finalTotal = gtotal + dnrp.charges - amountPaid;
             var prepayment = await dNPaymentHistoryService.GetPrepaymentByTaxpayerId(dnrp.taxpayerId);
-            if (finalTotal < 0)
+            //if (finalTotal < 0)
+            //{
+            //}
+            if (prepayment != null && finalTotal > 0)
             {
-                // register the prepayment
-                prepayment = await dNPaymentHistoryService.AddPrepaymentForAlreadyRegisterdAmount(new Prepayment()
-                {
-                    amount = finalTotal * -1,
-                    prepaymentStatus = "ACTIVE",
-                    taxpayerId = dnrp.taxpayerId
-                });
-                //if (prepayment != null && finalTotal > 0)
-                //{
-                //    finalTotal = finalTotal ;
-                //}
+                finalTotal = finalTotal - prepayment.amount;
+            }
+            else if (finalTotal < 0)
+            {
+                finalTotal = 0;
             }
 
             htmlContent = htmlContent.Replace("AMOUNT_PAID", String.Format("{0:n}", decimal.Round(amountPaid, 2)));

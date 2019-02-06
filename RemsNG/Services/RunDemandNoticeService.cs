@@ -19,6 +19,7 @@ namespace RemsNG.Services
 {
     public class RunDemandNoticeService : IRunDemandNoticeService
     {
+        private readonly CompanyItemDao _companyItemDao;
         private readonly DNPaymentHistoryDao _dnPaymentHistoryDao;
         private readonly DemandNoticePaymentHistoryDao _dnpHisotryDao;
         private readonly IDNAmountDueMgtService _admService;
@@ -87,6 +88,7 @@ namespace RemsNG.Services
             _admService = dNAmountDueMgtService;
             _dnpHisotryDao = new DemandNoticePaymentHistoryDao(_db);
             _dnPaymentHistoryDao = new DNPaymentHistoryDao(_db);
+            _companyItemDao = new CompanyItemDao(_db);
         }
 
         public async Task RegisterTaxpayer()
@@ -163,6 +165,14 @@ namespace RemsNG.Services
                                 dntd.councilTreasurerSigFilen = await imageService.ImageNameByOwnerIdAsync(lcda.id,
                                     ImgTypesEnum.COUNCIL_TREASURER_SIGNATURE.ToString());
                                 dntd.isUnbilled = demandNotice.isUnbilled;
+
+
+                                // get taxpayer company item
+                                var items = await _companyItemDao.ByTaxpayer(tm.id);
+                                if (items.Count < 1)
+                                {
+                                    continue;
+                                }
 
                                 Response response1 = await demandNoticeTaxpayersDao.Add(dntd);
 
