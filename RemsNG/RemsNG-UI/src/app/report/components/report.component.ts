@@ -1,27 +1,35 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { IMyDpOptions, IMyDateModel } from 'mydatepicker';
 import { ToasterService } from 'angular2-toaster';
 import { ReportService } from '../services/report.service';
 import * as FileSaver from 'file-saver';
+import { AppSettings } from '../../shared/models/app.settings';
+import { isNullOrUndefined } from 'util';
 
 @Component({
     selector: 'app-report',
     templateUrl: '../views/report.component.html'
 })
 
-export class ReportComponent {
+export class ReportComponent implements OnInit {
 
     startDate: string = '';
     endDate: string = '';
     htmlresult: string = '';
-
+    yrLst = [];
+    selectedYr;
     isLoading: boolean = false;
     public myDatePickerOptions: IMyDpOptions = {
         dateFormat: 'dd-mm-yyyy',
     };
 
     constructor(private toasterService: ToasterService,
-        private reportService: ReportService) {
+        private reportService: ReportService,
+        private appsettings: AppSettings) {
+    }
+
+    ngOnInit() {
+        this.yrLst = this.appsettings.getYearList();
     }
 
     onDateChanged(event: IMyDateModel, dataType: string) {
@@ -166,6 +174,25 @@ export class ReportComponent {
                 } else {
                     this.htmlresult = '';
                 }
+            }, error => {
+                this.isLoading = false;
+                this.toasterService.pop('error', 'Error', error);
+            });
+    }
+
+    downloadTWithoutDN() {
+        if (isNullOrUndefined(this.selectedYr)) {
+            this.toasterService.pop('error', 'Error', 'Billing year is required');
+            return;
+        }
+        this.isLoading = true;
+        this.reportService.downloadReportTaxpayerWithOutDN(this.selectedYr)
+            .subscribe(response => {
+                this.isLoading = false;
+                 FileSaver.saveAs(response, this.selectedYr + 'report' + '.xlsx');
+                // const blob = new Blob([response], { type: 'text/xlsx' });
+                // const url = window.URL.createObjectURL(blob);
+                // window.open(url);
             }, error => {
                 this.isLoading = false;
                 this.toasterService.pop('error', 'Error', error);

@@ -16,5 +16,6 @@ namespace RemsNG.Services.Interfaces
         Task<object> ListByItemId(Guid itemId);
         Task<object> ListByItemId(Guid itemId, PageModel pageModel);
         Task<Response> RunTaxpayerPenalty(Guid[] taxpayerIds);
+        Task<List<DemandNoticeItemPenalty>> ActivePenalty(Guid taxpayerId);
     }
 }

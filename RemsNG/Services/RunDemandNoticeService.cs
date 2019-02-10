@@ -166,7 +166,6 @@ namespace RemsNG.Services
                                     ImgTypesEnum.COUNCIL_TREASURER_SIGNATURE.ToString());
                                 dntd.isUnbilled = demandNotice.isUnbilled;
 
-
                                 // get taxpayer company item
                                 var items = await _companyItemDao.ByTaxpayer(tm.id);
                                 if (items.Count < 1)

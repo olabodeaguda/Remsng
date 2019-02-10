@@ -49,5 +49,11 @@ export class ReportService {
         .catch(error => this.dateService.handleError(error));
     }
 
+    
+    downloadReportTaxpayerWithOutDN(billingYr: number) {
+        return this.dateService.getBlob(`report/withoutdn/${billingYr}`)
+        .catch(error => this.dateService.handleError(error));
+    }
+
 }
 

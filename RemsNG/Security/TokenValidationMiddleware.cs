@@ -6,8 +6,6 @@ using RemsNG.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.IO;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -54,8 +52,7 @@ namespace RemsNG.Security
                                 }
                             }
 
-                            SecurityToken validatedToken;
-                            context.User = handler.ValidateToken(token, ServicesCollection.tokenValidationParameters(), out validatedToken);
+                            context.User = handler.ValidateToken(token, ServicesCollection.tokenValidationParameters(), out SecurityToken validatedToken);
                             await next(context);
                         }
                         catch (Exception ex)

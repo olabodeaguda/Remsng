@@ -6,6 +6,7 @@ using RemsNG.ORM;
 using RemsNG.Services.Interfaces;
 using RemsNG.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -59,7 +60,6 @@ namespace RemsNG.Services
             return await itemPenaltyDao.UpdateStatus(item);
         }
 
-
         public async Task<Response> RunTaxpayerPenalty(Guid[] taxpayerIds)
         {
             var recievables = await demandNoticeTaxpayersDao.GetAllReceivables(taxpayerIds);// unpaid taxpayer
@@ -108,6 +108,14 @@ namespace RemsNG.Services
                 code = MsgCode_Enum.SUCCESS,
                 description = "No penalty for the selected user"
             };
+        }
+
+        public async Task<List<DemandNoticeItemPenalty>> ActivePenalty(Guid taxpayerId)
+        {
+            var result = await demandNoticePenaltyDao.ByTaxpayerId(taxpayerId);
+            return result
+                .Where(x => x.itemPenaltyStatus == "PENDING" || x.itemPenaltyStatus == "PART_PAYMENT")
+                .ToList();
         }
     }
 }

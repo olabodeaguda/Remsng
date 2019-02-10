@@ -31,7 +31,7 @@ namespace RemsNG.Dao
                     && taxpayer.firstname == r.firstname)
                 {
                     throw new DuplicateCompanyException("Taxpayer already exist");
-                } 
+                }
             }
 
             DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addTaxpayer @p0,@p1,@p2,@p3,@p4,@p5,@p6,@p7", new object[] {
@@ -277,6 +277,21 @@ namespace RemsNG.Dao
                 .ToList();
 
             return re;
+        }
+
+        public async Task<TaxpayerExtension2[]> GetUnbilledTaxpayer(int billingYear)
+        {
+            string query = $"select tbl_taxPayer.*,tbl_company.companyName, tbl_street.streetName, tbl_address.addressnumber, tbl_ward.wardName from tbl_taxPayer " +
+                $"inner join tbl_company on tbl_company.id = tbl_taxPayer.companyId " +
+                $"inner join tbl_street on tbl_street.id = tbl_taxPayer.streetId " +
+                $"inner join tbl_ward on tbl_ward.id = tbl_street.wardId " +
+                $"inner join tbl_address on tbl_address.id = tbl_taxPayer.addressId " +
+                $"where tbl_taxPayer.id  " +
+                $"not in(select taxpayerId from tbl_demandNoticeTaxpayers where " +
+                $"billingYr= {billingYear} and tbl_demandNoticeTaxpayers.demandNoticeStatus <> 'CANCEL') " +
+                $"and tbl_taxPayer.taxpayerStatus = 'ACTIVE' ";
+
+            return await db.TaxpayerExtension2s.FromSql(query).ToArrayAsync();
         }
     }
 }

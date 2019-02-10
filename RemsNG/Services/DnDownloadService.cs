@@ -180,6 +180,7 @@ namespace RemsNG.Services
             {
                 htmlContent = htmlContent.Replace("BILL_NO", dnrp.billingNumber);
             }
+
             htmlContent = htmlContent.Replace("PAYER_NAME", dnrp.taxpayersName);
             htmlContent = htmlContent.Replace("PAYER_ADDRESS", dnrp.addressName);
             htmlContent = htmlContent.Replace("CURRENT_DATE", DateTime.Now.ToString("dd-MM-yyyy"));

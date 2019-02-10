@@ -19,5 +19,6 @@ namespace RemsNG.Services.Interfaces
         Task<DemandNotice> GetByBatchId(string batchId);
         Task<bool> AddArrears(DemandNoticeArrears dna);
         Task<object> SearchDemandNotice(DemandNotice demandNotice, PageModel pageModel);
+
     }
 }

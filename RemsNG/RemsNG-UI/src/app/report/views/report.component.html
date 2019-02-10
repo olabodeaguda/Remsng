@@ -28,7 +28,14 @@
                                 <label for="endDate">End Date</label>
                                 <my-date-picker name="endDate" [options]="myDatePickerOptions" (dateChanged)="onDateChanged($event,'endDate')"></my-date-picker>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-3">
+                                <label for="dateYear">Select Year</label>
+                                <select name="dateYear" class="form-control" [(ngModel)]="selectedYr">
+                                    <option selected="selected">Select Year</option>
+                                    <option *ngFor="let data of yrLst;" [ngValue]="data">{{data}}</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3">
                                 <label></label>
                                 <div class="row">
                                     <div class="col-ms-3">
@@ -63,6 +70,11 @@
                                                     <li>
                                                         <a href="javascript:;" (click)="downloadByCategory()">
                                                             <i class="fa fa-download"></i> Report by category</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="javascript:;" (click)="downloadTWithoutDN()">
+                                                            <i class="fa fa-download"></i> Taxpayer without demand notice</a>
                                                     </li>
                                                 </ul>
                                             </div>

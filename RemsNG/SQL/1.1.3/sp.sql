@@ -121,3 +121,40 @@ go
 
 		 select newid() as id,@msg as msg,@success as success;
   end
+  go
+  ALTER procedure sp_addPayment
+(
+	@taxpayerId uniqueidentifier,
+	@billingNumber varchar(30),
+	@amount decimal(18,2),
+	@charges decimal(18,2),
+	@paymentMode varchar(30),
+	@referenceNumber varchar(30),
+	@bankId uniqueidentifier,
+	@createdBy varchar(100),
+	@dateCreated datetime,
+	@isWaiver bit
+)
+as
+begin
+	declare @msg varchar(200);
+	declare @success bit;
+
+	insert into tbl_demandNoticePaymentHistory(id,ownerId,billingNumber,amount,charges,paymentMode,
+	referenceNumber,bankId,createdBy,dateCreated,paymentStatus,IsWaiver)
+	values(NEWID(),@taxpayerId,@billingNumber,@amount,@charges,@paymentMode,@referenceNumber,@bankId,
+	@createdBy,@dateCreated,'COMPLETED',@isWaiver);
+
+	if @@ROWCOUNT > 0
+	begin
+		set @msg = 'Payment has been added';
+		set @success = 1;
+	end
+	else
+	begin
+		set @msg = 'An error occured, Please try again, Payment has been added';
+		set @success = 0;
+	end
+	select NEWID() as id, @msg as msg,@success as success;
+end
+

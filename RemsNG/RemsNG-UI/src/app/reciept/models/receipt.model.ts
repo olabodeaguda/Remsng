@@ -12,4 +12,5 @@ export class ReceiptModel{
     referenceNumber: string = '';
     newPaymentStatus:string = '';
     isLoading:boolean = false;
+    IsWaiver = false;
 }

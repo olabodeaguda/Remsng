@@ -15,6 +15,7 @@ namespace RemsNG.ORM
         public Guid bankId { get; set; }
         public string paymentStatus { get; set; }
         public string bankName { get; set; }
+        public bool IsWaiver { get; set; }
         [NotMapped]
         public decimal TotalBillAmount { get; set; }
     }

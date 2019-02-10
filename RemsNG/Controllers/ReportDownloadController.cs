@@ -19,21 +19,23 @@ namespace RemsNG.Controllers
     [Route("api/v1/report")]
     public class ReportDownloadController : Controller
     {
+        private readonly ITaxpayerService _taxpayerService;
         private readonly IReportService reportService;
         private readonly IExcelService excelService;
         private readonly ILcdaService lcdaService;
         private readonly IDNPaymentHistoryService dNPaymentHistoryService;
-        private IHostingEnvironment hostingEnvironment;
+        private readonly IHostingEnvironment hostingEnvironment;
         public ReportDownloadController(IReportService _reportService,
             IExcelService _excelService, ILcdaService _lcdaService,
             IDNPaymentHistoryService _dNPaymentHistoryService,
-            IHostingEnvironment _hostingEnvironment)
+            IHostingEnvironment _hostingEnvironment, ITaxpayerService taxpayerService)
         {
             reportService = _reportService;
             excelService = _excelService;
             lcdaService = _lcdaService;
             dNPaymentHistoryService = _dNPaymentHistoryService;
             hostingEnvironment = _hostingEnvironment;
+            _taxpayerService = taxpayerService;
         }
 
         [RemsRequirementAttribute("DOWNLOAD_REPORT")]
@@ -432,6 +434,36 @@ namespace RemsNG.Controllers
 
             HttpContext.Response.ContentType = "application/octet-stream";
             HttpContext.Response.Body.Write(result, 0, result.Length);
+            return new ContentResult();
+        }
+
+
+        [HttpGet("withoutdn/{billingYr}")]
+        public async Task<IActionResult> GetTaxpayeWithOutDemandNotice(int billingYr)
+        {
+            if (billingYr == default(int))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = $"Billing year is required"
+                });
+            }
+
+            var taxpayer = await _taxpayerService.UnBilledTaxpayer(billingYr);
+            if (taxpayer.Length <= 0)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = $"All taxpayer has been billed for this year"
+                });
+            }
+
+            byte[] byt = await excelService.TaxpayerWithOutDemandNotice(taxpayer, billingYr);
+
+            HttpContext.Response.ContentType = "application/octet-stream";
+            HttpContext.Response.Body.Write(byt, 0, byt.Length);
             return new ContentResult();
         }
     }

@@ -83,6 +83,7 @@
                                                 <th>Billing Year</th>
                                                 <th>Reference Number</th>
                                                 <th>Payment Status</th>
+                                                <th>Is Waiver</th>
                                                 <th>Created Date</th>
                                             </thead>
                                             <tbody>
@@ -118,6 +119,7 @@
                                                     <td>{{data.billingYear}}</td>
                                                     <td>{{data.referenceNumber}}</td>
                                                     <td>{{data.paymentStatus}}</td>
+                                                    <td>{{data.isWaiver? 'Yes':'No'}}</td>
                                                     <td>{{data.dateCreated|date}}</td>
                                                 </tr>
                                                 <tr *ngIf="receiptLst.length < 1">

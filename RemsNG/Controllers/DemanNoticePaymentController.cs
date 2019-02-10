@@ -20,6 +20,7 @@ namespace RemsNG.Controllers
     [Route("api/v1/payment")]
     public class DemanNoticePaymentController : Controller
     {
+        private readonly IItemPenaltyService _penaltyService;
         private readonly IDNPaymentHistoryService dNPaymentHistoryService;
         private readonly IDemandNoticeTaxpayerService demandNoticeTaxpayerService;
         private ILogger logger;
@@ -28,7 +29,8 @@ namespace RemsNG.Controllers
         public DemanNoticePaymentController(IDNPaymentHistoryService _dNPaymentHistoryService,
             IDemandNoticeTaxpayerService _demandNoticeTaxpayerService,
             ITaxpayerService _taxpayerService, ILoggerFactory loggerFactory,
-            IDNAmountDueMgtService _amountDueMgtService, IAbstractService _abstractService)
+            IDNAmountDueMgtService _amountDueMgtService, IAbstractService _abstractService,
+            IItemPenaltyService penaltyService)
         {
             dNPaymentHistoryService = _dNPaymentHistoryService;
             dNPaymentHistoryService = _dNPaymentHistoryService;
@@ -36,6 +38,7 @@ namespace RemsNG.Controllers
             logger = loggerFactory.CreateLogger("Receipt payment");
             amountDueMgtService = _amountDueMgtService;
             abstractService = _abstractService;
+            _penaltyService = penaltyService;
         }
 
         [HttpGet("{billingNumber}")]
@@ -157,6 +160,21 @@ namespace RemsNG.Controllers
             }
             else
             {
+                if (dnph.IsWaiver)
+                {
+                    // get arrears
+                    //var arrears = await demandNoticeTaxpayerService.GetArrearsByTaxpayerId(dnph.ownerId);
+                    //if (arrears.Sum(x=>x.totalAmount) <= dnph.amount)
+                    //{
+                    //    string query1 = ""
+                    //}
+
+                    ////get penalty
+                    //var penalty = _penaltyService.ActivePenalty(dnph.ownerId);
+
+
+                }
+
                 var txpayer = await demandNoticeTaxpayerService.TaxpayerMiniByBillingNo(dnph.billingNumber);
                 var prepay = await dNPaymentHistoryService.GetPrepaymentByTaxpayerId(txpayer.taxpayerId);
                 if (prepay != null)
@@ -189,8 +207,6 @@ namespace RemsNG.Controllers
                     amountDueMgtService.CurrentAmountDue(paymentDueList, (dnph.amount + dnph.charges) - rmain, true);
                     query = query + amountDueMgtService.PaymentQuery(paymentDueList, dnph,
                        DemandNoticeStatus.PAID.ToString(), User.Identity.Name);
-                   
-
                     //over payment by taxpayer 
                     query = query + $"insert into tbl_prepayment(taxpayerId,amount,datecreated) values('{txpayer.taxpayerId}','{rmain}',getdate());";
                 }

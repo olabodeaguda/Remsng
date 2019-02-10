@@ -371,5 +371,7 @@ namespace RemsNG.Dao
 
             return await db.DemandNoticeTaxpayersDetails.FromSql(query).ToListAsync();
         }
+
+
     }
 }

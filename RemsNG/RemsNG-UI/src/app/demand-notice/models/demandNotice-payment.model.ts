@@ -11,4 +11,5 @@ export class DemandNoticePaymentModel{
     paymentStatus:string = '';
     createdBy:string = '';
     dateCreated:string = ''
+    IsWaiver: boolean = false;
 }

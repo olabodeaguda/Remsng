@@ -18,7 +18,7 @@ namespace RemsNG.Dao
         public async Task<Response> AddAsync(DemandNoticePaymentHistory dnph)
         {
             DbResponse dbResponse = await db.DbResponses.FromSql("sp_addPayment @p0,@p1,@p2,@p3,@p4,@p5" +
-                ",@p6,@p7,@p8", new object[] {
+                ",@p6,@p7,@p8,@p9", new object[] {
                 dnph.ownerId,
                 dnph.billingNumber,
                 dnph.amount,
@@ -26,7 +26,8 @@ namespace RemsNG.Dao
                 dnph.paymentMode,
                 dnph.referenceNumber,
                 dnph.bankId,
-                dnph.createdBy,dnph.dateCreated
+                dnph.createdBy,dnph.dateCreated,
+                dnph.IsWaiver
             }).FirstOrDefaultAsync();
 
             if (dbResponse.success)

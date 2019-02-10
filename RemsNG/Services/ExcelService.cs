@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace RemsNG.Services
@@ -771,6 +772,84 @@ namespace RemsNG.Services
                             rowHeader1.CreateCell(3).SetCellValue(String.Format("{0:n}", decimal.Round(penalty.Sum(x => x.amountPaid), 2)));
                             cc++;
                         }
+                    }
+                }
+
+                MemoryStream memo = new MemoryStream();
+                workbook.Write(memo);
+                return memo.ToArray();
+            });
+        }
+
+        public async Task<byte[]> TaxpayerWithOutDemandNotice(TaxpayerExtension2[] taxpayers, int billingYear)
+        {
+            return await Task.Run(() =>
+            {
+                IWorkbook workbook = new XSSFWorkbook();
+                if (taxpayers.Length < 1)
+                {
+                    return null;
+                }
+
+                foreach (var tm in taxpayers.GroupBy(x => x.StreetName))
+                {
+                    string valu = Regex.Replace(tm.Key, "[!@#$%^&*()_+|\\}{[]';:/.,<>?]+", "");
+                    valu = valu.Replace("[", "");
+                    valu = valu.Replace("]", "");
+                    valu = valu.Replace("/", "");
+                    valu = valu.Replace("\\", "");
+                    valu = valu.Replace("-", "");
+                    ISheet sheet1;
+                    var r = workbook.GetSheet(valu);
+                    if (r != null)
+                    {
+                        sheet1 = workbook.CreateSheet(valu + Guid.NewGuid().ToString().Substring(0, 6));
+                    }
+                    else
+                    {
+                        sheet1 = workbook.CreateSheet(valu);
+                    }
+
+                    #region sub heading
+                    sheet1.AddMergedRegion(new CellRangeAddress(0, 0, 0, 4));
+                    sheet1.AddMergedRegion(new CellRangeAddress(1, 1, 0, 4));
+                    //sheet1.AddMergedRegion(new CellRangeAddress(2, 2, 0, 4));
+                    //sheet1.AddMergedRegion(new CellRangeAddress(3, 3, 0, 4));
+
+                    var rowIndex = 0;
+                    IRow rowDomain = sheet1.CreateRow(rowIndex);
+                    rowDomain.Height = 400;
+                    ICell cellDomain = rowDomain.CreateCell(0);
+                    cellDomain.SetCellValue(tm.Key.ToUpper());
+                    CellStyleHeader(cellDomain, workbook, 13);
+                    rowIndex++;
+
+                    IRow rowLcda = sheet1.CreateRow(rowIndex);
+                    rowLcda.Height = 300;
+                    ICell cellLcda = rowLcda.CreateCell(0);
+                    cellLcda.SetCellValue($"Unbilled taxpayer for the year {billingYear}");
+                    CellStyleHeader(cellLcda, workbook, 10);
+                    rowIndex++;
+                    #endregion
+
+                    #region header
+                    IRow rowHeader = sheet1.CreateRow(rowIndex++);
+                    rowHeader.CreateCell(0).SetCellValue("SN");
+                    rowHeader.CreateCell(1).SetCellValue("Company Name");
+                    rowHeader.CreateCell(2).SetCellValue("Taxpayer Name");
+                    rowHeader.CreateCell(3).SetCellValue("Ward Name");
+                    rowHeader.CreateCell(4).SetCellValue("Street");
+                    #endregion
+
+                    int count = 1;
+                    foreach (var tmm in tm.ToArray())
+                    {
+                        IRow rowHeader1 = sheet1.CreateRow(rowIndex++);
+                        rowHeader1.CreateCell(0).SetCellValue(count++);
+                        rowHeader1.CreateCell(1).SetCellValue(tmm.companyName);
+                        rowHeader1.CreateCell(2).SetCellValue($"{tmm.lastname} {tmm.firstname} {tmm.surname}");
+                        rowHeader1.CreateCell(3).SetCellValue(tmm.WardName);
+                        rowHeader1.CreateCell(4).SetCellValue($"{tmm.AddressNumber} {tmm.StreetName}");
                     }
                 }
 

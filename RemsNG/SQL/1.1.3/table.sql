@@ -5,4 +5,9 @@
 	[prepaymentStatus] [varchar(50)] NOT NULL default 'ACTIVE',
 	[datecreated] [datetime] NOT NULL);
 
+GO
+
+alter table tbl_demandNoticePaymentHistory add IsWaiver bit not null DEFAULT 0;
+
+GO
 

@@ -2,7 +2,6 @@
 using RemsNG.ORM;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace RemsNG.Services.Interfaces
@@ -22,5 +21,6 @@ namespace RemsNG.Services.Interfaces
         Task<List<DemandNoticePaymentHistory>> PaymentHistory(Guid id);
         Task<bool> Delete(Guid taxpayerId);
         Task<List<TaxpayerExtension>> SearchInStreet(Guid streetId, string query);
+        Task<TaxpayerExtension2[]> UnBilledTaxpayer(int billingYear);
     }
 }

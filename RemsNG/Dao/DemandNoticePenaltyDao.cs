@@ -118,7 +118,6 @@ namespace RemsNG.Dao
             return lstdbItem;
         }
 
-
         public async Task<List<DemandNoticeItemPenaltyExt>> ReportByCategory(DateTime fromDate, DateTime toDate)
         {
             DateTime startDate = new DateTime(fromDate.Year, fromDate.Month, fromDate.Day, 0, 0, 0);

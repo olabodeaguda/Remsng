@@ -1,9 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RemsNG.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace RemsNG.ORM
 {
@@ -59,9 +55,10 @@ namespace RemsNG.ORM
         public DbSet<DemandNoticePaymentHistoryExt> DemandNoticePaymentHistoryExts { get; set; }
         public DbSet<ItemReportSummaryModel> ItemReportSummaryModels { get; set; }
         public DbSet<ChartReport> ChartReports { get; set; }
-        public DbSet<DnError> DnErroor{ get; set; }
+        public DbSet<DnError> DnErroor { get; set; }
         public DbSet<SyncDataModel> SyncDataModels { get; set; }
         public DbSet<Prepayment> Prepayments { get; set; }
+        public DbSet<TaxpayerExtension2> TaxpayerExtension2s { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

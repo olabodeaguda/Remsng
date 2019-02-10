@@ -211,5 +211,10 @@ namespace RemsNG.Services
         {
             return await dntDao.MoveToUnBills(billno);
         }
+
+        public async Task<List<DemandNoticeArrears>> GetArrearsByTaxpayerId(Guid taxpayerId)
+        {
+            return await dna.ByTaxpayer(taxpayerId);
+        }
     }
 }

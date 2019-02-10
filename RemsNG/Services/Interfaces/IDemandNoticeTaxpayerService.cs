@@ -19,5 +19,6 @@ namespace RemsNG.Services.Interfaces
         Task<List<object>> GetTaxpayerPayables(Guid taxpayerId);
         Task<bool> MoveToBill(string billno);
         Task<bool> MoveToUnBills(string billno);
+        Task<List<DemandNoticeArrears>> GetArrearsByTaxpayerId(Guid taxpayerId);
     }
 }

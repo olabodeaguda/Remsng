@@ -106,5 +106,10 @@ namespace RemsNG.Services
         {
             return await taxpayerDao.SearchInStreet(streetId, query);
         }
+
+        public async Task<TaxpayerExtension2[]> UnBilledTaxpayer(int billingYear)
+        {
+            return await taxpayerDao.GetUnbilledTaxpayer(billingYear);
+        }
     }
 }

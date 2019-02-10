@@ -62,29 +62,42 @@
 
                                 <div class="form-group">
                                     <label for="startDate">Payment Date</label>
-                                    <my-date-picker name="startDate" [options]="myDatePickerOptions" (dateChanged)="onDateChanged($event,'dateCreated')"></my-date-picker>
+                                    <my-date-picker name="startDate" [options]="myDatePickerOptions"
+                                        (dateChanged)="onDateChanged($event,'dateCreated')"></my-date-picker>
                                 </div>
                                 <div class="form-group">
                                     <div class="form-group">
                                         <label for="bankId">Select Bank</label>
-                                        <select id="bankId" name="bankId" class="form-control" [(ngModel)]="dnpModel.bankId">
+                                        <select id="bankId" name="bankId" class="form-control"
+                                            [(ngModel)]="dnpModel.bankId">
                                             <option>Select Bank</option>
-                                            <option *ngFor="let data of banks;" [ngValue]="data.id">{{data.bankName}}</option>
+                                            <option *ngFor="let data of banks;" [ngValue]="data.id">{{data.bankName}}
+                                            </option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="referenceNumber">Reference Number</label>
-                                    <input name="referenceNumber" class="form-control" [(ngModel)]="dnpModel.referenceNumber" />
+                                    <input name="referenceNumber" class="form-control"
+                                        [(ngModel)]="dnpModel.referenceNumber" />
                                 </div>
                                 <div class="form-group">
                                     <label for="amount">Amount</label>
                                     <input name="amount" class="form-control" [(ngModel)]="dnpModel.amount" />
                                 </div>
+                                <div class="form-group">
+                                    <div class="form-check col-sm-12">
+                                        <input type="checkbox" class="form-check-input" id="IsWaiver"
+                                            [checked]="dnpModel.IsWaiver"
+                                            (change)="dnpModel.IsWaiver = !dnpModel.IsWaiver">
+                                        <label class="form-check-label" for="IsWaiver">Should be a waver? check if yes?</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="box-footer">
-                            <button [ladda]="isLoadingMini" type="submit" class="btn btn-success" (click)="registerpayment()">Submit</button>
+                            <button [ladda]="isLoadingMini" type="submit" class="btn btn-success"
+                                (click)="registerpayment()">Submit</button>
                             <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
                         </div>
                     </div>
@@ -113,7 +126,8 @@
                                 <div class="col-xs-12">
                                     <div class="form-group col-md-6">
                                         <label for="category">Category</label>
-                                        <input disabled="disabled" name="category" class="form-control" [(ngModel)]="amountDueModel.category" />
+                                        <input disabled="disabled" name="category" class="form-control"
+                                            [(ngModel)]="amountDueModel.category" />
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label for="itemDescription">Item Description</label>
@@ -126,7 +140,8 @@
                                 <div class="col-xs-12">
                                     <div class="form-group col-md-6">
                                         <label for="itemAmount">Amount due</label>
-                                        <input name="itemAmount" class="form-control" [(ngModel)]="amountDueModel.itemAmount" />
+                                        <input name="itemAmount" class="form-control"
+                                            [(ngModel)]="amountDueModel.itemAmount" />
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label for=""></label>
@@ -197,14 +212,17 @@
                                 <div class="col-xs-12">
                                     <div class="form-group col-md-6">
                                         <label for="itemId">Select Item</label>
-                                        <select name="itemId" id="itemId" class="form-control" [(ngModel)]="amountDueModel.itemId">
+                                        <select name="itemId" id="itemId" class="form-control"
+                                            [(ngModel)]="amountDueModel.itemId">
                                             <option>Select Item</option>
-                                            <option *ngFor="let data of items;" [ngValue]="data.id">{{data.itemDescription}}</option>
+                                            <option *ngFor="let data of items;" [ngValue]="data.id">
+                                                {{data.itemDescription}}</option>
                                         </select>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label for="itemAmount">Amount Due</label>
-                                        <input name="itemAmount" class="form-control" [(ngModel)]="amountDueModel.itemAmount" />
+                                        <input name="itemAmount" class="form-control"
+                                            [(ngModel)]="amountDueModel.itemAmount" />
                                     </div>
                                 </div>
                             </div>
@@ -241,7 +259,8 @@
                     <br> Are you sure?
                 </div>
                 <div class="box-footer">
-                    <button [ladda]="isLoadingMini" type="submit" class="btn btn-success" (click)="submitCancel()">Submit</button>
+                    <button [ladda]="isLoadingMini" type="submit" class="btn btn-success"
+                        (click)="submitCancel()">Submit</button>
                     <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -263,7 +282,8 @@
                     Are you sure?
                 </div>
                 <div class="box-footer">
-                    <button [ladda]="isLoadingMini" type="submit" class="btn btn-success" (click)="submitUnbilled()">Submit</button>
+                    <button [ladda]="isLoadingMini" type="submit" class="btn btn-success"
+                        (click)="submitUnbilled()">Submit</button>
                     <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -339,19 +359,22 @@
                                                 <td>
                                                     <div class="btn-group" *ngIf="data.demandNoticeStatus !== 'CANCEL'">
                                                         <button type="button" class="btn btn-default dropdown-toggle"
-                                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            data-toggle="dropdown" aria-haspopup="true"
+                                                            aria-expanded="false">
                                                             Action
                                                             <span class="caret"></span>
                                                         </button>
                                                         <ul class="dropdown-menu">
                                                             <li>
-                                                                <a href="javascript:;" (click)="downloadDN(data.billingNumber)">
+                                                                <a href="javascript:;"
+                                                                    (click)="downloadDN(data.billingNumber)">
                                                                     <i class="fa fa-download"></i> Download Demand
                                                                     notice
                                                                 </a>
                                                             </li>
                                                             <li>
-                                                                <a href="javascript:;" (click)="openEdit(data.billingNumber)">
+                                                                <a href="javascript:;"
+                                                                    (click)="openEdit(data.billingNumber)">
                                                                     <i class="fa fa-edit"></i> Edit </a>
                                                             </li>
                                                             <li>
@@ -359,16 +382,19 @@
                                                                     <i class="fa fa-plus"></i> Add Arrears </a>
                                                             </li>
                                                             <li>
-                                                                <a href="javascript:;" (click)="openCancel(data.billingNumber)">
+                                                                <a href="javascript:;"
+                                                                    (click)="openCancel(data.billingNumber)">
                                                                     <i class="fa fa-exclamation-triangle"></i> Cancel
                                                                     Demand Notice </a>
                                                             </li>
                                                             <li>
-                                                                <a href="javascript:;" (click)="openPayment(data.billingNumber)">
+                                                                <a href="javascript:;"
+                                                                    (click)="openPayment(data.billingNumber)">
                                                                     <i class="fa fa-money"></i> Make Payment </a>
                                                             </li>
                                                             <li>
-                                                                <a href="javascript:;" (click)="openReciept(data.billingNumber)">
+                                                                <a href="javascript:;"
+                                                                    (click)="openReciept(data.billingNumber)">
                                                                     <i class="fa fa-sticky-note-o"></i> Download
                                                                     Reciept </a>
                                                             </li>

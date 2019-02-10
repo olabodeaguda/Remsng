@@ -1,8 +1,4 @@
-﻿using RemsNG.ORM;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace RemsNG.Models
 {
@@ -21,5 +17,6 @@ namespace RemsNG.Models
         public int billingYear { get; set; }
         public DateTime dateCreated { get; set; }
         public string taxpayersName { get; set; }
+        public bool IsWaiver { get; set; }
     }
 }
