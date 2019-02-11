@@ -2,7 +2,7 @@
 	[id] [bigint] NOT NULL PRIMARY KEY IDENTITY(1,1),
 	[taxpayerId] [uniqueidentifier] NOT NULL,
 	[amount] [decimal](18, 2) NOT NULL,
-	[prepaymentStatus] [varchar(50)] NOT NULL default 'ACTIVE',
+	[prepaymentStatus] varchar(50) NOT NULL default 'ACTIVE',
 	[datecreated] [datetime] NOT NULL);
 
 GO

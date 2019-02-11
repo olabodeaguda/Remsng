@@ -20,7 +20,6 @@ namespace RemsNG.Dao
             return result;
         }
 
-
         public async Task<List<DNAmountDueModel>> ByBillingNo(string[] bills)
         {
             string bnos = bills.FormatString();
