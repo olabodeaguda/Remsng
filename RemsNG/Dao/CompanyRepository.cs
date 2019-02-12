@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RemsNG.Common.Models;
+using RemsNG.Data.Entities;
 using RemsNG.Exceptions;
 using RemsNG.ORM;
 using RemsNG.Utilities;

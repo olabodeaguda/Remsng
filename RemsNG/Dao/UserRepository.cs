@@ -1,4 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
+using RemsNG.Common.Models;
+using RemsNG.Data.Entities;
 using RemsNG.Exceptions;
 using RemsNG.ORM;
 using RemsNG.Utilities;
@@ -9,29 +12,29 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class UserDao : AbstractRepository
+    public class UserRepository : AbstractRepository
     {
-        public UserDao(RemsDbContext _db) : base(_db)
+        public UserRepository(RemsDbContext _db) : base(_db)
         {
         }
 
         public async Task<User> Get(Guid id)
         {
-            return await db.Users.FirstOrDefaultAsync(x => x.id == id);
+            return await db.Users.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<bool> Update(User user)
         {
-            var usr = await db.Users.FindAsync(new object[] { user.id });
+            var usr = await db.Users.FindAsync(new object[] { user.Id });
             if (usr != null)
             {
-                usr.lastModifiedDate = user.lastModifiedDate;
-                usr.lastmodifiedby = user.lastmodifiedby;
-                usr.surname = user.surname;
-                usr.firstname = user.firstname;
-                usr.lastname = user.lastname;
-                usr.email = user.email;
-                usr.gender = user.gender;
+                usr.LastModifiedDate = user.LastModifiedDate;
+                usr.Lastmodifiedby = user.Lastmodifiedby;
+                usr.Surname = user.Surname;
+                usr.Firstname = user.Firstname;
+                usr.Lastname = user.Lastname;
+                usr.Email = user.Email;
+                usr.Gender = user.Gender;
 
                 int count = await db.SaveChangesAsync();
                 if (count > 0)
@@ -41,7 +44,7 @@ namespace RemsNG.Dao
             }
             else
             {
-                throw new NotFoundException($"{user.username} was not found");
+                throw new NotFoundException($"{user.Username} was not found");
             }
 
             return false;
@@ -85,15 +88,15 @@ namespace RemsNG.Dao
 
         public async Task<User> ByEmail(string email)
         {
-            return await db.Users.FirstOrDefaultAsync(x => x.email == email);
+            return await db.Users.FirstOrDefaultAsync(x => x.Email == email);
         }
 
         public async Task<User> ByUserName(string username)
         {
-            return await db.Users.FirstOrDefaultAsync(x => x.username == username);
+            return await db.Users.FirstOrDefaultAsync(x => x.Username == username);
         }
 
-        public async Task<object> Paginated(Models.PageModel pageModel)
+        public async Task<object> Paginated(PageModel pageModel)
         {
             return await Task.Run(() =>
             {
@@ -107,14 +110,14 @@ namespace RemsNG.Dao
             });
         }
 
-        public async Task<object> Paginated(Models.PageModel pageModel, Guid lcdaId)
+        public async Task<object> Paginated(PageModel pageModel, Guid lcdaId)
         {
             var results = await db.Users.FromSql("sp_domainUsers @p0, @p1, @p2", new object[] {
                      lcdaId,
                      pageModel.PageNum,
                      pageModel.PageSize
                 }).ToListAsync();
-            var totalCount = await db.UserLcdas.Where(x => x.lgdaId == lcdaId).CountAsync();
+            var totalCount = await db.UserLcdas.Where(x => x.LgdaId == lcdaId).CountAsync();
             return new
             {
                 data = results,
@@ -130,7 +133,7 @@ namespace RemsNG.Dao
                 throw new NotFoundException("Can't find selected user");
             }
 
-            user.passwordHash = EncryptDecryptUtils.ToHexString(newPwd);
+            user.PasswordHash = EncryptDecryptUtils.ToHexString(newPwd);
             int count = await db.SaveChangesAsync();
             if (count > 0)
             {

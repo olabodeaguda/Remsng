@@ -22,4 +22,9 @@ namespace RemsNG.Common.Models
         public virtual CompanyModel Company { get; set; }
         public virtual StreetModel Street { get; set; }
     }
+
+    public enum TaxPayerEnum
+    {
+        ACTIVE, DELETED
+    }
 }

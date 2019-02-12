@@ -94,7 +94,7 @@ namespace RemsNG.Dao
         public async Task<TaxpayerExtensionModel> ById(Guid id)
         {
             var result = await db.Set<TaxpayerExtensionModel>().FromSql("sp_TaxpayerById @p0", new object[] { id }).FirstOrDefaultAsync();
-            if (result == null || result.taxpayerStatus == TaxpayerEnum.DELETED.ToString())
+            if (result == null || result.taxpayerStatus == TaxPayerEnum.DELETED.ToString())
             {
                 return null;
             }
@@ -105,7 +105,7 @@ namespace RemsNG.Dao
         public async Task<List<TaxpayerExtensionModel>> ByStreetId(Guid streetId)
         {
             var result = await db.Set<TaxpayerExtensionModel>().FromSql("sp_TaxpayerByStreetId @p0", new object[] { streetId }).ToListAsync();
-            result = result.Where(x => x.taxpayerStatus == TaxpayerEnum.ACTIVE.ToString()).ToList();
+            result = result.Where(x => x.taxpayerStatus == TaxPayerEnum.ACTIVE.ToString()).ToList();
             return result;
         }
 
@@ -120,7 +120,7 @@ namespace RemsNG.Dao
 
             return new
             {
-                data = results.Where(x => x.taxpayerStatus == TaxpayerEnum.ACTIVE.ToString()).ToList(),
+                data = results.Where(x => x.taxpayerStatus == TaxPayerEnum.ACTIVE.ToString()).ToList(),
                 totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
             };
         }
@@ -128,7 +128,7 @@ namespace RemsNG.Dao
         public async Task<List<TaxpayerExtensionModel>> ByCompanyId(Guid companyId)
         {
             var results = await db.Set<TaxpayerExtensionModel>().FromSql("sp_TaxpayerByCompanyId @p0", new object[] { companyId }).ToListAsync();
-            results = results.Where(x => x.taxpayerStatus == TaxpayerEnum.ACTIVE.ToString()).ToList();
+            results = results.Where(x => x.taxpayerStatus == TaxPayerEnum.ACTIVE.ToString()).ToList();
             return results;
         }
 
@@ -162,7 +162,7 @@ namespace RemsNG.Dao
         public async Task<List<TaxpayerExtensionModel>> ByLcdaId(Guid lcdaId)
         {
             var results = await db.Set<TaxpayerExtensionModel>().FromSql("sp_TaxpayerByLcdaId @p0", new object[] { lcdaId }).ToListAsync();
-            results = results.Where(x => x.taxpayerStatus == TaxpayerEnum.ACTIVE.ToString()).ToList();
+            results = results.Where(x => x.taxpayerStatus == TaxPayerEnum.ACTIVE.ToString()).ToList();
             return results;
         }
 
@@ -206,7 +206,7 @@ namespace RemsNG.Dao
             query = query + (string.IsNullOrEmpty(subQuery) ? "" : " or ") + (string.IsNullOrEmpty(subQuery) ? "" : $" ( {subQuery} ) ");
 
             var results = await db.TaxpayerExtensions.FromSql(query).ToListAsync();
-            return results.Distinct().Where(x => x.taxpayerStatus == TaxpayerEnum.ACTIVE.ToString()).OrderBy(x => x.firstname).ToList();
+            return results.Distinct().Where(x => x.taxpayerStatus == TaxPayerEnum.ACTIVE.ToString()).OrderBy(x => x.firstname).ToList();
         }
 
         public async Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel)
@@ -220,7 +220,7 @@ namespace RemsNG.Dao
 
             return new
             {
-                data = results.Where(x => x.taxpayerStatus == TaxpayerEnum.ACTIVE.ToString()).ToList(),
+                data = results.Where(x => x.taxpayerStatus == TaxPayerEnum.ACTIVE.ToString()).ToList(),
                 totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
             };
         }
