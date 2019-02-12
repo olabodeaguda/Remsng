@@ -11,10 +11,10 @@ namespace RemsNG.Services
 {
     public class CompanyItemService : ICompanyItemService
     {
-        CompanyItemDao companyItemDao;
+        CompanyItemRepository companyItemDao;
         public CompanyItemService(RemsDbContext _db)
         {
-            companyItemDao = new CompanyItemDao(_db);
+            companyItemDao = new CompanyItemRepository(_db);
         }
 
         public async Task<Response> Add(CompanyItem companyItem)

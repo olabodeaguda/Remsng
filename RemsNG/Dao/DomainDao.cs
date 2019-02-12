@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class DomainDao : AbstractDao
+    public class DomainDao : AbstractRepository
     {
         public DomainDao(RemsDbContext _db) : base(_db)
         {

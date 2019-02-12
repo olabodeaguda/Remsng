@@ -12,14 +12,14 @@ namespace RemsNG.Services
     public class ReportService : IReportService
     {
         private readonly DemandNoticePenaltyDao dnPenaltyDao;
-        private readonly DemandNoticeArrearDao dnArrearsDao;
+        private readonly DemandNoticeArrearRepository dnArrearsDao;
         private readonly DemandNoticeItemDao dnitemDao;
         private readonly ReportDao reportDao;
         public ReportService(RemsDbContext _db)
         {
             reportDao = new ReportDao(_db);
             dnitemDao = new DemandNoticeItemDao(_db);
-            dnArrearsDao = new DemandNoticeArrearDao(_db);
+            dnArrearsDao = new DemandNoticeArrearRepository(_db);
             dnPenaltyDao = new DemandNoticePenaltyDao(_db);
         }
 

@@ -9,7 +9,7 @@ using RemsNG.ORM;
 
 namespace RemsNG.Dao
 {
-    public class SyncDao : AbstractDao
+    public class SyncDao : AbstractRepository
     {
         public SyncDao(RemsDbContext _db) : base(_db)
         {

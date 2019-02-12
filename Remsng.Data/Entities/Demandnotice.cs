@@ -5,9 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace RemsNG.Data.Entities
 {
     [Table("tbl_demandnotice")]
-    public partial class Demandnotice
+    public class DemandNotice
     {
-        public Demandnotice()
+        public DemandNotice()
         {
             DemandNoticeItem = new HashSet<DemandNoticeItem>();
         }

@@ -1,7 +1,7 @@
-﻿using RemsNG.ORM;
+﻿using RemsNG.Common.Models;
+using RemsNG.ORM;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace RemsNG.Services.Interfaces
@@ -14,7 +14,7 @@ namespace RemsNG.Services.Interfaces
         Task<RoleExtension> GetByName(string rolename);
         Task<bool> Add(Role role);
         Task<RoleExtension> GetUserDomainRoleByUsername(string username, Guid domainId);
-        Task<object> Paginated(Models.PageModel pageModel);
+        Task<object> Paginated(PageModel pageModel);
         Task<bool> Add(RolePermission role);
         Task<List<RoleExtension>> ByDomainId(Guid domainId);
         Task<List<RoleExtension>> AllRoleByUsername(string username);

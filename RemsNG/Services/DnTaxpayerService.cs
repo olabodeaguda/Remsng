@@ -11,10 +11,10 @@ namespace RemsNG.Services
 {
     public class DnTaxpayerService : IDnTaxpayer
     {
-        private readonly DemandNoticeTaxpayersDao dnTaxpayerDao;
+        private readonly DemandNoticeTaxpayersRepository dnTaxpayerDao;
         public DnTaxpayerService(RemsDbContext _db)
         {
-            dnTaxpayerDao = new DemandNoticeTaxpayersDao(_db);
+            dnTaxpayerDao = new DemandNoticeTaxpayersRepository(_db);
         }
 
         public async Task<DemandNoticeTaxpayersDetail> ByBillingNo(string billingNo)

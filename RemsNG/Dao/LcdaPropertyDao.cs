@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace RemsNG.Dao
 {
-    public class LcdaPropertyDao : AbstractDao
+    public class LcdaPropertyDao : AbstractRepository
     {
         public LcdaPropertyDao(RemsDbContext _db) : base(_db)
         {

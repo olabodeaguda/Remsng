@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace RemsNG.Data.Entities
 {
     [Table("tbl_itempenalty")]
-    public partial class Itempenalty
+    public partial class ItemPenalty
     {
         public Guid Id { get; set; }
         public Guid ItemId { get; set; }

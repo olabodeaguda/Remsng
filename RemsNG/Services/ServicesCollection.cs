@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using RemsNG.Common.Models;
 using RemsNG.Models;
 using RemsNG.Security;
 using RemsNG.Services.Interfaces;

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class DemandNoticePenaltyDao : AbstractDao
+    public class DemandNoticePenaltyDao : AbstractRepository
     {
         public DemandNoticePenaltyDao(RemsDbContext _db) : base(_db)
         {

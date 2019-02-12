@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class LoginDao:AbstractDao
+    public class LoginDao:AbstractRepository
     {
         public LoginDao(RemsDbContext _db):base(_db)
         {

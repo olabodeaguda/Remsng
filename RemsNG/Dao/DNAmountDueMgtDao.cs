@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class DNAmountDueMgtDao : AbstractDao
+    public class DNAmountDueMgtDao : AbstractRepository
     {
         public DNAmountDueMgtDao(RemsDbContext _db) : base(_db)
         {

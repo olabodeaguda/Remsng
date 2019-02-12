@@ -4,8 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RemsNG.Data.Entities
 {
-    [Table("tbl_demandNoticeTaxpayers")]
-    public partial class DemandNoticeTaxpayers
+    public class DemandNoticeTaxpayers
     {
         public Guid Id { get; set; }
         public Guid DnId { get; set; }

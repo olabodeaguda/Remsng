@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class LcdaDao : AbstractDao
+    public class LcdaDao : AbstractRepository
     {
         private readonly ILogger logger;
         public LcdaDao(RemsDbContext _db, ILoggerFactory loggerFactory) : base(_db)

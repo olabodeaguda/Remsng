@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using RemsNG.ORM;
 using RemsNG.Dao;
 using RemsNG.Models;
+using RemsNG.Common.Models;
 
 namespace RemsNG.Services
 {

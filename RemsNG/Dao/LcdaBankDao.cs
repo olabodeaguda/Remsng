@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace RemsNG.Dao
 {
-    public class LcdaBankDao : AbstractDao
+    public class LcdaBankDao : AbstractRepository
     {
         public LcdaBankDao(RemsDbContext _db) : base(_db)
         {

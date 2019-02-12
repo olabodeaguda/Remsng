@@ -11,11 +11,11 @@ namespace RemsNG.Services
 {
     public class AddressService : IAddress
     {
-        private AddressDao addressDao;
+        private AddressRepository addressDao;
 
         public AddressService(RemsDbContext _db)
         {
-            addressDao = new AddressDao(_db);
+            addressDao = new AddressRepository(_db);
         }
 
         public async Task<Response> Add(Address address)

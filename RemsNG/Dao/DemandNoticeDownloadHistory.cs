@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class DemandNoticeDownloadHistoryDao:AbstractDao
+    public class DemandNoticeDownloadHistoryDao:AbstractRepository
     {
         private ILogger logger;
         public DemandNoticeDownloadHistoryDao(RemsDbContext _db, ILoggerFactory loggerFactory) : base(_db)

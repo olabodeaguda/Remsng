@@ -7,7 +7,7 @@ using RemsNG.ORM;
 
 namespace RemsNG.Dao
 {
-    public class ReportDao : AbstractDao
+    public class ReportDao : AbstractRepository
     {
         public ReportDao(RemsDbContext _db) : base(_db)
         {

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class UserDao : AbstractDao
+    public class UserDao : AbstractRepository
     {
         public UserDao(RemsDbContext _db) : base(_db)
         {

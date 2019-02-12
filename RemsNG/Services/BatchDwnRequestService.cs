@@ -11,10 +11,10 @@ namespace RemsNG.Services
 {
     public class BatchDwnRequestService : IBatchDwnRequestService
     {
-        private readonly BatchDownloadRequestDao bnr;
+        private readonly BatchDownloadRequestRepository bnr;
         public BatchDwnRequestService(RemsDbContext _db)
         {
-            bnr = new BatchDownloadRequestDao(_db);
+            bnr = new BatchDownloadRequestRepository(_db);
         }
 
         public async Task<Response> AddBatchRequest(BatchDemandNoticeModel bdnModel)

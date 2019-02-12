@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.NodeServices;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RemsNG.Dao;
+using RemsNG.Data.Entities;
 using RemsNG.Models;
 using RemsNG.ORM;
 using RemsNG.Services.Interfaces;
@@ -19,17 +20,17 @@ namespace RemsNG.Services
 {
     public class RunDemandNoticeService : IRunDemandNoticeService
     {
-        private readonly CompanyItemDao _companyItemDao;
+        private readonly CompanyItemRepository _companyItemDao;
         private readonly DNPaymentHistoryDao _dnPaymentHistoryDao;
         private readonly DemandNoticePaymentHistoryDao _dnpHisotryDao;
         private readonly IDNAmountDueMgtService _admService;
         private readonly TaxpayerDao taxpayerDao;
-        private readonly DemandNoticeDao demandNoticeDao;
-        private readonly DemandNoticeTaxpayersDao demandNoticeTaxpayersDao;
+        private readonly DemandNoticeRepository demandNoticeDao;
+        private readonly DemandNoticeTaxpayersRepository demandNoticeTaxpayersDao;
         private readonly ErrorDao errorDao;
         private readonly ILogger logger;
         private readonly DemandNoticeItemDao demandNoticeItemDao;
-        private readonly DemandNoticeArrearDao demandNoticeArrearDao;
+        private readonly DemandNoticeArrearRepository demandNoticeArrearDao;
         private readonly DemandNoticePenaltyDao demandNoticePenaltyDao;
         private readonly LcdaDao lcdaDao;
         private readonly WardDao wardDao;
@@ -66,11 +67,11 @@ namespace RemsNG.Services
             hostingEnvironment = _hostingEnvironment;
             serviceProvider = _serviceProvider;
             taxpayerDao = new TaxpayerDao(_db);
-            demandNoticeDao = new DemandNoticeDao(_db);
-            demandNoticeTaxpayersDao = new DemandNoticeTaxpayersDao(_db);
+            demandNoticeDao = new DemandNoticeRepository(_db);
+            demandNoticeTaxpayersDao = new DemandNoticeTaxpayersRepository(_db);
             errorDao = new ErrorDao(_db, loggerFactory);
             demandNoticeItemDao = new DemandNoticeItemDao(_db);
-            demandNoticeArrearDao = new DemandNoticeArrearDao(_db);
+            demandNoticeArrearDao = new DemandNoticeArrearRepository(_db);
             demandNoticePenaltyDao = new DemandNoticePenaltyDao(_db);
             lcdaDao = new LcdaDao(_db, loggerFactory);
             wardDao = new WardDao(_db);
@@ -88,7 +89,7 @@ namespace RemsNG.Services
             _admService = dNAmountDueMgtService;
             _dnpHisotryDao = new DemandNoticePaymentHistoryDao(_db);
             _dnPaymentHistoryDao = new DNPaymentHistoryDao(_db);
-            _companyItemDao = new CompanyItemDao(_db);
+            _companyItemDao = new CompanyItemRepository(_db);
         }
 
         public async Task RegisterTaxpayer()
@@ -492,16 +493,16 @@ namespace RemsNG.Services
             }
         }
 
-        private async Task<bool> RunArrears(DemandNoticeTaxpayersDetail dntd, string billNumber, int arrearCategory)
+        private async Task<bool> RunArrears(DemandNoticeTaxpayers dntd, string billNumber, int arrearCategory)
         {
-            int billingYr = arrearCategory > 3 ? dntd.billingYr - 1 : dntd.billingYr;
+            int billingYr = arrearCategory > 3 ? dntd.BillingYr - 1 : dntd.BillingYr;
             try
             {
-                List<DemandNoticeItem> items = await demandNoticeItemDao.UnpaidBillsByTaxpayerId(dntd.taxpayerId, billNumber, billingYr);
+                List<DemandNoticeItem> items = await demandNoticeItemDao.UnpaidBillsByTaxpayerId(dntd.TaxpayerId, billNumber, billingYr);
                 if (items.Count > 0)
                 {
                     string oldBillnumber = items.FirstOrDefault().billingNo;
-                    List<DemandNoticePaymentHistory> payments = await _dnpHisotryDao.ApprovedPaymentHistory(dntd.taxpayerId, billingYr);
+                    List<DemandNoticePaymentHistory> payments = await _dnpHisotryDao.ApprovedPaymentHistory(dntd.TaxpayerId, billingYr);
                     var arrears = await demandNoticeArrearDao.ByTaxpayer(dntd.taxpayerId);
                     var penalty = await demandNoticePenaltyDao.ByTaxpayerId(dntd.taxpayerId, billingYr);
 

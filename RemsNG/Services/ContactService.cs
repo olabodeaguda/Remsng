@@ -10,10 +10,10 @@ namespace RemsNG.Services
 {
     public class ContactService : IContactService
     {
-        private ContactDao contactDao;
+        private ContactRepository contactDao;
         public ContactService(RemsDbContext db)
         {
-            contactDao = new ContactDao(db);
+            contactDao = new ContactRepository(db);
         }
 
         public async Task<bool> Add(ContactDetail contactDetail)

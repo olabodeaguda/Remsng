@@ -7,6 +7,7 @@ using RemsNG.ORM;
 using RemsNG.Dao;
 using RemsNG.Models;
 using Microsoft.Extensions.Logging;
+using RemsNG.Common.Models;
 
 namespace RemsNG.Services
 {

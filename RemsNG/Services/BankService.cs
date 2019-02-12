@@ -10,10 +10,10 @@ namespace RemsNG.Services
 {
     public class BankService : IBankService
     {
-        private BankDao bankDao;
+        private BankRepository bankDao;
         public BankService(RemsDbContext _db)
         {
-            bankDao = new BankDao(_db);
+            bankDao = new BankRepository(_db);
         }
 
         public async Task<List<Bank>> GetBankAsync()

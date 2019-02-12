@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class RoleDao : AbstractDao
+    public class RoleDao : AbstractRepository
     {
         private readonly ILogger logger;
         public RoleDao(RemsDbContext _db, ILoggerFactory loggerFactory) : base(_db)

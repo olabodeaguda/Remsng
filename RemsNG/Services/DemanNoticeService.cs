@@ -11,12 +11,12 @@ namespace RemsNG.Services
 {
     public class DemanNoticeService : IDemandNoticeService
     {
-        private DemandNoticeDao demandNoticeDao;
-        private DemandNoticeArrearDao dnaDao;
+        private DemandNoticeRepository demandNoticeDao;
+        private DemandNoticeArrearRepository dnaDao;
         public DemanNoticeService(RemsDbContext db)
         {
-            demandNoticeDao = new DemandNoticeDao(db);
-            dnaDao = new DemandNoticeArrearDao(db);
+            demandNoticeDao = new DemandNoticeRepository(db);
+            dnaDao = new DemandNoticeArrearRepository(db);
         }
 
         public async Task<Response> Add(DemandNotice demandNotice)

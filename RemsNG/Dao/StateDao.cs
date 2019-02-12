@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class StateDao : AbstractDao
+    public class StateDao : AbstractRepository
     {
         public StateDao(RemsDbContext _db) : base(_db)
         {

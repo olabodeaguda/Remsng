@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class DemandNoticePaymentHistoryDao : AbstractDao
+    public class DemandNoticePaymentHistoryDao : AbstractRepository
     {
         public DemandNoticePaymentHistoryDao(RemsDbContext _db) : base(_db)
         {

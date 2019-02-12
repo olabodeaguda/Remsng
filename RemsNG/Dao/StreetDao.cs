@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class StreetDao : AbstractDao
+    public class StreetDao : AbstractRepository
     {
         private readonly ILogger logger;
         public StreetDao(RemsDbContext _db, ILoggerFactory loggerFactory) : base(_db)

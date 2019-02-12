@@ -1,14 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using RemsNG.Common.Models;
 using RemsNG.Exceptions;
-using RemsNG.Models;
 using RemsNG.Utilities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace RemsNG.Security
 {
@@ -18,7 +15,9 @@ namespace RemsNG.Security
         public ExceptionTranslator(ILoggerFactory loggerFactory)
         {
             if (loggerFactory != null)
+            {
                 logger = loggerFactory.CreateLogger("ExceptionTranslator");
+            }
         }
         public void Translate(HttpContext context, Exception exception, Response response)
         {

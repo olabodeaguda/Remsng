@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class DNPaymentHistoryDao : AbstractDao
+    public class DNPaymentHistoryDao : AbstractRepository
     {
         public DNPaymentHistoryDao(RemsDbContext _db) : base(_db)
         { }

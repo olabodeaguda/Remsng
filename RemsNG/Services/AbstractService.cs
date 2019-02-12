@@ -10,10 +10,10 @@ namespace RemsNG.Services
 {
     public class AbstractService : IAbstractService
     {
-        AbstractDao abstractDao;
+        AbstractRepository abstractDao;
         public AbstractService(RemsDbContext _db)
         {
-            abstractDao = new AbstractDao(_db);
+            abstractDao = new AbstractRepository(_db);
         }
 
         public async  Task<bool> ExecuteQueryAsync(string query)

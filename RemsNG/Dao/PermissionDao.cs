@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RemsNG.Common.Models;
 using RemsNG.ORM;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class PermissionDao : AbstractDao
+    public class PermissionDao : AbstractRepository
     {
         public PermissionDao(RemsDbContext _db) : base(_db)
         {
@@ -23,8 +24,8 @@ namespace RemsNG.Dao
             return await db.RolePermissions.Where(x => x.roleId == id).CountAsync();
         }
 
-        public async Task<List<Permission>> byRoleId(Guid roleId, Models.PageModel pageModel)
-        {            
+        public async Task<List<Permission>> byRoleId(Guid roleId, PageModel pageModel)
+        {
             return await db.Permissions.FromSql("sp_getRolePermissionPaginated @p0, @p1, @p2", new object[] {
                 roleId,
                 pageModel.PageNum,

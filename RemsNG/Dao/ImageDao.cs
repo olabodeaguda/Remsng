@@ -9,7 +9,7 @@ using RemsNG.Utilities;
 
 namespace RemsNG.Dao
 {
-    public class ImageDao : AbstractDao
+    public class ImageDao : AbstractRepository
     {
         public ImageDao(RemsDbContext _db) : base(_db)
         {
