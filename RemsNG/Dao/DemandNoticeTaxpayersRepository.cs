@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Remsng.Data;
 using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
-using RemsNG.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,14 +19,39 @@ namespace RemsNG.Dao
             errorDao = new ErrorRepository(_db);
         }
 
-        public async Task<List<DemandNoticeTaxpayers>> getTaxpayerByIds(string[] ids, int billingYr)
+        public async Task<List<DemandNoticeTaxpayersModel>> getTaxpayerByIds(string[] ids, int billingYr)
         {
             StringBuilder stringBuilder = new StringBuilder();
             string tIds = stringBuilder.AppendJoin(',', ids).ToString();
 
             string query = $"select tbl_demandNoticeTaxpayers.*, -1 as totalSize from tbl_demandNoticeTaxpayers" +
                 $" where taxpayerId in ({tIds}) and billingYr = {billingYr} and demandNoticeStatus not in ('CLOSED','CANCEL')";
-            return await db.Set<DemandNoticeTaxpayers>().FromSql(query).ToListAsync();
+            var result = await db.Set<DemandNoticeTaxpayers>().FromSql(query).ToListAsync();
+            return result.Select(x => new DemandNoticeTaxpayersModel()
+            {
+                AddressName = x.AddressName,
+                BillingNumber = x.billingNumber,
+                BillingYr = x.BillingYr,
+                CouncilTreasurerMobile = x.CouncilTreasurerMobile,
+                CouncilTreasurerSigFilen = x.CouncilTreasurerSigFilen,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                DemandNoticeStatus = x.DemandNoticeStatus,
+                DnId = x.DnId,
+                DomainName = x.DomainName,
+                Id = x.Id,
+                IsUnbilled = x.IsUnbilled,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                LcdaAddress = x.LcdaAddress,
+                LcdaLogoFileName = x.LcdaLogoFileName,
+                LcdaName = x.LcdaName,
+                LcdaState = x.LcdaState,
+                RevCoodinatorSigFilen = x.RevCoodinatorSigFilen,
+                TaxpayerId = x.TaxpayerId,
+                TaxpayersName = x.TaxpayersName,
+                WardName = x.WardName
+            }).ToList();
         }
 
         public async Task<bool> UpdateTaxPayer(Guid id, string status)
@@ -168,21 +193,73 @@ namespace RemsNG.Dao
             };
         }
 
-        public async Task<List<DemandNoticeTaxpayers>> GetDNTaxpayerByBatchIdAsync(string batchId)
+        public async Task<List<DemandNoticeTaxpayersModel>> GetDNTaxpayerByBatchIdAsync(string batchId)
         {
-            List<DemandNoticeTaxpayers> results = await db.DemandNoticeTaxpayersDetails
+            List<DemandNoticeTaxpayers> result = await db.DemandNoticeTaxpayersDetails
                 .FromSql("sp_getDnTByBatchNumber @p0",
                 new object[] { batchId }).ToListAsync();
-            return results;
+            return result.Select(x => new DemandNoticeTaxpayersModel()
+            {
+                AddressName = x.AddressName,
+                BillingNumber = x.billingNumber,
+                BillingYr = x.BillingYr,
+                CouncilTreasurerMobile = x.CouncilTreasurerMobile,
+                CouncilTreasurerSigFilen = x.CouncilTreasurerSigFilen,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                DemandNoticeStatus = x.DemandNoticeStatus,
+                DnId = x.DnId,
+                DomainName = x.DomainName,
+                Id = x.Id,
+                IsUnbilled = x.IsUnbilled,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                LcdaAddress = x.LcdaAddress,
+                LcdaLogoFileName = x.LcdaLogoFileName,
+                LcdaName = x.LcdaName,
+                LcdaState = x.LcdaState,
+                RevCoodinatorSigFilen = x.RevCoodinatorSigFilen,
+                TaxpayerId = x.TaxpayerId,
+                TaxpayersName = x.TaxpayersName,
+                WardName = x.WardName
+            }).ToList();
         }
 
-        public async Task<DemandNoticeTaxpayers> ByBillingNo(string billingNo)
+        public async Task<DemandNoticeTaxpayersModel> ByBillingNo(string billingNo)
         {
             string query = $"select tbl_demandNoticeTaxpayers.*, -1 as totalSize from tbl_demandNoticeTaxpayers where billingNumber = '{billingNo}'";
-            DemandNoticeTaxpayers results = await db.DemandNoticeTaxpayersDetails
+            DemandNoticeTaxpayers x = await db.DemandNoticeTaxpayersDetails
                 .FromSql(query,
                 new object[] { billingNo }).FirstOrDefaultAsync();
-            return results;
+            if (x == null)
+            {
+                return null;
+            }
+            return new DemandNoticeTaxpayersModel()
+            {
+                AddressName = x.AddressName,
+                BillingNumber = x.billingNumber,
+                BillingYr = x.BillingYr,
+                CouncilTreasurerMobile = x.CouncilTreasurerMobile,
+                CouncilTreasurerSigFilen = x.CouncilTreasurerSigFilen,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                DemandNoticeStatus = x.DemandNoticeStatus,
+                DnId = x.DnId,
+                DomainName = x.DomainName,
+                Id = x.Id,
+                IsUnbilled = x.IsUnbilled,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                LcdaAddress = x.LcdaAddress,
+                LcdaLogoFileName = x.LcdaLogoFileName,
+                LcdaName = x.LcdaName,
+                LcdaState = x.LcdaState,
+                RevCoodinatorSigFilen = x.RevCoodinatorSigFilen,
+                TaxpayerId = x.TaxpayerId,
+                TaxpayersName = x.TaxpayersName,
+                WardName = x.WardName
+            };
         }
 
         public async Task<DemandNoticeTaxpayers> GetSingleTaxpayerAsync(string taxpayerId, int billingYr)
@@ -191,10 +268,35 @@ namespace RemsNG.Dao
               new object[] { taxpayerId, billingYr }).FirstOrDefaultAsync();
         }
 
-        public async Task<List<DemandNoticeTaxpayers>> GetDNTaxpayerByBatchNoAsync(string batchno)
+        public async Task<List<DemandNoticeTaxpayersModel>> GetDNTaxpayerByBatchNoAsync(string batchno)
         {
-            return await db.DemandNoticeTaxpayersDetails.FromSql("sp_getDNDemandNoticeByBatchNo @p0",
+            var result = await db.DemandNoticeTaxpayersDetails.FromSql("sp_getDNDemandNoticeByBatchNo @p0",
               new object[] { batchno }).ToListAsync();
+            return result.Select(x => new DemandNoticeTaxpayersModel()
+            {
+                AddressName = x.AddressName,
+                BillingNumber = x.billingNumber,
+                BillingYr = x.BillingYr,
+                CouncilTreasurerMobile = x.CouncilTreasurerMobile,
+                CouncilTreasurerSigFilen = x.CouncilTreasurerSigFilen,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                DemandNoticeStatus = x.DemandNoticeStatus,
+                DnId = x.DnId,
+                DomainName = x.DomainName,
+                Id = x.Id,
+                IsUnbilled = x.IsUnbilled,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                LcdaAddress = x.LcdaAddress,
+                LcdaLogoFileName = x.LcdaLogoFileName,
+                LcdaName = x.LcdaName,
+                LcdaState = x.LcdaState,
+                RevCoodinatorSigFilen = x.RevCoodinatorSigFilen,
+                TaxpayerId = x.TaxpayerId,
+                TaxpayersName = x.TaxpayersName,
+                WardName = x.WardName
+            }).ToList();
         }
 
         public async Task<Response> CancelTaxpayerDemandNoticeByBillingNo1(string billingNo, string createdBy)
@@ -275,7 +377,7 @@ namespace RemsNG.Dao
             }
         }
 
-        public async Task<List<DemandNoticeTaxpayers>> SearchAllAsync(string qs)
+        public async Task<List<DemandNoticeTaxpayersModel>> SearchAllAsync(string qs)
         {
             string[] q = qs.Split(new char[] { ' ' });
             string query = $"select tbl_demandNoticeTaxpayers.*,-1 as totalSize from tbl_demandNoticeTaxpayers where ";
@@ -299,7 +401,32 @@ namespace RemsNG.Dao
 
             var results = await db.DemandNoticeTaxpayersDetails.FromSql(query).ToListAsync();
 
-            return results.Distinct().ToList();
+            var result = results.Distinct().ToList();
+            return result.Select(x => new DemandNoticeTaxpayersModel()
+            {
+                AddressName = x.AddressName,
+                BillingNumber = x.billingNumber,
+                BillingYr = x.BillingYr,
+                CouncilTreasurerMobile = x.CouncilTreasurerMobile,
+                CouncilTreasurerSigFilen = x.CouncilTreasurerSigFilen,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                DemandNoticeStatus = x.DemandNoticeStatus,
+                DnId = x.DnId,
+                DomainName = x.DomainName,
+                Id = x.Id,
+                IsUnbilled = x.IsUnbilled,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                LcdaAddress = x.LcdaAddress,
+                LcdaLogoFileName = x.LcdaLogoFileName,
+                LcdaName = x.LcdaName,
+                LcdaState = x.LcdaState,
+                RevCoodinatorSigFilen = x.RevCoodinatorSigFilen,
+                TaxpayerId = x.TaxpayerId,
+                TaxpayersName = x.TaxpayersName,
+                WardName = x.WardName
+            }).ToList();
         }
 
         public async Task<bool> BlinkClosesDemandNoticeByCompany(Guid companyId)
@@ -315,17 +442,41 @@ namespace RemsNG.Dao
             return false;
         }
 
-        public async Task<DemandNoticeTaxpayers[]> GetAllReceivables()
+        public async Task<DemandNoticeTaxpayersModel[]> GetAllReceivables()
         {
             string query = $"select dnt.*,-1 as totalSize  from tbl_demandNoticeTaxpayers as dnt " +
                 $"where dnt.taxpayerId not in (select taxpayerId from tbl_demandNoticePenalty where itemPenaltyStatus != 'PAID') " +
                 $"and dnt.demandNoticeStatus in ('PENDING','PART_PAYMENT')";
 
-            var results = await db.DemandNoticeTaxpayersDetails.FromSql(query).ToArrayAsync();
-            return results;
+            var result = await db.DemandNoticeTaxpayersDetails.FromSql(query).ToArrayAsync();
+            return result.Select(x => new DemandNoticeTaxpayersModel()
+            {
+                AddressName = x.AddressName,
+                BillingNumber = x.billingNumber,
+                BillingYr = x.BillingYr,
+                CouncilTreasurerMobile = x.CouncilTreasurerMobile,
+                CouncilTreasurerSigFilen = x.CouncilTreasurerSigFilen,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                DemandNoticeStatus = x.DemandNoticeStatus,
+                DnId = x.DnId,
+                DomainName = x.DomainName,
+                Id = x.Id,
+                IsUnbilled = x.IsUnbilled,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                LcdaAddress = x.LcdaAddress,
+                LcdaLogoFileName = x.LcdaLogoFileName,
+                LcdaName = x.LcdaName,
+                LcdaState = x.LcdaState,
+                RevCoodinatorSigFilen = x.RevCoodinatorSigFilen,
+                TaxpayerId = x.TaxpayerId,
+                TaxpayersName = x.TaxpayersName,
+                WardName = x.WardName
+            }).ToArray();
         }
 
-        public async Task<DemandNoticeTaxpayers[]> GetAllReceivables(Guid[] taxpayerIds)
+        public async Task<DemandNoticeTaxpayersModel[]> GetAllReceivables(Guid[] taxpayerIds)
         {
             string ids = taxpayerIds.Select(x => x.ToString()).ToArray().FormatString();
 
@@ -334,18 +485,66 @@ namespace RemsNG.Dao
                 $"(select taxpayerId from tbl_demandNoticePenalty where itemPenaltyStatus != 'PAID' and taxpayerId in ({ids}) ) " +
                 $"and dnt.demandNoticeStatus in ('PENDING','PART_PAYMENT') and taxpayerId in ({ids}) and dnt.billingYr = {DateTime.Now.Year - 1}";
 
-            var results = await db.DemandNoticeTaxpayersDetails.FromSql(query).ToArrayAsync();
-            return results;
+            var result = await db.DemandNoticeTaxpayersDetails.FromSql(query).ToArrayAsync();
+            return result.Select(x => new DemandNoticeTaxpayersModel()
+            {
+                AddressName = x.AddressName,
+                BillingNumber = x.billingNumber,
+                BillingYr = x.BillingYr,
+                CouncilTreasurerMobile = x.CouncilTreasurerMobile,
+                CouncilTreasurerSigFilen = x.CouncilTreasurerSigFilen,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                DemandNoticeStatus = x.DemandNoticeStatus,
+                DnId = x.DnId,
+                DomainName = x.DomainName,
+                Id = x.Id,
+                IsUnbilled = x.IsUnbilled,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                LcdaAddress = x.LcdaAddress,
+                LcdaLogoFileName = x.LcdaLogoFileName,
+                LcdaName = x.LcdaName,
+                LcdaState = x.LcdaState,
+                RevCoodinatorSigFilen = x.RevCoodinatorSigFilen,
+                TaxpayerId = x.TaxpayerId,
+                TaxpayersName = x.TaxpayersName,
+                WardName = x.WardName
+            }).ToArray();
         }
 
-        public async Task<List<DemandNoticeTaxpayers>> GetTaxpayerPayables(Guid taxpayerId)
+        public async Task<List<DemandNoticeTaxpayersModel>> GetTaxpayerPayables(Guid taxpayerId)
         {
             string query = $"select tbl_demandNoticeTaxpayers.*, -1 as totalSize from tbl_demandNoticeTaxpayers " +
                 $"where taxpayerId = '{taxpayerId}' and demandNoticeStatus in ('PART_PAYMENT','PENDING','PAID','CLOSED') order by  dateCreated";
-            var results = await db.DemandNoticeTaxpayersDetails
+            var result = await db.DemandNoticeTaxpayersDetails
                 .FromSql(query,
                 new object[] { taxpayerId.ToString() }).ToListAsync();
-            return results;
+            return result.Select(x => new DemandNoticeTaxpayersModel()
+            {
+                AddressName = x.AddressName,
+                BillingNumber = x.billingNumber,
+                BillingYr = x.BillingYr,
+                CouncilTreasurerMobile = x.CouncilTreasurerMobile,
+                CouncilTreasurerSigFilen = x.CouncilTreasurerSigFilen,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                DemandNoticeStatus = x.DemandNoticeStatus,
+                DnId = x.DnId,
+                DomainName = x.DomainName,
+                Id = x.Id,
+                IsUnbilled = x.IsUnbilled,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                LcdaAddress = x.LcdaAddress,
+                LcdaLogoFileName = x.LcdaLogoFileName,
+                LcdaName = x.LcdaName,
+                LcdaState = x.LcdaState,
+                RevCoodinatorSigFilen = x.RevCoodinatorSigFilen,
+                TaxpayerId = x.TaxpayerId,
+                TaxpayersName = x.TaxpayersName,
+                WardName = x.WardName
+            }).ToList();
         }
 
         public async Task<bool> MoveToBills(string billno)
@@ -361,7 +560,7 @@ namespace RemsNG.Dao
             return count > 0;
         }
 
-        public async Task<List<DemandNoticeTaxpayers>> GetAllUnbilledDemandNotice(string batchno)
+        public async Task<List<DemandNoticeTaxpayersModel>> GetAllUnbilledDemandNotice(string batchno)
         {
             string query = $"select tbl_demandNoticeTaxpayers.*, -1 as totalSize  " +
                 $"from tbl_demandNoticeTaxpayers " +
@@ -370,7 +569,32 @@ namespace RemsNG.Dao
                 $"inner join tbl_ward on tbl_ward.id = tbl_street.wardId " +
                 $"where isUnbilled = 1";
 
-            return await db.DemandNoticeTaxpayersDetails.FromSql(query).ToListAsync();
+            var result = await db.DemandNoticeTaxpayersDetails.FromSql(query).ToListAsync();
+            return result.Select(x => new DemandNoticeTaxpayersModel()
+            {
+                AddressName = x.AddressName,
+                BillingNumber = x.billingNumber,
+                BillingYr = x.BillingYr,
+                CouncilTreasurerMobile = x.CouncilTreasurerMobile,
+                CouncilTreasurerSigFilen = x.CouncilTreasurerSigFilen,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                DemandNoticeStatus = x.DemandNoticeStatus,
+                DnId = x.DnId,
+                DomainName = x.DomainName,
+                Id = x.Id,
+                IsUnbilled = x.IsUnbilled,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                LcdaAddress = x.LcdaAddress,
+                LcdaLogoFileName = x.LcdaLogoFileName,
+                LcdaName = x.LcdaName,
+                LcdaState = x.LcdaState,
+                RevCoodinatorSigFilen = x.RevCoodinatorSigFilen,
+                TaxpayerId = x.TaxpayerId,
+                TaxpayersName = x.TaxpayersName,
+                WardName = x.WardName
+            }).ToList();
         }
 
 

@@ -41,11 +41,11 @@ namespace Remsng.Data
         public DbSet<DemandNoticeItem> DemandNoticeItems { get; set; }
         public DbSet<DemandNoticeItemModelExt> DemandNoticeItemExts { get; set; }
         public DbSet<DemandNoticeArrearsModelExt> DemandNoticeArrearsExts { get; set; }
-        public DbSet<DemandNoticeItemPenaltyExtModel> DemandNoticeItemPenaltyExts { get; set; }
+        public DbSet<DemandNoticeItemPenaltyModelExt> DemandNoticeItemPenaltyExts { get; set; }
         public DbSet<DemandNoticeItemModelExtension> DemandNoticeItemExtensions { get; set; }
         public DbSet<State> States { get; set; }
         public DbSet<Images> Imagess { get; set; }
-        public DbSet<DemandNoticeItemPenaltyExtModel> DemandNoticeItemPenaties { get; set; }
+        public DbSet<DemandNoticeItemPenaltyModelExt> DemandNoticeItemPenaties { get; set; }
         public DbSet<DemandNoticeArrears> DemandNoticeArrearss { get; set; }
         public DbSet<DemandNoticeDownloadHistory> DemandNoticeDownloadHistories { get; set; }
         public DbSet<BankLcda> LcdaBanks { get; set; }

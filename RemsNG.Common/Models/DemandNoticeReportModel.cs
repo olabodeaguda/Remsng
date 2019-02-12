@@ -5,7 +5,7 @@ namespace RemsNG.Common.Models
 {
     public class DemandNoticeReportModel : DemandNoticeTaxpayersModel
     {
-        public List<DnReportItem> items { get; set; } = new List<DnReportItem>();
+        public List<DnReportItemModel> items { get; set; } = new List<DnReportItemModel>();
         public string amountInWords { get; set; }
         public List<BankLcdaModel> banks { get; set; } = new List<BankLcdaModel>();
         public decimal penalty { get; set; }

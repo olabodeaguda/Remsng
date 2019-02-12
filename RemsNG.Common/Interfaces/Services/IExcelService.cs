@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RemsNG.Common.Models;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -14,14 +15,14 @@ namespace RemsNG.Common.Interfaces.Services
             string domainName, string lcdaName, DateTime startDate, DateTime endDate);
 
         Task<byte[]> WriteReportSummaryConsolidated(List<ItemReportSummaryModel> rptLst,
-           string domainName, string lcdaName, DateTime startDate, DateTime endDate, List<DemandNoticePaymentHistory> dnph);
+           string domainName, string lcdaName, DateTime startDate, DateTime endDate, List<DemandNoticePaymentHistoryModel> dnph);
 
 
         Task<string> WriteReportSummaryConsolidatedSeperate(List<ItemReportSummaryModel> rptLst,
-           string domainName, string lcdaName, DateTime startDate, DateTime endDate, List<DemandNoticePaymentHistory> dnph);
+           string domainName, string lcdaName, DateTime startDate, DateTime endDate, List<DemandNoticePaymentHistoryModel> dnph);
         Task<byte[]> WriteReportCategory(string domainName, string lcdaName, DateTime startDate,
-            DateTime endDate, List<DemandNoticeItemExt> dnitem, List<DemandNoticeItemPenaltyExt> dnPenalty,
-            List<DemandNoticeArrearsExt> dnArrears);
-        Task<byte[]> TaxpayerWithOutDemandNotice(TaxpayerExtension2[] taxpayers, int billingYear);
+            DateTime endDate, List<DemandNoticeItemModelExt> dnitem, List<DemandNoticeItemPenaltyModelExt> dnPenalty,
+            List<DemandNoticeArrearsModelExt> dnArrears);
+        Task<byte[]> TaxpayerWithOutDemandNotice(TaxpayerExtensionModel2[] taxpayers, int billingYear);
     }
 }

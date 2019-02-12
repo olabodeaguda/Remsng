@@ -2,7 +2,7 @@
 
 namespace RemsNG.Common.Models
 {
-    public class DemandNoticeItemPenaltyExtModel : AbstractModel
+    public class DemandNoticeItemPenaltyModelExt : AbstractModel
     {
         public Guid id { get; set; }
         public string billingNo { get; set; }

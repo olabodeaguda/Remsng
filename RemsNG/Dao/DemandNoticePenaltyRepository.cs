@@ -15,7 +15,7 @@ namespace RemsNG.Dao
         {
         }
 
-        public string AddQuery(DemandNoticeItemPenaltyExtModel dnp)
+        public string AddQuery(DemandNoticeItemPenaltyModelExt dnp)
         {
             return $"INSERT INTO tbl_demandNoticePenalty" +
                 $" (id ,billingNo,taxpayerId ,totalAmount,amountPaid,itemId" +
@@ -94,37 +94,37 @@ namespace RemsNG.Dao
             }
         }
 
-        public async Task<List<DemandNoticeItemPenaltyExtModel>> ByBillingNumber(string billingno)
+        public async Task<List<DemandNoticeItemPenaltyModelExt>> ByBillingNumber(string billingno)
         {
             string query = $"select tbl_demandNoticePenalty.*,0 as billingYr from tbl_demandNoticePenalty where billingNo = '{billingno}'";
-            List<DemandNoticeItemPenaltyExtModel> lstdbItem = await db.DemandNoticeItemPenaties
+            List<DemandNoticeItemPenaltyModelExt> lstdbItem = await db.DemandNoticeItemPenaties
                 .FromSql(query).ToListAsync();
             return lstdbItem;
         }
 
-        public async Task<List<DemandNoticeItemPenaltyExtModel>> ByTaxpayerId(Guid taxpayerId)
+        public async Task<List<DemandNoticeItemPenaltyModelExt>> ByTaxpayerId(Guid taxpayerId)
         {
             string query = $"select tbl_demandNoticePenalty.*,0 as billingYr from tbl_demandNoticePenalty where taxpayerId = '{taxpayerId}'";
-            List<DemandNoticeItemPenaltyExtModel> lstdbItem = await db.DemandNoticeItemPenaties
+            List<DemandNoticeItemPenaltyModelExt> lstdbItem = await db.DemandNoticeItemPenaties
                 .FromSql(query).ToListAsync();
             return lstdbItem;
         }
 
-        public async Task<List<DemandNoticeItemPenaltyExtModel>> ByTaxpayerId(Guid taxpayerId, int billingYr)
+        public async Task<List<DemandNoticeItemPenaltyModelExt>> ByTaxpayerId(Guid taxpayerId, int billingYr)
         {
             string query = $"select tbl_demandNoticePenalty.*,0 as billingYr from tbl_demandNoticePenalty " +
                 $"where taxpayerId = '{taxpayerId}' and billingYear = {billingYr}";
-            List<DemandNoticeItemPenaltyExtModel> lstdbItem = await db.DemandNoticeItemPenaties
+            List<DemandNoticeItemPenaltyModelExt> lstdbItem = await db.DemandNoticeItemPenaties
                 .FromSql(query).ToListAsync();
             return lstdbItem;
         }
 
-        public async Task<List<DemandNoticeItemPenaltyExtModel>> ReportByCategory(DateTime fromDate, DateTime toDate)
+        public async Task<List<DemandNoticeItemPenaltyModelExt>> ReportByCategory(DateTime fromDate, DateTime toDate)
         {
             DateTime startDate = new DateTime(fromDate.Year, fromDate.Month, fromDate.Day, 0, 0, 0);
             DateTime endDate = new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59);
 
-            List<DemandNoticeItemPenaltyExtModel> lst =
+            List<DemandNoticeItemPenaltyModelExt> lst =
                 await db.DemandNoticeItemPenaltyExts.FromSql("sp_getPenaltyByCategoryDate @p0,@p1",
                 new object[] { startDate, endDate }).ToListAsync();
 

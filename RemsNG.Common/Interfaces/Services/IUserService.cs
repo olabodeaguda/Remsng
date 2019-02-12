@@ -1,22 +1,24 @@
-﻿using System;
+﻿using RemsNG.Common.Models;
+using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace RemsNG.Common.Interfaces.Services
-    public interface IUserService
 {
-    Task<User> Get(Guid id);
-    Task<User> GetUserByUsername(string username);
-    Task<User> ByEmail(string email);
-    Task<object> GetToken(User user, Guid domainId);
-    string GetToken(Claim[] claim);
-    Task<bool> Create(User user);
-    Task<bool> AddAndAssignLGDA(User user, UserLcda userLcda);
-    Task<object> Paginated(Models.PageModel pageModel, Guid lcdaId);
-    Task<object> Paginated(Models.PageModel pageModel);
-    Task<bool> Update(User user);
-    Task<bool> ChangePwd(Guid id, string newPwd);
-    Task<bool> AssignLGDA(UserLcda userLcda);
-    Task<bool> ChangeStatus(string status, Guid id);
-}
+    public interface IUserService
+    {
+        Task<UserModel> Get(Guid id);
+        Task<UserModel> GetUserByUsername(string username);
+        Task<UserModel> ByEmail(string email);
+        Task<object> GetToken(UserModel user, Guid domainId);
+        string GetToken(Claim[] claim);
+        Task<bool> Create(UserModel user);
+        Task<bool> AddAndAssignLGDA(UserModel user, UserLcdaModel userLcda);
+        Task<object> Paginated(PageModel pageModel, Guid lcdaId);
+        Task<object> Paginated(PageModel pageModel);
+        Task<bool> Update(UserModel user);
+        Task<bool> ChangePwd(Guid id, string newPwd);
+        Task<bool> AssignLGDA(UserLcdaModel userLcda);
+        Task<bool> ChangeStatus(string status, Guid id);
+    }
 }

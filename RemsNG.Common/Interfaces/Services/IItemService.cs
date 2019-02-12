@@ -1,13 +1,14 @@
-﻿using System;
+﻿using RemsNG.Common.Models;
+using System;
 using System.Threading.Tasks;
 
 namespace RemsNG.Common.Interfaces.Services
 {
     public interface IItemService
     {
-        Task<Response> Add(Item item);
-        Task<Response> Update(Item item);
-        Task<Response> UpdateStatus(Item item);
+        Task<Response> Add(ItemModel item);
+        Task<Response> Update(ItemModel item);
+        Task<Response> UpdateStatus(ItemModel item);
         Task<object> ListByLcdaId(Guid lcdaId, PageModel pageModel);
         Task<object> ListByLcdaId(Guid lcdaId);
         Task<object> GetItemByIdAsync(Guid id);

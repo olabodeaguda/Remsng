@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using RemsNG.Common.Models;
+using RemsNG.Data.Entities;
 using RemsNG.Exceptions;
-using RemsNG.Models;
-using RemsNG.ORM;
 using RemsNG.Security;
 using RemsNG.Services.Interfaces;
 using RemsNG.Utilities;
@@ -48,7 +48,7 @@ namespace RemsNG.Controllers
             }
 
             User user = await userService.Get(id);
-            user.passwordHash = null;
+            user.PasswordHash = null;
 
             if (user == null)
             {
@@ -92,7 +92,7 @@ namespace RemsNG.Controllers
                 return NotFound(new Response() { code = MsgCode_Enum.NOTFOUND, data = $"{ln.username} does not exist" });
             }
 
-            if (user.passwordHash != EncryptDecryptUtils.ToHexString(ln.pwd))
+            if (user.PasswordHash != EncryptDecryptUtils.ToHexString(ln.pwd))
             {
                 logger.LogError($"{ln.username} password is incorrect", new object[] { ln.username });
                 return new HttpMessageResult(new Response()
@@ -102,7 +102,7 @@ namespace RemsNG.Controllers
                 }, 401);
             }
 
-            if (user.userStatus != UserStatus.ACTIVE.ToString())
+            if (user.UserStatus != UserStatus.ACTIVE.ToString())
             {
                 return BadRequest(new Response() { code = MsgCode_Enum.INACTIVE_USER, data = "Username is not active" });
             }
@@ -124,16 +124,16 @@ namespace RemsNG.Controllers
         [HttpPost]
         public async Task<object> AssignToUser([FromBody]UserLcda userLcda)
         {
-            if (userLcda.lgdaId == default(Guid))
+            if (userLcda.LgdaId == default(Guid))
             {
                 throw new InvalidCredentialsException("LGDA is required");
             }
-            else if (userLcda.userId == default(Guid))
+            else if (userLcda.UserId == default(Guid))
             {
                 throw new InvalidCredentialsException("User is required");
             }
 
-            User user = await userService.Get(userLcda.userId);
+            User user = await userService.Get(userLcda.UserId);
             if (user == null)
             {
                 return NotFound(new Response()
@@ -143,7 +143,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            Lgda lcda = await lcdaService.Get(userLcda.lgdaId);
+            Lcda lcda = await lcdaService.Get(userLcda.LgdaId);
             if (lcda == null)
             {
                 return NotFound(new Response()
@@ -152,22 +152,22 @@ namespace RemsNG.Controllers
                     description = "Select LGDA not found"
                 });
             }
-            else if (lcda.lcdaStatus != UserStatus.ACTIVE.ToString())
+            else if (lcda.LcdaStatus != UserStatus.ACTIVE.ToString())
             {
                 return BadRequest(new Response()
                 {
                     code = MsgCode_Enum.WRONG_CREDENTIALS,
-                    description = $"{lcda.lcdaName} is not Active"
+                    description = $"{lcda.LcdaName} is not Active"
                 });
             }
 
-            UserLcda lg = await lcdaService.UserLcdaByIds(lcda.id, user.id);
+            UserLcda lg = await lcdaService.UserLcdaByIds(lcda.Id, user.Id);
             if (lg != null)
             {
                 return BadRequest(new Response()
                 {
                     code = MsgCode_Enum.DUPLICATE,
-                    description = $"{user.username} already exist int LCDA {lcda.lcdaName}"
+                    description = $"{user.Username} already exist int LCDA {lcda.LcdaName}"
                 });
             }
 
@@ -177,7 +177,7 @@ namespace RemsNG.Controllers
                 return Ok(new Response()
                 {
                     code = MsgCode_Enum.SUCCESS,
-                    description = $"{user.username} have been assigned to {lcda.lcdaName}"
+                    description = $"{user.Username} have been assigned to {lcda.LcdaName}"
                 });
             }
             else
@@ -226,13 +226,13 @@ namespace RemsNG.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] User user)
         {
-            User username = await userService.GetUserByUsername(user.username);
-            User email = await userService.ByEmail(user.email);
-            List<Lgda> lst = await lcdaService.byUsername(user.username);
+            User username = await userService.GetUserByUsername(user.Username);
+            User email = await userService.ByEmail(user.Email);
+            List<Lcda> lst = await lcdaService.byUsername(user.Username);
 
-            user.id = Guid.NewGuid();
-            user.dateCreated = DateTime.Now;
-            user.createdBy = User.Identity.Name;
+            user.Id = Guid.NewGuid();
+            user.DateCreated = DateTime.Now;
+            user.CreatedBy = User.Identity.Name;
             bool isAdded = false;
 
             if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
@@ -245,7 +245,7 @@ namespace RemsNG.Controllers
                 {
                     throw new AlreadyExistException("Email already Exist");
                 }
-                user.userStatus = UserStatus.ACTIVE.ToString();
+                user.UserStatus = UserStatus.ACTIVE.ToString();
                 isAdded = await userService.Create(user);
             }
             else
@@ -256,21 +256,21 @@ namespace RemsNG.Controllers
                     throw new InvalidCredentialsException("Logon user must be in a valid local government development authority");
                 }
 
-                if (username != null && lst.Any(x => x.id == domainId))
+                if (username != null && lst.Any(x => x.Id == domainId))
                 {
                     throw new AlreadyExistException("Username already Exist");
                 }
-                else if (email != null && lst.Any(x => x.id == domainId))
+                else if (email != null && lst.Any(x => x.Id == domainId))
                 {
                     throw new AlreadyExistException("Email already Exist");
                 }
 
                 UserLcda userLcda = new UserLcda()
                 {
-                    userId = user.id,
-                    lgdaId = domainId
+                    UserId = user.Id,
+                    LgdaId = domainId
                 };
-                user.userStatus = UserStatus.NOT_ACTIVE.ToString();
+                user.UserStatus = UserStatus.NOT_ACTIVE.ToString();
                 isAdded = await userService.AddAndAssignLGDA(user, userLcda);
             }
 
@@ -279,7 +279,7 @@ namespace RemsNG.Controllers
                 return Ok(new Response()
                 {
                     code = MsgCode_Enum.SUCCESS,
-                    description = $"{user.username} have been added successfully"
+                    description = $"{user.Username} have been added successfully"
                 });
             }
             else
@@ -297,9 +297,9 @@ namespace RemsNG.Controllers
         [HttpPost]
         public async Task<IActionResult> Update([FromBody] User user)
         {
-            user.lastModifiedDate = DateTime.Now;
-            user.lastmodifiedby = User.Identity.Name;
-            if (user.id == default(Guid))
+            user.LastModifiedDate = DateTime.Now;
+            user.Lastmodifiedby = User.Identity.Name;
+            if (user.Id == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -315,7 +315,7 @@ namespace RemsNG.Controllers
                 return Ok(new Response()
                 {
                     code = MsgCode_Enum.SUCCESS,
-                    description = $"{user.username} has been updated successfully"
+                    description = $"{user.Username} has been updated successfully"
                 });
             }
             else
@@ -366,7 +366,7 @@ namespace RemsNG.Controllers
         [HttpPost]
         public async Task<IActionResult> ChangeUserStatus([FromBody] User user)
         {
-            if (string.IsNullOrEmpty(user.userStatus))
+            if (string.IsNullOrEmpty(user.UserStatus))
             {
                 return BadRequest(new Response()
                 {
@@ -374,7 +374,7 @@ namespace RemsNG.Controllers
                     description = "User status is required"
                 });
             }
-            else if (user.id == Guid.Empty)
+            else if (user.Id == Guid.Empty)
             {
                 return BadRequest(new Response()
                 {
@@ -383,7 +383,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            bool result = await userService.ChangeStatus(user.userStatus, user.id);
+            bool result = await userService.ChangeStatus(user.UserStatus, user.Id);
             if (result)
             {
                 return Ok(new Response()

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.Common.Models;
 using RemsNG.Data.Entities;
 using RemsNG.Exceptions;
@@ -19,11 +20,11 @@ namespace RemsNG.Dao
         public async Task<Response> Add(Company company)
         {
             DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addCompany @p0, @p1, @p2, @p3, @p4", new object[] {
-                company.companyName,
-                company.sectorId,
-                company.categoryId,
-                company.createdBy,
-                company.lcdaId
+                company.CompanyName,
+                company.SectorId,
+                company.CategoryId,
+                company.CreatedBy,
+                company.LcdaId
             }).FirstOrDefaultAsync();
 
             if (dbResponse.success)
@@ -31,7 +32,7 @@ namespace RemsNG.Dao
                 return new Response()
                 {
                     code = MsgCode_Enum.SUCCESS,
-                    description = $"{company.companyName} has been added successfully"
+                    description = $"{company.CompanyName} has been added successfully"
                 };
             }
             else
@@ -46,16 +47,16 @@ namespace RemsNG.Dao
 
         public async Task<Response> Update(Company company)
         {
-            var r = await db.Companies.FindAsync(new object[] { company.id });
+            var r = await db.Companies.FindAsync(new object[] { company.Id });
             if (r == null)
             {
-                throw new NotFoundException($"{company.companyName} can not be found");
+                throw new NotFoundException($"{company.CompanyName} can not be found");
             }
 
-            r.addressId = company.addressId != null ? company.addressId : null;
-            r.categoryId = company.categoryId;
-            r.companyName = company.companyName;
-            r.sectorId = company.sectorId;
+            r.AddressId = company.AddressId != null ? company.AddressId : null;
+            r.CategoryId = company.CategoryId;
+            r.CompanyName = company.CompanyName;
+            r.SectorId = company.SectorId;
 
             int count = await db.SaveChangesAsync();
             if (count > 0)
@@ -63,7 +64,7 @@ namespace RemsNG.Dao
                 return new Response()
                 {
                     code = MsgCode_Enum.SUCCESS,
-                    description = $"{company.companyName} has been updated successfully"
+                    description = $"{company.CompanyName} has been updated successfully"
                 };
             }
             else
@@ -78,13 +79,13 @@ namespace RemsNG.Dao
 
         public async Task<Response> UpdateStatus(Company company)
         {
-            var r = await db.Companies.FindAsync(new object[] { company.id });
+            var r = await db.Companies.FindAsync(new object[] { company.Id });
             if (r == null)
             {
-                throw new NotFoundException($"{company.companyName} can not be found");
+                throw new NotFoundException($"{company.CompanyName} can not be found");
             }
 
-            r.companyStatus = company.companyStatus;
+            r.CompanyStatus = company.CompanyStatus;
 
             int count = await db.SaveChangesAsync();
             if (count > 0)
@@ -92,7 +93,7 @@ namespace RemsNG.Dao
                 return new Response()
                 {
                     code = MsgCode_Enum.SUCCESS,
-                    description = $"{company.companyName} has been added successfully"
+                    description = $"{company.CompanyName} has been added successfully"
                 };
             }
             else
@@ -107,17 +108,17 @@ namespace RemsNG.Dao
 
         public async Task<Company> ById(Guid id)
         {
-            return await db.Companies.FirstOrDefaultAsync(x => x.id == id);
+            return await db.Companies.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<List<CompanyExt>> ByLcda(Guid lcdaId)
+        public async Task<List<CompanyExtModel>> ByLcda(Guid lcdaId)
         {
-            return await db.Set<CompanyExt>().FromSql("sp_CompanyBylcdaId  @p0", new object[] { lcdaId }).ToListAsync();
+            return await db.Set<CompanyExtModel>().FromSql("sp_CompanyBylcdaId  @p0", new object[] { lcdaId }).ToListAsync();
         }
 
         public async Task<object> ByLcda(Guid lcdaId, PageModel pageModel)
         {
-            var results = await db.Set<CompanyExt>().FromSql("sp_CompanyBylcdaIdpaginate @p0, @p1, @p2", new object[] {
+            var results = await db.Set<CompanyExtModel>().FromSql("sp_CompanyBylcdaIdpaginate @p0, @p1, @p2", new object[] {
                     lcdaId,
                     pageModel.PageNum,
                     pageModel.PageSize

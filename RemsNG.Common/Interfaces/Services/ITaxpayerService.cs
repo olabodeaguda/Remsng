@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RemsNG.Common.Models;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,19 +7,19 @@ namespace RemsNG.Common.Interfaces.Services
 {
     public interface ITaxpayerService
     {
-        Task<Response> Create(Taxpayer taxpayer, bool confirmCompany);
-        Task<TaxpayerExtension> ById(Guid id);
-        Task<List<TaxpayerExtension>> ByStreetId(Guid streetId);
+        Task<Response> Create(TaxPayerModel taxpayer, bool confirmCompany);
+        Task<TaxpayerExtensionModel> ById(Guid id);
+        Task<List<TaxpayerExtensionModel>> ByStreetId(Guid streetId);
         Task<object> ByStreetId(Guid streetId, PageModel pageModel);
-        Task<List<TaxpayerExtension>> ByCompanyId(Guid companyId);
-        Task<Response> Update(Taxpayer taxpayer);
-        Task<List<TaxpayerExtension>> ByLcdaId(Guid lcdaId);
+        Task<List<TaxpayerExtensionModel>> ByCompanyId(Guid companyId);
+        Task<Response> Update(TaxPayerModel taxpayer);
+        Task<List<TaxpayerExtensionModel>> ByLcdaId(Guid lcdaId);
         Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel);
-        Task<Lgda> getLcda(Guid taxpayerId);
-        Task<List<TaxpayerExtension>> Search(Guid lcdaId, string qu);
-        Task<List<DemandNoticePaymentHistory>> PaymentHistory(Guid id);
+        Task<LcdaModel> getLcda(Guid taxpayerId);
+        Task<List<TaxpayerExtensionModel>> Search(Guid lcdaId, string qu);
+        Task<List<DemandNoticePaymentHistoryModel>> PaymentHistory(Guid id);
         Task<bool> Delete(Guid taxpayerId);
-        Task<List<TaxpayerExtension>> SearchInStreet(Guid streetId, string query);
-        Task<TaxpayerExtension2[]> UnBilledTaxpayer(int billingYear);
+        Task<List<TaxpayerExtensionModel>> SearchInStreet(Guid streetId, string query);
+        Task<TaxpayerExtensionModel2[]> UnBilledTaxpayer(int billingYear);
     }
 }

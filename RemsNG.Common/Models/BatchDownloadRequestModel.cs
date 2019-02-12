@@ -2,7 +2,7 @@
 
 namespace RemsNG.Common.Models
 {
-    public class BatchDownloadRequest
+    public class BatchDownloadRequestModel
     {
         public Guid Id { get; set; }
         public string BatchNo { get; set; }

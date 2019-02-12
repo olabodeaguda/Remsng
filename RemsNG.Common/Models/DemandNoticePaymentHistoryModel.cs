@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RemsNG.Common.Models
 {
-    public partial class DemandNoticePaymentHistoryMoel
+    public partial class DemandNoticePaymentHistoryModel
     {
         public Guid Id { get; set; }
         public Guid OwnerId { get; set; }
@@ -20,5 +20,6 @@ namespace RemsNG.Common.Models
         public DateTime? LastModifiedDate { get; set; }
         public string PaymentStatus { get; set; }
         public bool SyncStatus { get; set; }
+        public bool IsWaiver { get; set; }
     }
 }

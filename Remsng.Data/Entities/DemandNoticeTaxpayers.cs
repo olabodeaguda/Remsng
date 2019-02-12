@@ -6,6 +6,8 @@ namespace RemsNG.Data.Entities
 {
     public class DemandNoticeTaxpayers
     {
+        public string billingNumber;
+
         public Guid Id { get; set; }
         public Guid DnId { get; set; }
         public Guid TaxpayerId { get; set; }

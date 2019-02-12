@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using RemsNG.Common.Models;
+using System.Threading.Tasks;
 
 namespace RemsNG.Common.Interfaces.Services
 {
     public interface IDemandNoticeDownloadHistory
     {
-        Task Add(DemandNoticeDownloadHistory dndh);
+        Task Add(DemandNoticeDownloadHistoryModel dndh);
     }
 }

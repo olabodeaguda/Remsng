@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RemsNG.Common.Models;
+using System;
 using System.Threading.Tasks;
 
 namespace RemsNG.Common.Interfaces.Services
@@ -10,6 +11,6 @@ namespace RemsNG.Common.Interfaces.Services
         Task<string> LcdaTemlateByLcda(Guid lcdaId);
         Task<string> ReceiptTemlate(string billingno);
         Task<string> PopulateReceiptHtml(string htmlContent, string rootUrl,
-            string createdBy, DemandNoticePaymentHistory dnph);
+            string createdBy, DemandNoticePaymentHistoryModel dnph);
     }
 }

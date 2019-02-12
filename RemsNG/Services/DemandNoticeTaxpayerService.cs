@@ -1,4 +1,8 @@
-﻿using RemsNG.Dao;
+﻿using Remsng.Data;
+using RemsNG.Common.Interfaces.Services;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
+using RemsNG.Dao;
 using RemsNG.Exceptions;
 using RemsNG.Models;
 using RemsNG.ORM;
@@ -58,73 +62,73 @@ namespace RemsNG.Services
 
                 DemandNoticeReportModel dnrm = new DemandNoticeReportModel()
                 {
-                    addressName = t.addressName,
-                    billingNumber = t.billingNumber,
-                    billingYr = t.billingYr,
-                    councilTreasurerMobile = t.councilTreasurerMobile,
-                    councilTreasurerSigFilen = t.councilTreasurerSigFilen,
-                    createdBy = t.createdBy,
-                    domainName = t.domainName.ToUpper(),
-                    lcdaAddress = t.lcdaAddress,
-                    lcdaLogoFileName = t.lcdaLogoFileName,
-                    lcdaName = t.lcdaName.ToUpper(),
-                    lcdaState = t.lcdaState,
-                    revCoodinatorSigFilen = t.revCoodinatorSigFilen,
-                    taxpayersName = t.taxpayersName,
-                    wardName = t.wardName,
-                    taxpayerId = t.taxpayerId,
-                    demandNoticeStatus = t.demandNoticeStatus
+                    AddressName = t.AddressName,
+                    BillingNumber = t.BillingNumber,
+                    BillingYr = t.BillingYr,
+                    CouncilTreasurerMobile = t.CouncilTreasurerMobile,
+                    CouncilTreasurerSigFilen = t.CouncilTreasurerSigFilen,
+                    CreatedBy = t.CreatedBy,
+                    DomainName = t.DomainName.ToUpper(),
+                    LcdaAddress = t.LcdaAddress,
+                    LcdaLogoFileName = t.LcdaLogoFileName,
+                    LcdaName = t.LcdaName.ToUpper(),
+                    LcdaState = t.LcdaState,
+                    RevCoodinatorSigFilen = t.RevCoodinatorSigFilen,
+                    TaxpayersName = t.TaxpayersName,
+                    WardName = t.WardName,
+                    TaxpayerId = t.TaxpayerId,
+                    DemandNoticeStatus = t.DemandNoticeStatus
                 };
-                Lgda lgda = await lcdaService.ByBillingNumber(billingNo); //await taxpayerService.getLcda(t.taxpayerId);
-                List<LcdaProperty> ls = new List<LcdaProperty>();
+                LcdaModel lgda = await lcdaService.ByBillingNumber(billingNo); //await taxpayerService.getLcda(t.taxpayerId);
+                List<LcdaPropertyModel> ls = new List<LcdaPropertyModel>();
                 if (lgda != null)
                 {
-                    dnrm.lcdaId = lgda.id;
-                    ls = await lpService.ByLcda(lgda.id);
+                    dnrm.lcdaId = lgda.Id;
+                    ls = await lpService.ByLcda(lgda.Id);
                 }
-                List<LcdaProperty> coucilNum = ls.Where(z => z.propertyKey == "COUNCIL_TREASURER_MOBILE").ToList();
+                List<LcdaPropertyModel> coucilNum = ls.Where(z => z.PropertyKey == "COUNCIL_TREASURER_MOBILE").ToList();
                 if (coucilNum.Count > 0)
                 {
-                    dnrm.councilTreasurerMobile = String.Join(",", coucilNum.Select(x => x.propertyValue));
+                    dnrm.CouncilTreasurerMobile = String.Join(",", coucilNum.Select(x => x.PropertyValue));
                 }
 
-                dnrm.lcdaLogoFileName = await imageService.ImageNameByOwnerIdAsync(lgda.id,
+                dnrm.LcdaLogoFileName = await imageService.ImageNameByOwnerIdAsync(lgda.Id,
                                    ImgTypesEnum.LOGO.ToString());
-                dnrm.revCoodinatorSigFilen = await imageService.ImageNameByOwnerIdAsync(lgda.id,
+                dnrm.RevCoodinatorSigFilen = await imageService.ImageNameByOwnerIdAsync(lgda.Id,
                     ImgTypesEnum.REVENUE_COORDINATOR_SIGNATURE.ToString());
-                dnrm.councilTreasurerSigFilen = await imageService.ImageNameByOwnerIdAsync(lgda.id,
+                dnrm.CouncilTreasurerSigFilen = await imageService.ImageNameByOwnerIdAsync(lgda.Id,
                     ImgTypesEnum.COUNCIL_TREASURER_SIGNATURE.ToString());
 
-                List<DemandNoticeItem> dnitem = await dnItemService.ByBillingNumber(billingNo);
+                List<DemandNoticeItemModel> dnitem = await dnItemService.ByBillingNumber(billingNo);
 
-                dnrm.items = dnitem.Select(x => new DnReportItem()
+                dnrm.items = dnitem.Select(x => new DnReportItemModel()
                 {
-                    itemTitle = x.itemName,
-                    itemAmount = x.itemAmount
+                    itemTitle = x.ItemName,
+                    itemAmount = x.ItemAmount
                 }).ToList();
 
-                dnrm.amountPaid = dnrm.amountPaid + dnitem.Sum(x => x.amountPaid);
+                dnrm.amountPaid = dnrm.amountPaid + dnitem.Sum(x => x.AmountPaid);
 
-                dnrm.banks = await lcdaBankService.Get(lgda.id);
+                dnrm.banks = await lcdaBankService.Get(lgda.Id);
 
-                var penalties = await dnp.ByTaxpayerId(dnrm.taxpayerId);
+                var penalties = await dnp.ByTaxpayerId(dnrm.TaxpayerId);
 
                 dnrm.penalty = penalties.Sum(x => (x.totalAmount - x.amountPaid));
                 dnrm.amountPaid = dnrm.amountPaid + penalties.Sum(x => x.amountPaid);
 
                 var arrears = await dna.ByBillingNumber(billingNo);
-                dnrm.arrears = arrears.Sum(x => (x.totalAmount - x.amountPaid));
+                dnrm.arrears = arrears.Sum(x => (x.TotalAmount - x.AmountPaid));
                 var amtDue = await _dphDao.ByBillingNumber(billingNo);
 
                 dnrm.amountPaid = amtDue.Sum(x => x.amount);//dnrm.amountPaid + arrears.Sum(x => x.amountPaid);
 
-                LcdaProperty isEnablePayment = ls.FirstOrDefault(x =>
-                x.propertyKey == "ALLOW_PAYMENT_SERVICES" && x.propertyStatus == "ACTIVE");
+                LcdaPropertyModel isEnablePayment = ls.FirstOrDefault(x =>
+                x.PropertyKey == "ALLOW_PAYMENT_SERVICES" && x.PropertyStatus == "ACTIVE");
                 decimal gtotal = dnrm.items.Sum(x => x.itemAmount) + dnrm.arrears + dnrm.penalty;
                 dnrm.amountDue = gtotal;
                 if (isEnablePayment != null)
                 {
-                    if (isEnablePayment.propertyValue == "1")
+                    if (isEnablePayment.PropertyValue == "1")
                     {
                         dnrm.charges = await chargesService.getCharges(gtotal, dnrm.lcdaId);
                     }
@@ -146,12 +150,12 @@ namespace RemsNG.Services
             }
         }
 
-        public async Task<List<DemandNoticeTaxpayersDetail>> GetDNTaxpayerByBatchNoAsync(string batchno)
+        public async Task<List<DemandNoticeTaxpayersModel>> GetDNTaxpayerByBatchNoAsync(string batchno)
         {
             return await dntDao.GetDNTaxpayerByBatchNoAsync(batchno);
         }
 
-        public async Task<DemandNoticeTaxpayersDetail> TaxpayerMiniByBillingNo(string billingNo)
+        public async Task<DemandNoticeTaxpayersModel> TaxpayerMiniByBillingNo(string billingNo)
         {
             return await dntDao.ByBillingNo(billingNo);
         }
@@ -161,7 +165,7 @@ namespace RemsNG.Services
             return await dntDao.CancelTaxpayerDemandNoticeByBillingNo(billingNo, createdBy);
         }
 
-        public async Task<List<DemandNoticeTaxpayersDetail>> Search(string query)
+        public async Task<List<DemandNoticeTaxpayersModel>> Search(string query)
         {
             return await dntDao.SearchAllAsync(query);
         }
@@ -171,7 +175,7 @@ namespace RemsNG.Services
             return await dntDao.BlinkClosesDemandNoticeByCompany(companyId);
         }
 
-        public async Task<DemandNoticeTaxpayersDetail[]> GetAllReceivables()
+        public async Task<DemandNoticeTaxpayersModel[]> GetAllReceivables()
         {
             return await dntDao.GetAllReceivables();
         }
@@ -187,16 +191,16 @@ namespace RemsNG.Services
             List<object> lstPayables = new List<object>();
             foreach (var tm in result)
             {
-                var currentDue = await _admService.ByBillingNo(tm.billingNumber);
+                var currentDue = await _admService.ByBillingNo(tm.BillingNumber);
                 decimal amtDue = currentDue.Sum(x => (x.itemAmount - x.amountPaid));
                 lstPayables.Add(new
                 {
-                    billingNumber = tm.billingNumber,
-                    billingYr = tm.billingYr,
-                    wardName = tm.wardName,
-                    demandNoticeStatus = tm.demandNoticeStatus,
+                    billingNumber = tm.BillingNumber,
+                    billingYr = tm.BillingYr,
+                    wardName = tm.WardName,
+                    demandNoticeStatus = tm.DemandNoticeStatus,
                     amountDue = amtDue,
-                    dateCreated = tm.dateCreated
+                    dateCreated = tm.DateCreated
                 });
             }
 
@@ -212,7 +216,7 @@ namespace RemsNG.Services
             return await dntDao.MoveToUnBills(billno);
         }
 
-        public async Task<List<DemandNoticeArrears>> GetArrearsByTaxpayerId(Guid taxpayerId)
+        public async Task<List<DemandNoticeArrearsModel>> GetArrearsByTaxpayerId(Guid taxpayerId)
         {
             return await dna.ByTaxpayer(taxpayerId);
         }

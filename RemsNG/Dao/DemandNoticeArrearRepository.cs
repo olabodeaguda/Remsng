@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.Common.Models;
-using RemsNG.ORM;
-using RemsNG.Utilities;
+using RemsNG.Common.Utilities;
+using RemsNG.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -159,7 +160,7 @@ namespace RemsNG.Dao
             }
         }
 
-        public async Task<List<DemandNoticeArrears>> ByBillingNumber(string billingno)
+        public async Task<List<DemandNoticeArrearsModel>> ByBillingNumber(string billingno)
         {
             List<DemandNoticeArrears> lstdbItem = await db.DemandNoticeArrearss
                 .FromSql($"select tbl_demandNoticeArrears.*, 0 as billingYr from tbl_demandNoticeArrears " +
@@ -167,21 +168,52 @@ namespace RemsNG.Dao
             List<DemandNoticeArrears> lst = new List<DemandNoticeArrears>();
             foreach (var tm in lstdbItem)
             {
-                var t = lst.FirstOrDefault(x => x.billingNo == tm.billingNo && x.totalAmount == tm.totalAmount);
+                var t = lst.FirstOrDefault(x => x.BillingNo == tm.BillingNo && x.TotalAmount == tm.TotalAmount);
                 if (t == null)
                 {
                     lst.Add(tm);
                 }
             }
-            return lst;
+            return lst.Select(x => new DemandNoticeArrearsModel()
+            {
+                AmountPaid = x.AmountPaid,
+                ArrearsStatus = x.ArrearsStatus,
+                BillingNo = x.BillingNo,
+                BillingYear = x.BillingYear,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                Id = x.Id,
+                ItemId = x.ItemId,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                OriginatedYear = x.OriginatedYear,
+                TaxpayerId = x.TaxpayerId,
+                TotalAmount = x.TotalAmount
+            }).ToList();
         }
 
-        public async Task<List<DemandNoticeArrears>> ByTaxpayer(Guid taxpayerId)
+        public async Task<List<DemandNoticeArrearsModel>> ByTaxpayer(Guid taxpayerId)
         {
             string query = $"select tbl_demandNoticeArrears.*, 0 as billingYr " +
                 $"from tbl_demandNoticeArrears where taxpayerId = '{taxpayerId}' and arrearsStatus in ('PENDING','PART_PAYMENT')";
 
-            return await db.DemandNoticeArrearss.FromSql(query).ToListAsync();
+            var result = await db.DemandNoticeArrearss.FromSql(query).ToListAsync();
+            return result.Select(x => new DemandNoticeArrearsModel()
+            {
+                AmountPaid = x.AmountPaid,
+                ArrearsStatus = x.ArrearsStatus,
+                BillingNo = x.BillingNo,
+                BillingYear = x.BillingYear,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                Id = x.Id,
+                ItemId = x.ItemId,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                OriginatedYear = x.OriginatedYear,
+                TaxpayerId = x.TaxpayerId,
+                TotalAmount = x.TotalAmount
+            }).ToList();
         }
 
         public string AddQuery(DemandNoticeArrears dna)
@@ -189,9 +221,9 @@ namespace RemsNG.Dao
             return $"insert into tbl_demandNoticeArrears(id,billingNo,taxpayerId,totalAmount," +
                 $" amountPaid,itemId,originatedYear," +
                 $"billingYear,arrearsStatus,createdBy,dateCreated) values(" +
-                $"'{Guid.NewGuid()}','{dna.billingNo}','{dna.taxpayerId}','{dna.totalAmount}',0," +
-                $"'{dna.itemId}','{dna.originatedYear}','{dna.billingYr}','{dna.arrearsStatus}'," +
-                $"'{dna.createdBy}',getdate());";
+                $"'{Guid.NewGuid()}','{dna.BillingNo}','{dna.TaxpayerId}','{dna.TotalAmount}',0," +
+                $"'{dna.ItemId}','{dna.OriginatedYear}','{dna.BillingYear}','{dna.ArrearsStatus}'," +
+                $"'{dna.CreatedBy}',getdate());";
         }
 
         public async Task<bool> AddArrears(DemandNoticeArrears dna)
