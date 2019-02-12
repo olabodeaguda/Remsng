@@ -1,4 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
+using RemsNG.Common.Models;
+using RemsNG.Data.Entities;
 using RemsNG.Exceptions;
 using RemsNG.Models;
 using RemsNG.ORM;
@@ -10,21 +13,21 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class ItemPenaltyDao : AbstractRepository
+    public class ItemPenaltyRepository : AbstractRepository
     {
-        public ItemPenaltyDao(RemsDbContext _db) : base(_db)
+        public ItemPenaltyRepository(RemsDbContext _db) : base(_db)
         {
         }
 
         public async Task<Response> Add(ItemPenalty item)
         {
-            var r = await db.ItemPenalties.FirstOrDefaultAsync(x => x.duration == item.duration && item.itemId == x.itemId);
+            var r = await db.ItemPenalties.FirstOrDefaultAsync(x => x.Duration == item.Duration && item.ItemId == x.ItemId);
             if (r != null)
             {
-                throw new DuplicateException($"Penalty for duration {item.duration} already exist");
+                throw new DuplicateException($"Penalty for duration {item.Duration} already exist");
             }
 
-            item.dateCreated = DateTime.Now;
+            item.DateCreated = DateTime.Now;
             db.ItemPenalties.Add(item);
             int count = await db.SaveChangesAsync();
             if (count > 0)
@@ -47,17 +50,17 @@ namespace RemsNG.Dao
 
         public async Task<Response> Update(ItemPenalty item)
         {
-            var r = await db.ItemPenalties.FindAsync(new object[] { item.id });
+            var r = await db.ItemPenalties.FindAsync(new object[] { item.Id });
             if (r == null)
             {
                 throw new NotFoundException($"Penalty does not exist");
             }
 
-            r.duration = item.duration;
-            r.isPercentage = item.isPercentage;
-            r.amount = item.amount;
-            r.lastmodifiedby = item.lastmodifiedby;
-            r.lastModifiedDate = DateTime.Now;
+            r.Duration = item.Duration;
+            r.IsPercentage = item.IsPercentage;
+            r.Amount = item.Amount;
+            r.Lastmodifiedby = item.Lastmodifiedby;
+            r.LastModifiedDate = DateTime.Now;
 
             int count = await db.SaveChangesAsync();
             if (count > 0)
@@ -80,15 +83,15 @@ namespace RemsNG.Dao
 
         public async Task<Response> UpdateStatus(ItemPenalty item)
         {
-            var r = await db.ItemPenalties.FindAsync(new object[] { item.id });
+            var r = await db.ItemPenalties.FindAsync(new object[] { item.Id });
             if (r == null)
             {
                 throw new NotFoundException($"Penalty does not exist");
             }
 
-            r.penaltyStatus = item.penaltyStatus;
-            r.lastmodifiedby = item.lastmodifiedby;
-            r.lastModifiedDate = DateTime.Now;
+            r.PenaltyStatus = item.PenaltyStatus;
+            r.Lastmodifiedby = item.Lastmodifiedby;
+            r.LastModifiedDate = DateTime.Now;
 
             int count = await db.SaveChangesAsync();
             if (count > 0)
@@ -109,15 +112,16 @@ namespace RemsNG.Dao
             }
         }
 
-        public async Task<object> GetById(Guid id) => await db.ItemPenalties.FirstOrDefaultAsync(x => x.id == id);
+        public async Task<object> GetById(Guid id) => await db.ItemPenalties.FirstOrDefaultAsync(x => x.Id == id);
 
-        public async Task<object> ListByItemId(Guid itemId) => await db.ItemPenalties.Where(x => x.itemId == itemId).ToListAsync();
+        public async Task<object> ListByItemId(Guid itemId) => 
+            await db.ItemPenalties.Where(x => x.ItemId == itemId).ToListAsync();
 
         public async Task<object> ListByItemId(Guid itemId, PageModel pageModel)
         {
-            var results = await db.ItemPenalties.Where(x => x.itemId == itemId).Skip((pageModel.PageNum - 1) * pageModel.PageSize)
+            var results = await db.ItemPenalties.Where(x => x.ItemId == itemId).Skip((pageModel.PageNum - 1) * pageModel.PageSize)
                 .Take(pageModel.PageSize).ToListAsync();
-            var totalCount = await db.ItemPenalties.Where(x=>x.itemId==itemId).CountAsync();
+            var totalCount = await db.ItemPenalties.Where(x=>x.ItemId==itemId).CountAsync();
             return new
             {
                 data = results,

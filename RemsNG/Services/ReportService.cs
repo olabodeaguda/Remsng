@@ -11,16 +11,16 @@ namespace RemsNG.Services
 {
     public class ReportService : IReportService
     {
-        private readonly DemandNoticePenaltyDao dnPenaltyDao;
+        private readonly DemandNoticePenaltyRepository dnPenaltyDao;
         private readonly DemandNoticeArrearRepository dnArrearsDao;
-        private readonly DemandNoticeItemDao dnitemDao;
-        private readonly ReportDao reportDao;
+        private readonly DemandNoticeItemRepository dnitemDao;
+        private readonly ReportRepository reportDao;
         public ReportService(RemsDbContext _db)
         {
-            reportDao = new ReportDao(_db);
-            dnitemDao = new DemandNoticeItemDao(_db);
+            reportDao = new ReportRepository(_db);
+            dnitemDao = new DemandNoticeItemRepository(_db);
             dnArrearsDao = new DemandNoticeArrearRepository(_db);
-            dnPenaltyDao = new DemandNoticePenaltyDao(_db);
+            dnPenaltyDao = new DemandNoticePenaltyRepository(_db);
         }
 
         public async Task<List<ItemReportSummaryModel>> ByDate(DateTime startDate, DateTime endDate)

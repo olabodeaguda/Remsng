@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.Common.Models;
-using RemsNG.ORM;
+using RemsNG.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class PermissionDao : AbstractRepository
+    public class PermissionRepository : AbstractRepository
     {
-        public PermissionDao(RemsDbContext _db) : base(_db)
+        public PermissionRepository(RemsDbContext _db) : base(_db)
         {
         }
 
@@ -21,7 +22,7 @@ namespace RemsNG.Dao
 
         public async Task<int> PermissionCountByRoleId(Guid id)
         {
-            return await db.RolePermissions.Where(x => x.roleId == id).CountAsync();
+            return await db.RolePermissions.Where(x => x.RoleId == id).CountAsync();
         }
 
         public async Task<List<Permission>> byRoleId(Guid roleId, PageModel pageModel)
@@ -47,7 +48,8 @@ namespace RemsNG.Dao
 
         public async Task<RolePermission> ByPermissionAndRoleId(RolePermission rolePermission)
         {
-            return await db.RolePermissions.FirstOrDefaultAsync(x => x.permissionId == rolePermission.permissionId && x.roleId == rolePermission.roleId);
+            return await db.RolePermissions.FirstOrDefaultAsync(x => x.PermissionId == rolePermission.PermissionId
+            && x.RoleId == rolePermission.RoleId);
         }
 
         public async Task<bool> RemovePermission(RolePermission rolePermission)

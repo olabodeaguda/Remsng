@@ -21,20 +21,20 @@ namespace RemsNG.Services
     public class RunDemandNoticeService : IRunDemandNoticeService
     {
         private readonly CompanyItemRepository _companyItemDao;
-        private readonly DNPaymentHistoryDao _dnPaymentHistoryDao;
-        private readonly DemandNoticePaymentHistoryDao _dnpHisotryDao;
+        private readonly DNPaymentHistoryRepository _dnPaymentHistoryDao;
+        private readonly DemandNoticePaymentHistoryRepository _dnpHisotryDao;
         private readonly IDNAmountDueMgtService _admService;
-        private readonly TaxpayerDao taxpayerDao;
+        private readonly TaxpayerRepository taxpayerDao;
         private readonly DemandNoticeRepository demandNoticeDao;
         private readonly DemandNoticeTaxpayersRepository demandNoticeTaxpayersDao;
-        private readonly ErrorDao errorDao;
+        private readonly ErrorRepository errorDao;
         private readonly ILogger logger;
-        private readonly DemandNoticeItemDao demandNoticeItemDao;
+        private readonly DemandNoticeItemRepository demandNoticeItemDao;
         private readonly DemandNoticeArrearRepository demandNoticeArrearDao;
-        private readonly DemandNoticePenaltyDao demandNoticePenaltyDao;
-        private readonly LcdaDao lcdaDao;
-        private readonly WardDao wardDao;
-        private readonly StreetDao streetDao;
+        private readonly DemandNoticePenaltyRepository demandNoticePenaltyDao;
+        private readonly LcdaRepository lcdaDao;
+        private readonly WardRepository wardDao;
+        private readonly StreetRepository streetDao;
         private readonly IAddress address;
         private readonly ILcdaService lcdaService;
         private readonly IStateService stateService;
@@ -66,16 +66,16 @@ namespace RemsNG.Services
             nodeServices = _nodeServices;
             hostingEnvironment = _hostingEnvironment;
             serviceProvider = _serviceProvider;
-            taxpayerDao = new TaxpayerDao(_db);
+            taxpayerDao = new TaxpayerRepository(_db);
             demandNoticeDao = new DemandNoticeRepository(_db);
             demandNoticeTaxpayersDao = new DemandNoticeTaxpayersRepository(_db);
-            errorDao = new ErrorDao(_db, loggerFactory);
-            demandNoticeItemDao = new DemandNoticeItemDao(_db);
+            errorDao = new ErrorRepository(_db, loggerFactory);
+            demandNoticeItemDao = new DemandNoticeItemRepository(_db);
             demandNoticeArrearDao = new DemandNoticeArrearRepository(_db);
-            demandNoticePenaltyDao = new DemandNoticePenaltyDao(_db);
-            lcdaDao = new LcdaDao(_db, loggerFactory);
-            wardDao = new WardDao(_db);
-            streetDao = new StreetDao(_db, loggerFactory);
+            demandNoticePenaltyDao = new DemandNoticePenaltyRepository(_db);
+            lcdaDao = new LcdaRepository(_db, loggerFactory);
+            wardDao = new WardRepository(_db);
+            streetDao = new StreetRepository(_db, loggerFactory);
             address = _address;
             lcdaService = _lcdaService;
             imageService = _imageService;
@@ -87,8 +87,8 @@ namespace RemsNG.Services
             httpContextAccessor = _httpContextAccessor;
             taxpayerService = _taxpayerService;
             _admService = dNAmountDueMgtService;
-            _dnpHisotryDao = new DemandNoticePaymentHistoryDao(_db);
-            _dnPaymentHistoryDao = new DNPaymentHistoryDao(_db);
+            _dnpHisotryDao = new DemandNoticePaymentHistoryRepository(_db);
+            _dnPaymentHistoryDao = new DNPaymentHistoryRepository(_db);
             _companyItemDao = new CompanyItemRepository(_db);
         }
 

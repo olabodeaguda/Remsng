@@ -10,12 +10,12 @@ namespace RemsNG.Services
 {
     public class DNPaymentHistoryService : IDNPaymentHistoryService
     {
-        private DNPaymentHistoryDao _dnpDao;
-        private DemandNoticePaymentHistoryDao dnph;
+        private DNPaymentHistoryRepository _dnpDao;
+        private DemandNoticePaymentHistoryRepository dnph;
         public DNPaymentHistoryService(RemsDbContext _db)
         {
-            dnph = new DemandNoticePaymentHistoryDao(_db);
-            _dnpDao = new DNPaymentHistoryDao(_db);
+            dnph = new DemandNoticePaymentHistoryRepository(_db);
+            _dnpDao = new DNPaymentHistoryRepository(_db);
         }
         public async Task<Response> AddAsync(DemandNoticePaymentHistory dnphModel)
         {

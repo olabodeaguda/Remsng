@@ -11,10 +11,10 @@ namespace RemsNG.Services
 {
     public class DemandNoticeItemService : IDemandNoticeItemService
     {
-        DemandNoticeItemDao dnDao;
+        DemandNoticeItemRepository dnDao;
         public DemandNoticeItemService(RemsDbContext _db)
         {
-            dnDao = new DemandNoticeItemDao(_db);
+            dnDao = new DemandNoticeItemRepository(_db);
         }
 
         public async Task<List<DemandNoticeItem>> ByBillingNumber(string billingno)

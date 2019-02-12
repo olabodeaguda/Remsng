@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RemsNG.Data.Entities
@@ -21,5 +20,6 @@ namespace RemsNG.Data.Entities
         public DateTime? LastModifiedDate { get; set; }
         public string PaymentStatus { get; set; }
         public bool SyncStatus { get; set; }
+        public bool IsWaiver { get; set; }
     }
 }

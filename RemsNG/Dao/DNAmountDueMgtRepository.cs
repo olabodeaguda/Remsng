@@ -1,4 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
+using RemsNG.Common.Models;
+using RemsNG.Data.Entities;
 using RemsNG.Models;
 using RemsNG.ORM;
 using RemsNG.Utilities;
@@ -8,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class DNAmountDueMgtDao : AbstractRepository
+    public class DNAmountDueMgtRepository : AbstractRepository
     {
-        public DNAmountDueMgtDao(RemsDbContext _db) : base(_db)
+        public DNAmountDueMgtRepository(RemsDbContext _db) : base(_db)
         {
         }
 
@@ -111,8 +114,8 @@ namespace RemsNG.Dao
                     }
                 }
 
-                query = query + $"update tbl_demandNoticeTaxpayers set demandNoticeStatus = '{status}' where billingNumber = '{dnph.billingNumber}';";
-                query = query + $"update tbl_demandNoticePaymentHistory set paymentStatus = 'APPROVED' where id = '{dnph.id}';";
+                query = query + $"update tbl_demandNoticeTaxpayers set demandNoticeStatus = '{status}' where billingNumber = '{dnph.BillingNumber}';";
+                query = query + $"update tbl_demandNoticePaymentHistory set paymentStatus = 'APPROVED' where id = '{dnph.Id}';";
             }
 
             return query;

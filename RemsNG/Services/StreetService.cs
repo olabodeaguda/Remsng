@@ -11,10 +11,10 @@ namespace RemsNG.Services
 {
     public class StreetService : IStreetService
     {
-        StreetDao streetDao;
+        StreetRepository streetDao;
         public StreetService(RemsDbContext _db, ILoggerFactory loggerFactory)
         {
-            streetDao = new StreetDao(_db, loggerFactory);
+            streetDao = new StreetRepository(_db, loggerFactory);
         }
         public async Task<Response> Add(Street street)
         {

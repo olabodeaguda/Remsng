@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
+using RemsNG.Common.Models;
+using RemsNG.Data.Entities;
 using RemsNG.Exceptions;
 using RemsNG.ORM;
 using RemsNG.Utilities;
@@ -10,18 +12,18 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class DomainDao : AbstractRepository
+    public class DomainRepository : AbstractRepository
     {
-        public DomainDao(RemsDbContext _db) : base(_db)
+        public DomainRepository(RemsDbContext _db) : base(_db)
         {
         }
 
         public async Task<List<Domain>> ActiveDomains()
         {
-            return await db.Domains.Where(x => x.domainStatus == UserStatus.ACTIVE.ToString()).OrderBy(x => x.domainName).ToListAsync();
+            return await db.Domains.Where(x => x.DomainStatus == UserStatus.ACTIVE.ToString()).OrderBy(x => x.DomainName).ToListAsync();
         }
 
-        public async Task<object> Paginated(Models.PageModel pageModel)
+        public async Task<object> Paginated(PageModel pageModel)
         {
             return await Task.Run(() =>
             {
@@ -37,7 +39,7 @@ namespace RemsNG.Dao
         
         public async Task<bool> Add(Domain domain)
         {
-            domain.domainType = EncryptDecryptUtils.ToHexString("others");
+            domain.DomainType = EncryptDecryptUtils.ToHexString("others");
             db.Domains.Add(domain);
             int count = await db.SaveChangesAsync();
             if (count > 0)
@@ -62,7 +64,7 @@ namespace RemsNG.Dao
 
         public async Task<Domain> byDomainId(Guid id)
         {
-            return await db.Domains.FirstOrDefaultAsync(x => x.id == id);
+            return await db.Domains.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<Domain> DomainbyLCDAId(Guid lcdaId)
@@ -72,19 +74,19 @@ namespace RemsNG.Dao
 
         public async Task<Domain> byDomainCode(string domainCode)
         {
-            return await db.Domains.FirstOrDefaultAsync(x => x.domainCode.ToLower() == domainCode.ToLower());
+            return await db.Domains.FirstOrDefaultAsync(x => x.DomainCode.ToLower() == domainCode.ToLower());
         }
 
         public async Task<bool> UpdateDomain(Domain domain)
         {
-            var oldDomain = await db.Domains.FirstOrDefaultAsync(x => x.id == domain.id);
+            var oldDomain = await db.Domains.FirstOrDefaultAsync(x => x.Id == domain.Id);
             if (oldDomain == null)
             {
-                throw new NotFoundException($"{domain.domainName} not found");
+                throw new NotFoundException($"{domain.DomainName} not found");
             }
-            oldDomain.domainName = domain.domainName;
-            oldDomain.domainCode = domain.domainCode;
-            oldDomain.stateId = domain.stateId;
+            oldDomain.DomainName = domain.DomainName;
+            oldDomain.DomainCode = domain.DomainCode;
+            oldDomain.StateId = domain.StateId;
 
             int affectedCount = await db.SaveChangesAsync();
             if (affectedCount > 0)
@@ -96,13 +98,13 @@ namespace RemsNG.Dao
 
         public async Task<bool> changeDomain(Guid domainId, string domainStatus)
         {
-            var oldDomain = await db.Domains.FirstOrDefaultAsync(x => x.id == domainId);
+            var oldDomain = await db.Domains.FirstOrDefaultAsync(x => x.Id == domainId);
             if (oldDomain == null)
             {
                 throw new InvalidCredentialsException("Invalid credentials");
             }
 
-            oldDomain.domainStatus = domainStatus;
+            oldDomain.DomainStatus = domainStatus;
             int affectedCount = await db.SaveChangesAsync();
             if (affectedCount > 0)
             {

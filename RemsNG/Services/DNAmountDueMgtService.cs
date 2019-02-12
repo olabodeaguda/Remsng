@@ -11,10 +11,10 @@ namespace RemsNG.Services
 {
     public class DNAmountDueMgtService : IDNAmountDueMgtService
     {
-        private DNAmountDueMgtDao dNAmountDueMgtDao;
+        private DNAmountDueMgtRepository dNAmountDueMgtDao;
         public DNAmountDueMgtService(RemsDbContext _db)
         {
-            dNAmountDueMgtDao = new DNAmountDueMgtDao(_db);
+            dNAmountDueMgtDao = new DNAmountDueMgtRepository(_db);
         }
 
         public async Task<List<DNAmountDueModel>> ByBillingNo(string billingno)

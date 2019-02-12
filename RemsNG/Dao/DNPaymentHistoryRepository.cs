@@ -1,13 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
+using Remsng.Data.Entities;
 using RemsNG.ORM;
 using System;
 using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class DNPaymentHistoryDao : AbstractRepository
+    public class DNPaymentHistoryRepository : AbstractRepository
     {
-        public DNPaymentHistoryDao(RemsDbContext _db) : base(_db)
+        public DNPaymentHistoryRepository(RemsDbContext _db) : base(_db)
         { }
 
         public async Task<Prepayment> Get(Guid taxpayerId)

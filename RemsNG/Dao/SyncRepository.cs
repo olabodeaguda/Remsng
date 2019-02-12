@@ -4,14 +4,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Remsng.Data;
+using RemsNG.Common.Models;
 using RemsNG.Models;
 using RemsNG.ORM;
 
 namespace RemsNG.Dao
 {
-    public class SyncDao : AbstractRepository
+    public class SyncRepository : AbstractRepository
     {
-        public SyncDao(RemsDbContext _db) : base(_db)
+        public SyncRepository(RemsDbContext _db) : base(_db)
         {
         }
 

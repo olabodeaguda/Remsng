@@ -13,12 +13,12 @@ namespace RemsNG.Dao
 {
     public class DemandNoticeRepository : AbstractRepository
     {
-        private StreetDao streetDao;
-        WardDao wardDao;
+        private StreetRepository streetDao;
+        WardRepository wardDao;
         public DemandNoticeRepository(RemsDbContext _db) : base(_db)
         {
-            wardDao = new WardDao(_db);
-            streetDao = new StreetDao(_db);
+            wardDao = new WardRepository(_db);
+            streetDao = new StreetRepository(_db);
         }
 
         public async Task<Response> Add(DemandNotice demandNotice)
@@ -70,16 +70,16 @@ namespace RemsNG.Dao
                 totalCount = 0;// demandNotice.TotalSize.HasValue ? demandNotice.TotalSize.Value : 1;
             }
 
-            List<DemandNoticeExt> lst = new List<DemandNoticeExt>();
+            List<DemandNoticeModelExt> lst = new List<DemandNoticeModelExt>();
             foreach (var x in results)
             {
-                DemandNoticeModelExt dne = new DemandNoticeExt();
-                dne.batchNo = x.batchNo;
-                dne.billingYear = x.billingYear;
-                dne.demandNoticeStatus = x.demandNoticeStatus;
-                dne.id = x.id;
-                dne.lcdaId = x.lcdaId;
-                dne.demandNoticeRequest = await TranslateDemandNoticeRequest(x.query);
+                DemandNoticeModelExt dne = new DemandNoticeModelExt();
+                dne.batchNo = x.BatchNo;
+                dne.billingYear = x.BillingYear;
+                dne.demandNoticeStatus = x.DemandNoticeStatus;
+                dne.id = x.Id;
+                dne.lcdaId = x.LcdaId;
+                dne.demandNoticeRequestModel = await TranslateDemandNoticeRequest(x.Query);
                 lst.Add(dne);
             }
 
@@ -106,16 +106,16 @@ namespace RemsNG.Dao
                 totalCount = 0;// demandNotice.totalSize.HasValue ? demandNotice.totalSize.Value : 1;
             }
 
-            List<DemandNoticeExt> lst = new List<DemandNoticeExt>();
+            List<DemandNoticeModelExt> lst = new List<DemandNoticeModelExt>();
             foreach (var x in results)
             {
-                DemandNoticeExt dne = new DemandNoticeExt();
-                dne.batchNo = x.batchNo;
-                dne.billingYear = x.billingYear;
-                dne.demandNoticeStatus = x.demandNoticeStatus;
-                dne.id = x.id;
-                dne.lcdaId = x.lcdaId;
-                dne.demandNoticeRequest = await TranslateDemandNoticeRequest(x.query);
+                DemandNoticeModelExt dne = new DemandNoticeModelExt();
+                dne.batchNo = x.BatchNo;
+                dne.billingYear = x.BillingYear;
+                dne.demandNoticeStatus = x.DemandNoticeStatus;
+                dne.id = x.Id;
+                dne.lcdaId = x.LcdaId;
+                dne.demandNoticeRequestModel = await TranslateDemandNoticeRequest(x.Query);
                 lst.Add(dne);
             }
 
@@ -155,8 +155,8 @@ namespace RemsNG.Dao
         public async Task<Response> UpdateBillingYr(DemandNotice demandNotice)
         {
             DbResponse dbResponse = await db.DbResponses.FromSql("sp_updateBillingYrDemandNotice @p0,@p1", new object[] {
-                demandNotice.id,
-                demandNotice.billingYear
+                demandNotice.Id,
+                demandNotice.BillingYear
             }).FirstOrDefaultAsync();
 
             if (dbResponse.success)
@@ -180,8 +180,8 @@ namespace RemsNG.Dao
         public async Task<Response> UpdateStatus(DemandNotice demandNotice)
         {
             DbResponse dbResponse = await db.DbResponses.FromSql("sp_updateStatusDemandNotice @p0,@p1", new object[] {
-                demandNotice.id,
-                demandNotice.demandNoticeStatus
+                demandNotice.Id,
+                demandNotice.DemandNoticeStatus
             }).FirstOrDefaultAsync();
 
             if (dbResponse.success)
@@ -209,19 +209,19 @@ namespace RemsNG.Dao
             if (results.Count > 0)
             {
                 DemandNotice demandNotice = results[0];
-                totalCount = demandNotice.totalSize.HasValue ? demandNotice.totalSize.Value : 1;
+                totalCount = 0;// demandNotice.totalSize.HasValue ? demandNotice.totalSize.Value : 1;
             }
-            List<DemandNoticeExt> lst = new List<DemandNoticeExt>();
+            List<DemandNoticeModelExt> lst = new List<DemandNoticeModelExt>();
             foreach (var x in results)
             {
-                DemandNoticeExt dne = new DemandNoticeExt();
-                dne.batchNo = x.batchNo;
-                dne.billingYear = x.billingYear;
-                dne.demandNoticeStatus = x.demandNoticeStatus;
-                dne.id = x.id;
-                dne.lcdaId = x.lcdaId;
-                dne.demandNoticeRequest = await TranslateDemandNoticeRequest(x.query);
-                dne.CreatedDate = x.dateCreated.Value;
+                DemandNoticeModelExt dne = new DemandNoticeModelExt();
+                dne.batchNo = x.BatchNo;
+                dne.billingYear = x.BillingYear;
+                dne.demandNoticeStatus = x.DemandNoticeStatus;
+                dne.id = x.Id;
+                dne.lcdaId = x.LcdaId;
+                dne.demandNoticeRequestModel = await TranslateDemandNoticeRequest(x.Query);
+                dne.CreatedDate = x.DateCreated.Value;
                 lst.Add(dne);
             }
 
@@ -232,15 +232,15 @@ namespace RemsNG.Dao
             };
         }
 
-        private async Task<DemandNoticeRequest> TranslateDemandNoticeRequest(string jsonObject)
+        private async Task<DemandNoticeRequestModel> TranslateDemandNoticeRequest(string jsonObject)
         {
-            DemandNoticeRequest s = JsonConvert.DeserializeObject<DemandNoticeRequest>(EncryptDecryptUtils.FromHexString(jsonObject));
+            DemandNoticeRequestModel s = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(EncryptDecryptUtils.FromHexString(jsonObject));
             if (s.wardId != null)
             {
                 Ward ward = await wardDao.GetWard(s.wardId.Value);
                 if (ward != null)
                 {
-                    s.wardName = ward.wardName;
+                    s.wardName = ward.WardName;
                 }
             }
             if (s.streetId != null)
@@ -248,7 +248,7 @@ namespace RemsNG.Dao
                 Street street = await streetDao.ById(s.streetId.Value);
                 if (street != null)
                 {
-                    s.streetName = street.streetName;
+                    s.streetName = street.StreetName;
                 }
             }
             return s;
@@ -261,19 +261,19 @@ namespace RemsNG.Dao
             if (results.Count > 0)
             {
                 DemandNotice demandNotice = results[0];
-                totalCount = demandNotice.totalSize.HasValue ? demandNotice.totalSize.Value : 1;
+                totalCount = 0;// demandNotice.totalSize.HasValue ? demandNotice.totalSize.Value : 1;
             }
 
             return new
             {
-                data = results.Select(x => new DemandNoticeExt()
+                data = results.Select(x => new DemandNoticeModelExt()
                 {
-                    batchNo = x.batchNo,
-                    billingYear = x.billingYear,
-                    demandNoticeStatus = x.demandNoticeStatus,
-                    id = x.id,
-                    lcdaId = x.lcdaId,
-                    demandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequest>(EncryptDecryptUtils.FromHexString(x.query))
+                    batchNo = x.BatchNo,
+                    billingYear = x.BillingYear,
+                    demandNoticeStatus = x.DemandNoticeStatus,
+                    id = x.Id,
+                    lcdaId = x.LcdaId,
+                    demandNoticeRequestModel = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(EncryptDecryptUtils.FromHexString(x.Query))
                 }),
                 totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
             };

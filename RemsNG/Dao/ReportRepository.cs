@@ -1,15 +1,15 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
+using RemsNG.Common.Models;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using RemsNG.ORM;
 
 namespace RemsNG.Dao
 {
-    public class ReportDao : AbstractRepository
+    public class ReportRepository : AbstractRepository
     {
-        public ReportDao(RemsDbContext _db) : base(_db)
+        public ReportRepository(RemsDbContext _db) : base(_db)
         {
         }
 
@@ -23,7 +23,7 @@ namespace RemsNG.Dao
                     startDate,endDate
                        }).ToListAsync();
             }
-            catch (Exception x)
+            catch (Exception)
             {
 
                 throw;
@@ -39,7 +39,7 @@ namespace RemsNG.Dao
                 }).ToListAsync();
         }
 
-        public async Task<List<ChartReport>> ReportByYear()
+        public async Task<List<ChartReportModel>> ReportByYear()
         {
             return await db.ChartReports.FromSql("sp_reportByYear @p0",
                 new object[]

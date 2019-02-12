@@ -9,15 +9,15 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class ErrorDao : AbstractRepository
+    public class ErrorRepository : AbstractRepository
     {
         private readonly ILogger logger;
-        public ErrorDao(RemsDbContext _db, ILoggerFactory loggerFactory) : base(_db)
+        public ErrorRepository(RemsDbContext _db, ILoggerFactory loggerFactory) : base(_db)
         {
             logger = loggerFactory.CreateLogger("Error Dao");
         }
 
-        public ErrorDao(RemsDbContext _db) : base(_db)
+        public ErrorRepository(RemsDbContext _db) : base(_db)
         {
         }
 

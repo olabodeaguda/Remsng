@@ -11,10 +11,10 @@ namespace RemsNG.Services
 {
     public class WardService : IWardService
     {
-        private WardDao wardDao;
+        private WardRepository wardDao;
         public WardService(RemsDbContext db)
         {
-            wardDao = new WardDao(db);
+            wardDao = new WardRepository(db);
         }
 
         public async Task<List<Ward>> ActiveWard()

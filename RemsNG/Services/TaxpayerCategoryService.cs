@@ -11,10 +11,10 @@ namespace RemsNG.Services
 {
     public class TaxpayerCategoryService : ITaxpayerCategoryService
     {
-        private TaxpayerCatgoryDao taxpayerCatgoryDao;
+        private TaxpayerCatgoryRepository taxpayerCatgoryDao;
         public TaxpayerCategoryService(RemsDbContext _db, ILoggerFactory loggerFactory)
         {
-            taxpayerCatgoryDao = new TaxpayerCatgoryDao(_db);
+            taxpayerCatgoryDao = new TaxpayerCatgoryRepository(_db);
         }
 
         public async Task<Response> Add(TaxpayerCategory taxpayerCategory)

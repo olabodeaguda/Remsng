@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using RemsNG.Models;
-using RemsNG.ORM;
+using Remsng.Data;
+using RemsNG.Common.Models;
+using RemsNG.Data.Entities;
 using RemsNG.Utilities;
 using System;
 using System.Collections.Generic;
@@ -10,21 +11,21 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class SectorDao : AbstractRepository
+    public class SectorRepository : AbstractRepository
     {
         private readonly ILogger logger;
-        public SectorDao(RemsDbContext _db, ILoggerFactory loggerFactory) : base(_db)
+        public SectorRepository(RemsDbContext _db, ILoggerFactory loggerFactory) : base(_db)
         {
-            this.logger = loggerFactory.CreateLogger("Sector Dao");
+            logger = loggerFactory.CreateLogger("Sector Dao");
         }
 
         public async Task<Response> Add(Sector sector)
         {
             DbResponse dbResponse = await db.DbResponses.FromSql("sp_createSector @p0, @p1, @p2, @p3", new object[] {
-                sector.sectorName,
-                sector.lcdaId,
-                sector.createdBy,
-                sector.prefix
+                sector.SectorName,
+                sector.LcdaId,
+                sector.CreatedBy,
+                sector.Prefix
             }).FirstOrDefaultAsync();
 
             if (dbResponse.success)
@@ -47,10 +48,10 @@ namespace RemsNG.Dao
         public async Task<Response> Update(Sector sector)
         {
             DbResponse dbResponse = await db.DbResponses.FromSql("sp_updateSector @p0, @p1, @p2, @p3", new object[] {
-                sector.id,
-                sector.sectorName,
-                sector.lastmodifiedby,
-                sector.prefix
+                sector.Id,
+                sector.SectorName,
+                sector.Lastmodifiedby,
+                sector.Prefix
             }).FirstOrDefaultAsync();
 
             if (dbResponse.success)
@@ -70,9 +71,15 @@ namespace RemsNG.Dao
             };
         }
 
-        public async Task<List<Sector>> ByLcdaId(Guid lcdaId) => await db.Sectors.Where(x => x.lcdaId == lcdaId).ToListAsync();
+        public async Task<List<Sector>> ByLcdaId(Guid lcdaId)
+        {
+            return await db.Sectors.Where(x => x.LcdaId == lcdaId).ToListAsync();
+        }
 
-        public async Task<Sector> ById(Guid id) => await db.Sectors.FirstOrDefaultAsync(x=>x.id == id);
+        public async Task<Sector> ById(Guid id)
+        {
+            return await db.Sectors.FirstOrDefaultAsync(x => x.Id == id);
+        }
 
         public async Task<Sector> ByTaxpayerId(Guid taxpayerId)
         {

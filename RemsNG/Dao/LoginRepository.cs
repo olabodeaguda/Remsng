@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.ORM;
 using System;
 using System.Collections.Generic;
@@ -7,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class LoginDao:AbstractRepository
+    public class LoginRepository : AbstractRepository
     {
-        public LoginDao(RemsDbContext _db):base(_db)
+        public LoginRepository(RemsDbContext _db):base(_db)
         {
         }
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data.Entities;
 using RemsNG.Common.Models;
 using RemsNG.Data.Entities;
 
@@ -49,7 +50,7 @@ namespace Remsng.Data
         public DbSet<DemandNoticeDownloadHistory> DemandNoticeDownloadHistories { get; set; }
         public DbSet<BankLcda> LcdaBanks { get; set; }
         public DbSet<BatchDemandNoticeModel> BatchDemanNoticeModels { get; set; }
-        public DbSet<LcdaPropertyModel> LcdaProperties { get; set; }
+        public DbSet<LcdaProperty> LcdaProperties { get; set; }
         public DbSet<DNAmountDueModel> DNAmountDueModels { get; set; }
         public DbSet<DemandNoticePaymentHistory> DemandNoticePaymentHistories { get; set; }
         public DbSet<Bank> Banks { get; set; }

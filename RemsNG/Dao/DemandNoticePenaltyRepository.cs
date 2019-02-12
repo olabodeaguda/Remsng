@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RemsNG.Models;
-using RemsNG.ORM;
+using Remsng.Data;
+using RemsNG.Common.Models;
+using RemsNG.Data.Entities;
 using RemsNG.Utilities;
 using System;
 using System.Collections.Generic;
@@ -8,19 +9,19 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class DemandNoticePenaltyDao : AbstractRepository
+    public class DemandNoticePenaltyRepository : AbstractRepository
     {
-        public DemandNoticePenaltyDao(RemsDbContext _db) : base(_db)
+        public DemandNoticePenaltyRepository(RemsDbContext _db) : base(_db)
         {
         }
 
-        public string AddQuery(DemandNoticeItemPenalty dnp)
+        public string AddQuery(DemandNoticeItemPenaltyExtModel dnp)
         {
             return $"INSERT INTO tbl_demandNoticePenalty" +
                 $" (id ,billingNo,taxpayerId ,totalAmount,amountPaid,itemId" +
                 $" ,originatedYear,billingYear,itemPenaltyStatus,createdBy,dateCreated)" +
                 $" VALUES ('{Guid.NewGuid()}','{dnp.billingNo}','{dnp.taxpayerId}','{dnp.totalAmount}','{dnp.amountPaid}','{dnp.itemId}'" +
-                $",'{dnp.originatedYear}','{dnp.billingYr}','{dnp.itemPenaltyStatus}','APPLICATION','{DateTime.Now}');";
+                $",'{dnp.originatedYear}','{dnp.billingYear}','{dnp.itemPenaltyStatus}','APPLICATION','{DateTime.Now}');";
         }
 
         public Response RunQuery(string query)
@@ -93,37 +94,37 @@ namespace RemsNG.Dao
             }
         }
 
-        public async Task<List<DemandNoticeItemPenalty>> ByBillingNumber(string billingno)
+        public async Task<List<DemandNoticeItemPenaltyExtModel>> ByBillingNumber(string billingno)
         {
             string query = $"select tbl_demandNoticePenalty.*,0 as billingYr from tbl_demandNoticePenalty where billingNo = '{billingno}'";
-            List<DemandNoticeItemPenalty> lstdbItem = await db.DemandNoticeItemPenaties
+            List<DemandNoticeItemPenaltyExtModel> lstdbItem = await db.DemandNoticeItemPenaties
                 .FromSql(query).ToListAsync();
             return lstdbItem;
         }
 
-        public async Task<List<DemandNoticeItemPenalty>> ByTaxpayerId(Guid taxpayerId)
+        public async Task<List<DemandNoticeItemPenaltyExtModel>> ByTaxpayerId(Guid taxpayerId)
         {
             string query = $"select tbl_demandNoticePenalty.*,0 as billingYr from tbl_demandNoticePenalty where taxpayerId = '{taxpayerId}'";
-            List<DemandNoticeItemPenalty> lstdbItem = await db.DemandNoticeItemPenaties
+            List<DemandNoticeItemPenaltyExtModel> lstdbItem = await db.DemandNoticeItemPenaties
                 .FromSql(query).ToListAsync();
             return lstdbItem;
         }
 
-        public async Task<List<DemandNoticeItemPenalty>> ByTaxpayerId(Guid taxpayerId, int billingYr)
+        public async Task<List<DemandNoticeItemPenaltyExtModel>> ByTaxpayerId(Guid taxpayerId, int billingYr)
         {
             string query = $"select tbl_demandNoticePenalty.*,0 as billingYr from tbl_demandNoticePenalty " +
                 $"where taxpayerId = '{taxpayerId}' and billingYear = {billingYr}";
-            List<DemandNoticeItemPenalty> lstdbItem = await db.DemandNoticeItemPenaties
+            List<DemandNoticeItemPenaltyExtModel> lstdbItem = await db.DemandNoticeItemPenaties
                 .FromSql(query).ToListAsync();
             return lstdbItem;
         }
 
-        public async Task<List<DemandNoticeItemPenaltyExt>> ReportByCategory(DateTime fromDate, DateTime toDate)
+        public async Task<List<DemandNoticeItemPenaltyExtModel>> ReportByCategory(DateTime fromDate, DateTime toDate)
         {
             DateTime startDate = new DateTime(fromDate.Year, fromDate.Month, fromDate.Day, 0, 0, 0);
             DateTime endDate = new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59);
 
-            List<DemandNoticeItemPenaltyExt> lst =
+            List<DemandNoticeItemPenaltyExtModel> lst =
                 await db.DemandNoticeItemPenaltyExts.FromSql("sp_getPenaltyByCategoryDate @p0,@p1",
                 new object[] { startDate, endDate }).ToListAsync();
 

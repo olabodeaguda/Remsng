@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RemsNG.Models;
-using RemsNG.ORM;
+using Remsng.Data;
+using RemsNG.Common.Models;
+using RemsNG.Data.Entities;
 using RemsNG.Utilities;
 using System;
 using System.Collections.Generic;
@@ -8,19 +9,19 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class DemandNoticeItemDao : AbstractRepository
+    public class DemandNoticeItemRepository : AbstractRepository
     {
-        public DemandNoticeItemDao(RemsDbContext _db) : base(_db)
+        public DemandNoticeItemRepository(RemsDbContext _db) : base(_db)
         {
         }
 
-        public async Task<Response> Add(DemandNoticeTaxpayersDetail dntd)
+        public async Task<Response> Add(DemandNoticeTaxpayers dntd)
         {
             DbResponse dbResponse = await db.DbResponses.FromSql("sp_addTaxpayerDemandNoticeItem @p0,@p1,@p2,@p3", new object[] {
-                dntd.dnId,
-                dntd.taxpayerId,
-                dntd.billingYr,
-                dntd.createdBy
+                dntd.DnId,
+                dntd.TaxpayerId,
+                dntd.BillingYr,
+                dntd.CreatedBy
             }).FirstOrDefaultAsync();
 
             if (dbResponse.success)
@@ -63,12 +64,12 @@ namespace RemsNG.Dao
             return lstdbItem;
         }
 
-        public async Task<List<DemandNoticeItemExt>> ReportByCategory(DateTime fromDate, DateTime toDate)
+        public async Task<List<DemandNoticeItemModelExt>> ReportByCategory(DateTime fromDate, DateTime toDate)
         {
             DateTime startDate = new DateTime(fromDate.Year, fromDate.Month, fromDate.Day, 0, 0, 0);
             DateTime endDate = new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59);
 
-            List<DemandNoticeItemExt> lst =
+            List<DemandNoticeItemModelExt> lst =
                 await db.DemandNoticeItemExts.FromSql("sp_getByCategoryDate @p0,@p1",
                 new object[] { startDate, endDate }).ToListAsync();
 

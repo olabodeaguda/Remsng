@@ -22,20 +22,20 @@ namespace RemsNG.Services
     {
         private readonly JwtIssuerOptions jwtOptions;
         private readonly LoginDao loginDao;
-        private readonly DomainDao domainDao;
-        private readonly RoleDao roleDao;
-        private readonly LcdaDao lcdaDao;
+        private readonly DomainRepository domainDao;
+        private readonly RoleRepository roleDao;
+        private readonly LcdaRepository lcdaDao;
         private readonly UserDao userDao;
-        private readonly PermissionDao permissionDao;
+        private readonly PermissionRepository permissionDao;
         public UserService(RemsDbContext _db,
             IOptions<JwtIssuerOptions> _jwtOptions, ILoggerFactory loggerFactory)
         {
             loginDao = new LoginDao(_db);
-            domainDao = new DomainDao(_db);
-            roleDao = new RoleDao(_db, loggerFactory);
-            lcdaDao = new LcdaDao(_db, loggerFactory);
+            domainDao = new DomainRepository(_db);
+            roleDao = new RoleRepository(_db, loggerFactory);
+            lcdaDao = new LcdaRepository(_db, loggerFactory);
             userDao = new UserDao(_db);
-            permissionDao = new PermissionDao(_db);
+            permissionDao = new PermissionRepository(_db);
             jwtOptions = _jwtOptions.Value;
         }
 

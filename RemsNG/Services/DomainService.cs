@@ -11,11 +11,11 @@ namespace RemsNG.Services
 {
     public class DomainService : IDomainService
     {
-        private readonly DomainDao domainDao;
+        private readonly DomainRepository domainDao;
 
         public DomainService(RemsDbContext _db)
         {
-            domainDao = new DomainDao(_db);
+            domainDao = new DomainRepository(_db);
         }
 
         public async Task<bool> Add(Domain domain)

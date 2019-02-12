@@ -1,4 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
+using RemsNG.Common.Models;
+using RemsNG.Data.Entities;
 using RemsNG.Exceptions;
 using RemsNG.Models;
 using RemsNG.ORM;
@@ -10,23 +13,23 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class ItemDao : AbstractRepository
+    public class ItemRepository : AbstractRepository
     {
-        public ItemDao(RemsDbContext _db) : base(_db)
+        public ItemRepository(RemsDbContext _db) : base(_db)
         {
         }
 
         public async Task<Response> Add(Item item)
         {
-            var r = await db.Items.FirstOrDefaultAsync(x => x.itemDescription.ToLower() == item.itemDescription.ToLower()
-            && item.lcdaId == x.lcdaId);
+            var r = await db.Items.FirstOrDefaultAsync(x => x.ItemDescription.ToLower() == item.ItemDescription.ToLower()
+            && item.LcdaId == x.LcdaId);
             if (r != null)
             {
 
-                throw new DuplicateException($"{item.itemDescription} already exist");
+                throw new DuplicateException($"{item.ItemDescription} already exist");
             }
 
-            item.dateCreated = DateTime.Now;
+            item.DateCreated = DateTime.Now;
             db.Items.Add(item);
             int count = await db.SaveChangesAsync();
             if (count > 0)
@@ -34,7 +37,7 @@ namespace RemsNG.Dao
                 return new Response()
                 {
                     code = MsgCode_Enum.SUCCESS,
-                    description = $"{item.itemDescription} has been addedd successfully"
+                    description = $"{item.ItemDescription} has been addedd successfully"
                 };
             }
             else
@@ -42,23 +45,23 @@ namespace RemsNG.Dao
                 return new Response()
                 {
                     code = MsgCode_Enum.FAIL,
-                    description = $"{item.itemDescription} request failed. Please try again or contact an administrator for help"
+                    description = $"{item.ItemDescription} request failed. Please try again or contact an administrator for help"
                 };
             }
         }
 
         public async Task<Response> Update(Item item)
         {
-            var r = await db.Items.FindAsync(new object[] { item.id });
+            var r = await db.Items.FindAsync(new object[] { item.Id });
             if (r == null)
             {
-                throw new NotFoundException($"{item.itemDescription} does not exist");
+                throw new NotFoundException($"{item.ItemDescription} does not exist");
             }
 
-            r.itemDescription = item.itemDescription;
-            r.lastmodifiedby = item.lastmodifiedby;
-            r.lastModifiedDate = DateTime.Now;
-            r.itemCode = item.itemCode;
+            r.ItemDescription = item.ItemDescription;
+            r.Lastmodifiedby = item.Lastmodifiedby;
+            r.LastModifiedDate = DateTime.Now;
+            r.ItemCode = item.ItemCode;
 
             int count = await db.SaveChangesAsync();
             if (count > 0)
@@ -66,7 +69,7 @@ namespace RemsNG.Dao
                 return new Response()
                 {
                     code = MsgCode_Enum.SUCCESS,
-                    description = $"{item.itemDescription} has been updated successfully"
+                    description = $"{item.ItemDescription} has been updated successfully"
                 };
             }
             else
@@ -74,22 +77,22 @@ namespace RemsNG.Dao
                 return new Response()
                 {
                     code = MsgCode_Enum.FAIL,
-                    description = $"An error occur while updating {item.itemDescription}. Please try again or contact administrator"
+                    description = $"An error occur while updating {item.ItemDescription}. Please try again or contact administrator"
                 };
             }
         }
 
         public async Task<Response> UpdateStatus(Item item)
         {
-            var r = await db.Items.FindAsync(new object[] { item.id });
+            var r = await db.Items.FindAsync(new object[] { item.Id });
             if (r == null)
             {
-                throw new NotFoundException($"{item.itemDescription} does not exist");
+                throw new NotFoundException($"{item.ItemDescription} does not exist");
             }
 
-            r.itemStatus = item.itemStatus;
-            r.lastmodifiedby = item.lastmodifiedby;
-            r.lastModifiedDate = DateTime.Now;
+            r.ItemStatus = item.ItemStatus;
+            r.Lastmodifiedby = item.Lastmodifiedby;
+            r.LastModifiedDate = DateTime.Now;
 
             int count = await db.SaveChangesAsync();
             if (count > 0)
@@ -97,7 +100,7 @@ namespace RemsNG.Dao
                 return new Response()
                 {
                     code = MsgCode_Enum.SUCCESS,
-                    description = $"{item.itemDescription} has been updated successfully"
+                    description = $"{item.ItemDescription} has been updated successfully"
                 };
             }
             else
@@ -105,16 +108,16 @@ namespace RemsNG.Dao
                 return new Response()
                 {
                     code = MsgCode_Enum.FAIL,
-                    description = $"An error occur while updating {item.itemDescription}. Please try again or contact administrator"
+                    description = $"An error occur while updating {item.ItemDescription}. Please try again or contact administrator"
                 };
             }
         }
 
         public async Task<object> ListByLcdaId(Guid lcdaId, PageModel pageModel)
         {
-            var results = await db.Items.Where(x => x.lcdaId == lcdaId).Skip((pageModel.PageNum - 1) * pageModel.PageSize)
+            var results = await db.Items.Where(x => x.LcdaId == lcdaId).Skip((pageModel.PageNum - 1) * pageModel.PageSize)
                 .Take(pageModel.PageSize).ToListAsync();
-            var totalCount = await db.Items.Where(x => x.lcdaId == lcdaId).CountAsync();
+            var totalCount = await db.Items.Where(x => x.LcdaId == lcdaId).CountAsync();
             return new
             {
                 data = results,
@@ -125,12 +128,12 @@ namespace RemsNG.Dao
 
         public async Task<object> ListByLcdaId(Guid lcdaId)
         {
-            return await db.Items.Where(x => x.lcdaId == lcdaId).ToListAsync();
+            return await db.Items.Where(x => x.LcdaId == lcdaId).ToListAsync();
         }
 
         public async Task<object> GetItemByIdAsync(Guid id)
         {
-            return await db.Items.FirstOrDefaultAsync(x => x.id == id);
+            return await db.Items.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<object> GetByTaxPayersId(Guid taxpayersId)

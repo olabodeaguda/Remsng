@@ -10,10 +10,10 @@ namespace RemsNG.Services
 {
     public class ListPropertyService : IListPropertyService
     {
-        private readonly LcdaPropertyDao lcdaPropertyDao;
+        private readonly LcdaPropertyRepository lcdaPropertyDao;
         public ListPropertyService(RemsDbContext _db)
         {
-            lcdaPropertyDao = new LcdaPropertyDao(_db);
+            lcdaPropertyDao = new LcdaPropertyRepository(_db);
         }
 
         public async Task<List<LcdaProperty>> ByLcda(Guid lcdaId)

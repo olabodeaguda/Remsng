@@ -1,4 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
+using RemsNG.Common.Models;
+using RemsNG.Data.Entities;
 using RemsNG.Exceptions;
 using RemsNG.Models;
 using RemsNG.ORM;
@@ -10,9 +13,9 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class TaxpayerCatgoryDao : AbstractRepository
+    public class TaxpayerCatgoryRepository : AbstractRepository
     {
-        public TaxpayerCatgoryDao(RemsDbContext _db) : base(_db)
+        public TaxpayerCatgoryRepository(RemsDbContext _db) : base(_db)
         {
         }
 
@@ -40,15 +43,15 @@ namespace RemsNG.Dao
 
         public async Task<Response> Update(TaxpayerCategory taxpayerCategory)
         {
-            var category = await db.TaxPayersCategories.FindAsync(new object[] { taxpayerCategory.id });
+            var category = await db.TaxPayersCategories.FindAsync(new object[] { taxpayerCategory.Id });
             if (category == null)
             {
                 throw new NotFoundException("Taxpayer category does not exist");
             }
 
-            category.taxpayerCategoryName = taxpayerCategory.taxpayerCategoryName;
-            category.lastmodifiedby = taxpayerCategory.lastmodifiedby;
-            category.lastModifiedDate = DateTime.Now;
+            category.TaxpayerCategoryName = taxpayerCategory.TaxpayerCategoryName;
+            category.Lastmodifiedby = taxpayerCategory.Lastmodifiedby;
+            category.LastModifiedDate = DateTime.Now;
 
             int count = await db.SaveChangesAsync();
             if (count > 0)
@@ -101,19 +104,19 @@ namespace RemsNG.Dao
 
         public async Task<TaxpayerCategory> GetById(Guid id)
         {
-            return await db.TaxPayersCategories.FirstOrDefaultAsync(x => x.id == id);
+            return await db.TaxPayersCategories.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<List<TaxpayerCategory>> GetListByLcdaIdAsync(Guid lcdaId)
         {
-            return await db.TaxPayersCategories.Where(x => x.lcdaId == lcdaId).ToListAsync();
+            return await db.TaxPayersCategories.Where(x => x.LcdaId == lcdaId).ToListAsync();
         }
 
         public async Task<object> GetListByLcdaIdAsync(Guid lcdaId, PageModel pageModel)
         {
-            var results = await db.TaxPayersCategories.Where(x => x.lcdaId == lcdaId).Skip((pageModel.PageNum - 1) * pageModel.PageSize)
+            var results = await db.TaxPayersCategories.Where(x => x.LcdaId == lcdaId).Skip((pageModel.PageNum - 1) * pageModel.PageSize)
                 .Take(pageModel.PageSize).ToListAsync();
-            var totalCount = await db.TaxPayersCategories.Where(x => x.lcdaId == lcdaId).CountAsync();
+            var totalCount = await db.TaxPayersCategories.Where(x => x.LcdaId == lcdaId).CountAsync();
             return new
             {
                 data = results,
@@ -124,7 +127,7 @@ namespace RemsNG.Dao
 
         public async Task<object> GetByNameAndLcdaId(Guid lcdaid, string name)
         {
-            return await db.TaxPayersCategories.FirstOrDefaultAsync(x => x.lcdaId == lcdaid && x.taxpayerCategoryName.ToLower() == name);
+            return await db.TaxPayersCategories.FirstOrDefaultAsync(x => x.LcdaId == lcdaid && x.TaxpayerCategoryName.ToLower() == name);
         }
 
         public async Task<TaxpayerCategory> GetTaxpayerCategory(Guid taxpayerId)

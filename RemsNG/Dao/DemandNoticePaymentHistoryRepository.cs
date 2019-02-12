@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RemsNG.Models;
-using RemsNG.ORM;
+using Remsng.Data;
+using RemsNG.Common.Models;
+using RemsNG.Data.Entities;
 using RemsNG.Utilities;
 using System;
 using System.Collections.Generic;
@@ -9,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class DemandNoticePaymentHistoryDao : AbstractRepository
+    public class DemandNoticePaymentHistoryRepository : AbstractRepository
     {
-        public DemandNoticePaymentHistoryDao(RemsDbContext _db) : base(_db)
+        public DemandNoticePaymentHistoryRepository(RemsDbContext _db) : base(_db)
         {
         }
 
@@ -19,14 +20,15 @@ namespace RemsNG.Dao
         {
             DbResponse dbResponse = await db.DbResponses.FromSql("sp_addPayment @p0,@p1,@p2,@p3,@p4,@p5" +
                 ",@p6,@p7,@p8,@p9", new object[] {
-                dnph.ownerId,
-                dnph.billingNumber,
-                dnph.amount,
-                dnph.charges,
-                dnph.paymentMode,
-                dnph.referenceNumber,
-                dnph.bankId,
-                dnph.createdBy,dnph.dateCreated,
+                dnph.OwnerId,
+                dnph.BillingNumber,
+                dnph.Amount,
+                dnph.Charges,
+                dnph.PaymentMode,
+                dnph.ReferenceNumber,
+                dnph.BankId,
+                dnph.CreatedBy,
+                dnph.DateCreated,
                 dnph.IsWaiver
             }).FirstOrDefaultAsync();
 
@@ -52,13 +54,13 @@ namespace RemsNG.Dao
         public async Task<Response> UpdateAsync(DemandNoticePaymentHistory dnph)
         {
             DbResponse dbResponse = await db.DbResponses.FromSql("sp_addPayment  @p0,@p1,@p2,@p3,@p4,@p5", new object[] {
-                dnph.id,
-                dnph.bankId,
-                dnph.referenceNumber,
-                dnph.amount,
-                dnph.charges,
-                dnph.paymentMode,
-                dnph.createdBy
+                dnph.Id,
+                dnph.BankId,
+                dnph.ReferenceNumber,
+                dnph.Amount,
+                dnph.Charges,
+                dnph.PaymentMode,
+                dnph.CreatedBy
             }).FirstOrDefaultAsync();
 
             if (dbResponse.success)
@@ -82,8 +84,8 @@ namespace RemsNG.Dao
         public async Task<Response> UpdateStatusAsync(DemandNoticePaymentHistory dnph)
         {
             DbResponse dbResponse = await db.DbResponses.FromSql("sp_updatePaymentHistoryStatus @p0,@p1", new object[] {
-                dnph.id,
-                dnph.paymentStatus
+                dnph.Id,
+                dnph.PaymentStatus
             }).FirstOrDefaultAsync();
 
             if (dbResponse.success)
@@ -104,7 +106,7 @@ namespace RemsNG.Dao
             }
         }
 
-        public async Task<List<DemandNoticePaymentHistoryExt>> ByBillingNumber(string billingnumber)
+        public async Task<List<DemandNoticePaymentHistoryModelExt>> ByBillingNumber(string billingnumber)
         {
             //string query = $"select dnph.*,bank.bankName from tbl_demandNoticePaymentHistory as dnph " +
             //    $"inner join tbl_bank bank on bank.id = dnph.bankId where billingNumber = '{billingnumber}'";
@@ -142,7 +144,7 @@ namespace RemsNG.Dao
 
         public async Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel)
         {
-            var results = await db.Set<DemandNoticePaymentHistoryExt>()
+            var results = await db.Set<DemandNoticePaymentHistoryModelExt>()
                 .FromSql("sp_paymenthistoryByLcda @p0,@p1,@p2",
                 new object[] { lcdaId, pageModel.PageSize, pageModel.PageNum }).ToListAsync();
             int totalCount = 0;
@@ -167,7 +169,7 @@ namespace RemsNG.Dao
                 $"and paymentStatus = 'APPROVED'";
             var result = await db.DemandNoticePaymentHistories.FromSql(query).ToListAsync();
             return result
-                .GroupBy(x => x.id)
+                .GroupBy(x => x.Id)
                 .Select(p => p.First())
                 .ToList();
         }

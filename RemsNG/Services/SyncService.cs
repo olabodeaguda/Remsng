@@ -20,13 +20,13 @@ namespace RemsNG.Services
     public class SyncService : ISyncService
     {
         private static HttpClient client = new HttpClient();
-        private SyncDao syncDao;
+        private SyncRepository syncDao;
         private IConfiguration configuration;
         private ILogger logger;
         public SyncService(RemsDbContext db, ILoggerFactory loggerFactory, IConfigurationRoot _configuration)
         {
             logger = loggerFactory.CreateLogger("Sync Service");
-            syncDao = new SyncDao(db);
+            syncDao = new SyncRepository(db);
 
             configuration = _configuration;
         }

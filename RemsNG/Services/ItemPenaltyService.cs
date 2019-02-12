@@ -17,7 +17,7 @@ namespace RemsNG.Services
         private ItemPenaltyDao itemPenaltyDao;
         private IDNAmountDueMgtService _admService;
         private readonly DemandNoticeTaxpayersRepository demandNoticeTaxpayersDao;
-        private readonly DemandNoticePenaltyDao demandNoticePenaltyDao;
+        private readonly DemandNoticePenaltyRepository demandNoticePenaltyDao;
         private readonly ILogger logger;
         public ItemPenaltyService(RemsDbContext _db
             , IDNAmountDueMgtService dNAmountDueMgtService,
@@ -26,7 +26,7 @@ namespace RemsNG.Services
             itemPenaltyDao = new ItemPenaltyDao(_db);
             demandNoticeTaxpayersDao = new DemandNoticeTaxpayersRepository(_db);
             _admService = dNAmountDueMgtService;
-            demandNoticePenaltyDao = new DemandNoticePenaltyDao(_db);
+            demandNoticePenaltyDao = new DemandNoticePenaltyRepository(_db);
             logger = loggerFactory.CreateLogger("Items penalty");
         }
 

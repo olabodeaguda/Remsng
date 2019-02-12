@@ -11,10 +11,10 @@ namespace RemsNG.Services
 {
     public class ImageService: IImageService
     {
-        private readonly ImageDao imageDao;
+        private readonly ImageRepository imageDao;
         public ImageService(RemsDbContext _db)
         {
-            imageDao = new ImageDao(_db);
+            imageDao = new ImageRepository(_db);
         }
         public async Task<Response> Add(Images images)
         {

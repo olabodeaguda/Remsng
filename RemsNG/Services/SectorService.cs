@@ -12,10 +12,10 @@ namespace RemsNG.Services
 {
     public class SectorService : ISectorService
     {
-        SectorDao sectorDao;
+        SectorRepository sectorDao;
         public SectorService(RemsDbContext _db, ILoggerFactory loggerFactory)
         {
-            sectorDao = new SectorDao(_db, loggerFactory);
+            sectorDao = new SectorRepository(_db, loggerFactory);
         }
         public async Task<Response> Add(Sector sector)
         {

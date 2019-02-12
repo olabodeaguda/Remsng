@@ -10,10 +10,10 @@ namespace RemsNG.Services
 {
     public class StateService : IStateService
     {
-        private readonly StateDao stateDao;
+        private readonly StateRepository stateDao;
         public StateService(RemsDbContext _db)
         {
-            stateDao = new StateDao(_db);
+            stateDao = new StateRepository(_db);
         }
 
         public async Task<List<State>> All()

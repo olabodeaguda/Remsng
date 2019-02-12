@@ -12,18 +12,18 @@ namespace RemsNG.Services
 {
     public class LcdaService : ILcdaService
     {
-        private readonly LcdaDao lcdaDao;
-        private readonly RoleDao roleDao;
-        private readonly TaxpayerDao taxpayerDao;
-        private readonly WardDao wardDao;
-        private readonly StreetDao streetDao;
+        private readonly LcdaRepository lcdaDao;
+        private readonly RoleRepository roleDao;
+        private readonly TaxpayerRepository taxpayerDao;
+        private readonly WardRepository wardDao;
+        private readonly StreetRepository streetDao;
         public LcdaService(RemsDbContext _db, ILoggerFactory loggerFactory)
         {
-            lcdaDao = new LcdaDao(_db,loggerFactory);
-            roleDao = new RoleDao(_db, loggerFactory);
-            taxpayerDao = new TaxpayerDao(_db);
-            wardDao = new WardDao(_db);
-            streetDao = new StreetDao(_db,loggerFactory);
+            lcdaDao = new LcdaRepository(_db,loggerFactory);
+            roleDao = new RoleRepository(_db, loggerFactory);
+            taxpayerDao = new TaxpayerRepository(_db);
+            wardDao = new WardRepository(_db);
+            streetDao = new StreetRepository(_db,loggerFactory);
         }
 
         public async Task<List<Lgda>> ActiveLCDAByDomainId(Guid domainId)

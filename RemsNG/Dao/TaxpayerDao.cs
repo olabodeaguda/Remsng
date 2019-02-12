@@ -1,4 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
+using RemsNG.Common.Models;
+using RemsNG.Data.Entities;
 using RemsNG.Exceptions;
 using RemsNG.Models;
 using RemsNG.ORM;
@@ -10,15 +13,15 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class TaxpayerDao : AbstractRepository
+    public class TaxpayerRepository : AbstractRepository
     {
-        public TaxpayerDao(RemsDbContext _db) : base(_db)
+        public TaxpayerRepository(RemsDbContext _db) : base(_db)
         {
         }
 
-        public async Task<Response> Create(Taxpayer taxpayer, bool confirmCompany)
+        public async Task<Response> Create(TaxPayer taxpayer, bool confirmCompany)
         {
-            var r = (Taxpayer)await Get(taxpayer.streetId, taxpayer.companyId);
+            var r = (TaxPayer)await Get(taxpayer.StreetId.Value, taxpayer.CompanyId);
 
             if (r != null && confirmCompany)
             {
@@ -26,23 +29,23 @@ namespace RemsNG.Dao
             }
             if (r != null)
             {
-                if (taxpayer.lastname == r.lastname &&
-                    taxpayer.surname == r.surname
-                    && taxpayer.firstname == r.firstname)
+                if (taxpayer.Lastname == r.Lastname &&
+                    taxpayer.Surname == r.Surname
+                    && taxpayer.Firstname == r.Firstname)
                 {
                     throw new DuplicateCompanyException("Taxpayer already exist");
                 }
             }
 
             DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addTaxpayer @p0,@p1,@p2,@p3,@p4,@p5,@p6,@p7", new object[] {
-                    taxpayer.id,
-                    taxpayer.companyId,
-                    taxpayer.streetId,
-                    taxpayer.addressId == null?Guid.Empty:taxpayer.addressId,
-                    taxpayer.createdBy,
-                    taxpayer.surname,
-                    taxpayer.firstname,
-                    taxpayer.lastname
+                    taxpayer.Id,
+                    taxpayer.CompanyId,
+                    taxpayer.StreetId,
+                    taxpayer.AddressId == null?Guid.Empty:taxpayer.AddressId,
+                    taxpayer.CreatedBy,
+                    taxpayer.Surname,
+                    taxpayer.Firstname,
+                    taxpayer.Lastname
             }).FirstOrDefaultAsync();
 
             if (dbResponse.success)
@@ -69,7 +72,7 @@ namespace RemsNG.Dao
             return await db.Taxpayers.FromSql(query).FirstOrDefaultAsync();
         }
 
-        public async Task<List<Taxpayer>> GetActiveTaxpayers(DemandNoticeRequest demandNoticeRequest)
+        public async Task<List<TaxPayer>> GetActiveTaxpayers(DemandNoticeRequestModel demandNoticeRequest)
         {
             if (demandNoticeRequest.streetId != Guid.Empty && demandNoticeRequest.streetId != null)
             {
@@ -88,9 +91,9 @@ namespace RemsNG.Dao
             }
         }
 
-        public async Task<TaxpayerExtension> ById(Guid id)
+        public async Task<TaxpayerExtensionModel> ById(Guid id)
         {
-            var result = await db.Set<TaxpayerExtension>().FromSql("sp_TaxpayerById @p0", new object[] { id }).FirstOrDefaultAsync();
+            var result = await db.Set<TaxpayerExtensionModel>().FromSql("sp_TaxpayerById @p0", new object[] { id }).FirstOrDefaultAsync();
             if (result == null || result.taxpayerStatus == TaxpayerEnum.DELETED.ToString())
             {
                 return null;
@@ -99,16 +102,16 @@ namespace RemsNG.Dao
             return result;
         }
 
-        public async Task<List<TaxpayerExtension>> ByStreetId(Guid streetId)
+        public async Task<List<TaxpayerExtensionModel>> ByStreetId(Guid streetId)
         {
-            var result = await db.Set<TaxpayerExtension>().FromSql("sp_TaxpayerByStreetId @p0", new object[] { streetId }).ToListAsync();
+            var result = await db.Set<TaxpayerExtensionModel>().FromSql("sp_TaxpayerByStreetId @p0", new object[] { streetId }).ToListAsync();
             result = result.Where(x => x.taxpayerStatus == TaxpayerEnum.ACTIVE.ToString()).ToList();
             return result;
         }
 
         public async Task<object> ByStreetId(Guid streetId, PageModel pageModel)
         {
-            var results = await db.Set<TaxpayerExtension>().FromSql("sp_TaxpayerByStreetIdPaginated @p0,@p1,@p2", new object[] { streetId, pageModel.PageSize, pageModel.PageNum }).ToListAsync();
+            var results = await db.Set<TaxpayerExtensionModel>().FromSql("sp_TaxpayerByStreetIdPaginated @p0,@p1,@p2", new object[] { streetId, pageModel.PageSize, pageModel.PageNum }).ToListAsync();
             int totalCount = 0;
             if (results.Count > 0)
             {
@@ -122,24 +125,24 @@ namespace RemsNG.Dao
             };
         }
 
-        public async Task<List<TaxpayerExtension>> ByCompanyId(Guid companyId)
+        public async Task<List<TaxpayerExtensionModel>> ByCompanyId(Guid companyId)
         {
-            var results = await db.Set<TaxpayerExtension>().FromSql("sp_TaxpayerByCompanyId @p0", new object[] { companyId }).ToListAsync();
+            var results = await db.Set<TaxpayerExtensionModel>().FromSql("sp_TaxpayerByCompanyId @p0", new object[] { companyId }).ToListAsync();
             results = results.Where(x => x.taxpayerStatus == TaxpayerEnum.ACTIVE.ToString()).ToList();
             return results;
         }
 
-        public async Task<Response> Update(Taxpayer taxpayer)
+        public async Task<Response> Update(TaxPayer taxpayer)
         {
             DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_updateTaxpayer @p0,@p1,@p2,@p3,@p4,@p5,@p6,@p7", new object[] {
-                    taxpayer.id,
-                    taxpayer.companyId,
-                    taxpayer.streetId,
-                    taxpayer.addressId,
-                    taxpayer.lastmodifiedby,
-                    taxpayer.surname,
-                    taxpayer.firstname,
-                    taxpayer.lastname
+                    taxpayer.Id,
+                    taxpayer.CompanyId,
+                    taxpayer.StreetId,
+                    taxpayer.AddressId,
+                    taxpayer.Lastmodifiedby,
+                    taxpayer.Surname,
+                    taxpayer.Firstname,
+                    taxpayer.Lastname
             }).FirstOrDefaultAsync();
             Response response = new Response();
             response.description = dbResponse.msg;
@@ -156,14 +159,14 @@ namespace RemsNG.Dao
             return response;
         }
 
-        public async Task<List<TaxpayerExtension>> ByLcdaId(Guid lcdaId)
+        public async Task<List<TaxpayerExtensionModel>> ByLcdaId(Guid lcdaId)
         {
-            var results = await db.Set<TaxpayerExtension>().FromSql("sp_TaxpayerByLcdaId @p0", new object[] { lcdaId }).ToListAsync();
+            var results = await db.Set<TaxpayerExtensionModel>().FromSql("sp_TaxpayerByLcdaId @p0", new object[] { lcdaId }).ToListAsync();
             results = results.Where(x => x.taxpayerStatus == TaxpayerEnum.ACTIVE.ToString()).ToList();
             return results;
         }
 
-        public async Task<List<TaxpayerExtension>> Search(Guid lcdaId, string qu)
+        public async Task<List<TaxpayerExtensionModel>> Search(Guid lcdaId, string qu)
         {
             string[] q = qu.Split(new char[] { ' ' });
 
@@ -208,7 +211,7 @@ namespace RemsNG.Dao
 
         public async Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel)
         {
-            var results = await db.Set<TaxpayerExtension>().FromSql("sp_TaxpayerByLcdaIdpaginated @p0,@p1,@p2", new object[] { lcdaId, pageModel.PageSize, pageModel.PageNum }).ToListAsync();
+            var results = await db.Set<TaxpayerExtensionModel>().FromSql("sp_TaxpayerByLcdaIdpaginated @p0,@p1,@p2", new object[] { lcdaId, pageModel.PageSize, pageModel.PageNum }).ToListAsync();
             int totalCount = 0;
             if (results.Count > 0)
             {
@@ -222,7 +225,7 @@ namespace RemsNG.Dao
             };
         }
 
-        public async Task<Lgda> getLcda(Guid taxpayerId)
+        public async Task<Lcda> getLcda(Guid taxpayerId)
         {
             string query = $"select distinct ld.* from tbl_lcda as ld ";
             query = query + $"inner join tbl_ward as wd on wd.lcdaId = ld.id ";
@@ -249,7 +252,7 @@ namespace RemsNG.Dao
             return await db.Database.ExecuteSqlCommandAsync(query);
         }
 
-        public async Task<List<TaxpayerExtension>> SearchInStreet(Guid streetid, string queryParams)
+        public async Task<List<TaxpayerExtensionModel>> SearchInStreet(Guid streetid, string queryParams)
         {
             string[] str = queryParams.Split(new char[] { ' ' });
             string query = string.Empty;
@@ -279,7 +282,7 @@ namespace RemsNG.Dao
             return re;
         }
 
-        public async Task<TaxpayerExtension2[]> GetUnbilledTaxpayer(int billingYear)
+        public async Task<TaxpayerExtensionModel2[]> GetUnbilledTaxpayer(int billingYear)
         {
             string query = $"select tbl_taxPayer.*,tbl_company.companyName, tbl_street.streetName, tbl_address.addressnumber, tbl_ward.wardName from tbl_taxPayer " +
                 $"inner join tbl_company on tbl_company.id = tbl_taxPayer.companyId " +

@@ -11,11 +11,11 @@ namespace RemsNG.Services
 {
     public class ItemService : IItemService
     {
-        private ItemDao itemDao;
+        private ItemRepository itemDao;
 
         public ItemService(RemsDbContext remsDb)
         {
-            itemDao = new ItemDao(remsDb);
+            itemDao = new ItemRepository(remsDb);
         }
 
         public async Task<Response> Add(Item item)

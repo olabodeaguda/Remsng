@@ -11,10 +11,10 @@ namespace RemsNG.Services
 {
     public class ErrorService : IErrorService
     {
-        private ErrorDao errorDao;
+        private ErrorRepository errorDao;
         public ErrorService(RemsDbContext _db, ILoggerFactory loggerFactory)
         {
-            errorDao = new ErrorDao(_db, loggerFactory);
+            errorDao = new ErrorRepository(_db, loggerFactory);
         }
 
         public async Task<bool> Add(Error error)

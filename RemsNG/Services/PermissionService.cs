@@ -12,10 +12,10 @@ namespace RemsNG.Services
 {
     public class PermissionService : IPermission
     {
-        PermissionDao permissionDao;
+        PermissionRepository permissionDao;
         public PermissionService(RemsDbContext _db)
         {
-            permissionDao = new PermissionDao(_db);
+            permissionDao = new PermissionRepository(_db);
         }
 
         public async Task<List<Permission>> All()

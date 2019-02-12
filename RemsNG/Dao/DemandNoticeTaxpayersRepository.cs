@@ -13,10 +13,10 @@ namespace RemsNG.Dao
 {
     public class DemandNoticeTaxpayersRepository : AbstractRepository
     {
-        private readonly ErrorDao errorDao;
+        private readonly ErrorRepository errorDao;
         public DemandNoticeTaxpayersRepository(RemsDbContext _db) : base(_db)
         {
-            errorDao = new ErrorDao(_db);
+            errorDao = new ErrorRepository(_db);
         }
 
         public async Task<List<DemandNoticeTaxpayers>> getTaxpayerByIds(string[] ids, int billingYr)

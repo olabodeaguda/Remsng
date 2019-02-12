@@ -13,11 +13,11 @@ namespace RemsNG.Services
 {
     public class DemandNoticeTaxpayerService : IDemandNoticeTaxpayerService
     {
-        private readonly DemandNoticePaymentHistoryDao _dphDao;
+        private readonly DemandNoticePaymentHistoryRepository _dphDao;
         private DemandNoticeTaxpayersRepository dntDao;
         private IDemandNoticeItemService dnItemService;
         private DemandNoticeArrearRepository dna;
-        private DemandNoticePenaltyDao dnp;
+        private DemandNoticePenaltyRepository dnp;
         private ITaxpayerService taxpayerService;
         private readonly IImageService imageService;
         private readonly ILcdaBankService lcdaBankService;
@@ -32,10 +32,10 @@ namespace RemsNG.Services
             IDemandNoticeCharges _chargesService, ILcdaService _lcdaService, IDNAmountDueMgtService admService)
         {
             dntDao = new DemandNoticeTaxpayersRepository(_db);
-            _dphDao = new DemandNoticePaymentHistoryDao(_db);
+            _dphDao = new DemandNoticePaymentHistoryRepository(_db);
             dnItemService = _dnItemService;
             dna = new DemandNoticeArrearRepository(_db);
-            dnp = new DemandNoticePenaltyDao(_db);
+            dnp = new DemandNoticePenaltyRepository(_db);
             taxpayerService = _taxpayerService;
             imageService = _imageService;
             lcdaBankService = _lcdaBankService;

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RemsNG.Common.Models
 {
-    public class Prepayment
+    public class PrepaymentModel
     {
         public long id { get; set; }
         public Guid taxpayerId { get; set; }

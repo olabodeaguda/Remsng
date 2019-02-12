@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
+using RemsNG.Common.Models;
+using RemsNG.Data.Entities;
 using RemsNG.Exceptions;
-using RemsNG.Models;
-using RemsNG.ORM;
 using RemsNG.Utilities;
 using System;
 using System.Collections.Generic;
@@ -10,20 +11,26 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class WardDao : AbstractRepository
+    public class WardRepository : AbstractRepository
     {
-        public WardDao(RemsDbContext _db) : base(_db)
+        public WardRepository(RemsDbContext _db) : base(_db)
         {
         }
 
-        public async Task<List<Ward>> all1() => await db.Wards.ToListAsync();
+        public async Task<List<Ward>> all1()
+        {
+            return await db.Wards.ToListAsync();
+        }
 
         public async Task<List<Ward>> All()
         {
             return await db.Wards.FromSql("sp_ward").ToListAsync();
         }
 
-        public async Task<List<Ward>> ActiveWard() => await db.Wards.Where(x => x.wardStatus.ToUpper() == UserStatus.ACTIVE.ToString()).ToListAsync();
+        public async Task<List<Ward>> ActiveWard()
+        {
+            return await db.Wards.Where(x => x.WardStatus.ToUpper() == UserStatus.ACTIVE.ToString()).ToListAsync();
+        }
 
         public async Task<bool> Add(Ward ward)
         {
@@ -37,10 +44,10 @@ namespace RemsNG.Dao
             return false;
         }
 
-        public async Task<object> Paginated(Models.PageModel pageModel, Guid lgdaId)
+        public async Task<object> Paginated(PageModel pageModel, Guid lgdaId)
         {
             var wardlst = await GetWardByLGDAId(lgdaId);
-            var results = wardlst.OrderBy(x=>x.wardName).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToList();
+            var results = wardlst.OrderBy(x => x.WardName).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToList();
             var totalCount = db.Wards.Count();
             return new
             {
@@ -49,10 +56,10 @@ namespace RemsNG.Dao
             };
         }
 
-        public async Task<object> Paginated(Models.PageModel pageModel)
+        public async Task<object> Paginated(PageModel pageModel)
         {
             var wardlst = await All();
-            var results = wardlst.OrderBy(x => x.wardName).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToList();
+            var results = wardlst.OrderBy(x => x.WardName).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToList();
             var totalCount = db.Wards.Count();
             return new
             {
@@ -63,13 +70,18 @@ namespace RemsNG.Dao
 
         public async Task<Ward> GetWard(Guid id)
         {
-            return await db.Wards.FromSql("sp_wardById @p0", new object[] { id}).FirstOrDefaultAsync();//.FirstOrDefaultAsync(x => x.id == id);
+            return await db.Wards.FromSql("sp_wardById @p0", new object[] { id }).FirstOrDefaultAsync();//.FirstOrDefaultAsync(x => x.id == id);
         }
 
         public async Task<Ward> GetWard(string wardName, Guid lgdaid)
-            => await db.Wards.Where(x => x.wardName.ToLower() == wardName.ToLower() && x.lcdaId == lgdaid).FirstOrDefaultAsync();
+        {
+            return await db.Wards.Where(x => x.WardName.ToLower() == wardName.ToLower() && x.LcdaId == lgdaid).FirstOrDefaultAsync();
+        }
 
-        public async Task<List<Ward>> GetWardByLGDAId1(Guid lgdaId) => await db.Wards.Where(x => x.lcdaId == lgdaId).OrderBy(x => x.wardName).ToListAsync();
+        public async Task<List<Ward>> GetWardByLGDAId1(Guid lgdaId)
+        {
+            return await db.Wards.Where(x => x.LcdaId == lgdaId).OrderBy(x => x.WardName).ToListAsync();
+        }
 
         public async Task<List<Ward>> GetWardByLGDAId(Guid lgdaId)
         {
@@ -78,15 +90,15 @@ namespace RemsNG.Dao
 
         public async Task<bool> Update(Ward ward)
         {
-            var oldWard = db.Wards.FirstOrDefault(x => x.id == ward.id);
+            var oldWard = db.Wards.FirstOrDefault(x => x.Id == ward.Id);
             if (oldWard == null)
             {
-                throw new NotFoundException($"{ward.wardName} not found");
+                throw new NotFoundException($"{ward.WardName} not found");
             }
 
-            oldWard.wardName = ward.wardName;
-            oldWard.lastmodifiedBy = ward.lastmodifiedBy;
-            oldWard.lastModifiedDate = ward.lastModifiedDate;
+            oldWard.WardName = ward.WardName;
+            oldWard.Lastmodifiedby = ward.Lastmodifiedby;
+            oldWard.LastModifiedDate = ward.LastModifiedDate;
 
             int affectedrow = await db.SaveChangesAsync();
             if (affectedrow > 0)

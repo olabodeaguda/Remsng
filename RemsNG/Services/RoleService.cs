@@ -13,10 +13,10 @@ namespace RemsNG.Services
 {
     public class RoleService : IRoleService
     {
-        RoleDao roleDao;
+        RoleRepository roleDao;
         public RoleService(RemsDbContext _db, ILoggerFactory loggerFactory)
         {
-            roleDao = new RoleDao(_db,loggerFactory);
+            roleDao = new RoleRepository(_db,loggerFactory);
         }
 
         public async Task<bool> Add(Role role)

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RemsNG.ORM;
+using Remsng.Data;
+using RemsNG.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Dao
 {
-    public class StateDao : AbstractRepository
+    public class StateRepository : AbstractRepository
     {
-        public StateDao(RemsDbContext _db) : base(_db)
+        public StateRepository(RemsDbContext _db) : base(_db)
         {
         }
 
         public async Task<List<State>> All()
         {
-            return await db.States.OrderBy(x => x.stateName).ToListAsync();
+            return await db.States.OrderBy(x => x.StateName).ToListAsync();
         }
 
         public async Task<State> ByLcda(Guid lcdaId)

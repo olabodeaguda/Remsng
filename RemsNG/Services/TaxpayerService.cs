@@ -14,10 +14,10 @@ namespace RemsNG.Services
     public class TaxpayerService : ITaxpayerService
     {
         private IDNAmountDueMgtService amountDueMgtService;
-        private TaxpayerDao taxpayerDao;
+        private TaxpayerRepository taxpayerDao;
         public TaxpayerService(RemsDbContext _db, ILoggerFactory loggerFactory, IDNAmountDueMgtService _amountDueMgtService)
         {
-            taxpayerDao = new TaxpayerDao(_db);
+            taxpayerDao = new TaxpayerRepository(_db);
             amountDueMgtService = _amountDueMgtService;
         }
 
