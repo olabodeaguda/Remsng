@@ -16,13 +16,13 @@ namespace RemsNG.Data.Repository
         {
         }
 
-        public string AddQuery(DemandNoticeItemPenaltyModelExt dnp)
+        public string AddQuery(DemandNoticePenaltyModel dnp)
         {
             return $"INSERT INTO tbl_demandNoticePenalty" +
                 $" (id ,billingNo,taxpayerId ,totalAmount,amountPaid,itemId" +
                 $" ,originatedYear,billingYear,itemPenaltyStatus,createdBy,dateCreated)" +
-                $" VALUES ('{Guid.NewGuid()}','{dnp.billingNo}','{dnp.taxpayerId}','{dnp.totalAmount}','{dnp.amountPaid}','{dnp.itemId}'" +
-                $",'{dnp.originatedYear}','{dnp.billingYear}','{dnp.itemPenaltyStatus}','APPLICATION','{DateTime.Now}');";
+                $" VALUES ('{Guid.NewGuid()}','{dnp.BillingNo}','{dnp.TaxpayerId}','{dnp.TotalAmount}','{dnp.AmountPaid}','{dnp.ItemId}'" +
+                $",'{dnp.OriginatedYear}','{dnp.BillingYear}','{dnp.ItemPenaltyStatus}','APPLICATION','{DateTime.Now}');";
         }
 
         public Response RunQuery(string query)

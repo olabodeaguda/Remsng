@@ -4,7 +4,6 @@ using Remsng.Data;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Models;
 using RemsNG.Data.Entities;
-using RemsNG.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +14,8 @@ namespace RemsNG.Data.Repository
     public class RoleRepository : AbstractRepository
     {
         private readonly ILogger logger;
-        public RoleRepository(RemsDbContext _db, ILoggerFactory loggerFactory) : base(_db)
+        public RoleRepository(RemsDbContext _db,
+            ILoggerFactory loggerFactory) : base(_db)
         {
             logger = loggerFactory.CreateLogger("Role Dao");
         }
@@ -29,7 +29,8 @@ namespace RemsNG.Data.Repository
         {
             return await Task.Run(() =>
             {
-                List<RoleExtensionModel> AllRole = db.RoleExtensions.FromSql("sp_getRoles @p0, @p1", new object[] { pageModel.PageSize, pageModel.PageNum }).ToList();
+                List<RoleExtensionModel> AllRole = db.RoleExtensions.FromSql("sp_getRoles @p0, @p1",
+                    new object[] { pageModel.PageSize, pageModel.PageNum }).ToList();
 
                 var totalCount = db.Roles.Count();
                 return new
@@ -52,7 +53,7 @@ namespace RemsNG.Data.Repository
             };
         }
 
-        public async Task<bool> Add(Role role)
+        public async Task<bool> Add(RoleModel role)
         {
             DbResponse dbResponse = await db.DbResponses.FromSql("sp_createRole @p0,@p1, @p2",
                 new object[] { role.Id, role.RoleName, role.DomainId }).FirstOrDefaultAsync();
@@ -65,14 +66,28 @@ namespace RemsNG.Data.Repository
             return false;
         }
 
-        public async Task<UserRole> GetRoleAsync(UserRole userRole)
+        public async Task<UserRoleModel> GetRoleAsync(UserRole userRole)
         {
-            return await db.UserRoles.FirstOrDefaultAsync(x => x.RoleId == userRole.RoleId && x.UserId == userRole.UserId);
+            var r = await db.UserRoles.FirstOrDefaultAsync(x => x.RoleId == userRole.RoleId && x.UserId == userRole.UserId);
+            if (r == null)
+            {
+                return null;
+            }
+
+            return new UserRoleModel()
+            {
+                RoleId = r.RoleId,
+                UserId = r.UserId
+            };
         }
 
-        public async Task<bool> Add(RolePermission role)
+        public async Task<bool> Add(RolePermissionModel role)
         {
-            db.RolePermissions.Add(role);
+            db.RolePermissions.Add(new RolePermission()
+            {
+                PermissionId = role.PermissionId,
+                RoleId = role.RoleId
+            });
             int count = await db.SaveChangesAsync();
 
             if (count > 0)
@@ -93,7 +108,7 @@ namespace RemsNG.Data.Repository
             return await db.RoleExtensions.FromSql("sp_roleById @p0", new object[] { id }).FirstOrDefaultAsync();
         }
 
-        public async Task<bool> Update(Role role)
+        public async Task<bool> Update(RoleModel role)
         {
             DbResponse dbResponse = await db.DbResponses.FromSql("sp_updateRole @p0, @p1, @p2",
                 new object[] { role.RoleName, role.Id, role.DomainId }).FirstOrDefaultAsync();
@@ -105,7 +120,7 @@ namespace RemsNG.Data.Repository
             return false;
         }
 
-        public async Task<bool> UpdateStatus(Role role)
+        public async Task<bool> UpdateStatus(RoleModel role)
         {
             var r = await GetById(role.Id);
 
@@ -150,9 +165,13 @@ namespace RemsNG.Data.Repository
             return await db.RoleExtensions.FromSql("sp_getUserDomainRolesByDomainId @p0, @p1", new object[] { userid, domainid }).FirstOrDefaultAsync();
         }
 
-        public async Task<bool> AssignRoleToUserAsync(UserRole userRole)
+        public async Task<bool> AssignRoleToUserAsync(UserRoleModel userRole)
         {
-            db.UserRoles.Add(userRole);
+            db.UserRoles.Add(new UserRole()
+            {
+                RoleId = userRole.RoleId,
+                UserId = userRole.UserId
+            });
             int count = await db.SaveChangesAsync();
             if (count > 0)
             {
@@ -162,12 +181,22 @@ namespace RemsNG.Data.Repository
             return false;
         }
 
-        public async Task<UserRole> GetUserRoleAsync(Guid userId, Guid roleId)
+        public async Task<UserRoleModel> GetUserRoleAsync(Guid userId, Guid roleId)
         {
-            return await db.UserRoles.FirstOrDefaultAsync(x => x.UserId == userId && x.RoleId == roleId);
+            var r = await db.UserRoles.FirstOrDefaultAsync(x => x.UserId == userId && x.RoleId == roleId);
+            if (r == null)
+            {
+                return null;
+            }
+
+            return new UserRoleModel()
+            {
+                RoleId = r.RoleId,
+                UserId = r.UserId
+            };
         }
 
-        public async Task<bool> Remove(UserRole userRole)
+        public async Task<bool> Remove(UserRoleModel userRole)
         {
             var r = await db.UserRoles.FirstOrDefaultAsync(x => x.UserId == userRole.UserId && x.RoleId == userRole.RoleId);
 
@@ -180,6 +209,5 @@ namespace RemsNG.Data.Repository
             }
             return false;
         }
-
     }
 }

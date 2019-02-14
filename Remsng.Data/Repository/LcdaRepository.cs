@@ -123,7 +123,7 @@ namespace RemsNG.Data.Repository
             };
         }
 
-        public async Task<bool> Add(Lcda lcda)
+        public async Task<bool> Add(LcdaModel lcda)
         {
             db.lgdas.Add(lcda);
             int count = await db.SaveChangesAsync();
@@ -134,7 +134,7 @@ namespace RemsNG.Data.Repository
             return false;
         }
 
-        public async Task<bool> Update(Lcda lcda)
+        public async Task<bool> Update(LcdaModel lcda)
         {
             var oldlcda = await db.lgdas.FirstOrDefaultAsync(x => x.Id == lcda.Id);
             if (oldlcda == null)
@@ -276,7 +276,7 @@ namespace RemsNG.Data.Repository
             }).ToList();
         }
 
-        public async Task<bool> RemoveUserFromLCDA(UserLcda userLcda)
+        public async Task<bool> RemoveUserFromLCDA(UserLcdaModel userLcda)
         {
             DbResponse dbResponse = await db.DbResponses
                 .FromSql("sp_removeUserFromLCDA @p0, @p1",
@@ -316,13 +316,28 @@ namespace RemsNG.Data.Repository
             };
         }
 
-        public async Task<Domain> GetDomain(Guid lcdaId)
+        public async Task<DomainModel> GetDomain(Guid lcdaId)
         {
             string query = $"select distinct tbl_domain.* from tbl_domain " +
                 $"inner join tbl_lcda on tbl_lcda.domainId = tbl_domain.id " +
                 $" where tbl_lcda.id = '{lcdaId}'";
 
-            return await db.Domains.FromSql(query).FirstOrDefaultAsync();
+            var r = await db.Domains.FromSql(query).FirstOrDefaultAsync();
+            if (r == null)
+            {
+                return null;
+            }
+            return new DomainModel()
+            {
+                AddressId = r.AddressId,
+                Datecreated = r.Datecreated,
+                DomainCode = r.DomainCode,
+                DomainName = r.DomainName,
+                DomainStatus = r.DomainStatus,
+                DomainType = r.DomainType,
+                Id = r.Id,
+                StateId = r.StateId
+            };
         }
 
         public async Task<LcdaModel> GetLcdaExtension(Guid lcdaId)

@@ -84,7 +84,7 @@ namespace RemsNG.Data.Repository
         }
 
         public string PaymentQuery(List<DNAmountDueModel> paymentDueList,
-            DemandNoticePaymentHistory dnph, string status, string createdby)
+            DemandNoticePaymentHistoryModel dnph, string status, string createdby)
         {
             string query = "";
 

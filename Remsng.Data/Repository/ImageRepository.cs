@@ -2,7 +2,6 @@
 using Remsng.Data;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
-using RemsNG.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +15,7 @@ namespace RemsNG.Data.Repository
         {
         }
 
-        public async Task<Response> Add(Images images)
+        public async Task<Response> Add(ImagesModel images)
         {
             DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addImages @p0, @p1, @p2, @p3", new object[] {
                images.ImgFilename,
@@ -43,14 +42,40 @@ namespace RemsNG.Data.Repository
             }
         }
 
-        public async Task<List<Images>> ByOwnerId(Guid ownerId)
+        public async Task<List<ImagesModel>> ByOwnerId(Guid ownerId)
         {
-            return await db.Imagess.Where(x => x.OwnerId == ownerId).ToListAsync();
+            var r = await db.Imagess.Where(x => x.OwnerId == ownerId).ToListAsync();
+            return r.Select(x => new ImagesModel()
+            {
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated.Value,
+                ImgFilename = x.ImgFilename,
+                Id = x.Id,
+                ImgType = x.ImgType,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                OwnerId = x.OwnerId
+            }).ToList();
         }
 
-        public async Task<Images> ByOwnerId(Guid ownerId, string fileType)
+        public async Task<ImagesModel> ByOwnerId(Guid ownerId, string fileType)
         {
-            return await db.Imagess.Where(x => x.OwnerId == ownerId && x.ImgType == fileType).FirstOrDefaultAsync();
+            var x = await db.Imagess.Where(p => p.OwnerId == ownerId && p.ImgType == fileType).FirstOrDefaultAsync();
+            if (x == null)
+            {
+                return null;
+            }
+            return new ImagesModel()
+            {
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated.Value,
+                ImgFilename = x.ImgFilename,
+                Id = x.Id,
+                ImgType = x.ImgType,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                OwnerId = x.OwnerId
+            };
         }
     }
 }

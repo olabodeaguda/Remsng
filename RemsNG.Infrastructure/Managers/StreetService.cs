@@ -1,37 +1,38 @@
 ﻿using Microsoft.Extensions.Logging;
-using RemsNG.Dao;
-using RemsNG.Models;
-using RemsNG.ORM;
-using RemsNG.Services.Interfaces;
+using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Data.Entities;
+using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace RemsNG.Services
 {
-    public class StreetService : IStreetService
+    public class StreetManagers : IStreetManagers
     {
         StreetRepository streetDao;
-        public StreetService(RemsDbContext _db, ILoggerFactory loggerFactory)
+        public StreetManagers(RemsDbContext _db, ILoggerFactory loggerFactory)
         {
             streetDao = new StreetRepository(_db, loggerFactory);
         }
-        public async Task<Response> Add(Street street)
+        public async Task<Response> Add(StreetModel street)
         {
             return await streetDao.Add(street);
         }
 
-        public async Task<Street> ById(Guid streetId)
+        public async Task<StreetModel> ById(Guid streetId)
         {
             return await streetDao.ById(streetId);
         }
 
-        public async Task<List<Street>> ByLcda(Guid lcdaId)
+        public async Task<List<StreetModel>> ByLcda(Guid lcdaId)
         {
             return await streetDao.ByLcda(lcdaId);
         }
 
-        public async Task<List<Street>> ByWard(Guid wardId)
+        public async Task<List<StreetModel>> ByWard(Guid wardId)
         {
             return await streetDao.ByWard(wardId);
         }
@@ -51,17 +52,17 @@ namespace RemsNG.Services
             return await streetDao.ChangeStatus(id, streetStatus);
         }
 
-        public async Task<Domain> GetDomain(Guid streetId)
+        public async Task<DomainModel> GetDomain(Guid streetId)
         {
             return await streetDao.GetDomain(streetId);
         }
 
-        public async Task<Response> Update(Street street)
+        public async Task<Response> Update(StreetModel street)
         {
             return await streetDao.Update(street);
         }
 
-        public async Task<List<Street>> Search(Guid wardId, string searchName)
+        public async Task<List<StreetModel>> Search(Guid wardId, string searchName)
         {
             return await streetDao.SearchStreet(wardId, searchName);
         }

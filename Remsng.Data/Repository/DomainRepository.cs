@@ -47,7 +47,7 @@ namespace RemsNG.Data.Repository
             });
         }
 
-        public async Task<bool> Add(Domain domain)
+        public async Task<bool> Add(DomainModel domain)
         {
             domain.DomainType = EncryptDecryptUtils.ToHexString("others");
             db.Domains.Add(domain);
@@ -151,7 +151,7 @@ namespace RemsNG.Data.Repository
             };
         }
 
-        public async Task<bool> UpdateDomain(Domain domain)
+        public async Task<bool> UpdateDomain(DomainModel domain)
         {
             var oldDomain = await db.Domains.FirstOrDefaultAsync(x => x.Id == domain.Id);
             if (oldDomain == null)

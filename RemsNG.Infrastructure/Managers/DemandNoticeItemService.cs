@@ -1,23 +1,21 @@
-﻿using RemsNG.Services.Interfaces;
-using System;
+﻿using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using RemsNG.ORM;
-using RemsNG.Dao;
-using RemsNG.Models;
 
 namespace RemsNG.Services
 {
-    public class DemandNoticeItemService : IDemandNoticeItemService
+    public class DemandNoticeItemManagers : IDemandNoticeItemManagers
     {
-        DemandNoticeItemRepository dnDao;
-        public DemandNoticeItemService(RemsDbContext _db)
+        private readonly DemandNoticeItemRepository dnDao;
+        public DemandNoticeItemManagers(RemsDbContext _db)
         {
             dnDao = new DemandNoticeItemRepository(_db);
         }
 
-        public async Task<List<DemandNoticeItem>> ByBillingNumber(string billingno)
+        public async Task<List<DemandNoticeItemModel>> ByBillingNumber(string billingno)
         {
             return await dnDao.ByBillingNumber(billingno);
         }

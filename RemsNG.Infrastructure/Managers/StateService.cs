@@ -1,37 +1,37 @@
-﻿using RemsNG.Services.Interfaces;
+﻿using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using RemsNG.ORM;
-using RemsNG.Dao;
 
 namespace RemsNG.Services
 {
-    public class StateService : IStateService
+    public class StateManagers : IStateManagers
     {
         private readonly StateRepository stateDao;
-        public StateService(RemsDbContext _db)
+        public StateManagers(RemsDbContext _db)
         {
             stateDao = new StateRepository(_db);
         }
 
-        public async Task<List<State>> All()
+        public async Task<List<StateModel>> All()
         {
             return await stateDao.All();
         }
 
-        public async Task<State> ByLcda(Guid lcdaId)
+        public async Task<StateModel> ByLcda(Guid lcdaId)
         {
             return await stateDao.ByLcda(lcdaId);
         }
 
         public async Task<string> StateNameByLcda(Guid lcdaId)
         {
-            State state = await stateDao.ByLcda(lcdaId);
+            StateModel state = await stateDao.ByLcda(lcdaId);
             if (state != null)
             {
-                return state.stateName;
+                return state.StateName;
             }
             return string.Empty;
         }

@@ -1,18 +1,17 @@
-﻿using RemsNG.Dao;
-using RemsNG.Models;
-using RemsNG.ORM;
-using RemsNG.Services.Interfaces;
-using RemsNG.Utilities;
+﻿using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace RemsNG.Services
 {
-    public class DNAmountDueMgtService : IDNAmountDueMgtService
+    public class DNAmountDueMgtManagers : IDNAmountDueMgtManagers
     {
         private DNAmountDueMgtRepository dNAmountDueMgtDao;
-        public DNAmountDueMgtService(RemsDbContext _db)
+        public DNAmountDueMgtManagers(RemsDbContext _db)
         {
             dNAmountDueMgtDao = new DNAmountDueMgtRepository(_db);
         }
@@ -32,7 +31,7 @@ namespace RemsNG.Services
             return await dNAmountDueMgtDao.UpdateAmount(dnamount);
         }
 
-        public void CurrentAmountDue(List<DNAmountDueModel> UnpaidDueList, 
+        public void CurrentAmountDue(List<DNAmountDueModel> UnpaidDueList,
             decimal amountPaid, bool isFullyPaid)
         {
             if (!isFullyPaid)
@@ -64,7 +63,7 @@ namespace RemsNG.Services
 
         }
 
-        public string PaymentQuery(List<DNAmountDueModel> paymentDueList, DemandNoticePaymentHistory dnph, string status, string createdby)
+        public string PaymentQuery(List<DNAmountDueModel> paymentDueList, DemandNoticePaymentHistoryModel dnph, string status, string createdby)
         {
             return dNAmountDueMgtDao.PaymentQuery(paymentDueList, dnph, status, createdby);
         }

@@ -5,18 +5,22 @@ using System.Linq;
 using System.Threading.Tasks;
 using RemsNG.ORM;
 using RemsNG.Dao;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Data.Repository;
+using Remsng.Data;
+using RemsNG.Common.Models;
 
 namespace RemsNG.Services
 {
-    public class BankService : IBankService
+    public class BankManagers : IBankManagers
     {
-        private BankRepository bankDao;
-        public BankService(RemsDbContext _db)
+        private readonly BankRepository bankDao;
+        public BankManagers(RemsDbContext _db)
         {
             bankDao = new BankRepository(_db);
         }
 
-        public async Task<List<Bank>> GetBankAsync()
+        public async Task<List<BankModel>> GetBankAsync()
         {
             return await bankDao.GetBankAsync();
         }

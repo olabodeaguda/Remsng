@@ -17,7 +17,7 @@ namespace RemsNG.Data.Repository
         {
         }
 
-        public async Task<Response> Add(TaxpayerCategory taxpayerCategory)
+        public async Task<Response> Add(TaxpayerCategoryModel taxpayerCategory)
         {
             db.TaxPayersCategories.Add(taxpayerCategory);
             int count = await db.SaveChangesAsync();
@@ -39,7 +39,7 @@ namespace RemsNG.Data.Repository
             }
         }
 
-        public async Task<Response> Update(TaxpayerCategory taxpayerCategory)
+        public async Task<Response> Update(TaxpayerCategoryModel taxpayerCategory)
         {
             var category = await db.TaxPayersCategories.FindAsync(new object[] { taxpayerCategory.Id });
             if (category == null)

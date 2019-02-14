@@ -1,30 +1,28 @@
-﻿using RemsNG.Services.Interfaces;
+﻿using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using RemsNG.Models;
-using RemsNG.ORM;
-using RemsNG.Dao;
 
 namespace RemsNG.Services
 {
-    public class DemanNoticeService : IDemandNoticeService
+    public class DemanNoticeManagers : IDemandNoticeManagers
     {
         private DemandNoticeRepository demandNoticeDao;
         private DemandNoticeArrearRepository dnaDao;
-        public DemanNoticeService(RemsDbContext db)
+        public DemanNoticeManagers(RemsDbContext db)
         {
             demandNoticeDao = new DemandNoticeRepository(db);
             dnaDao = new DemandNoticeArrearRepository(db);
         }
 
-        public async Task<Response> Add(DemandNotice demandNotice)
+        public async Task<Response> Add(DemandNoticeModel demandNotice)
         {
             return await demandNoticeDao.Add(demandNotice);
         }
 
-        public async Task<object> SearchDemandNotice(DemandNotice demandNotice,PageModel pageModel)
+        public async Task<object> SearchDemandNotice(DemandNoticeModel demandNotice, PageModel pageModel)
         {
             return await demandNoticeDao.SearchDemandNotice(demandNotice, pageModel);
         }
@@ -39,32 +37,32 @@ namespace RemsNG.Services
             return await demandNoticeDao.All(pageModel);
         }
 
-        public async Task<DemandNotice> GetById(Guid id)
+        public async Task<DemandNoticeModel> GetById(Guid id)
         {
             return await demandNoticeDao.GetById(id);
         }
 
-        public async Task<Response> UpdateBillingYr(DemandNotice demandNotice)
+        public async Task<Response> UpdateBillingYr(DemandNoticeModel demandNotice)
         {
             return await demandNoticeDao.UpdateBillingYr(demandNotice);
         }
 
-        public async Task<Response> UpdateQuery(DemandNotice demandNotice)
+        public async Task<Response> UpdateQuery(DemandNoticeModel demandNotice)
         {
             return await demandNoticeDao.UpdateQuery(demandNotice);
         }
 
-        public async Task<Response> UpdateStatus(DemandNotice demandNotice)
+        public async Task<Response> UpdateStatus(DemandNoticeModel demandNotice)
         {
             return await demandNoticeDao.UpdateStatus(demandNotice);
         }
 
-        public async Task<DemandNotice> GetByBatchId(string batchId)
+        public async Task<DemandNoticeModel> GetByBatchId(string batchId)
         {
             return await demandNoticeDao.GetByBatchId(batchId);
         }
 
-        public async Task<bool> AddArrears(DemandNoticeArrears dna)
+        public async Task<bool> AddArrears(DemandNoticeArrearsModel dna)
         {
             return await dnaDao.AddArrears(dna);
         }

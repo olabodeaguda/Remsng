@@ -1,33 +1,32 @@
-﻿using RemsNG.Services.Interfaces;
+﻿using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using RemsNG.Models;
-using RemsNG.ORM;
-using RemsNG.Dao;
 
 namespace RemsNG.Services
 {
-    public class CompanyService : ICompany
+    public class CompanyManagers : ICompanyManagers
     {
-        private CompanyRepository companyDao;
-        public CompanyService(RemsDbContext db)
+        private readonly CompanyRepository companyDao;
+        public CompanyManagers(RemsDbContext db)
         {
             companyDao = new CompanyRepository(db);
         }
 
-        public async Task<Response> Add(Company company)
+        public async Task<Response> Add(CompanyModel company)
         {
             return await companyDao.Add(company);
         }
 
-        public async Task<Company> ById(Guid id)
+        public async Task<CompanyModel> ById(Guid id)
         {
             return await companyDao.ById(id);
         }
 
-        public async Task<List<CompanyExt>> ByLcda(Guid lcdaId)
+        public async Task<List<CompanyExtModel>> ByLcda(Guid lcdaId)
         {
             return await companyDao.ByLcda(lcdaId);
         }
@@ -37,17 +36,17 @@ namespace RemsNG.Services
             return await companyDao.ByLcda(lcdaId, pageModel);
         }
 
-        public async Task<List<Company>> ByStretId(Guid streetId)
+        public async Task<List<CompanyModel>> ByStreetId(Guid streetId)
         {
             return await companyDao.ByStretId(streetId);
         }
 
-        public async Task<Response> Update(Company company)
+        public async Task<Response> Update(CompanyModel company)
         {
             return await companyDao.Update(company);
         }
 
-        public async Task<Response> UpdateStatus(Company company)
+        public async Task<Response> UpdateStatus(CompanyModel company)
         {
             return await companyDao.UpdateStatus(company);
         }

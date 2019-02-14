@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using RemsNG.Dao;
-using RemsNG.Exceptions;
-using RemsNG.Models;
-using RemsNG.ORM;
-using RemsNG.Services.Interfaces;
+using Remsng.Data;
+using RemsNG.Common.Exceptions;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,27 +11,27 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Services
 {
-    public class TaxpayerService : ITaxpayerService
+    public class TaxpayerManagers : ITaxpayerManagers
     {
-        private IDNAmountDueMgtService amountDueMgtService;
+        private IDNAmountDueMgtManagers amountDueMgtService;
         private TaxpayerRepository taxpayerDao;
-        public TaxpayerService(RemsDbContext _db, ILoggerFactory loggerFactory, IDNAmountDueMgtService _amountDueMgtService)
+        public TaxpayerManagers(RemsDbContext _db, ILoggerFactory loggerFactory, IDNAmountDueMgtManagers _amountDueMgtService)
         {
             taxpayerDao = new TaxpayerRepository(_db);
             amountDueMgtService = _amountDueMgtService;
         }
 
-        public async Task<List<TaxpayerExtension>> ByCompanyId(Guid companyId)
+        public async Task<List<TaxpayerExtensionModel>> ByCompanyId(Guid companyId)
         {
             return await taxpayerDao.ByCompanyId(companyId);
         }
 
-        public async Task<TaxpayerExtension> ById(Guid id)
+        public async Task<TaxpayerExtensionModel> ById(Guid id)
         {
             return await taxpayerDao.ById(id);
         }
 
-        public async Task<List<TaxpayerExtension>> ByLcdaId(Guid lcdaId)
+        public async Task<List<TaxpayerExtensionModel>> ByLcdaId(Guid lcdaId)
         {
             return await taxpayerDao.ByLcdaId(lcdaId);
         }
@@ -41,7 +41,7 @@ namespace RemsNG.Services
             return await taxpayerDao.ByLcdaId(lcdaId, pageModel);
         }
 
-        public async Task<List<TaxpayerExtension>> ByStreetId(Guid streetId)
+        public async Task<List<TaxpayerExtensionModel>> ByStreetId(Guid streetId)
         {
             return await taxpayerDao.ByStreetId(streetId);
         }
@@ -51,37 +51,37 @@ namespace RemsNG.Services
             return await taxpayerDao.ByStreetId(streetId, pageModel);
         }
 
-        public async Task<Response> Create(Taxpayer taxpayer, bool confirmCompany)
+        public async Task<Response> Create(TaxPayerModel taxpayer, bool confirmCompany)
         {
             return await taxpayerDao.Create(taxpayer, confirmCompany);
         }
 
-        public async Task<Lgda> getLcda(Guid taxpayerId)
+        public async Task<LcdaModel> getLcda(Guid taxpayerId)
         {
             return await taxpayerDao.getLcda(taxpayerId);
         }
 
-        public async Task<List<TaxpayerExtension>> Search(Guid lcdaId, string qu)
+        public async Task<List<TaxpayerExtensionModel>> Search(Guid lcdaId, string qu)
         {
             return await taxpayerDao.Search(lcdaId, qu);
         }
 
-        public async Task<Response> Update(Taxpayer taxpayer)
+        public async Task<Response> Update(TaxPayerModel taxpayer)
         {
             return await taxpayerDao.Update(taxpayer);
         }
 
-        public async Task<List<DemandNoticePaymentHistory>> PaymentHistory(Guid id)
+        public async Task<List<DemandNoticePaymentHistoryModel>> PaymentHistory(Guid id)
         {
             if (id == default(Guid))
             {
                 throw new UserValidationException("Invalid request");
             }
-            List<DemandNoticePaymentHistory> lst = new List<DemandNoticePaymentHistory>();
+            List<DemandNoticePaymentHistoryModel> lst = new List<DemandNoticePaymentHistoryModel>();
             var result = await taxpayerDao.PaymentHistory(id);
             foreach (var tm in result)
             {
-                var r = await amountDueMgtService.ByBillingNo(tm.billingNumber);
+                var r = await amountDueMgtService.ByBillingNo(tm.BillingNumber);
                 tm.TotalBillAmount = r.Sum(x => x.itemAmount);
                 lst.Add(tm);
             }
@@ -94,7 +94,7 @@ namespace RemsNG.Services
             {
                 throw new UserValidationException("Invalid request");
             }
-            int result = await taxpayerDao.UpdateStatus(taxpayerId, TaxpayerEnum.DELETED.ToString());
+            int result = await taxpayerDao.UpdateStatus(taxpayerId, TaxPayerEnum.DELETED.ToString());
             if (result >= 0)
             {
                 return true;
@@ -102,12 +102,12 @@ namespace RemsNG.Services
             return false;
         }
 
-        public async Task<List<TaxpayerExtension>> SearchInStreet(Guid streetId, string query)
+        public async Task<List<TaxpayerExtensionModel>> SearchInStreet(Guid streetId, string query)
         {
             return await taxpayerDao.SearchInStreet(streetId, query);
         }
 
-        public async Task<TaxpayerExtension2[]> UnBilledTaxpayer(int billingYear)
+        public async Task<TaxpayerExtensionModel2[]> UnBilledTaxpayer(int billingYear)
         {
             return await taxpayerDao.GetUnbilledTaxpayer(billingYear);
         }

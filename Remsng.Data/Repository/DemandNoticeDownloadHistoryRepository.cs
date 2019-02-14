@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class DemandNoticeDownloadHistorRepository : AbstractRepository
+    public class DemandNoticeDownloadHistoryRepository : AbstractRepository
     {
         private ILogger logger;
-        public DemandNoticeDownloadHistorRepository(RemsDbContext _db, ILoggerFactory loggerFactory) : base(_db)
+        public DemandNoticeDownloadHistoryRepository(RemsDbContext _db, ILoggerFactory loggerFactory) : base(_db)
         {
             logger = loggerFactory.CreateLogger("Demand Notice download History");
         }

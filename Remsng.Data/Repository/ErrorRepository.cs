@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Remsng.Data;
 using RemsNG.Common.Models;
-using RemsNG.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +21,7 @@ namespace RemsNG.Data.Repository
         {
         }
 
-        public async Task<bool> Add(Error error)
+        public async Task<bool> Add(ErrorModel error)
         {
             DbResponse dbResponse = await db.DbResponses.FromSql("sp_addError @p0,@p1,@p2", new object[]
             {

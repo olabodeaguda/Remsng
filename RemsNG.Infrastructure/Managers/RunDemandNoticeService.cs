@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.NodeServices;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
-using RemsNG.Dao;
+using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
-using RemsNG.Services.Interfaces;
-using RemsNG.Utilities;
+using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,12 +17,12 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Services
 {
-    public class RunDemandNoticeService : IRunDemandNoticeService
+    public class RunDemandNoticeManagers : IRunDemandNoticeManagers
     {
         private readonly CompanyItemRepository _companyItemDao;
         private readonly DNPaymentHistoryRepository _dnPaymentHistoryDao;
         private readonly DemandNoticePaymentHistoryRepository _dnpHisotryDao;
-        private readonly IDNAmountDueMgtService _admService;
+        private readonly IDNAmountDueMgtManagers _admService;
         private readonly TaxpayerRepository taxpayerDao;
         private readonly DemandNoticeRepository demandNoticeDao;
         private readonly DemandNoticeTaxpayersRepository demandNoticeTaxpayersDao;
@@ -35,36 +34,37 @@ namespace RemsNG.Services
         private readonly LcdaRepository lcdaDao;
         private readonly WardRepository wardDao;
         private readonly StreetRepository streetDao;
-        private readonly IAddress address;
-        private readonly ILcdaService lcdaService;
-        private readonly IStateService stateService;
-        private readonly IImageService imageService;
-        private readonly IDnDownloadService dnDownloadService;
-        private readonly IBatchDwnRequestService batchDwnRequestService;
-        private readonly IDemandNoticeTaxpayerService demandNoticeTaxpayerService;
-        private ITaxpayerService taxpayerService;
-        private IListPropertyService listPropertyService;
-        private IHttpContextAccessor httpContextAccessor;
+        private readonly IAddressManagers address;
+        private readonly ILcdaManagers lcdaService;
+        private readonly IStateManagers stateService;
+        private readonly IImageManagers imageService;
+        private readonly IDnDownloadManagers dnDownloadService;
+        private readonly IBatchDwnRequestManagers batchDwnRequestService;
+        private readonly IDemandNoticeTaxpayerManagers demandNoticeTaxpayerService;
+        private readonly ITaxpayerManagers taxpayerService;
+        private readonly IListPropertyManagers listPropertyService;
+        //private IHttpContextAccessor httpContextAccessor;
         private INodeServices nodeServices;
         private IHostingEnvironment hostingEnvironment;
         private IServiceProvider serviceProvider;
 
-        public RunDemandNoticeService(RemsDbContext _db,
-            ILoggerFactory loggerFactory, IAddress _address,
-            ILcdaService _lcdaService, IStateService _stateService,
-            IImageService _imageService,
-            IDnDownloadService _dnDownloadService, IBatchDwnRequestService _batchDwnRequestService,
-            IDemandNoticeTaxpayerService _demandNoticeTaxpayerService
-            , ITaxpayerService _taxpayerService,
-            IListPropertyService _listPropertyService,
-            IHttpContextAccessor _httpContextAccessor,
-            INodeServices _nodeServices, IHostingEnvironment _hostingEnvironment,
+        public RunDemandNoticeManagers(RemsDbContext _db,
+            ILoggerFactory loggerFactory, IAddressManagers _address,
+            ILcdaManagers _lcdaService, IStateManagers _stateService,
+            IImageManagers _imageService,
+            IDnDownloadManagers _dnDownloadService, IBatchDwnRequestManagers _batchDwnRequestService,
+            IDemandNoticeTaxpayerManagers _demandNoticeTaxpayerService
+            , ITaxpayerManagers _taxpayerService,
+            IListPropertyManagers _listPropertyService,
+            //IHttpContextAccessor _httpContextAccessor,
+            INodeServices _nodeServices,
+            IHostingEnvironment _hostingEnvironment,
             IServiceProvider _serviceProvider,
-            IDNAmountDueMgtService dNAmountDueMgtService)
+            IDNAmountDueMgtManagers dNAmountDueMgtService)
         {
             logger = loggerFactory.CreateLogger("Demand Notice Jobs");
             nodeServices = _nodeServices;
-            hostingEnvironment = _hostingEnvironment;
+            //hostingEnvironment = _hostingEnvironment;
             serviceProvider = _serviceProvider;
             taxpayerDao = new TaxpayerRepository(_db);
             demandNoticeDao = new DemandNoticeRepository(_db);
@@ -84,7 +84,7 @@ namespace RemsNG.Services
             batchDwnRequestService = _batchDwnRequestService;
             demandNoticeTaxpayerService = _demandNoticeTaxpayerService;
             listPropertyService = _listPropertyService;
-            httpContextAccessor = _httpContextAccessor;
+            // httpContextAccessor = _httpContextAccessor;
             taxpayerService = _taxpayerService;
             _admService = dNAmountDueMgtService;
             _dnpHisotryDao = new DemandNoticePaymentHistoryRepository(_db);
@@ -94,8 +94,7 @@ namespace RemsNG.Services
 
         public async Task RegisterTaxpayer()
         {
-            DemandNotice demandNotice = await demandNoticeDao.DequeueDemandNotice();
-
+            DemandNoticeModel demandNotice = await demandNoticeDao.DequeueDemandNotice();
             try
             {
                 if (demandNotice != null)
@@ -103,14 +102,14 @@ namespace RemsNG.Services
                     string query = EncryptDecryptUtils.FromHexString(demandNotice.Query);
                     DemandNoticeRequestModel demandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(query);
                     demandNoticeRequest.createdBy = demandNotice.CreatedBy;
-                    List<TaxPayer> taxpayers = await taxpayerDao.GetActiveTaxpayers(demandNoticeRequest);
+                    List<TaxPayerModel> taxpayers = await taxpayerDao.GetActiveTaxpayers(demandNoticeRequest);
                     string domainName = string.Empty;
                     if (taxpayers.Count > 0)
                     {
-                        Lcda lcda = await lcdaService.Get(demandNoticeRequest);
+                        LcdaModel lcda = await lcdaService.Get(demandNoticeRequest);
                         if (lcda != null)
                         {
-                            Domain dd = await lcdaDao.GetDomain(lcda.Id);
+                            DomainModel dd = await lcdaDao.GetDomain(lcda.Id);
                             if (dd != null)
                             {
                                 domainName = dd.DomainName;
@@ -130,7 +129,7 @@ namespace RemsNG.Services
                         //    bool result = await errorDao.Add(error);
                         //}
 
-                        List<DemandNoticeTaxpayers> dt =
+                        List<DemandNoticeTaxpayersModel> dt =
                             await demandNoticeTaxpayersDao.getTaxpayerByIds(taxpayers
                             .Select(x => string.Format("'{0}'", x.Id)).ToArray(), demandNotice.BillingYear);
 
@@ -139,7 +138,7 @@ namespace RemsNG.Services
                             var itExist = dt.FirstOrDefault(x => x.TaxpayerId == tm.Id);
                             if (itExist != null)
                             {
-                                Error error = new Error()
+                                ErrorModel error = new ErrorModel()
                                 {
                                     ErrorType = ErrorType.DEMAND_NOTICE.ToString(),
                                     Errorvalue = $"Demand notice have already been raised for {tm.Surname} {tm.Firstname} {tm.Lastname} " +
@@ -194,7 +193,7 @@ namespace RemsNG.Services
                                 else
                                 {
                                     // log error
-                                    Error error = new Error()
+                                    ErrorModel error = new ErrorModel()
                                     {
                                         ErrorType = ErrorType.DEMAND_NOTICE.ToString(),
                                         Errorvalue = response1.description,
@@ -207,7 +206,7 @@ namespace RemsNG.Services
                     }
                     else
                     {
-                        Error error = new Error()
+                        ErrorModel error = new ErrorModel()
                         {
                             ErrorType = ErrorType.DEMAND_NOTICE.ToString(),
                             Errorvalue = $"{taxpayers.Count} taxpayer was found from the query request ",
@@ -250,11 +249,11 @@ namespace RemsNG.Services
                 bdnm = await batchDwnRequestService.Dequeue();
                 if (bdnm != null)
                 {
-                    List<DemandNoticeTaxpayers> lstOfDN = await demandNoticeTaxpayerService.GetDNTaxpayerByBatchNoAsync(bdnm.batchNo);
+                    List<DemandNoticeTaxpayersModel> lstOfDN = await demandNoticeTaxpayerService.GetDNTaxpayerByBatchNoAsync(bdnm.batchNo);
                     if (lstOfDN.Count > 0)
                     {
                         var firstTaxpayer = lstOfDN[0];
-                        Lcda lgda = await taxpayerService.getLcda(firstTaxpayer.TaxpayerId);
+                        LcdaModel lgda = await taxpayerService.getLcda(firstTaxpayer.TaxpayerId);
                         string template = await dnDownloadService.LcdaTemlateByLcda(lgda.Id);
 
                         string rootUrl = hostingEnvironment.WebRootPath == null ? @"C:\" : hostingEnvironment.WebRootPath;
@@ -270,7 +269,7 @@ namespace RemsNG.Services
                         string htmlContents = string.Empty;
                         for (int i = 0; i < lstOfDN.Count; i++)
                         {
-                            string s = await dnDownloadService.PopulateReportHtml(htmlContent, lstOfDN[i].billingNumber, rootUrl, bdnm.createdBy);
+                            string s = await dnDownloadService.PopulateReportHtml(htmlContent, lstOfDN[i].BillingNumber, rootUrl, bdnm.createdBy);
 
                             htmlContents = htmlContents + (s == null || string.IsNullOrEmpty(s) ? "" : s);
                             if (i < 1)
@@ -341,11 +340,11 @@ namespace RemsNG.Services
                 bdnm = await batchDwnRequestService.Dequeue();
                 if (bdnm != null)
                 {
-                    List<DemandNoticeTaxpayers> lstOfDN = await demandNoticeTaxpayerService.GetDNTaxpayerByBatchNoAsync(bdnm.batchNo);
+                    List<DemandNoticeTaxpayersModel> lstOfDN = await demandNoticeTaxpayerService.GetDNTaxpayerByBatchNoAsync(bdnm.batchNo);
                     if (lstOfDN.Count > 0)
                     {
                         var firstTaxpayer = lstOfDN[0];
-                        Lcda lgda = await taxpayerService.getLcda(firstTaxpayer.TaxpayerId);
+                        LcdaModel lgda = await taxpayerService.getLcda(firstTaxpayer.TaxpayerId);
                         string template = await dnDownloadService.LcdaTemlateByLcda(lgda.Id);
                         string rootUrl = hostingEnvironment.WebRootPath;
                         string rootPath = Path.Combine(hostingEnvironment.WebRootPath, "zipReports", bdnm.batchNo);
@@ -424,7 +423,7 @@ namespace RemsNG.Services
             {
                 // logger error
                 logger.LogError(responseUnpaidArrears.description);
-                Error error = new Error()
+                ErrorModel error = new ErrorModel()
                 {
                     ErrorType = ErrorType.DEMAND_NOTICE.ToString(),
                     Errorvalue = $"Unpaid arrears section : {responseUnpaidArrears.description}, {JsonConvert.SerializeObject(dN_ArrearsModel)}",
@@ -439,7 +438,7 @@ namespace RemsNG.Services
             if (responseUnpaidDemandNotice.code != MsgCode_Enum.SUCCESS)
             {
                 logger.LogError(responseUnpaidDemandNotice.description);
-                Error error = new Error()
+                ErrorModel error = new ErrorModel()
                 {
                     ErrorType = ErrorType.DEMAND_NOTICE.ToString(),
                     Errorvalue = $"Unpaid demand notice arrears section: {responseUnpaidDemandNotice.description}, {JsonConvert.SerializeObject(dN_ArrearsModel)}",
@@ -468,7 +467,7 @@ namespace RemsNG.Services
             {
                 // logger error
                 logger.LogError(responseUnpaidArrears.description);
-                Error error = new Error()
+                ErrorModel error = new ErrorModel()
                 {
                     ErrorType = ErrorType.DEMAND_NOTICE.ToString(),
                     Errorvalue = $"Unpaid arrears section : {responseUnpaidArrears.description}, {JsonConvert.SerializeObject(dN_ArrearsModel)}",
@@ -483,7 +482,7 @@ namespace RemsNG.Services
             if (responseUnpaidDemandNotice.code != MsgCode_Enum.SUCCESS)
             {
                 logger.LogError(responseUnpaidDemandNotice.description);
-                Error error = new Error()
+                ErrorModel error = new ErrorModel()
                 {
                     ErrorType = ErrorType.DEMAND_NOTICE.ToString(),
                     Errorvalue = $"Unpaid demand notice arrears section: {responseUnpaidDemandNotice.description}, {JsonConvert.SerializeObject(dN_ArrearsModel)}",
@@ -498,11 +497,11 @@ namespace RemsNG.Services
             int billingYr = arrearCategory > 3 ? dntd.BillingYr - 1 : dntd.BillingYr;
             try
             {
-                List<DemandNoticeItem> items = await demandNoticeItemDao.UnpaidBillsByTaxpayerId(dntd.TaxpayerId, billNumber, billingYr);
+                List<DemandNoticeItemModel> items = await demandNoticeItemDao.UnpaidBillsByTaxpayerId(dntd.TaxpayerId, billNumber, billingYr);
                 if (items.Count > 0)
                 {
                     string oldBillnumber = items.FirstOrDefault().BillingNo;
-                    List<DemandNoticePaymentHistory> payments = await _dnpHisotryDao.ApprovedPaymentHistory(dntd.TaxpayerId, billingYr);
+                    List<DemandNoticePaymentHistoryModel> payments = await _dnpHisotryDao.ApprovedPaymentHistory(dntd.TaxpayerId, billingYr);
                     var arrears = await demandNoticeArrearDao.ByTaxpayer(dntd.TaxpayerId);
                     var penalty = await demandNoticePenaltyDao.ByTaxpayerId(dntd.TaxpayerId, billingYr);
 
@@ -512,7 +511,7 @@ namespace RemsNG.Services
 
                     if (amountDue > 0)
                     {
-                        DemandNoticeArrears dna = new DemandNoticeArrears()
+                        DemandNoticeArrearsModel dna = new DemandNoticeArrearsModel()
                         {
                             AmountPaid = payments.Sum(x => x.Amount),
                             ArrearsStatus = DemandNoticeStatus.PENDING.ToString(),
@@ -575,7 +574,7 @@ namespace RemsNG.Services
             if (responseUnpaidPenalty.code != MsgCode_Enum.SUCCESS)
             {
                 logger.LogError(responseUnpaidPenalty.description);
-                Error error = new Error()
+                ErrorModel error = new ErrorModel()
                 {
                     ErrorType = ErrorType.DEMAND_NOTICE.ToString(),
                     Errorvalue = $"Unpaid demand notice Penalty movement section: " +
@@ -597,7 +596,7 @@ namespace RemsNG.Services
 
         public async Task ReconcileDemandNotice()
         {
-            List<DemandNotice> lst = await demandNoticeDao.GetUnSyncData();
+            List<DemandNoticeModel> lst = await demandNoticeDao.GetUnSyncData();
             if (lst.Count > 0)
             {
                 string query = string.Empty;
@@ -630,11 +629,11 @@ namespace RemsNG.Services
             var recievables = await demandNoticeTaxpayersDao.GetAllReceivables(taxpayerIds);// unpaid taxpayer
 
             var recievable = recievables.FirstOrDefault();
-            List<DemandNoticeItem> items =
+            List<DemandNoticeItemModel> items =
                     await demandNoticeItemDao.UnpaidBillsByTaxpayerId(taxpayerId, billingNumber, billingYr - 1);
             if (recievable != null && items.Count > 0)
             {
-                List<DemandNoticePaymentHistory> payments = await _dnpHisotryDao.ApprovedPaymentHistory(taxpayerId, billingYr);
+                List<DemandNoticePaymentHistoryModel> payments = await _dnpHisotryDao.ApprovedPaymentHistory(taxpayerId, billingYr);
                 var arrears = await demandNoticeArrearDao.ByTaxpayer(taxpayerId);
                 decimal amountDue = items.Sum(x => x.ItemAmount) + arrears.Sum(x => x.TotalAmount)
                      - payments.Sum(x => x.Amount);
@@ -642,16 +641,16 @@ namespace RemsNG.Services
                 string query = string.Empty;
                 if (amountDue > 0)
                 {
-                    DemandNoticeItemPenaltyModelExt dnp = new DemandNoticeItemPenaltyModelExt()
+                    DemandNoticePenaltyModel dnp = new DemandNoticePenaltyModel()
                     {
-                        billingNo = billingNumber,
-                        amountPaid = 0,
-                        billingYear = billingYr,
-                        itemId = Guid.Empty,
-                        itemPenaltyStatus = DemandNoticeStatus.PENDING.ToString(),
-                        originatedYear = recievable.BillingYr,
-                        taxpayerId = taxpayerId,
-                        totalAmount = amountDue * (decimal)(0.1)
+                        BillingNo = billingNumber,
+                        AmountPaid = 0,
+                        BillingYear = billingYr,
+                        ItemId = Guid.Empty,
+                        ItemPenaltyStatus = DemandNoticeStatus.PENDING.ToString(),
+                        OriginatedYear = recievable.BillingYr,
+                        TaxpayerId = taxpayerId,
+                        TotalAmount = amountDue * (decimal)(0.1)
                     };
 
                     query = query + demandNoticePenaltyDao.AddQuery(dnp);

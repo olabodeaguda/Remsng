@@ -44,7 +44,7 @@ namespace RemsNG.Data.Repository
             };
         }
 
-        public async Task<bool> Update(User user)
+        public async Task<bool> Update(UserModel user)
         {
             var usr = await db.Users.FindAsync(new object[] { user.Id });
             if (usr != null)
@@ -71,9 +71,27 @@ namespace RemsNG.Data.Repository
             return false;
         }
 
-        public async Task<bool> Create(User user)
+        public async Task<bool> Create(UserModel result)
         {
-            db.Users.Add(user);
+            db.Users.Add(new User()
+            {
+                CreatedBy = result.CreatedBy,
+                DateCreated = result.DateCreated,
+                Email = result.Email,
+                Firstname = result.Firstname,
+                Gender = result.Gender,
+                Id = result.Id,
+                Lastmodifiedby = result.Lastmodifiedby,
+                LastModifiedDate = result.LastModifiedDate,
+                Lastname = result.Lastname,
+                Lockedoutenabled = result.Lockedoutenabled,
+                LockedOutEndDateUtc = result.LockedOutEndDateUtc,
+                PasswordHash = result.PasswordHash,
+                SecurityStamp = result.SecurityStamp,
+                Surname = result.Surname,
+                Username = result.Username,
+                UserStatus = result.UserStatus
+            });
 
             int count = await db.SaveChangesAsync();
             if (count > 0)
@@ -83,10 +101,32 @@ namespace RemsNG.Data.Repository
             return false;
         }
 
-        public async Task<bool> AddAndAssignLGDA(User user, UserLcda userLcda)
+        public async Task<bool> AddAndAssignLGDA(UserModel result, UserLcdaModel userLcda)
         {
-            db.Users.Add(user);
-            db.UserLcdas.Add(userLcda);
+            db.Users.Add(new User()
+            {
+                CreatedBy = result.CreatedBy,
+                DateCreated = result.DateCreated,
+                Email = result.Email,
+                Firstname = result.Firstname,
+                Gender = result.Gender,
+                Id = result.Id,
+                Lastmodifiedby = result.Lastmodifiedby,
+                LastModifiedDate = result.LastModifiedDate,
+                Lastname = result.Lastname,
+                Lockedoutenabled = result.Lockedoutenabled,
+                LockedOutEndDateUtc = result.LockedOutEndDateUtc,
+                PasswordHash = result.PasswordHash,
+                SecurityStamp = result.SecurityStamp,
+                Surname = result.Surname,
+                Username = result.Username,
+                UserStatus = result.UserStatus
+            });
+            db.UserLcdas.Add(new UserLcda()
+            {
+                LgdaId = userLcda.LgdaId,
+                UserId = userLcda.UserId
+            });
             int count = await db.SaveChangesAsync();
             if (count > 0)
             {
@@ -95,9 +135,13 @@ namespace RemsNG.Data.Repository
             return false;
         }
 
-        public async Task<bool> AssignLGDA(UserLcda userLcda)
+        public async Task<bool> AssignLGDA(UserLcdaModel userLcda)
         {
-            db.UserLcdas.Add(userLcda);
+            db.UserLcdas.Add(new UserLcda()
+            {
+                LgdaId = userLcda.LgdaId,
+                UserId = userLcda.UserId
+            });
             int count = await db.SaveChangesAsync();
             if (count > 0)
             {

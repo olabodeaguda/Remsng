@@ -1,80 +1,78 @@
-﻿using RemsNG.Services.Interfaces;
+﻿using Microsoft.Extensions.Logging;
+using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using RemsNG.ORM;
-using RemsNG.Dao;
-using RemsNG.Models;
-using Microsoft.Extensions.Logging;
-using RemsNG.Common.Models;
 
 namespace RemsNG.Services
 {
-    public class RoleService : IRoleService
+    public class RoleManagers : IRoleManagers
     {
-        RoleRepository roleDao;
-        public RoleService(RemsDbContext _db, ILoggerFactory loggerFactory)
+        private readonly RoleRepository roleDao;
+        public RoleManagers(RemsDbContext _db, ILoggerFactory loggerFactory)
         {
-            roleDao = new RoleRepository(_db,loggerFactory);
+            roleDao = new RoleRepository(_db, loggerFactory);
         }
 
-        public async Task<bool> Add(Role role)
-        {
-            return await roleDao.Add(role);
-        }
-
-        public async Task<bool> Add(RolePermission role)
+        public async Task<bool> Add(RoleModel role)
         {
             return await roleDao.Add(role);
         }
 
-        public async Task<RoleExtension> UserDomainRolesByDomainId(Guid userid, Guid domainid)
+        public async Task<bool> Add(RolePermissionModel role)
+        {
+            return await roleDao.Add(role);
+        }
+
+        public async Task<RoleExtensionModel> UserDomainRolesByDomainId(Guid userid, Guid domainid)
         {
             return await roleDao.UserDomainRolesByDomainId(userid, domainid);
         }
 
-        public async Task<List<RoleExtension>> AllDomainRolesByUsername(string username)
+        public async Task<List<RoleExtensionModel>> AllDomainRolesByUsername(string username)
         {
             return await roleDao.AllDomainRolesByUsername(username);
         }
 
-        public async Task<List<RoleExtension>> AllRoleByUserId(Guid id)
+        public async Task<List<RoleExtensionModel>> AllRoleByUserId(Guid id)
         {
             return await roleDao.AllRoleByUserId(id);
         }
 
-        public async Task<List<RoleExtension>> AllRoleByUsername(string username)
+        public async Task<List<RoleExtensionModel>> AllRoleByUsername(string username)
         {
             return await roleDao.AllRoleByUsername(username);
         }
 
-        public async Task<bool> AssignRoleToUserAsync(UserRole userRole)
+        public async Task<bool> AssignRoleToUserAsync(UserRoleModel userRole)
         {
             return await roleDao.AssignRoleToUserAsync(userRole);
         }
 
-        public async Task<List<RoleExtension>> ByDomainId(Guid domainId)
+        public async Task<List<RoleExtensionModel>> ByDomainId(Guid domainId)
         {
             return await roleDao.ByDomainId(domainId);
         }
 
-        public async Task<RoleExtension> GetById(Guid id)
+        public async Task<RoleExtensionModel> GetById(Guid id)
         {
             return await roleDao.GetById(id);
         }
 
-        public async Task<RoleExtension> GetByName(string rolename)
+        public async Task<RoleExtensionModel> GetByName(string rolename)
         {
             return await roleDao.GetByName(rolename);
         }
 
-        public async Task<RoleExtension> GetUserDomainRoleByUsername(string username, Guid domainId)
+        public async Task<RoleExtensionModel> GetUserDomainRoleByUsername(string username, Guid domainId)
         {
             return await roleDao.GetUserDomainRoleByUsername(username, domainId);
         }
 
-        public async Task<UserRole> GetUserRoleAsync(Guid userId, Guid roleId)
+        public async Task<UserRoleModel> GetUserRoleAsync(Guid userId, Guid roleId)
         {
             return await roleDao.GetUserRoleAsync(userId, roleId);
         }
@@ -84,17 +82,17 @@ namespace RemsNG.Services
             return await roleDao.Paginated(pageModel);
         }
 
-        public async Task<bool> Remove(UserRole userRole)
+        public async Task<bool> Remove(UserRoleModel userRole)
         {
             return await roleDao.Remove(userRole);
         }
 
-        public async Task<bool> Update(Role role)
+        public async Task<bool> Update(RoleModel role)
         {
             return await roleDao.Update(role);
         }
 
-        public async Task<bool> UpdateStatus(Role role)
+        public async Task<bool> UpdateStatus(RoleModel role)
         {
             return await roleDao.UpdateStatus(role);
         }

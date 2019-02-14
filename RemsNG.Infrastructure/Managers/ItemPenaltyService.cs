@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
-using RemsNG.Dao;
-using RemsNG.Exceptions;
-using RemsNG.Models;
-using RemsNG.ORM;
-using RemsNG.Services.Interfaces;
-using RemsNG.Utilities;
+using Remsng.Data;
+using RemsNG.Common.Exceptions;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
+using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,25 +12,25 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Services
 {
-    public class ItemPenaltyService : IItemPenaltyService
+    public class ItemPenaltyManagers : IItemPenaltyManagers
     {
-        private ItemPenaltyDao itemPenaltyDao;
-        private IDNAmountDueMgtService _admService;
+        private ItemPenaltyRepository itemPenaltyDao;
+        private IDNAmountDueMgtManagers _admService;
         private readonly DemandNoticeTaxpayersRepository demandNoticeTaxpayersDao;
         private readonly DemandNoticePenaltyRepository demandNoticePenaltyDao;
         private readonly ILogger logger;
-        public ItemPenaltyService(RemsDbContext _db
-            , IDNAmountDueMgtService dNAmountDueMgtService,
+        public ItemPenaltyManagers(RemsDbContext _db
+            , IDNAmountDueMgtManagers dNAmountDueMgtService,
             ILoggerFactory loggerFactory)
         {
-            itemPenaltyDao = new ItemPenaltyDao(_db);
+            itemPenaltyDao = new ItemPenaltyManagers(_db);
             demandNoticeTaxpayersDao = new DemandNoticeTaxpayersRepository(_db);
             _admService = dNAmountDueMgtService;
             demandNoticePenaltyDao = new DemandNoticePenaltyRepository(_db);
             logger = loggerFactory.CreateLogger("Items penalty");
         }
 
-        public async Task<Response> Add(ItemPenalty item)
+        public async Task<Response> Add(ItemPenaltyModel item)
         {
             return await itemPenaltyDao.Add(item);
         }
@@ -50,12 +50,12 @@ namespace RemsNG.Services
             return await itemPenaltyDao.ListByItemId(itemId, pageModel);
         }
 
-        public async Task<Response> Update(ItemPenalty item)
+        public async Task<Response> Update(ItemPenaltyModel item)
         {
             return await itemPenaltyDao.Update(item);
         }
 
-        public async Task<Response> UpdateStatus(ItemPenalty item)
+        public async Task<Response> UpdateStatus(ItemPenaltyModel item)
         {
             return await itemPenaltyDao.UpdateStatus(item);
         }
@@ -66,26 +66,26 @@ namespace RemsNG.Services
 
             if (recievables.Length > 0)
             {
-                var currentDues = await _admService.ByBillingNo(recievables.Select(x => x.billingNumber).ToArray()); // all current due amount of taxpayers
+                var currentDues = await _admService.ByBillingNo(recievables.Select(x => x.BillingNumber).ToArray()); // all current due amount of taxpayers
                 string query = string.Empty;
                 foreach (var tm in recievables)
                 {
-                    var res = currentDues.Where(x => x.billingNo == tm.billingNumber);
+                    var res = currentDues.Where(x => x.billingNo == tm.BillingNumber);
                     decimal sumitem = res.Sum(x => x.itemAmount);
                     decimal sumAmtPaid = res.Sum(x => x.amountPaid);
-                    var amountRemaining = currentDues.Where(x => x.billingNo == tm.billingNumber).Sum(x => (x.itemAmount - x.amountPaid));
+                    var amountRemaining = currentDues.Where(x => x.billingNo == tm.BillingNumber).Sum(x => (x.itemAmount - x.amountPaid));
                     if (amountRemaining > 0)
                     {
-                        DemandNoticeItemPenalty dnp = new DemandNoticeItemPenalty()
+                        DemandNoticePenaltyModel dnp = new DemandNoticePenaltyModel()
                         {
-                            billingNo = tm.billingNumber,
-                            amountPaid = 0,
-                            billingYr = tm.billingYr,
-                            itemId = Guid.Empty,
-                            itemPenaltyStatus = DemandNoticeStatus.PENDING.ToString(),
-                            originatedYear = tm.billingYr,
-                            taxpayerId = tm.taxpayerId,
-                            totalAmount = amountRemaining * (decimal)0.1
+                            BillingNo = tm.BillingNumber,
+                            AmountPaid = 0,
+                            BillingYear = tm.BillingYr,
+                            ItemId = Guid.Empty,
+                            ItemPenaltyStatus = DemandNoticeStatus.PENDING.ToString(),
+                            OriginatedYear = tm.BillingYr,
+                            TaxpayerId = tm.TaxpayerId,
+                            TotalAmount = amountRemaining * (decimal)0.1
                         };
                         query = query + demandNoticePenaltyDao.AddQuery(dnp);
                     }
@@ -110,7 +110,7 @@ namespace RemsNG.Services
             };
         }
 
-        public async Task<List<DemandNoticeItemPenalty>> ActivePenalty(Guid taxpayerId)
+        public async Task<List<DemandNoticeItemPenaltyModelExt>> ActivePenalty(Guid taxpayerId)
         {
             var result = await demandNoticePenaltyDao.ByTaxpayerId(taxpayerId);
             return result

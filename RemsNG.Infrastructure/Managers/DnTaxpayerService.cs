@@ -1,23 +1,21 @@
-﻿using RemsNG.Services.Interfaces;
-using System;
+﻿using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using RemsNG.Models;
-using RemsNG.ORM;
-using RemsNG.Dao;
 
 namespace RemsNG.Services
 {
-    public class DnTaxpayerService : IDnTaxpayer
+    public class DnTaxpayerManagers : IDnTaxpayerManagers
     {
         private readonly DemandNoticeTaxpayersRepository dnTaxpayerDao;
-        public DnTaxpayerService(RemsDbContext _db)
+        public DnTaxpayerManagers(RemsDbContext _db)
         {
             dnTaxpayerDao = new DemandNoticeTaxpayersRepository(_db);
         }
 
-        public async Task<DemandNoticeTaxpayersDetail> ByBillingNo(string billingNo)
+        public async Task<DemandNoticeTaxpayersModel> ByBillingNo(string billingNo)
         {
             return await dnTaxpayerDao.ByBillingNo(billingNo);
         }
@@ -27,14 +25,14 @@ namespace RemsNG.Services
             return await dnTaxpayerDao.GetDNTaxpayerByBatchIdAsync(batchId, pageModel);
         }
 
-        public async Task<List<DemandNoticeTaxpayersDetail>> GetDNTaxpayerByBatchIdAsync(string batchId)
+        public async Task<List<DemandNoticeTaxpayersModel>> GetDNTaxpayerByBatchIdAsync(string batchId)
         {
             return await dnTaxpayerDao.GetDNTaxpayerByBatchIdAsync(batchId);
         }
 
-        public async Task<DemandNoticeTaxpayersDetail> GetSingleTaxpayerAsync(string taxpayerId, int billingYr)
+        public async Task<DemandNoticeTaxpayersModel> GetSingleTaxpayerAsync(string taxpayerId, int billingYr)
         {
-            return await dnTaxpayerDao.GetSingleTaxpayerAsync(taxpayerId,billingYr);
+            return await dnTaxpayerDao.GetSingleTaxpayerAsync(taxpayerId, billingYr);
         }
     }
 }

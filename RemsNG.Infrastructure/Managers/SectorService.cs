@@ -7,37 +7,41 @@ using RemsNG.Models;
 using RemsNG.ORM;
 using Microsoft.Extensions.Logging;
 using RemsNG.Dao;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Data.Repository;
+using Remsng.Data;
+using RemsNG.Common.Models;
 
 namespace RemsNG.Services
 {
-    public class SectorService : ISectorService
+    public class SectorManagers : ISectorManagers
     {
         SectorRepository sectorDao;
-        public SectorService(RemsDbContext _db, ILoggerFactory loggerFactory)
+        public SectorManagers(RemsDbContext _db, ILoggerFactory loggerFactory)
         {
             sectorDao = new SectorRepository(_db, loggerFactory);
         }
-        public async Task<Response> Add(Sector sector)
+        public async Task<Response> Add(SectorModel sector)
         {
             return await sectorDao.Add(sector);
         }
 
-        public async Task<Sector> ById(Guid id)
+        public async Task<SectorModel> ById(Guid id)
         {
             return await sectorDao.ById(id);
         }
 
-        public async Task<List<Sector>> ByLcdaId(Guid lcdaId)
+        public async Task<List<SectorModel>> ByLcdaId(Guid lcdaId)
         {
             return await sectorDao.ByLcdaId(lcdaId);
         }
 
-        public async Task<Sector> ByTaxpayerId(Guid taxpayerId)
+        public async Task<SectorModel> ByTaxpayerId(Guid taxpayerId)
         {
             return await sectorDao.ByTaxpayerId(taxpayerId);
         }
 
-        public async Task<Response> Update(Sector sector)
+        public async Task<Response> Update(SectorModel sector)
         {
             return await sectorDao.Update(sector);
         }

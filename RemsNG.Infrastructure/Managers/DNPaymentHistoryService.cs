@@ -1,43 +1,43 @@
-﻿using RemsNG.Dao;
-using RemsNG.Models;
-using RemsNG.ORM;
-using RemsNG.Services.Interfaces;
+﻿using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace RemsNG.Services
 {
-    public class DNPaymentHistoryService : IDNPaymentHistoryService
+    public class DNPaymentHistoryManagers : IDNPaymentHistoryManagers
     {
         private DNPaymentHistoryRepository _dnpDao;
         private DemandNoticePaymentHistoryRepository dnph;
-        public DNPaymentHistoryService(RemsDbContext _db)
+        public DNPaymentHistoryManagers(RemsDbContext _db)
         {
             dnph = new DemandNoticePaymentHistoryRepository(_db);
             _dnpDao = new DNPaymentHistoryRepository(_db);
         }
-        public async Task<Response> AddAsync(DemandNoticePaymentHistory dnphModel)
+        public async Task<Response> AddAsync(DemandNoticePaymentHistoryModel dnphModel)
         {
             return await dnph.AddAsync(dnphModel);
         }
-        public async Task<Response> UpdateAsync(DemandNoticePaymentHistory dnphModel)
+        public async Task<Response> UpdateAsync(DemandNoticePaymentHistoryModel dnphModel)
         {
             return await dnph.UpdateAsync(dnphModel);
         }
-        public async Task<Response> UpdateStatusAsync(DemandNoticePaymentHistory dnphModel)
+        public async Task<Response> UpdateStatusAsync(DemandNoticePaymentHistoryModel dnphModel)
         {
             return await dnph.UpdateStatusAsync(dnphModel);
         }
-        public async Task<List<DemandNoticePaymentHistoryExt>> ByBillingNumber(string billingnumber)
+        public async Task<List<DemandNoticePaymentHistoryModelExt>> ByBillingNumber(string billingnumber)
         {
             return await dnph.ByBillingNumber(billingnumber);
         }
-        public async Task<List<DemandNoticePaymentHistory>> ByBillingNumbers(string billingnumber)
+        public async Task<List<DemandNoticePaymentHistoryModel>> ByBillingNumbers(string billingnumber)
         {
             return await dnph.ByBillingNumbers(billingnumber);
         }
-        public async Task<DemandNoticePaymentHistory> ById(Guid id)
+        public async Task<DemandNoticePaymentHistoryModel> ById(Guid id)
         {
             return await dnph.ById(id);
         }
@@ -45,16 +45,16 @@ namespace RemsNG.Services
         {
             return await dnph.ByLcdaId(lcdaId, pageModel);
         }
-        public async Task<DemandNoticePaymentHistory> ByIdExtended(Guid id)
+        public async Task<DemandNoticePaymentHistoryModel> ByIdExtended(Guid id)
         {
             return await dnph.ByIdExtended(id);
         }
-        public async Task<Prepayment> GetPrepaymentByTaxpayerId(Guid taxpayerId)
+        public async Task<PrepaymentModel> GetPrepaymentByTaxpayerId(Guid taxpayerId)
         {
             return await _dnpDao.Get(taxpayerId);
         }
 
-        public async Task<Prepayment> AddPrepaymentForAlreadyRegisterdAmount(Prepayment prepayment)
+        public async Task<PrepaymentModel> AddPrepaymentForAlreadyRegisterdAmount(PrepaymentModel prepayment)
         {
             return await _dnpDao.AddPrepaymentForAlreadyRegisterdAmount(prepayment);
         }

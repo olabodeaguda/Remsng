@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RemsNG.Common.Models
 {
-    public partial class DemandNoticePenaltyModel
+    public class DemandNoticePenaltyModel
     {
         public Guid Id { get; set; }
         public string BillingNo { get; set; }

@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Remsng.Data;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
-using RemsNG.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +18,7 @@ namespace RemsNG.Data.Repository
             logger = loggerFactory.CreateLogger("Sector Dao");
         }
 
-        public async Task<Response> Add(Sector sector)
+        public async Task<Response> Add(SectorModel sector)
         {
             DbResponse dbResponse = await db.DbResponses.FromSql("sp_createSector @p0, @p1, @p2, @p3", new object[] {
                 sector.SectorName,
@@ -45,7 +44,7 @@ namespace RemsNG.Data.Repository
             };
         }
 
-        public async Task<Response> Update(Sector sector)
+        public async Task<Response> Update(SectorModel sector)
         {
             DbResponse dbResponse = await db.DbResponses.FromSql("sp_updateSector @p0, @p1, @p2, @p3", new object[] {
                 sector.Id,

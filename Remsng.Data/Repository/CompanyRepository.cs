@@ -6,6 +6,7 @@ using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
@@ -105,9 +106,28 @@ namespace RemsNG.Data.Repository
             }
         }
 
-        public async Task<Company> ById(Guid id)
+        public async Task<CompanyModel> ById(Guid id)
         {
-            return await db.Companies.FirstOrDefaultAsync(x => x.Id == id);
+            var p = await db.Companies.FirstOrDefaultAsync(x => x.Id == id);
+            if (p == null)
+            {
+                return null;
+            }
+            return new CompanyModel()
+            {
+                AddressId = p.AddressId,
+                CategoryId = p.CategoryId,
+                CompanyName = p.CompanyName,
+                CompanyStatus = p.CompanyStatus,
+                CreatedBy = p.CreatedBy,
+                DateCreated = p.DateCreated,
+                Id = p.Id,
+                Lastmodifiedby = p.Lastmodifiedby,
+                LastModifiedDate = p.LastModifiedDate,
+                LcdaId = p.LcdaId,
+                SectorId = p.SectorId,
+                StreetId = p.StreetId
+            };
         }
 
         public async Task<List<CompanyExtModel>> ByLcda(Guid lcdaId)
@@ -134,9 +154,25 @@ namespace RemsNG.Data.Repository
             };
         }
 
-        public async Task<List<Company>> ByStretId(Guid streetId)
+        public async Task<List<CompanyModel>> ByStretId(Guid streetId)
         {
-            return await db.Set<Company>().FromSql("sp_companyBystreetId @p0", new object[] { streetId }).ToListAsync();
+            var r = await db.Set<Company>().FromSql("sp_companyBystreetId @p0", new object[] { streetId }).ToListAsync();
+
+            return r.Select(p => new CompanyModel()
+            {
+                AddressId = p.AddressId,
+                CategoryId = p.CategoryId,
+                CompanyName = p.CompanyName,
+                CompanyStatus = p.CompanyStatus,
+                CreatedBy = p.CreatedBy,
+                DateCreated = p.DateCreated,
+                Id = p.Id,
+                Lastmodifiedby = p.Lastmodifiedby,
+                LastModifiedDate = p.LastModifiedDate,
+                LcdaId = p.LcdaId,
+                SectorId = p.SectorId,
+                StreetId = p.StreetId
+            }).ToList();
         }
     }
 }

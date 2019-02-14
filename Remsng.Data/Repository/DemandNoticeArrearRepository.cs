@@ -160,7 +160,7 @@ namespace RemsNG.Data.Repository
             }
         }
 
-        public async Task<List<DemandNoticeArrears>> ByBillingNumber(string billingno)
+        public async Task<List<DemandNoticeArrearsModel>> ByBillingNumber(string billingno)
         {
             List<DemandNoticeArrears> lstdbItem = await db.DemandNoticeArrearss
                 .FromSql($"select tbl_demandNoticeArrears.*, 0 as billingYr from tbl_demandNoticeArrears " +
@@ -174,18 +174,49 @@ namespace RemsNG.Data.Repository
                     lst.Add(tm);
                 }
             }
-            return lst;
+            return lst.Select(x => new DemandNoticeArrearsModel()
+            {
+                AmountPaid = x.AmountPaid,
+                ArrearsStatus = x.ArrearsStatus,
+                BillingNo = x.BillingNo,
+                BillingYear = x.BillingYear,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                Id = x.Id,
+                ItemId = x.ItemId,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                OriginatedYear = x.OriginatedYear,
+                TaxpayerId = x.TaxpayerId,
+                TotalAmount = x.TotalAmount
+            }).ToList();
         }
 
-        public async Task<List<DemandNoticeArrears>> ByTaxpayer(Guid taxpayerId)
+        public async Task<List<DemandNoticeArrearsModel>> ByTaxpayer(Guid taxpayerId)
         {
             string query = $"select tbl_demandNoticeArrears.*, 0 as billingYr " +
                 $"from tbl_demandNoticeArrears where taxpayerId = '{taxpayerId}' and arrearsStatus in ('PENDING','PART_PAYMENT')";
 
-            return await db.DemandNoticeArrearss.FromSql(query).ToListAsync();
+            var entity = await db.DemandNoticeArrearss.FromSql(query).ToListAsync();
+            return entity.Select(x => new DemandNoticeArrearsModel()
+            {
+                AmountPaid = x.AmountPaid,
+                ArrearsStatus = x.ArrearsStatus,
+                BillingNo = x.BillingNo,
+                BillingYear = x.BillingYear,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                Id = x.Id,
+                ItemId = x.ItemId,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                OriginatedYear = x.OriginatedYear,
+                TaxpayerId = x.TaxpayerId,
+                TotalAmount = x.TotalAmount
+            }).ToList();
         }
 
-        public string AddQuery(DemandNoticeArrears dna)
+        public string AddQuery(DemandNoticeArrearsModel dna)
         {
             return $"insert into tbl_demandNoticeArrears(id,billingNo,taxpayerId,totalAmount," +
                 $" amountPaid,itemId,originatedYear," +
@@ -195,7 +226,7 @@ namespace RemsNG.Data.Repository
                 $"'{dna.CreatedBy}',getdate());";
         }
 
-        public async Task<bool> AddArrears(DemandNoticeArrears dna)
+        public async Task<bool> AddArrears(DemandNoticeArrearsModel dna)
         {
             string query = AddQuery(dna);
 

@@ -1,29 +1,28 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using RemsNG.Dao;
-using RemsNG.Models;
-using RemsNG.ORM;
-using RemsNG.Services.Interfaces;
-using RemsNG.Utilities;
+using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
+using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace RemsNG.Services
 {
-    public class SyncService : ISyncService
+    public class SyncManagers : ISyncManagers
     {
         private static HttpClient client = new HttpClient();
         private SyncRepository syncDao;
         private IConfiguration configuration;
         private ILogger logger;
-        public SyncService(RemsDbContext db, ILoggerFactory loggerFactory, IConfigurationRoot _configuration)
+        public SyncManagers(RemsDbContext db, ILoggerFactory loggerFactory, IConfigurationRoot _configuration)
         {
             logger = loggerFactory.CreateLogger("Sync Service");
             syncDao = new SyncRepository(db);
@@ -39,8 +38,7 @@ namespace RemsNG.Services
                 var d = config.GetValue(typeof(Guid), "domainId");
                 if (d != null)
                 {
-                    Guid domainId;
-                    if (Guid.TryParse(d.ToString(), out domainId))
+                    if (Guid.TryParse(d.ToString(), out Guid domainId))
                     {
                         List<SyncDataModel> data = await syncDao.Get();
                         if (data.Count > 0)

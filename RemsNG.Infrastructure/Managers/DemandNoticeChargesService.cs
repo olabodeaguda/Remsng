@@ -1,26 +1,25 @@
-﻿using RemsNG.ORM;
+﻿using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace RemsNG.Services.Interfaces
 {
-    public class DemandNoticeChargesService : IDemandNoticeCharges
+    public class DemandNoticeChargesManagers : IDemandNoticeChargesManagers
     {
-        private ILcdaService lcdaService;
-        public DemandNoticeChargesService(ILcdaService _lcdaService)
+        private ILcdaManagers lcdaService;
+        public DemandNoticeChargesManagers(ILcdaManagers _lcdaService)
         {
             lcdaService = _lcdaService;
         }
-        
+
         public async Task<decimal> getCharges(decimal amount, Guid lcdaId)
         {
             decimal finalcharges = 0;
-            Lgda lcdaExtension = await lcdaService.Get(lcdaId);
+            LcdaModel lcdaExtension = await lcdaService.Get(lcdaId);
             if (lcdaExtension != null)
             {
-                if (lcdaExtension.charges == 0)
+                if (lcdaExtension.Charges == 0)
                 {
                     //1%,200
                     if (amount <= 20000)
@@ -29,12 +28,12 @@ namespace RemsNG.Services.Interfaces
                     }
                     else
                     {
-                        finalcharges = decimal.Round((1/100) * amount,2);
+                        finalcharges = decimal.Round((1 / 100) * amount, 2);
                     }
                 }
                 else
                 {
-                    decimal charges = (lcdaExtension.charges / 100) * amount;
+                    decimal charges = (lcdaExtension.Charges / 100) * amount;
                     if (amount <= 20000)
                     {
                         if (charges > 200)

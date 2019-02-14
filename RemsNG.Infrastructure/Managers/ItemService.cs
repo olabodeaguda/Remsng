@@ -1,24 +1,22 @@
-﻿using RemsNG.Services.Interfaces;
+﻿using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using RemsNG.Models;
-using RemsNG.ORM;
-using RemsNG.Dao;
 
 namespace RemsNG.Services
 {
-    public class ItemService : IItemService
+    public class ItemManagers : IItemManagers
     {
-        private ItemRepository itemDao;
+        private readonly ItemRepository itemDao;
 
-        public ItemService(RemsDbContext remsDb)
+        public ItemManagers(RemsDbContext remsDb)
         {
             itemDao = new ItemRepository(remsDb);
         }
 
-        public async Task<Response> Add(Item item)
+        public async Task<Response> Add(ItemModel item)
         {
             return await itemDao.Add(item);
         }
@@ -43,12 +41,12 @@ namespace RemsNG.Services
             return await itemDao.ListByLcdaId(lcdaId);
         }
 
-        public async Task<Response> Update(Item item)
+        public async Task<Response> Update(ItemModel item)
         {
             return await itemDao.Update(item);
         }
 
-        public async Task<Response> UpdateStatus(Item item)
+        public async Task<Response> UpdateStatus(ItemModel item)
         {
             return await itemDao.UpdateStatus(item);
         }

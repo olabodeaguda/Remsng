@@ -1,21 +1,21 @@
-﻿using RemsNG.Services.Interfaces;
+﻿using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using RemsNG.ORM;
-using RemsNG.Dao;
 
 namespace RemsNG.Services
 {
-    public class LcdaBankService : ILcdaBankService
+    public class LcdaBankManagers : ILcdaBankManagers
     {
-        private LcdaBankDao lcdaBankDao;
-        public LcdaBankService(RemsDbContext _db)
+        private readonly LcdaBankRepository lcdaBankDao;
+        public LcdaBankManagers(RemsDbContext _db)
         {
-            lcdaBankDao = new LcdaBankDao(_db);
+            lcdaBankDao = new LcdaBankRepository(_db);
         }
-        public async Task<List<LcdaBank>> Get(Guid lcdaId)
+        public async Task<List<BankLcdaModel>> Get(Guid lcdaId)
         {
             return await lcdaBankDao.Get(lcdaId);
         }

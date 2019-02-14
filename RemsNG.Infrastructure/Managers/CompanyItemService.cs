@@ -1,38 +1,37 @@
-﻿using RemsNG.Services.Interfaces;
+﻿using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using RemsNG.Models;
-using RemsNG.ORM;
-using RemsNG.Dao;
 
 namespace RemsNG.Services
 {
-    public class CompanyItemService : ICompanyItemService
+    public class CompanyItemManagers : ICompanyItemManagers
     {
-        CompanyItemRepository companyItemDao;
-        public CompanyItemService(RemsDbContext _db)
+        private readonly CompanyItemRepository companyItemDao;
+        public CompanyItemManagers(RemsDbContext _db)
         {
             companyItemDao = new CompanyItemRepository(_db);
         }
 
-        public async Task<Response> Add(CompanyItem companyItem)
+        public async Task<Response> Add(CompanyItemModel companyItem)
         {
             return await companyItemDao.Add(companyItem);
         }
 
-        public async Task<List<CompanyItemExt>> ByTaxpayer(Guid taxpayerId)
+        public async Task<List<CompanyItemModelExt>> ByTaxpayer(Guid taxpayerId)
         {
             return await companyItemDao.ByTaxpayer(taxpayerId);
         }
 
-        public async Task<CompanyItemExt> ById(Guid id)
+        public async Task<CompanyItemModelExt> ById(Guid id)
         {
             return await companyItemDao.ById(id);
         }
 
-        public async Task<Response> Update(CompanyItem companyItem)
+        public async Task<Response> Update(CompanyItemModel companyItem)
         {
             return await companyItemDao.Update(companyItem);
         }

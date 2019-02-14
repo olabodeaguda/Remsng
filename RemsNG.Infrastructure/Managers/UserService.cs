@@ -1,62 +1,58 @@
-﻿using RemsNG.Services.Interfaces;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using RemsNG.ORM;
-using RemsNG.Dao;
-using System.Security.Claims;
-using System.Security.Principal;
-using RemsNG.Models;
-using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using RemsNG.Utilities;
-using Newtonsoft.Json;
-using Microsoft.Extensions.Logging;
-using RemsNG.Security;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace RemsNG.Services
 {
-    public class UserService : IUserService
+    public class UserManagers : IUserManagers
     {
         private readonly JwtIssuerOptions jwtOptions;
-        private readonly LoginDao loginDao;
+        private readonly LoginRepository loginDao;
         private readonly DomainRepository domainDao;
         private readonly RoleRepository roleDao;
         private readonly LcdaRepository lcdaDao;
-        private readonly UserDao userDao;
+        private readonly UserRepository userDao;
         private readonly PermissionRepository permissionDao;
-        public UserService(RemsDbContext _db,
+        public UserManagers(RemsDbContext _db,
             IOptions<JwtIssuerOptions> _jwtOptions, ILoggerFactory loggerFactory)
         {
-            loginDao = new LoginDao(_db);
+            loginDao = new LoginRepository(_db);
             domainDao = new DomainRepository(_db);
             roleDao = new RoleRepository(_db, loggerFactory);
             lcdaDao = new LcdaRepository(_db, loggerFactory);
-            userDao = new UserDao(_db);
+            userDao = new UserRepository(_db);
             permissionDao = new PermissionRepository(_db);
             jwtOptions = _jwtOptions.Value;
         }
 
-        public async Task<object> GetToken(User user, Guid lcdaId)
+        public async Task<object> GetToken(UserModel user, Guid lcdaId)
         {
             String domainName = "";
-            RoleExtension role = null;
+            RoleExtensionModel role = null;
             string permissions = string.Empty;
             List<Claim> claimLst = new List<Claim>();
-            if (user.username.ToLower() != "mos-admin")
+            if (user.Username.ToLower() != "mos-admin")
             {
-                Lgda ld = await lcdaDao.Get(lcdaId);
+                LcdaModel ld = await lcdaDao.Get(lcdaId);
 
                 if (ld != null)
                 {
-                    domainName = ld.lcdaName;
-                    role = await roleDao.GetUserDomainRoleByUsername(user.username, lcdaId);
+                    domainName = ld.LcdaName;
+                    role = await roleDao.GetUserDomainRoleByUsername(user.Username, lcdaId);
                     if (role != null)
                     {
-                        List<Permission> permissionlst = await permissionDao.byRoleId(role.id);
-                        claimLst.AddRange(permissionlst.Select(x => new Claim(ClaimTypes.Role, x.permissionName)));
+                        List<PermissionModel> permissionlst = await permissionDao.byRoleId(role.id);
+                        claimLst.AddRange(permissionlst.Select(x => new Claim(ClaimTypes.Role, x.PermissionName)));
                     }
                 }
             }
@@ -71,10 +67,10 @@ namespace RemsNG.Services
 
             claimLst.AddRange(new List<Claim>()
                 {
-                     new Claim(ClaimTypes.NameIdentifier, user.username),
-                            new Claim(ClaimTypes.Name, $"{user.surname} {user.firstname} {user.lastname}"),
+                     new Claim(ClaimTypes.NameIdentifier, user.Username),
+                            new Claim(ClaimTypes.Name, $"{user.Surname} {user.Firstname} {user.Lastname}"),
                             new Claim("Domain",lcdaId.ToString()),
-                            new Claim("identity",EncryptDecryptUtils.ToHexString(user.id.ToString()))
+                            new Claim("identity", Common.Utilities.EncryptDecryptUtils.ToHexString(user.Id.ToString()))
                 });
 
             var jwt = new SecurityTokenDescriptor
@@ -93,12 +89,12 @@ namespace RemsNG.Services
             return new
             {
                 tk = encodedJwt,
-                username = user.username,
-                fullname = $"{user.surname} {user.firstname} {user.lastname}",
-                userStatus = user.userStatus,
+                username = user.Username,
+                fullname = $"{user.Surname} {user.Firstname} {user.Lastname}",
+                userStatus = user.UserStatus,
                 domainName = domainName,
                 role = role?.roleName,
-                id = user.id
+                id = user.Id
             };
         }
 
@@ -135,22 +131,22 @@ namespace RemsNG.Services
             return new JwtSecurityTokenHandler().WriteToken(tokenHandler.CreateToken(jwt));
         }
 
-        public async Task<User> GetUserByUsername(string username)
+        public async Task<UserModel> GetUserByUsername(string username)
         {
             return await userDao.ByUserName(username);
         }
 
-        public async Task<User> ByEmail(string email)
+        public async Task<UserModel> ByEmail(string email)
         {
             return await userDao.ByEmail(email);
         }
 
-        public async Task<bool> Create(User user)
+        public async Task<bool> Create(UserModel user)
         {
             return await userDao.Create(user);
         }
 
-        public Task<bool> AddAndAssignLGDA(User user, UserLcda userLcda)
+        public Task<bool> AddAndAssignLGDA(UserModel user, UserLcdaModel userLcda)
         {
             return userDao.AddAndAssignLGDA(user, userLcda);
         }
@@ -165,12 +161,12 @@ namespace RemsNG.Services
             return await userDao.Paginated(pageModel);
         }
 
-        public async Task<bool> Update(User user)
+        public async Task<bool> Update(UserModel user)
         {
             return await userDao.Update(user);
         }
 
-        public async Task<User> Get(Guid id)
+        public async Task<UserModel> Get(Guid id)
         {
             return await userDao.Get(id);
         }
@@ -180,9 +176,9 @@ namespace RemsNG.Services
             return await userDao.ChangePwd(id, newPwd);
         }
 
-        public async Task<bool> AssignLGDA(UserLcda userLcda)
+        public async Task<bool> AssignLGDA(UserLcdaModel userLcda)
         {
-            return await this.userDao.AssignLGDA(userLcda);
+            return await userDao.AssignLGDA(userLcda);
         }
 
         public async Task<bool> ChangeStatus(string status, Guid id)

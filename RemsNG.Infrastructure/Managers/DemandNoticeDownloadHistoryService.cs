@@ -1,5 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
+using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
 using RemsNG.Dao;
+using RemsNG.Data.Repository;
 using RemsNG.ORM;
 using RemsNG.Services.Interfaces;
 using System;
@@ -9,15 +13,15 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Services
 {
-    public class DemandNoticeDownloadHistoryService : IDemandNoticeDownloadHistory
+    public class DemandNoticeDownloadHistoryManagers : IDemandNoticeDownloadHistoryManagers
     {
-        DemandNoticeDownloadHistoryDao dndh;
-        public DemandNoticeDownloadHistoryService(RemsDbContext _db, ILoggerFactory loggerFactory)
+        DemandNoticeDownloadHistoryRepository dndh;
+        public DemandNoticeDownloadHistoryManagers(RemsDbContext _db, ILoggerFactory loggerFactory)
         {
-            dndh = new DemandNoticeDownloadHistoryDao(_db, loggerFactory);
+            dndh = new DemandNoticeDownloadHistoryRepository(_db, loggerFactory);
         }
 
-        public async Task Add(DemandNoticeDownloadHistory demandNoticeDownloadHistory)
+        public async Task Add(DemandNoticeDownloadHistoryModel demandNoticeDownloadHistory)
         {
             await dndh.Add(demandNoticeDownloadHistory);
         }

@@ -1,20 +1,16 @@
-﻿using RemsNG.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using RemsNG.Models;
-using RemsNG.ORM;
-using RemsNG.Dao;
-using Remsng.Data;
+﻿using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RemsNG.Services
 {
-    public class BatchDwnRequestService : IBatchDwnRequestService
+    public class BatchDwnRequestManagers : IBatchDwnRequestManagers
     {
         private readonly BatchDownloadRequestRepository bnr;
-        public BatchDwnRequestService(RemsDbContext _db)
+        public BatchDwnRequestManagers(RemsDbContext _db)
         {
             bnr = new BatchDownloadRequestRepository(_db);
         }

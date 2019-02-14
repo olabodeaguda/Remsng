@@ -52,23 +52,66 @@ namespace RemsNG.Data.Repository
             return false;
         }
 
-        public async Task<List<ContactDetail>> ByOwnerId(Guid ownerId)
+        public async Task<List<ContactDetailModel>> ByOwnerId(Guid ownerId)
         {
-            return await db.ContactDetails.Where(x => x.OwnerId == ownerId).ToListAsync();
+            var entities = await db.ContactDetails.Where(x => x.OwnerId == ownerId).ToListAsync();
+            return entities.Select(x => new ContactDetailModel()
+            {
+                ContactType = x.ContactType,
+                ContactValue = x.ContactValue,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                Id = x.Id,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                OwnerId = x.OwnerId
+            }).ToList();
         }
 
-        public async Task<ContactDetail> ByContactValue(ContactDetail contactDetail)
+        public async Task<ContactDetailModel> ByContactValue(ContactDetailModel contactDetail)
         {
-            return await db.ContactDetails.Where(x => x.ContactValue.ToLower() == contactDetail.ContactValue &&
-            x.ContactType == contactDetail.ContactType).FirstOrDefaultAsync();
+            var x = await db.ContactDetails.Where(p => p.ContactValue.ToLower() == contactDetail.ContactValue &&
+            p.ContactType == contactDetail.ContactType).FirstOrDefaultAsync();
+            if (x == null)
+            {
+                return null;
+            }
+
+            return new ContactDetailModel()
+            {
+                ContactType = x.ContactType,
+                ContactValue = x.ContactValue,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                Id = x.Id,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                OwnerId = x.OwnerId
+            };
         }
 
-        public async Task<ContactDetail> ById(Guid id)
+        public async Task<ContactDetailModel> ById(Guid id)
         {
-            return await db.ContactDetails.FirstOrDefaultAsync(x => x.Id == id);
+            var x = await db.ContactDetails.FirstOrDefaultAsync(p => p.Id == id);
+            if (x == null)
+            {
+                return null;
+            }
+
+            return new ContactDetailModel()
+            {
+                ContactType = x.ContactType,
+                ContactValue = x.ContactValue,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                Id = x.Id,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                OwnerId = x.OwnerId
+            };
         }
 
-        public async Task<bool> Remove(ContactDetail contactDetail)
+        public async Task<bool> Remove(ContactDetailModel contactDetail)
         {
             db.ContactDetails.Remove(contactDetail);
 

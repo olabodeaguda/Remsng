@@ -1,22 +1,22 @@
-﻿using RemsNG.Services.Interfaces;
+﻿using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using RemsNG.ORM;
-using RemsNG.Dao;
 
 namespace RemsNG.Services
 {
-    public class ListPropertyService : IListPropertyService
+    public class ListPropertyManagers : IListPropertyManagers
     {
         private readonly LcdaPropertyRepository lcdaPropertyDao;
-        public ListPropertyService(RemsDbContext _db)
+        public ListPropertyManagers(RemsDbContext _db)
         {
             lcdaPropertyDao = new LcdaPropertyRepository(_db);
         }
 
-        public async Task<List<LcdaProperty>> ByLcda(Guid lcdaId)
+        public async Task<List<LcdaPropertyModel>> ByLcda(Guid lcdaId)
         {
             return await lcdaPropertyDao.ByLcda(lcdaId);
         }

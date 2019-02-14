@@ -1,44 +1,42 @@
-﻿using RemsNG.Services.Interfaces;
+﻿using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using RemsNG.ORM;
-using RemsNG.Dao;
-using RemsNG.Models;
-using RemsNG.Common.Models;
 
 namespace RemsNG.Services
 {
-    public class PermissionService : IPermission
+    public class PermissionManagers : IPermissionManagers
     {
-        PermissionRepository permissionDao;
-        public PermissionService(RemsDbContext _db)
+        private readonly PermissionRepository permissionDao;
+        public PermissionManagers(RemsDbContext _db)
         {
             permissionDao = new PermissionRepository(_db);
         }
 
-        public async Task<List<Permission>> All()
+        public async Task<List<PermissionModel>> All()
         {
             return await permissionDao.All();
         }
 
-        public async Task<RolePermission> ByPermissionAndRoleId(RolePermission rolePermission)
+        public async Task<RolePermissionModel> ByPermissionAndRoleId(RolePermissionModel rolePermission)
         {
             return await permissionDao.ByPermissionAndRoleId(rolePermission);
         }
 
-        public async Task<List<Permission>> byRoleId(Guid roleId)
+        public async Task<List<PermissionModel>> byRoleId(Guid roleId)
         {
             return await permissionDao.byRoleId(roleId);
         }
 
-        public async Task<List<Permission>> byRoleId(Guid roleId, PageModel pageModel)
+        public async Task<List<PermissionModel>> byRoleId(Guid roleId, PageModel pageModel)
         {
             return await permissionDao.byRoleId(roleId, pageModel);
         }
 
-        public async Task<List<Permission>> GetPermissionNotInRole(Guid roleId)
+        public async Task<List<PermissionModel>> GetPermissionNotInRole(Guid roleId)
         {
             return await permissionDao.GetPermissionNotInRole(roleId);
         }
@@ -48,7 +46,7 @@ namespace RemsNG.Services
             return await permissionDao.PermissionCountByRoleId(id);
         }
 
-        public async Task<bool> RemovePermission(RolePermission rolePermission)
+        public async Task<bool> RemovePermission(RolePermissionModel rolePermission)
         {
             return await permissionDao.RemovePermission(rolePermission);
         }

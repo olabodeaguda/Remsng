@@ -1,7 +1,7 @@
-﻿using RemsNG.Dao;
-using RemsNG.Models;
-using RemsNG.ORM;
-using RemsNG.Services.Interfaces;
+﻿using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Services
 {
-    public class ReportService : IReportService
+    public class ReportManagers : IReportManagers
     {
         private readonly DemandNoticePenaltyRepository dnPenaltyDao;
         private readonly DemandNoticeArrearRepository dnArrearsDao;
         private readonly DemandNoticeItemRepository dnitemDao;
         private readonly ReportRepository reportDao;
-        public ReportService(RemsDbContext _db)
+        public ReportManagers(RemsDbContext _db)
         {
             reportDao = new ReportRepository(_db);
             dnitemDao = new DemandNoticeItemRepository(_db);
@@ -183,7 +183,7 @@ namespace RemsNG.Services
             });
         }
 
-        public async Task<List<ChartReport>> ReportByCurrentYear()
+        public async Task<List<ChartReportModel>> ReportByCurrentYear()
         {
             return await reportDao.ReportByYear();
         }
@@ -194,15 +194,15 @@ namespace RemsNG.Services
 
         }
 
-        public async Task<List<DemandNoticeItemExt>> ReportitemsByCategory(DateTime startDate, DateTime endDate)
+        public async Task<List<DemandNoticeItemModelExt>> ReportitemsByCategory(DateTime startDate, DateTime endDate)
         {
             return await dnitemDao.ReportByCategory(startDate, endDate);
         }
-        public async Task<List<DemandNoticeArrearsExt>> ReportArrearsByCategory(DateTime startDate, DateTime endDate)
+        public async Task<List<DemandNoticeArrearsModelExt>> ReportArrearsByCategory(DateTime startDate, DateTime endDate)
         {
             return await dnArrearsDao.ReportByCategory(startDate, endDate);
         }
-        public async Task<List<DemandNoticeItemPenaltyExt>> ReportPenaltyByCategory(DateTime startDate, DateTime endDate)
+        public async Task<List<DemandNoticeItemPenaltyModelExt>> ReportPenaltyByCategory(DateTime startDate, DateTime endDate)
         {
             return await dnPenaltyDao.ReportByCategory(startDate, endDate);
         }

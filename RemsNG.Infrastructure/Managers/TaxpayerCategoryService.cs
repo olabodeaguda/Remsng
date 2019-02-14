@@ -1,23 +1,23 @@
 ﻿using Microsoft.Extensions.Logging;
-using RemsNG.Dao;
-using RemsNG.Models;
-using RemsNG.ORM;
-using RemsNG.Services.Interfaces;
+using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace RemsNG.Services
 {
-    public class TaxpayerCategoryService : ITaxpayerCategoryService
+    public class TaxpayerCategoryManagers : ITaxpayerCategoryManagers
     {
         private TaxpayerCatgoryRepository taxpayerCatgoryDao;
-        public TaxpayerCategoryService(RemsDbContext _db, ILoggerFactory loggerFactory)
+        public TaxpayerCategoryManagers(RemsDbContext _db, ILoggerFactory loggerFactory)
         {
             taxpayerCatgoryDao = new TaxpayerCatgoryRepository(_db);
         }
 
-        public async Task<Response> Add(TaxpayerCategory taxpayerCategory)
+        public async Task<Response> Add(TaxpayerCategoryModel taxpayerCategory)
         {
             return await taxpayerCatgoryDao.Add(taxpayerCategory);
         }
@@ -27,7 +27,7 @@ namespace RemsNG.Services
             return await taxpayerCatgoryDao.Delete(id);
         }
 
-        public async Task<TaxpayerCategory> GetById(Guid id)
+        public async Task<TaxpayerCategoryModel> GetById(Guid id)
         {
             return await taxpayerCatgoryDao.GetById(id);
         }
@@ -37,7 +37,7 @@ namespace RemsNG.Services
             return await taxpayerCatgoryDao.GetByNameAndLcdaId(lcdaid, name);
         }
 
-        public async Task<List<TaxpayerCategory>> GetListByLcdaIdAsync(Guid lcdaId)
+        public async Task<List<TaxpayerCategoryModel>> GetListByLcdaIdAsync(Guid lcdaId)
         {
             return await taxpayerCatgoryDao.GetListByLcdaIdAsync(lcdaId);
         }
@@ -47,12 +47,12 @@ namespace RemsNG.Services
             return await taxpayerCatgoryDao.GetListByLcdaIdAsync(lcdaId, pageModel);
         }
 
-        public async Task<Response> Update(TaxpayerCategory taxpayerCategory)
+        public async Task<Response> Update(TaxpayerCategoryModel taxpayerCategory)
         {
             return await taxpayerCatgoryDao.Update(taxpayerCategory);
         }
 
-        public async Task<TaxpayerCategory> GetTaxpayerCategory(Guid taxpayerId)
+        public async Task<TaxpayerCategoryModel> GetTaxpayerCategory(Guid taxpayerId)
         {
             return await taxpayerCatgoryDao.GetTaxpayerCategory(taxpayerId);
         }

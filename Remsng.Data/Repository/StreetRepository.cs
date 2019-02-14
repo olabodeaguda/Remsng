@@ -23,7 +23,7 @@ namespace RemsNG.Data.Repository
         {
         }
 
-        public async Task<Response> Add(Street street)
+        public async Task<Response> Add(StreetModel street)
         {
             DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addStreet @p0, @p1, @p2, @p3, @p4, @p5", new object[] {
                 street.Id,
@@ -52,7 +52,7 @@ namespace RemsNG.Data.Repository
             }
         }
 
-        public async Task<Response> Update(Street street)
+        public async Task<Response> Update(StreetModel street)
         {
             DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_updateStreet @p0, @p1, @p2, @p3, @p4, @p5", new object[] {
                 street.Id,

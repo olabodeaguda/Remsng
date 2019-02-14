@@ -11,8 +11,7 @@ namespace RemsNG.Data.Repository
     public class BankRepository : AbstractRepository
     {
         public BankRepository(RemsDbContext _db) : base(_db)
-        {
-        }
+        {}
 
         public async Task<List<BankModel>> GetBankAsync()
         {

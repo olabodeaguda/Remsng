@@ -16,7 +16,7 @@ namespace RemsNG.Data.Repository
         {
         }
 
-        public async Task<Response> Add(ItemPenalty item)
+        public async Task<Response> Add(ItemPenaltyModel item)
         {
             var r = await db.ItemPenalties.FirstOrDefaultAsync(x => x.Duration == item.Duration && item.ItemId == x.ItemId);
             if (r != null)
@@ -45,7 +45,7 @@ namespace RemsNG.Data.Repository
             }
         }
 
-        public async Task<Response> Update(ItemPenalty item)
+        public async Task<Response> Update(ItemPenaltyModel item)
         {
             var r = await db.ItemPenalties.FindAsync(new object[] { item.Id });
             if (r == null)
@@ -78,7 +78,7 @@ namespace RemsNG.Data.Repository
             }
         }
 
-        public async Task<Response> UpdateStatus(ItemPenalty item)
+        public async Task<Response> UpdateStatus(ItemPenaltyModel item)
         {
             var r = await db.ItemPenalties.FindAsync(new object[] { item.Id });
             if (r == null)
