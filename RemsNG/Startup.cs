@@ -17,7 +17,6 @@ namespace RemsNG
 {
     public class Startup
     {
-        //        private readonly ILogger _logger;
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -28,7 +27,7 @@ namespace RemsNG
             Configuration = builder.Build();
         }
 
-        public IConfigurationRoot Configuration { get; }
+        public IConfiguration Configuration { get; }
         private ILoggerFactory loggerFactory;
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
