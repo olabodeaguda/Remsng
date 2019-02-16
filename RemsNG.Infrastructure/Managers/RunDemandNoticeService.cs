@@ -15,7 +15,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RemsNG.Services
+namespace RemsNG.Infrastructure.Managers
 {
     public class RunDemandNoticeManagers : IRunDemandNoticeManagers
     {

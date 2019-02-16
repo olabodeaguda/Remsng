@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RemsNG.Services;
-using RemsNG.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using RemsNG.ORM;
-using RemsNG.Models;
-using RemsNG.Utilities;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
+using System;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,12 +14,12 @@ namespace RemsNG.Controllers
     [Route("api/v1/sector")]
     public class SectorController : Controller
     {
-        private readonly ISectorService sectorService;
-        public SectorController(ISectorService _sectorService)
+        private readonly ISectorManagers sectorService;
+        public SectorController(ISectorManagers _sectorService)
         {
             sectorService = _sectorService;
         }
-        
+
         [HttpGet("bylcda/{id}")]
         public async Task<object> GetByLcdaid(Guid id)
         {
@@ -46,9 +42,9 @@ namespace RemsNG.Controllers
         }
 
         [HttpPost]
-        public async Task<object> Post([FromBody]Sector sector)
+        public async Task<object> Post([FromBody]SectorModel sector)
         {
-            if (sector.lcdaId == default(Guid))
+            if (sector.LcdaId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -56,7 +52,7 @@ namespace RemsNG.Controllers
                     description = "Sector is required"
                 });
             }
-            else if (string.IsNullOrEmpty(sector.sectorName))
+            else if (string.IsNullOrEmpty(sector.SectorName))
             {
                 return BadRequest(new Response()
                 {
@@ -65,7 +61,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            sector.createdBy = User.Identity.Name;
+            sector.CreatedBy = User.Identity.Name;
 
             Response response = await sectorService.Add(sector);
 
@@ -73,9 +69,9 @@ namespace RemsNG.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<object> Put(Guid id, [FromBody]Sector sector)
+        public async Task<object> Put(Guid id, [FromBody]SectorModel sector)
         {
-            if (string.IsNullOrEmpty(sector.sectorName))
+            if (string.IsNullOrEmpty(sector.SectorName))
             {
                 return BadRequest(new Response()
                 {
@@ -83,7 +79,7 @@ namespace RemsNG.Controllers
                     description = "Sector Name is required"
                 });
             }
-            else if(id == default(Guid))
+            else if (id == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -92,7 +88,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            sector.lastmodifiedby = User.Identity.Name;
+            sector.Lastmodifiedby = User.Identity.Name;
 
             Response response = await sectorService.Update(sector);
             return Ok(response);

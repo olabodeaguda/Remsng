@@ -348,7 +348,7 @@ namespace RemsNG.Data.Repository
             if (count > 0)
             {
                 //log
-                Error error = new Error()
+                ErrorModel error = new ErrorModel()
                 {
                     DateCreated = DateTime.Now,
                     ErrorType = "Delete Demand Notice",
@@ -387,7 +387,7 @@ namespace RemsNG.Data.Repository
             if (count > 0)
             {
                 //log
-                Error error = new Error()
+                ErrorModel error = new ErrorModel()
                 {
                     DateCreated = DateTime.Now,
                     ErrorType = "Delete Demand Notice",

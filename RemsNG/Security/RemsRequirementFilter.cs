@@ -1,13 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using RemsNG.Exceptions;
-using RemsNG.Models;
-using RemsNG.Utilities;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
+using RemsNG.Common.Exceptions;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace RemsNG.Security
 {

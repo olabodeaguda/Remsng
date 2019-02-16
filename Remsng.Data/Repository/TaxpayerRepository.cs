@@ -160,7 +160,7 @@ namespace RemsNG.Data.Repository
             return results;
         }
 
-        public async Task<Response> Update(TaxPayer taxpayer)
+        public async Task<Response> Update(TaxPayerModel taxpayer)
         {
             DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_updateTaxpayer @p0,@p1,@p2,@p3,@p4,@p5,@p6,@p7", new object[] {
                     taxpayer.Id,

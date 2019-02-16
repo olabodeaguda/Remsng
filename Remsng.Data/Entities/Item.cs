@@ -11,7 +11,7 @@ namespace RemsNG.Data.Entities
         {
             CompanyItem = new HashSet<CompanyItem>();
             DemandNoticeItem = new HashSet<DemandNoticeItem>();
-            Itempenalty = new HashSet<Itempenalty>();
+            Itempenalty = new HashSet<ItemPenalty>();
         }
 
         public Guid Id { get; set; }
@@ -27,6 +27,6 @@ namespace RemsNG.Data.Entities
         public virtual Lcda Lcda { get; set; }
         public virtual ICollection<CompanyItem> CompanyItem { get; set; }
         public virtual ICollection<DemandNoticeItem> DemandNoticeItem { get; set; }
-        public virtual ICollection<Itempenalty> Itempenalty { get; set; }
+        public virtual ICollection<ItemPenalty> Itempenalty { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
+using RemsNG.Common.Models;
 using RemsNG.Exceptions;
 using RemsNG.Models;
 using RemsNG.Utilities;

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using RemsNG.Common.Models;
 using RemsNG.Exceptions;
 using RemsNG.Models;
 using System;

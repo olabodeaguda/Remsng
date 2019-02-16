@@ -19,7 +19,16 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> Add(TaxpayerCategoryModel taxpayerCategory)
         {
-            db.TaxPayersCategories.Add(taxpayerCategory);
+            db.TaxPayersCategories.Add(new TaxpayerCategory
+            {
+                CreatedBy = taxpayerCategory.CreatedBy,
+                DateCreated = taxpayerCategory.DateCreated,
+                Id = taxpayerCategory.Id,
+                Lastmodifiedby = taxpayerCategory.Lastmodifiedby,
+                LastModifiedDate = taxpayerCategory.LastModifiedDate,
+                LcdaId = taxpayerCategory.LcdaId,
+                TaxpayerCategoryName = taxpayerCategory.TaxpayerCategoryName
+            });
             int count = await db.SaveChangesAsync();
             if (count > 0)
             {

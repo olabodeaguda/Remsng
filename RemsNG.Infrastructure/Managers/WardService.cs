@@ -1,53 +1,52 @@
-﻿using RemsNG.Services.Interfaces;
+﻿using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using RemsNG.Models;
-using RemsNG.ORM;
-using RemsNG.Dao;
 
 namespace RemsNG.Services
 {
-    public class WardService : IWardService
+    public class WardManagers : IWardManagers
     {
         private WardRepository wardDao;
-        public WardService(RemsDbContext db)
+        public WardManagers(RemsDbContext db)
         {
             wardDao = new WardRepository(db);
         }
 
-        public async Task<List<Ward>> ActiveWard()
+        public async Task<List<WardModel>> ActiveWard()
         {
             return await wardDao.ActiveWard();
         }
 
-        public async Task<bool> Add(Ward ward)
+        public async Task<bool> Add(WardModel ward)
         {
             return await wardDao.Add(ward);
         }
 
-        public async Task<List<Ward>> all()
+        public async Task<List<WardModel>> all()
         {
             return await wardDao.All();
         }
 
-        public async Task<Domain> GetDomain(Guid wardId)
+        public async Task<DomainModel> GetDomain(Guid wardId)
         {
             return await wardDao.GetDomain(wardId);
         }
 
-        public async Task<Ward> GetWard(Guid id)
+        public async Task<WardModel> GetWard(Guid id)
         {
             return await wardDao.GetWard(id);
         }
 
-        public async Task<Ward> GetWard(string wardName, Guid lgdaid)
+        public async Task<WardModel> GetWard(string wardName, Guid lgdaid)
         {
             return await wardDao.GetWard(wardName, lgdaid);
         }
 
-        public async Task<List<Ward>> GetWardByLGDAId(Guid lgdaId)
+        public async Task<List<WardModel>> GetWardByLGDAId(Guid lgdaId)
         {
             return await wardDao.GetWardByLGDAId(lgdaId);
         }
@@ -62,7 +61,7 @@ namespace RemsNG.Services
             return await wardDao.Paginated(pageModel, lgdaId);
         }
 
-        public async Task<bool> Update(Ward ward)
+        public async Task<bool> Update(WardModel ward)
         {
             return await wardDao.Update(ward);
         }

@@ -1,16 +1,11 @@
-﻿using RemsNG.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using RemsNG.ORM;
-using RemsNG.Dao;
+﻿using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
-using RemsNG.Data.Repository;
-using Remsng.Data;
 using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace RemsNG.Services
+namespace RemsNG.Infrastructure.Managers
 {
     public class BankManagers : IBankManagers
     {

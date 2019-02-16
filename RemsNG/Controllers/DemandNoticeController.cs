@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
+using RemsNG.Infrastructure.Extensions;
+using RemsNG.Security;
+using RemsNG.Utilities;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using RemsNG.Services.Interfaces;
-using RemsNG.Models;
-using RemsNG.Utilities;
-using RemsNG.ORM;
-using RemsNG.Services;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Authorization;
-using RemsNG.Security;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace RemsNG.Controllers
 {
@@ -20,12 +18,12 @@ namespace RemsNG.Controllers
     [Route("api/v1/demandnotice")]
     public class DemandNoticeController : Controller
     {
-        private IDemandNoticeService demandService;
-        private IStreetService streetService;
-        private IWardService wardService;
-        private IDemandNoticeTaxpayerService dnTaxpayerService;
-        public DemandNoticeController(IDemandNoticeService _demandService, IStreetService _streetService,
-            IWardService _wardService, IDemandNoticeTaxpayerService _dnTaxpayerService)
+        private IDemandNoticeManagers demandService;
+        private IStreetManagers streetService;
+        private IWardManagers wardService;
+        private IDemandNoticeTaxpayerManagers dnTaxpayerService;
+        public DemandNoticeController(IDemandNoticeManagers _demandService, IStreetManagers _streetService,
+            IWardManagers _wardService, IDemandNoticeTaxpayerManagers _dnTaxpayerService)
         {
             demandService = _demandService;
             streetService = _streetService;
@@ -81,8 +79,8 @@ namespace RemsNG.Controllers
             }
 
             var result = await demandService.GetById(id);
-            result.query = Utilities.EncryptDecryptUtils.FromHexString(result.query);
-            Response response = new Models.Response();
+            result.Query = Utilities.EncryptDecryptUtils.FromHexString(result.Query);
+            Response response = new Response();
             response.data = result;
             if (result != null)
             {
@@ -109,8 +107,8 @@ namespace RemsNG.Controllers
                 });
             }
             var result = await demandService.GetByBatchId(id);
-            result.query = Utilities.EncryptDecryptUtils.FromHexString(result.query);
-            Response response = new Models.Response();
+            result.Query = Utilities.EncryptDecryptUtils.FromHexString(result.Query);
+            Response response = new Response();
             response.data = result;
             if (result != null)
             {
@@ -127,11 +125,11 @@ namespace RemsNG.Controllers
 
         [RemsRequirementAttribute("DEMANDNOTICE_REQUEST")]
         [HttpPost]
-        public async Task<object> Post([FromBody]DemandNoticeRequest demandNoticeRequest)
+        public async Task<object> Post([FromBody]DemandNoticeRequestModel demandNoticeRequest)
         {
             if (demandNoticeRequest.streetId != null && demandNoticeRequest.streetId != default(Guid))
             {
-                Street street = await streetService.ById(demandNoticeRequest.streetId.Value);
+                StreetModel street = await streetService.ById(demandNoticeRequest.streetId.Value);
                 if (street == null)
                 {
                     return BadRequest(new Response()
@@ -145,7 +143,7 @@ namespace RemsNG.Controllers
             else if (demandNoticeRequest.wardId != null && demandNoticeRequest.wardId != default(Guid))
             {
                 Guid s = demandNoticeRequest.wardId.Value;
-                Ward ward = await wardService.GetWard(demandNoticeRequest.wardId.Value);
+                WardModel ward = await wardService.GetWard(demandNoticeRequest.wardId.Value);
                 if (ward == null)
                 {
                     return BadRequest(new Response()
@@ -165,24 +163,24 @@ namespace RemsNG.Controllers
             }
 
 
-            DemandNotice demandNotice = new DemandNotice();
-            demandNotice.lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
+            DemandNoticeModel demandNotice = new DemandNoticeModel();
+            demandNotice.LcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
             string encr = JsonConvert.SerializeObject(demandNoticeRequest);
-            string dx = EncryptDecryptUtils.ToHexString(encr); ;
-            string ddx = EncryptDecryptUtils.FromHexString(dx);
-            demandNotice.query = EncryptDecryptUtils.ToHexString(encr);
+            string dx = Utilities.EncryptDecryptUtils.ToHexString(encr); ;
+            string ddx = Utilities.EncryptDecryptUtils.FromHexString(dx);
+            demandNotice.Query = Utilities.EncryptDecryptUtils.ToHexString(encr);
 
             demandNoticeRequest.createdBy = User.Identity.Name;
-            demandNotice.billingYear = demandNoticeRequest.dateYear;
-            demandNotice.createdBy = User.Identity.Name;
-            demandNotice.id = Guid.NewGuid();
-            demandNotice.batchNo = CommonList.GetBatchNo();
-            demandNotice.demandNoticeStatus = DemandNoticeStatus.SUBMITTED.ToString();
-            demandNotice.wardId = demandNoticeRequest.wardId;
-            demandNotice.streetId = demandNoticeRequest.streetId;
-            demandNotice.isUnbilled = demandNoticeRequest.isUnbilled;
+            demandNotice.BillingYear = demandNoticeRequest.dateYear;
+            demandNotice.CreatedBy = User.Identity.Name;
+            demandNotice.Id = Guid.NewGuid();
+            demandNotice.BatchNo = CommonList.GetBatchNo();
+            demandNotice.DemandNoticeStatus = DemandNoticeStatus.SUBMITTED.ToString();
+            demandNotice.WardId = demandNoticeRequest.wardId;
+            demandNotice.StreetId = demandNoticeRequest.streetId;
+            demandNotice.IsUnbilled = demandNoticeRequest.isUnbilled;
 
-           Response response = await demandService.Add(demandNotice);
+            Response response = await demandService.Add(demandNotice);
 
             if (response.code == MsgCode_Enum.SUCCESS)
             {
@@ -195,11 +193,11 @@ namespace RemsNG.Controllers
         }
 
         [HttpPost("search/{pagenum}/{pagesize}")]
-        public async Task<object> SearchDemandNotice([FromBody]DemandNoticeRequest demandNoticeRequest, [FromHeader] string pageNum, [FromHeader] string pageSize)
+        public async Task<object> SearchDemandNotice([FromBody]DemandNoticeRequestModel demandNoticeRequest, [FromHeader] string pageNum, [FromHeader] string pageSize)
         {
             if (demandNoticeRequest.streetId != null && demandNoticeRequest.streetId != default(Guid))
             {
-                Street street = await streetService.ById(demandNoticeRequest.streetId.Value);
+                StreetModel street = await streetService.ById(demandNoticeRequest.streetId.Value);
                 if (street == null)
                 {
                     return BadRequest(new Response()
@@ -213,7 +211,7 @@ namespace RemsNG.Controllers
             else if (demandNoticeRequest.wardId != null && demandNoticeRequest.wardId != default(Guid))
             {
                 Guid s = demandNoticeRequest.wardId.Value;
-                Ward ward = await wardService.GetWard(demandNoticeRequest.wardId.Value);
+                WardModel ward = await wardService.GetWard(demandNoticeRequest.wardId.Value);
                 if (ward == null)
                 {
                     return BadRequest(new Response()
@@ -236,20 +234,20 @@ namespace RemsNG.Controllers
             pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
 
             // demandNoticeRequest.createdBy = User.Identity.Name;
-            DemandNotice demandNotice = new DemandNotice();
-            demandNotice.lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
+            DemandNoticeModel demandNotice = new DemandNoticeModel();
+            demandNotice.LcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
             string encr = JsonConvert.SerializeObject(demandNoticeRequest);
-            string dx = EncryptDecryptUtils.ToHexString(encr); ;
+            string dx = Utilities.EncryptDecryptUtils.ToHexString(encr); ;
 
-            string ddx = EncryptDecryptUtils.FromHexString(dx);
-            demandNotice.query = EncryptDecryptUtils.ToHexString(encr);
-            demandNotice.billingYear = demandNoticeRequest.dateYear;
-            demandNotice.createdBy = User.Identity.Name;
-            demandNotice.id = Guid.NewGuid();
-            demandNotice.batchNo = CommonList.GetBatchNo();
-            demandNotice.demandNoticeStatus = DemandNoticeStatus.SUBMITTED.ToString();
-            demandNotice.wardId = demandNoticeRequest.wardId;
-            demandNotice.streetId = demandNoticeRequest.streetId;
+            string ddx = Utilities.EncryptDecryptUtils.FromHexString(dx);
+            demandNotice.Query = Utilities.EncryptDecryptUtils.ToHexString(encr);
+            demandNotice.BillingYear = demandNoticeRequest.dateYear;
+            demandNotice.CreatedBy = User.Identity.Name;
+            demandNotice.Id = Guid.NewGuid();
+            demandNotice.BatchNo = CommonList.GetBatchNo();
+            demandNotice.DemandNoticeStatus = DemandNoticeStatus.SUBMITTED.ToString();
+            demandNotice.WardId = demandNoticeRequest.wardId;
+            demandNotice.StreetId = demandNoticeRequest.streetId;
 
             return await demandService.SearchDemandNotice(demandNotice, new PageModel()
             {
@@ -259,10 +257,10 @@ namespace RemsNG.Controllers
         }
 
         [HttpPut("updatequery/{id}")]
-        public async Task<object> UpdateQuery(Guid id, [FromBody]DemandNoticeRequest query)
+        public async Task<object> UpdateQuery(Guid id, [FromBody]DemandNoticeRequestModel query)
         {
-            DemandNotice demandNotice = await demandService.GetById(id);
-            if (demandNotice.demandNoticeStatus != DemandNoticeStatus.SUBMITTED.ToString())
+            DemandNoticeModel demandNotice = await demandService.GetById(id);
+            if (demandNotice.DemandNoticeStatus != DemandNoticeStatus.SUBMITTED.ToString())
             {
                 return BadRequest(new Response()
                 {
@@ -273,12 +271,12 @@ namespace RemsNG.Controllers
 
             query.lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
 
-            Response response = await demandService.UpdateQuery(new DemandNotice()
+            Response response = await demandService.UpdateQuery(new DemandNoticeModel()
             {
-                id = id,
-                query = JsonConvert.SerializeObject(query),
-                lastmodifiedby = User.Identity.Name,
-                lastModifiedDate = DateTime.Now
+                Id = id,
+                Query = JsonConvert.SerializeObject(query),
+                Lastmodifiedby = User.Identity.Name,
+                LastModifiedDate = DateTime.Now
             });
 
             if (response.code == MsgCode_Enum.SUCCESS)
@@ -294,8 +292,8 @@ namespace RemsNG.Controllers
         [HttpPut("updateyear/{id}")]
         public async Task<object> UpdateBillingYear(Guid id, [FromHeader]int billingYr)
         {
-            DemandNotice demandNotice = await demandService.GetById(id);
-            if (demandNotice.demandNoticeStatus != DemandNoticeStatus.SUBMITTED.ToString())
+            DemandNoticeModel demandNotice = await demandService.GetById(id);
+            if (demandNotice.DemandNoticeStatus != DemandNoticeStatus.SUBMITTED.ToString())
             {
                 return BadRequest(new Response()
                 {
@@ -304,12 +302,12 @@ namespace RemsNG.Controllers
                 });
             }
 
-            Response response = await demandService.UpdateBillingYr(new DemandNotice()
+            Response response = await demandService.UpdateBillingYr(new DemandNoticeModel()
             {
-                id = id,
-                billingYear = billingYr,
-                lastmodifiedby = User.Identity.Name,
-                lastModifiedDate = DateTime.Now
+                Id = id,
+                BillingYear = billingYr,
+                Lastmodifiedby = User.Identity.Name,
+                LastModifiedDate = DateTime.Now
             });
 
             if (response.code == MsgCode_Enum.SUCCESS)
@@ -325,8 +323,8 @@ namespace RemsNG.Controllers
         [HttpPut("updatestatus/{id}")]
         public async Task<object> UpdateStatus(Guid id, [FromHeader]string dns)
         {
-            DemandNotice demandNotice = await demandService.GetById(id);
-            if (demandNotice.demandNoticeStatus != DemandNoticeStatus.SUBMITTED.ToString())
+            DemandNoticeModel demandNotice = await demandService.GetById(id);
+            if (demandNotice.DemandNoticeStatus != DemandNoticeStatus.SUBMITTED.ToString())
             {
                 return BadRequest(new Response()
                 {
@@ -335,12 +333,12 @@ namespace RemsNG.Controllers
                 });
             }
 
-            Response response = await demandService.UpdateBillingYr(new DemandNotice()
+            Response response = await demandService.UpdateBillingYr(new DemandNoticeModel()
             {
-                id = id,
-                demandNoticeStatus = dns,
-                lastmodifiedby = User.Identity.Name,
-                lastModifiedDate = DateTime.Now
+                Id = id,
+                DemandNoticeStatus = dns,
+                Lastmodifiedby = User.Identity.Name,
+                LastModifiedDate = DateTime.Now
             });
 
             if (response.code == MsgCode_Enum.SUCCESS)
@@ -354,9 +352,9 @@ namespace RemsNG.Controllers
         }
 
         [HttpPost("addarrears")]
-        public async Task<object> AddArrears([FromBody]DemandNoticeArrears dna)
+        public async Task<object> AddArrears([FromBody]DemandNoticeArrearsModel dna)
         {
-            if (dna.itemId == default(Guid))
+            if (dna.ItemId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -364,7 +362,7 @@ namespace RemsNG.Controllers
                     description = "Item is required"
                 });
             }
-            else if (dna.totalAmount < 1)
+            else if (dna.TotalAmount < 1)
             {
                 return BadRequest(new Response()
                 {
@@ -372,7 +370,7 @@ namespace RemsNG.Controllers
                     description = "Item is required"
                 });
             }
-            else if (dna.taxpayerId == Guid.Empty || string.IsNullOrEmpty(dna.billingNo))
+            else if (dna.TaxpayerId == Guid.Empty || string.IsNullOrEmpty(dna.BillingNo))
             {
                 return BadRequest(new Response()
                 {
@@ -381,20 +379,20 @@ namespace RemsNG.Controllers
                 });
             }
 
-            DemandNoticeTaxpayersDetail dnTxPayer = await dnTaxpayerService.ByBillingNo(dna.billingNo);
+            DemandNoticeTaxpayersModel dnTxPayer = await dnTaxpayerService.ByBillingNo(dna.BillingNo);
 
             if (dnTxPayer == null)
             {
                 return BadRequest(new Response()
                 {
                     code = MsgCode_Enum.NOTFOUND,
-                    description = $"{dna.billingNo} not found"
+                    description = $"{dna.BillingNo} not found"
                 });
             }
 
-            dna.arrearsStatus = DemandNoticeStatus.PENDING.ToString();
-            dna.billingYr = dnTxPayer.billingYr;
-            dna.createdBy = User.Identity.Name;
+            dna.ArrearsStatus = DemandNoticeStatus.PENDING.ToString();
+            dna.BillingYear = dnTxPayer.BillingYr;
+            dna.CreatedBy = User.Identity.Name;
 
             bool result = await demandService.AddArrears(dna);
 

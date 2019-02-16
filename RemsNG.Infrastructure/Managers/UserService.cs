@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
+using RemsNG.Infrastructure.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -12,19 +12,18 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace RemsNG.Services
+namespace RemsNG.Infrastructure.Managers
 {
     public class UserManagers : IUserManagers
     {
-        private readonly JwtIssuerOptions jwtOptions;
+        // private readonly JwtIssuerOptions jOptions;
         private readonly LoginRepository loginDao;
         private readonly DomainRepository domainDao;
         private readonly RoleRepository roleDao;
         private readonly LcdaRepository lcdaDao;
         private readonly UserRepository userDao;
         private readonly PermissionRepository permissionDao;
-        public UserManagers(RemsDbContext _db,
-            IOptions<JwtIssuerOptions> _jwtOptions, ILoggerFactory loggerFactory)
+        public UserManagers(RemsDbContext _db, ILoggerFactory loggerFactory)
         {
             loginDao = new LoginRepository(_db);
             domainDao = new DomainRepository(_db);
@@ -32,7 +31,6 @@ namespace RemsNG.Services
             lcdaDao = new LcdaRepository(_db, loggerFactory);
             userDao = new UserRepository(_db);
             permissionDao = new PermissionRepository(_db);
-            jwtOptions = _jwtOptions.Value;
         }
 
         public async Task<object> GetToken(UserModel user, Guid lcdaId)
@@ -61,7 +59,7 @@ namespace RemsNG.Services
                 domainName = "mos-admin";
             }
 
-            int logTime = int.TryParse(jwtOptions.logOutTIme, out logTime) ? logTime : 30;
+            int logTime = 30;// int.TryParse(jwtOptions.logOutTIme, out logTime) ? logTime : 30;
 
             var tokenHandler = new JwtSecurityTokenHandler();
 
@@ -75,12 +73,12 @@ namespace RemsNG.Services
 
             var jwt = new SecurityTokenDescriptor
             {
-                Issuer = jwtOptions.Issuer,
-                Audience = jwtOptions.Audience,
+                // Issuer = jwtOptions.Issuer,
+                // Audience = jwtOptions.Audience,
                 Subject = new ClaimsIdentity(claimLst),
                 Expires = DateTime.UtcNow.AddMinutes(logTime),
                 NotBefore = DateTime.UtcNow,
-                SigningCredentials = jwtOptions.SigningCredentials,
+                // SigningCredentials = jwtOptions.SigningCredentials,
                 IssuedAt = DateTime.UtcNow,
 
             };
@@ -102,7 +100,7 @@ namespace RemsNG.Services
         {
             List<Claim> claimLst = new List<Claim>();
 
-            int logTime = int.TryParse(jwtOptions.logOutTIme, out logTime) ? logTime : 30;
+            int logTime = 30;// int.TryParse(jwtOptions.logOutTIme, out logTime) ? logTime : 30;
 
             var tokenHandler = new JwtSecurityTokenHandler();
 
@@ -118,12 +116,12 @@ namespace RemsNG.Services
 
             var jwt = new SecurityTokenDescriptor
             {
-                Issuer = jwtOptions.Issuer,
-                Audience = jwtOptions.Audience,
+                //Issuer = jwtOptions.Issuer,
+                // Audience = jwtOptions.Audience,
                 Subject = new ClaimsIdentity(claim),
                 Expires = DateTime.UtcNow.AddMinutes(logTime),
                 NotBefore = DateTime.UtcNow,
-                SigningCredentials = jwtOptions.SigningCredentials,
+                //SigningCredentials = jwtOptions.SigningCredentials,
                 IssuedAt = DateTime.UtcNow,
 
             };

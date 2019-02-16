@@ -1,15 +1,15 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
+using RemsNG.Infrastructure.Extensions;
+using RemsNG.Security;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using RemsNG.Utilities;
-using RemsNG.Services.Interfaces;
 using System.Security.Claims;
-using RemsNG.Models;
-using RemsNG.ORM;
-using Microsoft.AspNetCore.Authorization;
-using RemsNG.Security;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,15 +19,15 @@ namespace RemsNG.Controllers
     [Route("api/v1/role")]
     public class RoleController : Controller
     {
-        IRoleService roleservice;
-        IPermission permissionService;
-        public RoleController(IRoleService _roleservice, IPermission _permissionService)
+        IRoleManagers roleservice;
+        IPermissionManagers permissionService;
+        public RoleController(IRoleManagers _roleservice, IPermissionManagers _permissionService)
         {
             roleservice = _roleservice;
             permissionService = _permissionService;
         }
 
-       // [RemsRequirementAttribute("GET_ROLES")]
+        // [RemsRequirementAttribute("GET_ROLES")]
         [HttpGet]
         public async Task<object> Get([FromHeader] string pageSize, [FromHeader] string pageNum)
         {
@@ -107,9 +107,9 @@ namespace RemsNG.Controllers
 
         [RemsRequirementAttribute("ADD_ROLES")]
         [HttpPost]
-        public async Task<object> Post([FromBody] Role role)
+        public async Task<object> Post([FromBody] RoleModel role)
         {
-            if (string.IsNullOrEmpty(role.roleName))
+            if (string.IsNullOrEmpty(role.RoleName))
             {
                 return BadRequest(new Response()
                 {
@@ -119,10 +119,10 @@ namespace RemsNG.Controllers
             }
             if (!ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
             {
-                role.domainId = ClaimExtension.GetDomainId(User.Claims.ToArray());
+                role.DomainId = ClaimExtension.GetDomainId(User.Claims.ToArray());
             }
 
-            if (role.domainId == Guid.Empty)
+            if (role.DomainId == Guid.Empty)
             {
                 return new HttpMessageResult(new Response()
                 {
@@ -130,8 +130,8 @@ namespace RemsNG.Controllers
                     description = "User Domain can not be found.. Please log in again"
                 }, 403);
             }
-            role.id = Guid.NewGuid();
-            role.roleStatus = UserStatus.ACTIVE.ToString();
+            role.Id = Guid.NewGuid();
+            role.RoleStatus = UserStatus.ACTIVE.ToString();
 
             bool result = await roleservice.Add(role);
             if (result)
@@ -139,7 +139,7 @@ namespace RemsNG.Controllers
                 return Created("/role", new Response()
                 {
                     code = MsgCode_Enum.SUCCESS,
-                    description = $"{role.roleName} have been added successfully"
+                    description = $"{role.RoleName} have been added successfully"
                 });
             }
             else
@@ -155,9 +155,9 @@ namespace RemsNG.Controllers
         [Route("update")]
         [RemsRequirementAttribute("UPDATE_ROLES")]
         [HttpPost]
-        public async Task<object> Update([FromBody] Role role)
+        public async Task<object> Update([FromBody] RoleModel role)
         {
-            if (string.IsNullOrEmpty(role.roleName))
+            if (string.IsNullOrEmpty(role.RoleName))
             {
                 return BadRequest(new Response()
                 {
@@ -166,7 +166,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            if (role.domainId == Guid.Empty)
+            if (role.DomainId == Guid.Empty)
             {
                 return NotFound(new Response()
                 {
@@ -175,7 +175,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            if (role.id == Guid.Empty)
+            if (role.Id == Guid.Empty)
             {
                 return NotFound(new Response()
                 {
@@ -206,9 +206,9 @@ namespace RemsNG.Controllers
         [Route("changestatus")]
         [RemsRequirementAttribute("CHANGE_STATUS")]
         [HttpPost]
-        public async Task<object> ChangeStatus([FromBody] Role role)
+        public async Task<object> ChangeStatus([FromBody] RoleModel role)
         {
-            if (role.id == Guid.Empty)
+            if (role.Id == Guid.Empty)
             {
                 return BadRequest(new Response()
                 {
@@ -216,7 +216,7 @@ namespace RemsNG.Controllers
                     description = "Selected role is invalid"
                 });
             }
-            else if (string.IsNullOrEmpty(role.roleStatus))
+            else if (string.IsNullOrEmpty(role.RoleStatus))
             {
                 return BadRequest(new Response()
                 {
@@ -225,7 +225,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            var r = await roleservice.GetById(role.id);
+            var r = await roleservice.GetById(role.Id);
             if (r == null)
             {
                 return NotFound(new Response()
@@ -234,7 +234,7 @@ namespace RemsNG.Controllers
                     description = "Role not found"
                 });
             }
-            else if (r.roleStatus == role.roleStatus)
+            else if (r.roleStatus == role.RoleStatus)
             {
                 return Ok(new Response()
                 {
@@ -265,9 +265,9 @@ namespace RemsNG.Controllers
         [Route("assignrole")]
         [RemsRequirementAttribute("ASSIGN_ROLES")]
         [HttpPost]
-        public async Task<object> AssignRoleToUser([FromBody] UserRole userRole)
+        public async Task<object> AssignRoleToUser([FromBody] UserRoleModel userRole)
         {
-            var role = await roleservice.GetById(userRole.roleid);
+            var role = await roleservice.GetById(userRole.RoleId);
             if (role == null)
             {
                 return BadRequest(new Response()
@@ -284,7 +284,7 @@ namespace RemsNG.Controllers
                     description = "Selected role is not active"
                 });
             }
-            RoleExtension roleex = await roleservice.UserDomainRolesByDomainId(userRole.userid, role.domainId);
+            RoleExtensionModel roleex = await roleservice.UserDomainRolesByDomainId(userRole.UserId, role.domainId);
 
             if (roleex != null)
             {
@@ -295,7 +295,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            UserRole ur = await roleservice.GetUserRoleAsync(userRole.userid, userRole.roleid);
+            UserRoleModel ur = await roleservice.GetUserRoleAsync(userRole.UserId, userRole.RoleId);
             if (ur != null)
             {
                 return new HttpMessageResult(new Response()
@@ -327,9 +327,9 @@ namespace RemsNG.Controllers
         [Route("assignroletopermission")]
         [RemsRequirementAttribute("MANAGE_PERMISSION")]
         [HttpPost]
-        public async Task<object> AssignPermissionToRole([FromBody] RolePermission rolePermission)
+        public async Task<object> AssignPermissionToRole([FromBody] RolePermissionModel rolePermission)
         {
-            if (rolePermission.permissionId == Guid.Empty)
+            if (rolePermission.PermissionId == Guid.Empty)
             {
                 return new HttpMessageResult(new Response()
                 {
@@ -337,7 +337,7 @@ namespace RemsNG.Controllers
                     description = "Permission is required"
                 }, 409);
             }
-            else if (rolePermission.roleId == Guid.Empty)
+            else if (rolePermission.RoleId == Guid.Empty)
             {
                 return new HttpMessageResult(new Response()
                 {
@@ -345,7 +345,7 @@ namespace RemsNG.Controllers
                     description = "Role is required"
                 }, 409);
             }
-            RolePermission pem = await permissionService.ByPermissionAndRoleId(rolePermission);
+            RolePermissionModel pem = await permissionService.ByPermissionAndRoleId(rolePermission);
             if (pem != null)
             {
                 return new HttpMessageResult(new Response()
@@ -377,9 +377,9 @@ namespace RemsNG.Controllers
         [Route("removerolepermission")]
         [RemsRequirementAttribute("MANAGE_PERMISSION")]
         [HttpPost]
-        public async Task<object> removeRolePermission([FromBody] RolePermission rolePermission)
+        public async Task<object> removeRolePermission([FromBody] RolePermissionModel rolePermission)
         {
-            if (rolePermission.permissionId == Guid.Empty)
+            if (rolePermission.PermissionId == Guid.Empty)
             {
                 return new HttpMessageResult(new Response()
                 {
@@ -387,7 +387,7 @@ namespace RemsNG.Controllers
                     description = "Permission is required"
                 }, 409);
             }
-            else if (rolePermission.roleId == Guid.Empty)
+            else if (rolePermission.RoleId == Guid.Empty)
             {
                 return new HttpMessageResult(new Response()
                 {
@@ -396,7 +396,7 @@ namespace RemsNG.Controllers
                 }, 409);
             }
 
-            RolePermission pem = await permissionService.ByPermissionAndRoleId(rolePermission);
+            RolePermissionModel pem = await permissionService.ByPermissionAndRoleId(rolePermission);
             if (pem == null)
             {
                 return new HttpMessageResult(new Response()
@@ -430,7 +430,7 @@ namespace RemsNG.Controllers
         [HttpGet]
         public async Task<object> Get([FromRoute] Guid id)
         {
-            RoleExtension role = await roleservice.GetById(id);
+            RoleExtensionModel role = await roleservice.GetById(id);
             if (role == null)
             {
                 return NotFound(new Response()
@@ -456,8 +456,8 @@ namespace RemsNG.Controllers
                 });
             }
 
-            List<RoleExtension> roleExtensions = await roleservice.AllRoleByUserId(id);
-            Response response = new Models.Response();
+            List<RoleExtensionModel> roleExtensions = await roleservice.AllRoleByUserId(id);
+            Response response = new Response();
             response.code = MsgCode_Enum.SUCCESS;
             Guid domainId = ClaimExtension.GetDomainId(User.Claims.ToArray());
             if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
@@ -494,7 +494,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            RoleExtension roleExtension = await roleservice.UserDomainRolesByDomainId(userId, domainId);
+            RoleExtensionModel roleExtension = await roleservice.UserDomainRolesByDomainId(userId, domainId);
 
             return Ok(new Response()
             {
@@ -506,9 +506,9 @@ namespace RemsNG.Controllers
         [RemsRequirementAttribute("REMOVE_ROLE")]
         [HttpPost]
         [Route("remove")]
-        public async Task<object> RemoveRole([FromBody] UserRole userRole)
+        public async Task<object> RemoveRole([FromBody] UserRoleModel userRole)
         {
-            UserRole ur = await roleservice.GetUserRoleAsync(userRole.userid, userRole.roleid);
+            UserRoleModel ur = await roleservice.GetUserRoleAsync(userRole.UserId, userRole.RoleId);
             if (ur == null)
             {
                 return NotFound(new Response()

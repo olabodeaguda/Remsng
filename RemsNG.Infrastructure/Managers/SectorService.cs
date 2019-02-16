@@ -1,18 +1,13 @@
-﻿using RemsNG.Services.Interfaces;
+﻿using Microsoft.Extensions.Logging;
+using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using RemsNG.Models;
-using RemsNG.ORM;
-using Microsoft.Extensions.Logging;
-using RemsNG.Dao;
-using RemsNG.Common.Interfaces.Managers;
-using RemsNG.Data.Repository;
-using Remsng.Data;
-using RemsNG.Common.Models;
 
-namespace RemsNG.Services
+namespace RemsNG.Infrastructure.Managers
 {
     public class SectorManagers : ISectorManagers
     {

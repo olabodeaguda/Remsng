@@ -5,7 +5,7 @@ using RemsNG.Data.Repository;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace RemsNG.Services
+namespace RemsNG.Infrastructure.Managers
 {
     public class DemandNoticeItemManagers : IDemandNoticeItemManagers
     {

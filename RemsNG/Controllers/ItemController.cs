@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RemsNG.Services.Interfaces;
-using RemsNG.Models;
-using RemsNG.Utilities;
-using RemsNG.ORM;
-using Microsoft.AspNetCore.Authorization;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
 using RemsNG.Security;
+using System;
+using System.Threading.Tasks;
 
 namespace RemsNG.Controllers
 {
@@ -16,8 +13,8 @@ namespace RemsNG.Controllers
     [Route("api/v1/item")]
     public class ItemController : Controller
     {
-        IItemService itemService;
-        public ItemController(IItemService _itemService)
+        IItemManagers itemService;
+        public ItemController(IItemManagers _itemService)
         {
             itemService = _itemService;
         }
@@ -70,7 +67,7 @@ namespace RemsNG.Controllers
             pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
             return await itemService.ListByLcdaId(lcdaId, new PageModel() { PageNum = int.Parse(pageNum), PageSize = int.Parse(pageSize) });
         }
-        
+
         [HttpGet("{id}")]
         public async Task<object> Get(Guid id)
         {
@@ -97,9 +94,9 @@ namespace RemsNG.Controllers
 
         [RemsRequirementAttribute("REGISTER_ITEM")]
         [HttpPost]
-        public async Task<object> Post([FromBody]Item item)
+        public async Task<object> Post([FromBody]ItemModel item)
         {
-            if (string.IsNullOrEmpty(item.itemDescription))
+            if (string.IsNullOrEmpty(item.ItemDescription))
             {
                 return BadRequest(new Response()
                 {
@@ -107,7 +104,7 @@ namespace RemsNG.Controllers
                     description = "item Description is required"
                 });
             }
-            else if (item.lcdaId == default(Guid))
+            else if (item.LcdaId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -116,19 +113,19 @@ namespace RemsNG.Controllers
                 });
             }
 
-            item.createdBy = User.Identity.Name;
-            item.id = Guid.NewGuid();
-            item.itemStatus = UserStatus.ACTIVE.ToString();
+            item.CreatedBy = User.Identity.Name;
+            item.Id = Guid.NewGuid();
+            item.ItemStatus = UserStatus.ACTIVE.ToString();
 
             Response response = await itemService.Add(item);
 
             return Ok(response);
         }
-        
+
         [HttpPut("{id}")]
-        public async Task<object> Put(Guid id, [FromBody]Item item)
+        public async Task<object> Put(Guid id, [FromBody]ItemModel item)
         {
-            var tu = itemService.GetItemByIdAsync(item.id);
+            var tu = itemService.GetItemByIdAsync(item.Id);
             if (id == default(Guid))
             {
                 return BadRequest(new Response()
@@ -137,7 +134,7 @@ namespace RemsNG.Controllers
                     description = "Select item is corrupt. Please reload page and try again else contact administrator"
                 });
             }
-            else if (item.lcdaId == default(Guid))
+            else if (item.LcdaId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -145,7 +142,7 @@ namespace RemsNG.Controllers
                     description = "LCDA is required"
                 });
             }
-            else if (string.IsNullOrEmpty(item.itemDescription))
+            else if (string.IsNullOrEmpty(item.ItemDescription))
             {
                 return BadRequest(new Response()
                 {
@@ -154,19 +151,19 @@ namespace RemsNG.Controllers
                 });
             }
 
-            item.lastmodifiedby = User.Identity.Name;
-            item.lastModifiedDate = DateTime.Now;
+            item.Lastmodifiedby = User.Identity.Name;
+            item.LastModifiedDate = DateTime.Now;
 
             Response response = await itemService.Update(item);
 
             return (response);
         }
-        
+
         [Route("changestatus")]
         [HttpPost]
-        public async Task<object> ChangeStatus([FromBody] Item item)
+        public async Task<object> ChangeStatus([FromBody] ItemModel item)
         {
-            if (item.id == default(Guid))
+            if (item.Id == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -174,7 +171,7 @@ namespace RemsNG.Controllers
                     description = "Select item is corrupt. Please reload page and try again else contact administrator"
                 });
             }
-            else if (string.IsNullOrEmpty(item.itemStatus))
+            else if (string.IsNullOrEmpty(item.ItemStatus))
             {
                 return BadRequest(new Response()
                 {
@@ -183,8 +180,8 @@ namespace RemsNG.Controllers
                 });
             }
 
-            item.lastmodifiedby = User.Identity.Name;
-            item.lastModifiedDate = DateTime.Now;
+            item.Lastmodifiedby = User.Identity.Name;
+            item.LastModifiedDate = DateTime.Now;
 
             Response response = await itemService.UpdateStatus(item);
 

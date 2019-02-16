@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RemsNG.Models;
-using RemsNG.ORM;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
 using RemsNG.Security;
-using RemsNG.Services.Interfaces;
-using RemsNG.Utilities;
 using System;
 using System.Threading.Tasks;
 
@@ -16,9 +15,9 @@ namespace RemsNG.Controllers
     [Route("api/v1/itempenalty")]
     public class ItemPenaltyController : Controller
     {
-        private IItemPenaltyService itemPenaltyService;
-        private IItemService itemservice;
-        public ItemPenaltyController(IItemPenaltyService _itemPenaltyService, IItemService _itemservice)
+        private IItemPenaltyManagers itemPenaltyService;
+        private IItemManagers itemservice;
+        public ItemPenaltyController(IItemPenaltyManagers _itemPenaltyService, IItemManagers _itemservice)
         {
             itemPenaltyService = _itemPenaltyService;
             itemservice = _itemservice;
@@ -64,7 +63,8 @@ namespace RemsNG.Controllers
 
             pageSize = string.IsNullOrEmpty(pageSize) ? "20" : pageSize;
             pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
-            return await itemPenaltyService.ListByItemId(itemId, new PageModel() { PageNum = int.Parse(pageNum), PageSize = int.Parse(pageSize) });
+            return await itemPenaltyService.ListByItemId(itemId, new PageModel()
+            { PageNum = int.Parse(pageNum), PageSize = int.Parse(pageSize) });
         }
 
         // GET api/values/5
@@ -86,9 +86,9 @@ namespace RemsNG.Controllers
         [RemsRequirementAttribute("REGISTER_ITEM_PENALTY")]
         // POST api/values
         [HttpPost]
-        public async Task<object> Post([FromBody]ItemPenalty itemPenalty)
+        public async Task<object> Post([FromBody]ItemPenaltyModel itemPenalty)
         {
-            if (itemPenalty.itemId == default(Guid))
+            if (itemPenalty.ItemId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -96,7 +96,7 @@ namespace RemsNG.Controllers
                     description = "bad request"
                 });
             }
-            else if (string.IsNullOrEmpty(itemPenalty.duration))
+            else if (string.IsNullOrEmpty(itemPenalty.Duration))
             {
                 return BadRequest(new Response()
                 {
@@ -104,7 +104,7 @@ namespace RemsNG.Controllers
                     description = "Penalty duration required"
                 });
             }
-            else if (itemPenalty.amount < 0)
+            else if (itemPenalty.Amount < 0)
             {
                 return BadRequest(new Response()
                 {
@@ -113,18 +113,18 @@ namespace RemsNG.Controllers
                 });
             }
 
-            itemPenalty.createdBy = User.Identity.Name;
-            itemPenalty.dateCreated = DateTime.Now;
-            itemPenalty.penaltyStatus = UserStatus.ACTIVE.ToString();
+            itemPenalty.CreatedBy = User.Identity.Name;
+            itemPenalty.DateCreated = DateTime.Now;
+            itemPenalty.PenaltyStatus = UserStatus.ACTIVE.ToString();
             Response response = await itemPenaltyService.Add(itemPenalty);
 
             return Ok(response);
         }
 
         [HttpPut]
-        public async Task<object> Put([FromBody]ItemPenalty itemPenalty)
+        public async Task<object> Put([FromBody]ItemPenaltyModel itemPenalty)
         {
-            if (itemPenalty.itemId == default(Guid) || itemPenalty.id == default(Guid))
+            if (itemPenalty.ItemId == default(Guid) || itemPenalty.Id == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -132,7 +132,7 @@ namespace RemsNG.Controllers
                     description = "Bad request"
                 });
             }
-            else if (string.IsNullOrEmpty(itemPenalty.duration))
+            else if (string.IsNullOrEmpty(itemPenalty.Duration))
             {
                 return BadRequest(new Response()
                 {
@@ -140,7 +140,7 @@ namespace RemsNG.Controllers
                     description = "Penalty duration required"
                 });
             }
-            else if (itemPenalty.amount < 0)
+            else if (itemPenalty.Amount < 0)
             {
                 return BadRequest(new Response()
                 {
@@ -156,9 +156,9 @@ namespace RemsNG.Controllers
 
         [Route("changestatus")]
         [HttpPost]
-        public async Task<object> ChangeStatus([FromBody]ItemPenalty itemPenalty)
+        public async Task<object> ChangeStatus([FromBody]ItemPenaltyModel itemPenalty)
         {
-            if (itemPenalty.id == default(Guid))
+            if (itemPenalty.Id == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -166,7 +166,7 @@ namespace RemsNG.Controllers
                     description = "Bad request"
                 });
             }
-            else if (string.IsNullOrEmpty(itemPenalty.penaltyStatus))
+            else if (string.IsNullOrEmpty(itemPenalty.PenaltyStatus))
             {
                 return BadRequest(new Response()
                 {

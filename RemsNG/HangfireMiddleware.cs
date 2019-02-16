@@ -1,7 +1,7 @@
 ﻿using Hangfire;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using RemsNG.Services.Interfaces;
+using RemsNG.Common.Interfaces.Managers;
 using System;
 using System.Threading.Tasks;
 
@@ -17,7 +17,7 @@ namespace RemsNG
         }
 
         public async Task Invoke(HttpContext context, ILoggerFactory loggerFactory,
-            IRunDemandNoticeService runDemandNoticeService, ISyncService syncService)
+            IRunDemandNoticeManagers runDemandNoticeService)
         {
             logger = loggerFactory.CreateLogger("Recurring job scheduler");
 

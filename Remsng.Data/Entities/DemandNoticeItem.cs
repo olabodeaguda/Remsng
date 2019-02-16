@@ -21,7 +21,7 @@ namespace RemsNG.Data.Entities
         public string Lastmodifiedby { get; set; }
         public DateTime? LastModifiedDate { get; set; }
 
-        public virtual Demandnotice DnTaxpayersDetails { get; set; }
+        public virtual DemandNotice DnTaxpayersDetails { get; set; }
         public virtual Item Item { get; set; }
     }
 }

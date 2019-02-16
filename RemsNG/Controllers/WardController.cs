@@ -1,24 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
+using RemsNG.Infrastructure.Extensions;
+using RemsNG.Security;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using RemsNG.Utilities;
-using RemsNG.Services.Interfaces;
-using System.Security.Claims;
-using RemsNG.Models;
-using RemsNG.ORM;
-using RemsNG.Security;
-using Microsoft.AspNetCore.Authorization;
 
 namespace RemsNG.Controllers
 {
     [Route("api/v1/ward")]
     public class WardController : Controller
     {
-        private readonly ILcdaService lcdaService;
-        private readonly IWardService wardService;
-        public WardController(IWardService _wardservice, ILcdaService _lcdaService)
+        private readonly ILcdaManagers lcdaService;
+        private readonly IWardManagers wardService;
+        public WardController(IWardManagers _wardservice, ILcdaManagers _lcdaService)
         {
             wardService = _wardservice;
             lcdaService = _lcdaService;
@@ -33,7 +31,7 @@ namespace RemsNG.Controllers
             if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
             {
                 var wards = await wardService.all();
-                return wards.OrderBy(x => x.wardName);
+                return wards.OrderBy(x => x.WardName);
             }
             else
             {
@@ -41,7 +39,7 @@ namespace RemsNG.Controllers
                 if (domainId != Guid.Empty)
                 {
                     var wards = await wardService.GetWardByLGDAId(domainId);
-                    return wards.OrderBy(x => x.wardName);
+                    return wards.OrderBy(x => x.WardName);
                 }
             }
 
@@ -91,9 +89,9 @@ namespace RemsNG.Controllers
 
         [RemsRequirementAttribute("ADD_WARD")]
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]Ward ward)
+        public async Task<IActionResult> Post([FromBody]WardModel ward)
         {
-            if (ward.lcdaId == default(Guid))
+            if (ward.LcdaId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -101,7 +99,7 @@ namespace RemsNG.Controllers
                     description = "Lgda is required!!"
                 });
             }
-            else if (string.IsNullOrEmpty(ward.wardName))
+            else if (string.IsNullOrEmpty(ward.WardName))
             {
                 return BadRequest(new Response()
                 {
@@ -109,7 +107,7 @@ namespace RemsNG.Controllers
                     description = "Ward name is required!!"
                 });
             }
-            Lgda lcda = await lcdaService.Get(ward.lcdaId);
+            LcdaModel lcda = await lcdaService.Get(ward.LcdaId);
             if (lcda == null)
             {
                 return BadRequest(new Response()
@@ -119,19 +117,19 @@ namespace RemsNG.Controllers
                 });
             }
 
-            Ward w = await wardService.GetWard(ward.wardName, ward.lcdaId);
+            WardModel w = await wardService.GetWard(ward.WardName, ward.LcdaId);
             if (w != null)
             {
                 return new HttpMessageResult(new Response()
                 {
                     code = MsgCode_Enum.DUPLICATE,
-                    description = $"{ward.wardName} already exist"
+                    description = $"{ward.WardName} already exist"
                 }, 409);
             }
-            ward.id = Guid.NewGuid();
-            ward.createdBy = User.Identity.Name;
-            ward.dateCreated = DateTime.Now;
-            ward.wardStatus = UserStatus.ACTIVE.ToString();
+            ward.Id = Guid.NewGuid();
+            ward.CreatedBy = User.Identity.Name;
+            ward.DateCreated = DateTime.Now;
+            ward.WardStatus = UserStatus.ACTIVE.ToString();
 
             bool result = await wardService.Add(ward);
             if (result)
@@ -139,7 +137,7 @@ namespace RemsNG.Controllers
                 return Ok(new Response()
                 {
                     code = MsgCode_Enum.SUCCESS,
-                    description = $"{ward.wardName} has been added successfully"
+                    description = $"{ward.WardName} has been added successfully"
                 });
             }
             else
@@ -155,9 +153,9 @@ namespace RemsNG.Controllers
         [RemsRequirementAttribute("UPDATE_WARD")]
         [Route("update")]
         [HttpPost]
-        public async Task<IActionResult> Update([FromBody] Ward ward)
+        public async Task<IActionResult> Update([FromBody] WardModel ward)
         {
-            if (string.IsNullOrEmpty(ward.wardName))
+            if (string.IsNullOrEmpty(ward.WardName))
             {
                 return BadRequest(new Response()
                 {
@@ -165,7 +163,7 @@ namespace RemsNG.Controllers
                     description = "Ward name is required"
                 });
             }
-            else if (default(Guid) == ward.id)
+            else if (default(Guid) == ward.Id)
             {
                 return BadRequest(new Response()
                 {
@@ -174,9 +172,9 @@ namespace RemsNG.Controllers
                 });
             }
 
-            ward.lastmodifiedBy = User.Identity.Name;
-            ward.lastModifiedDate = DateTime.Now;
-            bool result = await this.wardService.Update(ward);
+            ward.Lastmodifiedby = User.Identity.Name;
+            ward.LastModifiedDate = DateTime.Now;
+            bool result = await wardService.Update(ward);
             if (result)
             {
                 return Ok(new Response()

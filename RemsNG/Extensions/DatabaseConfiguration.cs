@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Remsng.Data;
 using RemsNG.Data;
 using RemsNG.ORM;
 

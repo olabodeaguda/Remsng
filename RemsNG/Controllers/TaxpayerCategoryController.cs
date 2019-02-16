@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using RemsNG.Services.Interfaces;
-using RemsNG.Models;
-using RemsNG.Utilities;
-using RemsNG.ORM;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
 using RemsNG.Security;
+using System;
+using System.Threading.Tasks;
 
 namespace RemsNG.Controllers
 {
@@ -16,8 +13,8 @@ namespace RemsNG.Controllers
     [Route("api/v1/taxpayercategory")]
     public class TaxpayerCategoryController : Controller
     {
-        private ITaxpayerCategoryService taxpayerCategoryService;
-        public TaxpayerCategoryController(ITaxpayerCategoryService _taxpayerCategoryService)
+        private ITaxpayerCategoryManagers taxpayerCategoryService;
+        public TaxpayerCategoryController(ITaxpayerCategoryManagers _taxpayerCategoryService)
         {
             taxpayerCategoryService = _taxpayerCategoryService;
         }
@@ -69,9 +66,9 @@ namespace RemsNG.Controllers
         [RemsRequirementAttribute("REGISTER_TAXPAYER")]
         // POST api/values
         [HttpPost]
-        public async Task<object> Post([FromBody]TaxpayerCategory taxpayerCategory)
+        public async Task<object> Post([FromBody]TaxpayerCategoryModel taxpayerCategory)
         {
-            if (string.IsNullOrEmpty(taxpayerCategory.taxpayerCategoryName))
+            if (string.IsNullOrEmpty(taxpayerCategory.TaxpayerCategoryName))
             {
                 return BadRequest(new Response()
                 {
@@ -79,7 +76,7 @@ namespace RemsNG.Controllers
                     description = "Category name is required!!"
                 });
             }
-            else if (taxpayerCategory.lcdaId == default(Guid))
+            else if (taxpayerCategory.LcdaId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -88,17 +85,17 @@ namespace RemsNG.Controllers
                 });
             }
 
-            taxpayerCategory.createdBy = User.Identity.Name;
-            taxpayerCategory.dateCreated = DateTime.Now;
-            taxpayerCategory.id = Guid.NewGuid();
+            taxpayerCategory.CreatedBy = User.Identity.Name;
+            taxpayerCategory.DateCreated = DateTime.Now;
+            taxpayerCategory.Id = Guid.NewGuid();
 
-            var r = await taxpayerCategoryService.GetByNameAndLcdaId(taxpayerCategory.lcdaId, taxpayerCategory.taxpayerCategoryName);
+            var r = await taxpayerCategoryService.GetByNameAndLcdaId(taxpayerCategory.LcdaId, taxpayerCategory.TaxpayerCategoryName);
             if (r != null)
             {
                 return new HttpMessageResult(new Response()
                 {
                     code = MsgCode_Enum.DUPLICATE,
-                    description = $" Category {taxpayerCategory.taxpayerCategoryName} already exist"
+                    description = $" Category {taxpayerCategory.TaxpayerCategoryName} already exist"
                 }, 409);
             }
 
@@ -107,19 +104,19 @@ namespace RemsNG.Controllers
         }
 
         [HttpPut]
-        public async Task<object> Put([FromBody]TaxpayerCategory taxpayerCategory)
+        public async Task<object> Put([FromBody]TaxpayerCategoryModel taxpayerCategory)
         {
-            var r = await taxpayerCategoryService.GetById(taxpayerCategory.id);
+            var r = await taxpayerCategoryService.GetById(taxpayerCategory.Id);
             if (r == null)
             {
                 return NotFound(new Response()
                 {
                     code = MsgCode_Enum.DUPLICATE,
-                    description = $"{taxpayerCategory.taxpayerCategoryName} not found"
+                    description = $"{taxpayerCategory.TaxpayerCategoryName} not found"
                 });
             }
 
-            if (string.IsNullOrEmpty(taxpayerCategory.taxpayerCategoryName))
+            if (string.IsNullOrEmpty(taxpayerCategory.TaxpayerCategoryName))
             {
                 return BadRequest(new Response()
                 {
@@ -127,7 +124,7 @@ namespace RemsNG.Controllers
                     description = "Category name is required!!"
                 });
             }
-            else if (taxpayerCategory.lcdaId == default(Guid))
+            else if (taxpayerCategory.LcdaId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -135,7 +132,7 @@ namespace RemsNG.Controllers
                     description = "LCDA is required!!"
                 });
             }
-            else if (taxpayerCategory.id == Guid.Empty)
+            else if (taxpayerCategory.Id == Guid.Empty)
             {
                 return BadRequest(new Response()
                 {
@@ -144,8 +141,8 @@ namespace RemsNG.Controllers
                 });
             }
 
-            taxpayerCategory.lastModifiedDate = DateTime.Now;
-            taxpayerCategory.lastmodifiedby = User.Identity.Name;
+            taxpayerCategory.LastModifiedDate = DateTime.Now;
+            taxpayerCategory.Lastmodifiedby = User.Identity.Name;
 
             Response response = await taxpayerCategoryService.Update(taxpayerCategory);
 

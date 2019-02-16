@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RemsNG.Exceptions;
-using RemsNG.Models;
-using RemsNG.Services.Interfaces;
-using RemsNG.Utilities;
+using RemsNG.Common.Exceptions;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
 using System;
 using System.Threading.Tasks;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace RemsNG.Controllers
 {
@@ -15,10 +14,10 @@ namespace RemsNG.Controllers
     [Route("api/v1/dnt")]
     public class DemandNoticeTaxpayerController : Controller
     {
-        private IDnTaxpayer dnTaxpayer;
-        private IDemandNoticeTaxpayerService demandNoticeTaxpayerService;
-        public DemandNoticeTaxpayerController(IDnTaxpayer _dnTaxpayer,
-            IDemandNoticeTaxpayerService _demandNoticeTaxpayerService)
+        private IDnTaxpayerManagers dnTaxpayer;
+        private IDemandNoticeTaxpayerManagers demandNoticeTaxpayerService;
+        public DemandNoticeTaxpayerController(IDnTaxpayerManagers _dnTaxpayer,
+            IDemandNoticeTaxpayerManagers _demandNoticeTaxpayerService)
         {
             dnTaxpayer = _dnTaxpayer;
             demandNoticeTaxpayerService = _demandNoticeTaxpayerService;
@@ -31,7 +30,7 @@ namespace RemsNG.Controllers
             {
                 return BadRequest(new Response()
                 {
-                    code = Utilities.MsgCode_Enum.INVALID_PARAMETER_PASSED,
+                    code = MsgCode_Enum.INVALID_PARAMETER_PASSED,
                     description = "Billing number is required"
                 });
             }
@@ -39,7 +38,7 @@ namespace RemsNG.Controllers
 
             return Ok(new Response()
             {
-                code = Utilities.MsgCode_Enum.SUCCESS,
+                code = MsgCode_Enum.SUCCESS,
                 data = new object[] { tu }
             });
         }
@@ -56,7 +55,7 @@ namespace RemsNG.Controllers
             {
                 throw new InvalidCredentialsException("Batch number is required");
             }
-            return await dnTaxpayer.GetDNTaxpayerByBatchIdAsync(batchno, new Models.PageModel()
+            return await dnTaxpayer.GetDNTaxpayerByBatchIdAsync(batchno, new PageModel()
             {
                 PageNum = int.Parse(pageNum),
                 PageSize = int.Parse(pageSize)
@@ -129,7 +128,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            if (!r.isUnbilled)
+            if (!r.IsUnbilled.Value)
             {
                 return BadRequest(new Response()
                 {
@@ -175,7 +174,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            if (r.isUnbilled)
+            if (r.IsUnbilled.Value)
             {
                 return BadRequest(new Response()
                 {

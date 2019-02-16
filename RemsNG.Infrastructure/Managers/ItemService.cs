@@ -5,7 +5,7 @@ using RemsNG.Data.Repository;
 using System;
 using System.Threading.Tasks;
 
-namespace RemsNG.Services
+namespace RemsNG.Infrastructure.Managers
 {
     public class ItemManagers : IItemManagers
     {

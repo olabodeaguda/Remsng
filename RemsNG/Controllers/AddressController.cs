@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RemsNG.Services.Interfaces;
-using RemsNG.ORM;
-using RemsNG.Models;
-using RemsNG.Utilities;
-using Microsoft.AspNetCore.Authorization;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
+using System;
+using System.Threading.Tasks;
 
 namespace RemsNG.Controllers
 {
@@ -15,9 +12,9 @@ namespace RemsNG.Controllers
     [Route("api/v1/address")]
     public class AddressController : Controller
     {
-        private IAddress addressservice;
+        private IAddressManagers addressservice;
 
-        public AddressController(IAddress _addressservice)
+        public AddressController(IAddressManagers _addressservice)
         {
             addressservice = _addressservice;
         }
@@ -45,9 +42,9 @@ namespace RemsNG.Controllers
 
         // POST api/values
         [HttpPost]
-        public async Task<object> Post([FromBody]Address address)
+        public async Task<object> Post([FromBody]AddressModel address)
         {
-            if (string.IsNullOrEmpty(address.addressnumber))
+            if (string.IsNullOrEmpty(address.Addressnumber))
             {
                 return BadRequest(new Response()
                 {
@@ -55,7 +52,7 @@ namespace RemsNG.Controllers
                     description = "Address number is required"
                 });
             }
-            else if (address.lcdaid == default(Guid))
+            else if (address.Lcdaid == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -63,7 +60,7 @@ namespace RemsNG.Controllers
                     description = "Bad request"
                 });
             }
-            else if (address.ownerId == default(Guid))
+            else if (address.OwnerId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -71,7 +68,7 @@ namespace RemsNG.Controllers
                     description = "Bad request"
                 });
             }
-            else if (address.streetId == default(Guid))
+            else if (address.StreetId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -80,9 +77,9 @@ namespace RemsNG.Controllers
                 });
             }
 
-            address.createdBy = User.Identity.Name;
-            address.dateCreated = DateTime.Now;
-            address.id = Guid.NewGuid();
+            address.CreatedBy = User.Identity.Name;
+            address.DateCreated = DateTime.Now;
+            address.Id = Guid.NewGuid();
 
             Response resp = await addressservice.Add(address);
             if (resp.code == MsgCode_Enum.SUCCESS)
@@ -98,9 +95,9 @@ namespace RemsNG.Controllers
 
         // PUT api/values/5
         [HttpPut]
-        public async Task<object> Put([FromBody]Address address)
+        public async Task<object> Put([FromBody]AddressModel address)
         {
-            if (string.IsNullOrEmpty(address.addressnumber))
+            if (string.IsNullOrEmpty(address.Addressnumber))
             {
                 return BadRequest(new Response()
                 {
@@ -108,7 +105,7 @@ namespace RemsNG.Controllers
                     description = "Address number is required"
                 });
             }
-            else if (address.lcdaid == default(Guid))
+            else if (address.Lcdaid == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -116,7 +113,7 @@ namespace RemsNG.Controllers
                     description = "Bad request"
                 });
             }
-            else if (address.ownerId == default(Guid))
+            else if (address.OwnerId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -124,7 +121,7 @@ namespace RemsNG.Controllers
                     description = "Bad request"
                 });
             }
-            else if (address.streetId == default(Guid))
+            else if (address.StreetId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -132,7 +129,7 @@ namespace RemsNG.Controllers
                     description = "Bad request"
                 });
             }
-            else if (address.id == default(Guid))
+            else if (address.Id == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -141,8 +138,8 @@ namespace RemsNG.Controllers
                 });
             }
 
-            address.lastmodifiedby = User.Identity.Name;
-            address.lastModifiedDate = DateTime.Now;
+            address.Lastmodifiedby = User.Identity.Name;
+            address.LastModifiedDate = DateTime.Now;
 
             Response response = await addressservice.Update(address);
             if (response.code == MsgCode_Enum.SUCCESS)
@@ -167,7 +164,7 @@ namespace RemsNG.Controllers
                     description = "Bad request"
                 });
             }
-            Address address = await addressservice.ById(id);
+            AddressModel address = await addressservice.ById(id);
             if (address == null)
             {
                 return NotFound(new Response()

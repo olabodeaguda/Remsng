@@ -3,7 +3,7 @@ using RemsNG.Common.Models;
 using System;
 using System.Threading.Tasks;
 
-namespace RemsNG.Services.Interfaces
+namespace RemsNG.Infrastructure.Managers
 {
     public class DemandNoticeChargesManagers : IDemandNoticeChargesManagers
     {

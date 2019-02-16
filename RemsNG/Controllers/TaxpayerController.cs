@@ -2,11 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using RemsNG.Models;
-using RemsNG.ORM;
-using RemsNG.Security;
-using RemsNG.Services.Interfaces;
-using RemsNG.Utilities;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
+using RemsNG.Infrastructure.Extensions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,16 +18,16 @@ namespace RemsNG.Controllers
     [Route("api/v1/taxpayer")]
     public class TaxpayerController : Controller
     {
-        private ITaxpayerService taxpayerService;
-        private ILcdaService lcdaService;
+        private ITaxpayerManagers taxpayerService;
+        private ILcdaManagers lcdaService;
         private ILogger logger;
-        private IAddress addressservice;
-        private ICompany companyService;
-        private IStreetService streetservice;
-        public TaxpayerController(ITaxpayerService _taxpayerService, ILcdaService _lcdaService,
-            ILoggerFactory _logger, IAddress address,
-            ICompany _companyservice,
-            IStreetService _streetservice)
+        private IAddressManagers addressservice;
+        private ICompanyManagers companyService;
+        private IStreetManagers streetservice;
+        public TaxpayerController(ITaxpayerManagers _taxpayerService, ILcdaManagers _lcdaService,
+            ILoggerFactory _logger, IAddressManagers address,
+            ICompanyManagers _companyservice,
+            IStreetManagers _streetservice)
         {
             taxpayerService = _taxpayerService;
             lcdaService = _lcdaService;
@@ -175,9 +174,9 @@ namespace RemsNG.Controllers
         }
 
         [HttpPost]
-        public async Task<object> Post([FromBody]Taxpayer value, [FromHeader] string confirmcompany)
+        public async Task<object> Post([FromBody]TaxPayerModel value, [FromHeader] string confirmcompany)
         {
-            if (value.streetId == default(Guid))
+            if (value.StreetId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -185,7 +184,7 @@ namespace RemsNG.Controllers
                     description = "Street is required"
                 });
             }
-            else if (value.companyId == default(Guid))
+            else if (value.CompanyId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -193,7 +192,7 @@ namespace RemsNG.Controllers
                     description = "Company is required"
                 });
             }
-            else if (string.IsNullOrEmpty(value.streetNumber))
+            else if (string.IsNullOrEmpty(value.StreetNumber))
             {
                 return BadRequest(new Response()
                 {
@@ -202,7 +201,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            Company company = await companyService.ById(value.companyId);
+            CompanyModel company = await companyService.ById(value.CompanyId);
             if (company == null)
             {
                 return BadRequest(new Response()
@@ -212,7 +211,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            Street street = await streetservice.ById(value.streetId);
+            StreetModel street = await streetservice.ById(value.StreetId.Value);
             if (street == null)
             {
                 return BadRequest(new Response()
@@ -233,32 +232,32 @@ namespace RemsNG.Controllers
             //    });
             //}
 
-            Lgda lgda = await lcdaService.ByStreet(value.streetId);
+            LcdaModel lgda = await lcdaService.ByStreet(value.StreetId.Value);
 
             if (lgda == null)
             {
-                logger.LogError($"Application could not get lcda for the street {value.streetId}");
+                logger.LogError($"Application could not get lcda for the street {value.StreetId.Value}");
                 return BadRequest(new Response()
                 {
                     code = MsgCode_Enum.FAIL,
                     description = "An error occur while trying to retrieve taxpayers lcda"
                 });
             }
-            value.id = Guid.NewGuid();
+            value.Id = Guid.NewGuid();
 
-            Address address = new Address()
+            AddressModel address = new AddressModel()
             {
-                id = Guid.NewGuid(),
-                addressnumber = value.streetNumber,
-                lcdaid = lgda.id,
-                streetId = value.streetId,
-                createdBy = User.Identity.Name,
-                ownerId = value.id
+                Id = Guid.NewGuid(),
+                Addressnumber = value.StreetNumber,
+                Lcdaid = lgda.Id,
+                StreetId = value.StreetId.Value,
+                CreatedBy = User.Identity.Name,
+                OwnerId = value.Id
             };
 
-            value.createdBy = User.Identity.Name;
-            value.taxpayerStatus = "ACTIVE";
-            value.addressId = address.id;
+            value.CreatedBy = User.Identity.Name;
+            value.TaxpayerStatus = "ACTIVE";
+            value.AddressId = address.Id;
 
             Response response = await taxpayerService.Create(value, (confirmcompany.ToLower() == "true" ? true : false));
 
@@ -281,7 +280,7 @@ namespace RemsNG.Controllers
         }
 
         [HttpPut]
-        public async Task<object> Put([FromBody]TaxpayerExtension taxpayerExtension)
+        public async Task<object> Put([FromBody]TaxpayerExtensionModel taxpayerExtension)
         {
             if (taxpayerExtension.id == default(Guid) || taxpayerExtension.addressId == default(Guid)
                 || taxpayerExtension.companyId == default(Guid))
@@ -301,7 +300,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            Address address = await addressservice.ById(taxpayerExtension.addressId);
+            AddressModel address = await addressservice.ById(taxpayerExtension.addressId);
             if (address == null)
             {
                 logger.LogError($"Not Found" + JsonConvert.SerializeObject(address));
@@ -312,7 +311,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            TaxpayerExtension te = await taxpayerService.ById(taxpayerExtension.id);
+            TaxpayerExtensionModel te = await taxpayerService.ById(taxpayerExtension.id);
             if (te == null)
             {
                 return BadRequest(new Response()
@@ -322,15 +321,15 @@ namespace RemsNG.Controllers
                 });
             }
             int sucessCount = 0;
-            if (address.addressnumber != taxpayerExtension.streetNumber || taxpayerExtension.companyId != te.companyId
+            if (address.Addressnumber != taxpayerExtension.streetNumber || taxpayerExtension.companyId != te.companyId
                 || taxpayerExtension.firstname != te.firstname ||
                     taxpayerExtension.lastname != te.lastname || taxpayerExtension.surname != te.surname)
             {
-                if (address.addressnumber != taxpayerExtension.streetNumber)
+                if (address.Addressnumber != taxpayerExtension.streetNumber)
                 {
-                    address.addressnumber = taxpayerExtension.streetNumber;
-                    address.lastModifiedDate = DateTime.Now;
-                    address.lastmodifiedby = User.Identity.Name;
+                    address.Addressnumber = taxpayerExtension.streetNumber;
+                    address.LastModifiedDate = DateTime.Now;
+                    address.Lastmodifiedby = User.Identity.Name;
                     Response addressResp = await addressservice.Update(address);
                     if (addressResp.code != MsgCode_Enum.SUCCESS)
                     {
@@ -350,17 +349,17 @@ namespace RemsNG.Controllers
                 if (taxpayerExtension.companyId != te.companyId || taxpayerExtension.firstname != te.firstname ||
                     taxpayerExtension.lastname != te.lastname || taxpayerExtension.surname != te.surname)
                 {
-                    Response tsResponse = await taxpayerService.Update(new Taxpayer()
+                    Response tsResponse = await taxpayerService.Update(new TaxPayerModel()
                     {
-                        addressId = te.addressId,
-                        companyId = taxpayerExtension.companyId,
-                        id = taxpayerExtension.id,
-                        lastmodifiedby = User.Identity.Name,
-                        lastModifiedDate = DateTime.Now,
-                        streetId = taxpayerExtension.streetId,
-                        firstname = taxpayerExtension.firstname,
-                        lastname = taxpayerExtension.lastname,
-                        surname = taxpayerExtension.surname
+                        AddressId = te.addressId,
+                        CompanyId = taxpayerExtension.companyId,
+                        Id = taxpayerExtension.id,
+                        Lastmodifiedby = User.Identity.Name,
+                        LastModifiedDate = DateTime.Now,
+                        StreetId = taxpayerExtension.streetId,
+                        Firstname = taxpayerExtension.firstname,
+                        Lastname = taxpayerExtension.lastname,
+                        Surname = taxpayerExtension.surname
                     });
 
                     if (tsResponse.code != MsgCode_Enum.SUCCESS)

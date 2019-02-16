@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using RemsNG.ORM;
-using RemsNG.Models;
-using RemsNG.Exceptions;
-using RemsNG.Utilities;
-using Microsoft.AspNetCore.Hosting;
-using System.IO;
-using RemsNG.Services.Interfaces;
 using Microsoft.Extensions.Logging;
+using RemsNG.Common.Exceptions;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
 using RemsNG.Security;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,18 +19,18 @@ namespace RemsNG.Controllers
     public class MediaController : Controller
     {
         private IHostingEnvironment hostingEnvironment;
-        private IImageService imageService;
+        private IImageManagers imageService;
         private readonly ILogger logger;
-        public MediaController(IHostingEnvironment _hostingEnvironment, 
-            IImageService _imageService, ILoggerFactory loggerFactory)
+        public MediaController(IHostingEnvironment _hostingEnvironment,
+            IImageManagers _imageService, ILoggerFactory loggerFactory)
         {
-            this.hostingEnvironment = _hostingEnvironment;
-            this.imageService = _imageService;
+            hostingEnvironment = _hostingEnvironment;
+            imageService = _imageService;
         }
 
         // GET api/values/5
         [HttpGet("ownerid/{id}")]
-        public async Task<List<Images>> ByOwnerId(Guid id)
+        public async Task<List<ImagesModel>> ByOwnerId(Guid id)
         {
             return await imageService.ByOwnerId(id);
         }
@@ -45,9 +43,9 @@ namespace RemsNG.Controllers
             {
                 throw new InvalidCredentialsException("Image is required!!!");
             }
-            int dotIndex = img.imgFilename.IndexOf('.');
-            img.imgFilename = $"{img.imgType}{DateTime.Now.Ticks}.{img.imgFilename.Substring(dotIndex + 1)}".ToLower();// img.imgFilename.Substring(dotIndex+1) img.imgFilename.Insert(dotIndex - 1, DateTime.Now.ToString("ddmmyyyyhhmmss"));
-            string filePath = Path.Combine(this.hostingEnvironment.WebRootPath, "images", img.imgFilename);
+            int dotIndex = img.ImgFilename.IndexOf('.');
+            img.ImgFilename = $"{img.ImgType}{DateTime.Now.Ticks}.{img.ImgFilename.Substring(dotIndex + 1)}".ToLower();// img.imgFilename.Substring(dotIndex+1) img.imgFilename.Insert(dotIndex - 1, DateTime.Now.ToString("ddmmyyyyhhmmss"));
+            string filePath = Path.Combine(hostingEnvironment.WebRootPath, "images", img.ImgFilename);
             bool result = false;
             await Task.Run(() =>
             {
@@ -57,8 +55,8 @@ namespace RemsNG.Controllers
 
             if (result)
             {
-                img.id = Guid.NewGuid();
-                img.createdBy = User.Identity.Name;
+                img.Id = Guid.NewGuid();
+                img.CreatedBy = User.Identity.Name;
                 Response response = await imageService.Add(img);
                 if (response.code == MsgCode_Enum.SUCCESS)
                 {

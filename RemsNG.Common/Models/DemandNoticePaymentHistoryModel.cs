@@ -22,5 +22,6 @@ namespace RemsNG.Common.Models
         public bool SyncStatus { get; set; }
         public bool IsWaiver { get; set; }
         public decimal TotalBillAmount { get; set; }
+        public string BankName { get; set; }
     }
 }

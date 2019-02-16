@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RemsNG.Models;
-using RemsNG.Exceptions;
-using RemsNG.Services.Interfaces;
-using RemsNG.ORM;
+using RemsNG.Common.Exceptions;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
 using RemsNG.Security;
-using Microsoft.AspNetCore.Authorization;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,8 +16,8 @@ namespace RemsNG.Controllers
     [Route("api/v1/amountdue")]
     public class DNAmountDueMgtController : Controller
     {
-        private IDNAmountDueMgtService amountDueMgtService;
-        public DNAmountDueMgtController(IDNAmountDueMgtService _amountDueMgtService)
+        private IDNAmountDueMgtManagers amountDueMgtService;
+        public DNAmountDueMgtController(IDNAmountDueMgtManagers _amountDueMgtService)
         {
             amountDueMgtService = _amountDueMgtService;
         }
@@ -49,7 +47,7 @@ namespace RemsNG.Controllers
         {
             if (value.id == Guid.NewGuid())
             {
-                throw new InvalidCredentialsException("Invalid request, identity number is required"); 
+                throw new InvalidCredentialsException("Invalid request, identity number is required");
             }
 
             if (value.itemAmount < 0)
@@ -60,7 +58,7 @@ namespace RemsNG.Controllers
             Response response = await amountDueMgtService.UpdateAmount(value);
 
             return Ok(response);
-          
+
         }
 
         // PUT api/values/5

@@ -65,9 +65,19 @@ namespace RemsNG.Data.Repository
             }).ToList();
         }
 
-        public async Task<bool> Add(Ward ward)
+        public async Task<bool> Add(WardModel ward)
         {
-            db.Wards.Add(ward);
+            db.Wards.Add(new Ward()
+            {
+                CreatedBy = ward.CreatedBy,
+                DateCreated = ward.DateCreated,
+                Id = ward.Id,
+                Lastmodifiedby = ward.Lastmodifiedby,
+                LastModifiedDate = ward.LastModifiedDate,
+                LcdaId = ward.LcdaId,
+                WardName = ward.WardName,
+                WardStatus = ward.WardStatus
+            });
             int count = await db.SaveChangesAsync();
             if (count > 0)
             {
@@ -178,7 +188,7 @@ namespace RemsNG.Data.Repository
             }).ToList();
         }
 
-        public async Task<bool> Update(Ward ward)
+        public async Task<bool> Update(WardModel ward)
         {
             var oldWard = db.Wards.FirstOrDefault(x => x.Id == ward.Id);
             if (oldWard == null)

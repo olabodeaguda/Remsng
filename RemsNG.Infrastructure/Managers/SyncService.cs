@@ -14,7 +14,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RemsNG.Services
+namespace RemsNG.Infrastructure.Managers
 {
     public class SyncManagers : ISyncManagers
     {
@@ -35,7 +35,7 @@ namespace RemsNG.Services
             try
             {
                 IConfigurationSection config = configuration.GetSection("domainSection");
-                var d = config.GetValue(typeof(Guid), "domainId");
+                var d = config["domainId"];
                 if (d != null)
                 {
                     if (Guid.TryParse(d.ToString(), out Guid domainId))
@@ -97,7 +97,7 @@ namespace RemsNG.Services
         private async Task<List<SyncDataModel>> SyncTORemote(string data)
         {
             IConfigurationSection config = configuration.GetSection("domainSection");
-            var d = config.GetValue(typeof(string), "SyncUrl");
+            var d = config["SyncUrl"];
 
             if (d != null)
             {
@@ -138,7 +138,7 @@ namespace RemsNG.Services
         private async Task<List<SyncDataModel>> SyncFromRemote(string data)
         {
             IConfigurationSection config = configuration.GetSection("domainSection");
-            var d = config.GetValue(typeof(string), "SyncUrl");
+            var d = config["SyncUrl"];
 
             if (d != null)
             {

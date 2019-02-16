@@ -113,7 +113,17 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> Remove(ContactDetailModel contactDetail)
         {
-            db.ContactDetails.Remove(contactDetail);
+            db.ContactDetails.Remove(new ContactDetail()
+            {
+                ContactType = contactDetail.ContactType,
+                ContactValue = contactDetail.ContactValue,
+                CreatedBy = contactDetail.CreatedBy,
+                DateCreated = contactDetail.DateCreated,
+                Id = contactDetail.Id,
+                Lastmodifiedby = contactDetail.Lastmodifiedby,
+                LastModifiedDate = contactDetail.LastModifiedDate,
+                OwnerId = contactDetail.OwnerId
+            });
 
             int count = await db.SaveChangesAsync();
             if (count > 0)

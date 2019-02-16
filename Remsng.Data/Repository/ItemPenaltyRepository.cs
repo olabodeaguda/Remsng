@@ -25,7 +25,19 @@ namespace RemsNG.Data.Repository
             }
 
             item.DateCreated = DateTime.Now;
-            db.ItemPenalties.Add(item);
+            db.ItemPenalties.Add(new ItemPenalty()
+            {
+                Amount = item.Amount,
+                CreatedBy = item.CreatedBy,
+                DateCreated = item.DateCreated,
+                Duration = item.Duration,
+                Id = item.Id,
+                IsPercentage = item.IsPercentage,
+                ItemId = item.ItemId,
+                Lastmodifiedby = item.Lastmodifiedby,
+                LastModifiedDate = item.LastModifiedDate,
+                PenaltyStatus = item.PenaltyStatus
+            });
             int count = await db.SaveChangesAsync();
             if (count > 0)
             {

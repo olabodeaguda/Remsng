@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RemsNG.Services.Interfaces;
-using RemsNG.Utilities;
-using RemsNG.ORM;
-using RemsNG.Models;
-using Microsoft.AspNetCore.Authorization;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
+using System;
+using System.Threading.Tasks;
 
 namespace RemsNG.Controllers
 {
@@ -15,14 +12,14 @@ namespace RemsNG.Controllers
     [Route("api/v1/permission")]
     public class PermissionController : Controller
     {
-        IPermission permissionService;
-        IRoleService roleservice;
-        public PermissionController(IPermission _permissionService, IRoleService _roleservice)
+        IPermissionManagers permissionService;
+        IRoleManagers roleservice;
+        public PermissionController(IPermissionManagers _permissionService, IRoleManagers _roleservice)
         {
             permissionService = _permissionService;
             roleservice = _roleservice;
         }
-        
+
         [HttpGet]
         public async Task<object> Get()
         {
@@ -78,7 +75,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            RoleExtension role = await roleservice.GetById(id);
+            RoleExtensionModel role = await roleservice.GetById(id);
             if (role == null)
             {
                 return NotFound(new Response()

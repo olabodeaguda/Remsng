@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using RemsNG.Models;
-using RemsNG.ORM;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Services;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
+using RemsNG.Infrastructure.Extensions;
 using RemsNG.Security;
-using RemsNG.Services.Interfaces;
-using RemsNG.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,16 +20,16 @@ namespace RemsNG.Controllers
     [Route("api/v1/report")]
     public class ReportDownloadController : Controller
     {
-        private readonly ITaxpayerService _taxpayerService;
-        private readonly IReportService reportService;
+        private readonly ITaxpayerManagers _taxpayerService;
+        private readonly IReportManagers reportService;
         private readonly IExcelService excelService;
-        private readonly ILcdaService lcdaService;
-        private readonly IDNPaymentHistoryService dNPaymentHistoryService;
+        private readonly ILcdaManagers lcdaService;
+        private readonly IDNPaymentHistoryManagers dNPaymentHistoryService;
         private readonly IHostingEnvironment hostingEnvironment;
-        public ReportDownloadController(IReportService _reportService,
-            IExcelService _excelService, ILcdaService _lcdaService,
-            IDNPaymentHistoryService _dNPaymentHistoryService,
-            IHostingEnvironment _hostingEnvironment, ITaxpayerService taxpayerService)
+        public ReportDownloadController(IReportManagers _reportService,
+            IExcelService _excelService, ILcdaManagers _lcdaService,
+            IDNPaymentHistoryManagers _dNPaymentHistoryService,
+            IHostingEnvironment _hostingEnvironment, ITaxpayerManagers taxpayerService)
         {
             reportService = _reportService;
             excelService = _excelService;
@@ -59,7 +60,7 @@ namespace RemsNG.Controllers
                 });
             }
             Guid lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
-            Lgda lgda = await lcdaService.Get(lcdaId);
+            LcdaModel lgda = await lcdaService.Get(lcdaId);
             if (lgda == null)
             {
                 return BadRequest(new Response()
@@ -87,9 +88,10 @@ namespace RemsNG.Controllers
                 });
             }
 
-            Domain domain = await lcdaService.GetDomain(lgda.id);
+            DomainModel domain = await lcdaService.GetDomain(lgda.Id);
 
-            byte[] result = await excelService.WriteReportSummary(current, previous, (domain == null ? "Unknown" : domain.domainName), lgda.lcdaName, sd, ed);
+            byte[] result = await excelService.WriteReportSummary(current, previous,
+                (domain == null ? "Unknown" : domain.DomainName), lgda.LcdaName, sd, ed);
 
             HttpContext.Response.ContentType = "application/octet-stream";
             HttpContext.Response.Body.Write(result, 0, result.Length);
@@ -117,7 +119,7 @@ namespace RemsNG.Controllers
                 });
             }
             Guid lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
-            Lgda lgda = await lcdaService.Get(lcdaId);
+            LcdaModel lgda = await lcdaService.Get(lcdaId);
             if (lgda == null)
             {
                 return BadRequest(new Response()
@@ -185,7 +187,7 @@ namespace RemsNG.Controllers
                 });
             }
             Guid lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
-            Lgda lgda = await lcdaService.Get(lcdaId);
+            LcdaModel lgda = await lcdaService.Get(lcdaId);
             if (lgda == null)
             {
                 return BadRequest(new Response()
@@ -205,7 +207,7 @@ namespace RemsNG.Controllers
             // getPayment history 
             string billnums = current.Select(x => x.billingNo).ToArray().FormatString();
 
-            List<DemandNoticePaymentHistory> dnph = await dNPaymentHistoryService.ByBillingNumbers(billnums);
+            List<DemandNoticePaymentHistoryModel> dnph = await dNPaymentHistoryService.ByBillingNumbers(billnums);
 
             if (current.Count < 1)
             {
@@ -216,11 +218,11 @@ namespace RemsNG.Controllers
                 });
             }
 
-            Domain domain = await lcdaService.GetDomain(lgda.id);
+            DomainModel domain = await lcdaService.GetDomain(lgda.Id);
 
             // byte[] result = await excelService.WriteReportSummary(current, (domain == null ? "Unknown" : domain.domainName), lgda.lcdaName, sd, ed);
             byte[] result = await excelService.WriteReportSummaryConsolidated(current,
-                (domain == null ? "Unknown" : domain.domainName), lgda.lcdaName, sd, ed, dnph);
+                (domain == null ? "Unknown" : domain.DomainName), lgda.LcdaName, sd, ed, dnph);
 
             HttpContext.Response.ContentType = "application/octet-stream";
             HttpContext.Response.Body.Write(result, 0, result.Length);
@@ -248,7 +250,7 @@ namespace RemsNG.Controllers
                 });
             }
             Guid lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
-            Lgda lgda = await lcdaService.Get(lcdaId);
+            LcdaModel lgda = await lcdaService.Get(lcdaId);
             if (lgda == null)
             {
                 return BadRequest(new Response()
@@ -267,7 +269,7 @@ namespace RemsNG.Controllers
 
             // getPayment history 
             string billnums = all.Select(x => x.billingNo).ToArray().FormatString();
-            List<DemandNoticePaymentHistory> dnph = await dNPaymentHistoryService.ByBillingNumbers(billnums);
+            List<DemandNoticePaymentHistoryModel> dnph = await dNPaymentHistoryService.ByBillingNumbers(billnums);
 
             if (all.Count < 1)
             {
@@ -278,10 +280,10 @@ namespace RemsNG.Controllers
                 });
             }
 
-            Domain domain = await lcdaService.GetDomain(lgda.id);
+            DomainModel domain = await lcdaService.GetDomain(lgda.Id);
 
             var result = await excelService.WriteReportSummaryConsolidatedSeperate(valid,
-                (domain == null ? "Unknown" : domain.domainName), lgda.lcdaName, sd, ed, dnph);
+                (domain == null ? "Unknown" : domain.DomainName), lgda.LcdaName, sd, ed, dnph);
 
             // var result1 = await System.IO.File.ReadAllBytesAsync(result);
 
@@ -319,7 +321,7 @@ namespace RemsNG.Controllers
                 });
             }
             Guid lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
-            Lgda lgda = await lcdaService.Get(lcdaId);
+            LcdaModel lgda = await lcdaService.Get(lcdaId);
             if (lgda == null)
             {
                 return BadRequest(new Response()
@@ -412,12 +414,12 @@ namespace RemsNG.Controllers
             ed = ed.AddHours(23);
             ed = ed.AddMinutes(59);
 
-            List<DemandNoticeItemExt> dnitem = await reportService.ReportitemsByCategory(sd, ed);
-            List<DemandNoticeItemPenaltyExt> dnPenalty = await reportService.ReportPenaltyByCategory(sd, ed);
-            List<DemandNoticeArrearsExt> dnArrears = await reportService.ReportArrearsByCategory(sd, ed);
+            List<DemandNoticeItemModelExt> dnitem = await reportService.ReportitemsByCategory(sd, ed);
+            List<DemandNoticeItemPenaltyModelExt> dnPenalty = await reportService.ReportPenaltyByCategory(sd, ed);
+            List<DemandNoticeArrearsModelExt> dnArrears = await reportService.ReportArrearsByCategory(sd, ed);
 
             Guid lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
-            Lgda lgda = await lcdaService.Get(lcdaId);
+            LcdaModel lgda = await lcdaService.Get(lcdaId);
             if (lgda == null)
             {
                 return BadRequest(new Response()
@@ -427,10 +429,10 @@ namespace RemsNG.Controllers
                 });
             }
 
-            Domain domain = await lcdaService.GetDomain(lgda.id);
+            DomainModel domain = await lcdaService.GetDomain(lgda.Id);
 
             var result = await excelService.WriteReportCategory(
-               (domain == null ? "Unknown" : domain.domainName), lgda.lcdaName, sd, ed, dnitem, dnPenalty, dnArrears);
+               (domain == null ? "Unknown" : domain.DomainName), lgda.LcdaName, sd, ed, dnitem, dnPenalty, dnArrears);
 
             HttpContext.Response.ContentType = "application/octet-stream";
             HttpContext.Response.Body.Write(result, 0, result.Length);

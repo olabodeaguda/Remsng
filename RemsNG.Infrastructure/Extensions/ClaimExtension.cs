@@ -1,11 +1,10 @@
-﻿using RemsNG.Utilities;
+﻿using RemsNG.Common.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
-namespace RemsNG.Security
+namespace RemsNG.Infrastructure.Extensions
 {
     public class ClaimExtension
     {
@@ -106,6 +105,6 @@ namespace RemsNG.Security
             }
             return Guid.Empty;
         }
-        
+
     }
 }

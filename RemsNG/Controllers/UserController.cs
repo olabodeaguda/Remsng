@@ -2,12 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using RemsNG.Common.Exceptions;
+using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
-using RemsNG.Exceptions;
+using RemsNG.Infrastructure.Extensions;
 using RemsNG.Security;
-using RemsNG.Services.Interfaces;
-using RemsNG.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,13 +21,13 @@ namespace RemsNG.Controllers
     public class UserController : Controller
     {
         private readonly ILogger logger;
-        private readonly IUserService userService;
-        private readonly IDomainService domainService;
-        private readonly ILcdaService lcdaService;
-        private readonly IRoleService roleService;
-        public UserController(IUserService _userService,
-            ILoggerFactory loggerFactory, IDomainService _domainService,
-            ILcdaService _lcdaService, IRoleService _roleservice)
+        private readonly IUserManagers userService;
+        private readonly IDomainManagers domainService;
+        private readonly ILcdaManagers lcdaService;
+        private readonly IRoleManagers roleService;
+        public UserController(IUserManagers _userService,
+            ILoggerFactory loggerFactory, IDomainManagers _domainService,
+            ILcdaManagers _lcdaService, IRoleManagers _roleservice)
         {
             userService = _userService;
             domainService = _domainService;
@@ -47,7 +48,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            User user = await userService.Get(id);
+            UserModel user = await userService.Get(id);
             user.PasswordHash = null;
 
             if (user == null)
@@ -85,14 +86,14 @@ namespace RemsNG.Controllers
             {
                 return BadRequest(new Response() { code = MsgCode_Enum.INVALID_PARAMETER_PASSED, data = "Username is required!!" });
             }
-            User user = await userService.GetUserByUsername(ln.username);
+            UserModel user = await userService.GetUserByUsername(ln.username);
             if (user == null)
             {
                 logger.LogError($"{ln.username} authentication failed, user does not exist", new object[] { ln.username });
                 return NotFound(new Response() { code = MsgCode_Enum.NOTFOUND, data = $"{ln.username} does not exist" });
             }
 
-            if (user.PasswordHash != EncryptDecryptUtils.ToHexString(ln.pwd))
+            if (user.PasswordHash != Common.Utilities.EncryptDecryptUtils.ToHexString(ln.pwd))
             {
                 logger.LogError($"{ln.username} password is incorrect", new object[] { ln.username });
                 return new HttpMessageResult(new Response()
@@ -122,7 +123,7 @@ namespace RemsNG.Controllers
         [RemsRequirementAttribute("ASSIGN_DOMAIN")]
         [Route("assignlgda")]
         [HttpPost]
-        public async Task<object> AssignToUser([FromBody]UserLcda userLcda)
+        public async Task<object> AssignToUser([FromBody]UserLcdaModel userLcda)
         {
             if (userLcda.LgdaId == default(Guid))
             {
@@ -133,7 +134,7 @@ namespace RemsNG.Controllers
                 throw new InvalidCredentialsException("User is required");
             }
 
-            User user = await userService.Get(userLcda.UserId);
+            UserModel user = await userService.Get(userLcda.UserId);
             if (user == null)
             {
                 return NotFound(new Response()
@@ -143,7 +144,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            Lcda lcda = await lcdaService.Get(userLcda.LgdaId);
+            LcdaModel lcda = await lcdaService.Get(userLcda.LgdaId);
             if (lcda == null)
             {
                 return NotFound(new Response()
@@ -161,7 +162,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            UserLcda lg = await lcdaService.UserLcdaByIds(lcda.Id, user.Id);
+            UserLcdaModel lg = await lcdaService.UserLcdaByIds(lcda.Id, user.Id);
             if (lg != null)
             {
                 return BadRequest(new Response()
@@ -224,11 +225,11 @@ namespace RemsNG.Controllers
         [RemsRequirementAttribute("ADD_PROFILE")]
         [Route("add")]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] User user)
+        public async Task<IActionResult> Create([FromBody] UserModel user)
         {
-            User username = await userService.GetUserByUsername(user.Username);
-            User email = await userService.ByEmail(user.Email);
-            List<Lcda> lst = await lcdaService.byUsername(user.Username);
+            UserModel username = await userService.GetUserByUsername(user.Username);
+            UserModel email = await userService.ByEmail(user.Email);
+            List<LcdaModel> lst = await lcdaService.byUsername(user.Username);
 
             user.Id = Guid.NewGuid();
             user.DateCreated = DateTime.Now;
@@ -265,7 +266,7 @@ namespace RemsNG.Controllers
                     throw new AlreadyExistException("Email already Exist");
                 }
 
-                UserLcda userLcda = new UserLcda()
+                UserLcdaModel userLcda = new UserLcdaModel()
                 {
                     UserId = user.Id,
                     LgdaId = domainId
@@ -295,7 +296,7 @@ namespace RemsNG.Controllers
         [RemsRequirementAttribute("UPDATE_PROFILE")]
         [Route("update")]
         [HttpPost]
-        public async Task<IActionResult> Update([FromBody] User user)
+        public async Task<IActionResult> Update([FromBody] UserModel user)
         {
             user.LastModifiedDate = DateTime.Now;
             user.Lastmodifiedby = User.Identity.Name;

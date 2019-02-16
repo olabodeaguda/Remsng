@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RemsNG.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using RemsNG.Utilities;
-using RemsNG.Models;
-using RemsNG.ORM;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
 using RemsNG.Security;
-using Microsoft.AspNetCore.Authorization;
+using System;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,11 +15,11 @@ namespace RemsNG.Controllers
     [Route("api/v1/company")]
     public class CompanyController : Controller
     {
-        private ICompany companyService;
-        private ILcdaService lcdaService;
-        private IDemandNoticeTaxpayerService demandNoticeTaxpayerService;
-        public CompanyController(ICompany _companyservice, ILcdaService _lcdaService,
-            IDemandNoticeTaxpayerService _demandNoticeTaxpayerService)
+        private ICompanyManagers companyService;
+        private ILcdaManagers lcdaService;
+        private IDemandNoticeTaxpayerManagers demandNoticeTaxpayerService;
+        public CompanyController(ICompanyManagers _companyservice, ILcdaManagers _lcdaService,
+            IDemandNoticeTaxpayerManagers _demandNoticeTaxpayerService)
         {
             companyService = _companyservice;
             lcdaService = _lcdaService;
@@ -59,7 +55,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            return await companyService.ByStretId(id);
+            return await companyService.ByStreetId(id);
         }
 
         [Route("bylcdapaging/{id}")]
@@ -78,7 +74,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            return await companyService.ByLcda(id, new Models.PageModel() { PageNum = int.Parse(pageNum), PageSize = int.Parse(pageSize) });
+            return await companyService.ByLcda(id, new Common.Models.PageModel() { PageNum = int.Parse(pageNum), PageSize = int.Parse(pageSize) });
         }
 
         [HttpGet("{id}")]
@@ -99,9 +95,9 @@ namespace RemsNG.Controllers
 
         [RemsRequirementAttribute("REGISTER_COMPANY")]
         [HttpPost]
-        public async Task<object> Post([FromBody]Company value)
+        public async Task<object> Post([FromBody]CompanyModel value)
         {
-            if (string.IsNullOrEmpty(value.companyName))
+            if (string.IsNullOrEmpty(value.CompanyName))
             {
                 return BadRequest(new Response()
                 {
@@ -109,7 +105,7 @@ namespace RemsNG.Controllers
                     description = "Company name is required"
                 });
             }
-            else if (value.sectorId == default(Guid))
+            else if (value.SectorId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -117,7 +113,7 @@ namespace RemsNG.Controllers
                     description = "Sector is required"
                 });
             }
-            else if (value.categoryId == default(Guid))
+            else if (value.CategoryId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -125,7 +121,7 @@ namespace RemsNG.Controllers
                     description = "Category is required"
                 });
             }
-            else if (value.lcdaId == default(Guid))
+            else if (value.LcdaId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -133,7 +129,7 @@ namespace RemsNG.Controllers
                     description = "Reload page and try again else log out and log in. Application could not tract your LCDA"
                 });
             }
-            var lcda = lcdaService.Get(value.lcdaId);
+            var lcda = lcdaService.Get(value.LcdaId);
             if (lcda == null)
             {
                 return BadRequest(new Response()
@@ -144,16 +140,16 @@ namespace RemsNG.Controllers
             }
 
 
-            value.id = Guid.NewGuid();
-            value.companyStatus = UserStatus.ACTIVE.ToString();
-            value.dateCreated = DateTime.Now;
-            value.createdBy = User.Identity.Name;
+            value.Id = Guid.NewGuid();
+            value.CompanyStatus = UserStatus.ACTIVE.ToString();
+            value.DateCreated = DateTime.Now;
+            value.CreatedBy = User.Identity.Name;
 
             Response response = await companyService.Add(value);
 
             if (response.code == MsgCode_Enum.SUCCESS)
             {
-                return Created("/company/" + value.id, response);
+                return Created("/company/" + value.Id, response);
             }
             else
             {
@@ -164,9 +160,9 @@ namespace RemsNG.Controllers
 
         [RemsRequirementAttribute("REGISTER_COMPANY")]
         [HttpPut]
-        public async Task<object> Put([FromBody]Company value)
+        public async Task<object> Put([FromBody]CompanyModel value)
         {
-            if (value.id == default(Guid))
+            if (value.Id == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -174,7 +170,7 @@ namespace RemsNG.Controllers
                     description = "Bad request"
                 });
             }
-            else if (string.IsNullOrEmpty(value.companyName))
+            else if (string.IsNullOrEmpty(value.CompanyName))
             {
                 return BadRequest(new Response()
                 {
@@ -182,7 +178,7 @@ namespace RemsNG.Controllers
                     description = "Company name is required"
                 });
             }
-            else if (value.sectorId == default(Guid))
+            else if (value.SectorId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -190,7 +186,7 @@ namespace RemsNG.Controllers
                     description = "Sector is required"
                 });
             }
-            else if (value.categoryId == default(Guid))
+            else if (value.CategoryId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -198,7 +194,7 @@ namespace RemsNG.Controllers
                     description = "Category is required"
                 });
             }
-            else if (value.lcdaId == default(Guid))
+            else if (value.LcdaId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -206,7 +202,7 @@ namespace RemsNG.Controllers
                     description = "Reload page and try again else log out and log in. Application could not tract your LCDA"
                 });
             }
-            var lcda = lcdaService.Get(value.lcdaId);
+            var lcda = lcdaService.Get(value.LcdaId);
             if (lcda == null)
             {
                 return BadRequest(new Response()
@@ -217,9 +213,9 @@ namespace RemsNG.Controllers
             }
 
 
-            value.companyStatus = UserStatus.ACTIVE.ToString();
-            value.lastModifiedDate = DateTime.Now;
-            value.lastmodifiedby = User.Identity.Name;
+            value.CompanyStatus = UserStatus.ACTIVE.ToString();
+            value.LastModifiedDate = DateTime.Now;
+            value.Lastmodifiedby = User.Identity.Name;
 
             Response response = await companyService.Update(value);
 
@@ -255,10 +251,10 @@ namespace RemsNG.Controllers
                 });
             }
 
-            Response response = await companyService.UpdateStatus(new Company()
+            Response response = await companyService.UpdateStatus(new CompanyModel()
             {
-                id = id,
-                companyStatus = status
+                Id = id,
+                CompanyStatus = status
             });
 
             if (response.code == MsgCode_Enum.SUCCESS)
@@ -284,7 +280,7 @@ namespace RemsNG.Controllers
                     description = "Bad request"
                 });
             }
-            Company company = await companyService.ById(id);
+            CompanyModel company = await companyService.ById(id);
             if (company == null)
             {
                 return BadRequest(new Response()

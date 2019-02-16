@@ -1,16 +1,15 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
+using RemsNG.Infrastructure.Extensions;
+using RemsNG.Security;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using RemsNG.Models;
-using RemsNG.Utilities;
-using RemsNG.ORM;
-using RemsNG.Services.Interfaces;
-using Microsoft.Extensions.Logging;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
-using RemsNG.Security;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,14 +20,14 @@ namespace RemsNG.Controllers
     public class DomainController : Controller
     {
         private readonly ILogger logger;
-        private readonly IDomainService domainService;
-        private readonly IUserService userService;
-        private readonly ILcdaService lcdaService;
-        public DomainController(IUserService _userService,
-            IDomainService _domainService, ILoggerFactory loggerFactory,
-            ILcdaService _lcdaService)
+        private readonly IDomainManagers domainService;
+        private readonly IUserManagers userService;
+        private readonly ILcdaManagers lcdaService;
+        public DomainController(IUserManagers _userService,
+            IDomainManagers _domainService, ILoggerFactory loggerFactory,
+            ILcdaManagers _lcdaService)
         {
-            this.userService = _userService;
+            userService = _userService;
             domainService = _domainService;
             lcdaService = _lcdaService;
             logger = loggerFactory.CreateLogger<UserController>();
@@ -45,7 +44,7 @@ namespace RemsNG.Controllers
                     description = "username is required!!!."
                 });
             }
-            User us = await this.userService.GetUserByUsername(username);
+            UserModel us = await userService.GetUserByUsername(username);
             if (us == null)
             {
                 return NotFound(new Response
@@ -55,21 +54,21 @@ namespace RemsNG.Controllers
                 });
             }
 
-            List<Domain> domains = await domainService.GetDomainByUsername(username);
+            List<DomainModel> domains = await domainService.GetDomainByUsername(username);
 
             return Ok(new Response
             {
                 code = MsgCode_Enum.SUCCESS,
-                data = domains.Where(x => x.domainStatus == UserStatus.ACTIVE.ToString())
+                data = domains.Where(x => x.DomainStatus == UserStatus.ACTIVE.ToString())
             });
         }
 
-        [Route("activeDomain")]        
+        [Route("activeDomain")]
         public async Task<object> Get()
         {
             if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
             {
-                return await this.domainService.ActiveDomains();
+                return await domainService.ActiveDomains();
             }
             else
             {
@@ -100,7 +99,7 @@ namespace RemsNG.Controllers
                 var domainId = ClaimExtension.GetDomainId(User.Claims.ToArray());
                 if (domainId != default(Guid))
                 {
-                    Domain d = await domainService.DomainbyLCDAId(domainId);
+                    DomainModel d = await domainService.DomainbyLCDAId(domainId);
                     return new
                     {
                         data = new List<object>() { d },
@@ -116,9 +115,9 @@ namespace RemsNG.Controllers
         }
         [RemsRequirementAttribute("MOS-ADMIN")]
         [Route("create")]
-        public async Task<IActionResult> Post([FromBody] Domain domain)
+        public async Task<IActionResult> Post([FromBody] DomainModel domain)
         {
-            if (string.IsNullOrEmpty(domain.domainCode))
+            if (string.IsNullOrEmpty(domain.DomainCode))
             {
                 return BadRequest(new Response()
                 {
@@ -126,7 +125,7 @@ namespace RemsNG.Controllers
                     description = "LGA Code is required!!!"
                 });
             }
-            else if (string.IsNullOrEmpty(domain.domainName))
+            else if (string.IsNullOrEmpty(domain.DomainName))
             {
                 return BadRequest(new Response()
                 {
@@ -135,19 +134,19 @@ namespace RemsNG.Controllers
                 });
             }
 
-            Domain ifExist = await domainService.ByDomainCode(domain.domainCode);
+            DomainModel ifExist = await domainService.ByDomainCode(domain.DomainCode);
             if (ifExist != null)
             {
                 return new HttpMessageResult(new Response()
                 {
                     code = MsgCode_Enum.FAIL,
-                    description = $"{domain.domainCode} already exist"
+                    description = $"{domain.DomainCode} already exist"
                 }, 409);
             }
 
-            domain.id = Guid.NewGuid();
-            domain.domainStatus = UserStatus.ACTIVE.ToString();
-            domain.datecreated = DateTime.Now;
+            domain.Id = Guid.NewGuid();
+            domain.DomainStatus = UserStatus.ACTIVE.ToString();
+            domain.Datecreated = DateTime.Now;
             bool result = await domainService.Add(domain);
             if (result)
             {
@@ -155,7 +154,7 @@ namespace RemsNG.Controllers
                 {
                     code = MsgCode_Enum.SUCCESS,
                     data = domain,
-                    description = $"{domain.domainName} have been added successfully"
+                    description = $"{domain.DomainName} have been added successfully"
                 });
             }
             else
@@ -164,7 +163,7 @@ namespace RemsNG.Controllers
                 {
                     code = MsgCode_Enum.FAIL,
                     data = domain,
-                    description = $"{domain.domainName} creation was not successfull. Please try again or contact administrator"
+                    description = $"{domain.DomainName} creation was not successfull. Please try again or contact administrator"
                 }, 409);
             }
         }
@@ -172,9 +171,9 @@ namespace RemsNG.Controllers
         [RemsRequirementAttribute("UPDATE_DOMAIN")]
         [Route("update")]
         [HttpPost]
-        public async Task<IActionResult> Update([FromBody] Domain domain)
+        public async Task<IActionResult> Update([FromBody] DomainModel domain)
         {
-            if (string.IsNullOrEmpty(domain.domainCode))
+            if (string.IsNullOrEmpty(domain.DomainCode))
             {
                 return BadRequest(new Response()
                 {
@@ -182,7 +181,7 @@ namespace RemsNG.Controllers
                     description = "LGA Code is required!!!"
                 });
             }
-            else if (string.IsNullOrEmpty(domain.domainName))
+            else if (string.IsNullOrEmpty(domain.DomainName))
             {
                 return BadRequest(new Response()
                 {
@@ -190,7 +189,7 @@ namespace RemsNG.Controllers
                     description = "LGA name is required!!!"
                 });
             }
-            else if (domain.id == default(Guid))
+            else if (domain.Id == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -222,9 +221,9 @@ namespace RemsNG.Controllers
         [RemsRequirementAttribute("MOS-ADMIN")]
         [Route("changestatus")]
         [HttpPost]
-        public async Task<IActionResult> ChangeStatus([FromBody] Domain domain)
+        public async Task<IActionResult> ChangeStatus([FromBody] DomainModel domain)
         {
-            if (string.IsNullOrEmpty(domain.domainStatus))
+            if (string.IsNullOrEmpty(domain.DomainStatus))
             {
                 return BadRequest(new Response()
                 {
@@ -232,7 +231,7 @@ namespace RemsNG.Controllers
                     description = "Domain Status is required!!!"
                 });
             }
-            else if (domain.id == default(Guid))
+            else if (domain.Id == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -240,7 +239,7 @@ namespace RemsNG.Controllers
                     description = "Invalid domain selected"
                 });
             }
-            else if (CommonList.StatusLst.FirstOrDefault(x => x == domain.domainStatus) == null)
+            else if (CommonList.StatusLst.FirstOrDefault(x => x == domain.DomainStatus) == null)
             {
                 return BadRequest(new Response()
                 {
@@ -249,7 +248,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            bool result = await domainService.ChangeDomain(domain.id, domain.domainStatus);
+            bool result = await domainService.ChangeDomain(domain.Id, domain.DomainStatus);
             if (result)
             {
                 return Ok(new Response()

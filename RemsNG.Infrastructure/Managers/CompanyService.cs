@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace RemsNG.Services
+namespace RemsNG.Infrastructure.Managers
 {
     public class CompanyManagers : ICompanyManagers
     {
@@ -50,5 +50,6 @@ namespace RemsNG.Services
         {
             return await companyDao.UpdateStatus(company);
         }
+        
     }
 }

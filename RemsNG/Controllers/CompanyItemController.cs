@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RemsNG.Models;
-using RemsNG.Utilities;
-using RemsNG.Services.Interfaces;
-using RemsNG.ORM;
-using Microsoft.AspNetCore.Authorization;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
+using System;
+using System.Threading.Tasks;
 
 namespace RemsNG.Controllers
 {
@@ -15,8 +12,8 @@ namespace RemsNG.Controllers
     [Route("api/v1/companyitem")]
     public class CompanyItemController : Controller
     {
-        private ICompanyItemService companyItemService;
-        public CompanyItemController(ICompanyItemService _companyItemService)
+        private ICompanyItemManagers companyItemService;
+        public CompanyItemController(ICompanyItemManagers _companyItemService)
         {
             companyItemService = _companyItemService;
         }
@@ -50,9 +47,9 @@ namespace RemsNG.Controllers
         }
 
         [HttpPost]
-        public async Task<object> Post([FromBody] CompanyItem companyItem)
+        public async Task<object> Post([FromBody] CompanyItemModel companyItem)
         {
-            if (companyItem.taxpayerId == default(Guid))
+            if (companyItem.TaxpayerId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -60,7 +57,7 @@ namespace RemsNG.Controllers
                     description = "Company is required!!!"
                 });
             }
-            else if (companyItem.itemId == default(Guid))
+            else if (companyItem.ItemId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -68,18 +65,18 @@ namespace RemsNG.Controllers
                     description = "Item is required!!!"
                 });
             }
-            else if (companyItem.billingYear < 2015)
+            else if (companyItem.BillingYear < 2015)
             {
                 return BadRequest(new Response()
                 {
                     code = MsgCode_Enum.FAIL,
-                    description = companyItem.billingYear == 0 ? "Billing year is required!!!" : "Bill year is in the wrong format"
+                    description = companyItem.BillingYear == 0 ? "Billing year is required!!!" : "Bill year is in the wrong format"
                 });
             }
 
-            companyItem.companyStatus = UserStatus.ACTIVE.ToString();
-            companyItem.id = Guid.NewGuid();
-            companyItem.createdBy = User.Identity.Name;
+            companyItem.CompanyStatus = UserStatus.ACTIVE.ToString();
+            companyItem.Id = Guid.NewGuid();
+            companyItem.CreatedBy = User.Identity.Name;
 
             Response response = await companyItemService.Add(companyItem);
 
@@ -94,9 +91,9 @@ namespace RemsNG.Controllers
         }
 
         [HttpPut]
-        public async Task<object> Put([FromBody]CompanyItem companyItem)
+        public async Task<object> Put([FromBody]CompanyItemModel companyItem)
         {
-            if (companyItem.taxpayerId == default(Guid))
+            if (companyItem.TaxpayerId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -104,7 +101,7 @@ namespace RemsNG.Controllers
                     description = "Company is required!!!"
                 });
             }
-            else if (companyItem.itemId == default(Guid))
+            else if (companyItem.ItemId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -112,15 +109,15 @@ namespace RemsNG.Controllers
                     description = "Item is required!!!"
                 });
             }
-            else if (companyItem.billingYear < 2015)
+            else if (companyItem.BillingYear < 2015)
             {
                 return BadRequest(new Response()
                 {
                     code = MsgCode_Enum.FAIL,
-                    description = companyItem.billingYear == 0 ? "Billing year is required!!!" : "Bill year is in the wrong format"
+                    description = companyItem.BillingYear == 0 ? "Billing year is required!!!" : "Bill year is in the wrong format"
                 });
             }
-            else if (companyItem.id == default(Guid))
+            else if (companyItem.Id == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -129,8 +126,8 @@ namespace RemsNG.Controllers
                 });
             }
 
-            companyItem.lastmodifiedby = User.Identity.Name;
-            companyItem.lastModifiedDate = DateTime.Now;
+            companyItem.Lastmodifiedby = User.Identity.Name;
+            companyItem.LastModifiedDate = DateTime.Now;
 
             Response response = await companyItemService.Update(companyItem);
             if (response.code == MsgCode_Enum.SUCCESS)
@@ -145,9 +142,9 @@ namespace RemsNG.Controllers
 
         [Route("changestatus")]
         [HttpPost]
-        public async Task<object> ChangeStatus([FromBody]CompanyItem companyItem)
+        public async Task<object> ChangeStatus([FromBody]CompanyItemModel companyItem)
         {
-            if (companyItem.id == default(Guid))
+            if (companyItem.Id == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -155,7 +152,7 @@ namespace RemsNG.Controllers
                     description = "Bad request"
                 });
             }
-            else if (string.IsNullOrEmpty(companyItem.companyStatus))
+            else if (string.IsNullOrEmpty(companyItem.CompanyStatus))
             {
                 return BadRequest(new Response()
                 {
@@ -164,7 +161,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            Response response = await companyItemService.UpdateStatus(companyItem.id, companyItem.companyStatus);
+            Response response = await companyItemService.UpdateStatus(companyItem.Id, companyItem.CompanyStatus);
             if (response.code == MsgCode_Enum.SUCCESS)
             {
                 return Ok(response);

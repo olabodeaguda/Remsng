@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using RemsNG.Common.Exceptions;
 using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
 using RemsNG.Exceptions;
 using RemsNG.Utilities;
 using System;
@@ -23,7 +25,8 @@ namespace RemsNG.Security
         {
             context.Response.ContentType = "application/json";
 
-            if (exception.GetType() == typeof(SecurityTokenValidationException) || exception.GetType() == typeof(UserValidationException))
+            if (exception.GetType() == typeof(SecurityTokenValidationException) 
+                || exception.GetType() == typeof(UserValidationException))
             {
                 response.description = "Invalid token";
                 response.code = MsgCode_Enum.INVALID_TOKEN;

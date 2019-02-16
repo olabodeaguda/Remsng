@@ -125,7 +125,20 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> Add(LcdaModel lcda)
         {
-            db.lgdas.Add(lcda);
+            db.lgdas.Add(new Lcda
+            {
+                AddressId = lcda.AddressId,
+                Charges = lcda.Charges,
+                CreatedBy = lcda.CreatedBy,
+                DateCreated = lcda.DateCreated,
+                DomainId = lcda.DomainId,
+                Id = lcda.Id,
+                Lastmodifiedby = lcda.Lastmodifiedby,
+                LastModifiedDate = lcda.LastModifiedDate,
+                LcdaCode = lcda.LcdaCode,
+                LcdaName = lcda.LcdaName,
+                LcdaStatus = lcda.LcdaStatus
+            });
             int count = await db.SaveChangesAsync();
             if (count > 0)
             {

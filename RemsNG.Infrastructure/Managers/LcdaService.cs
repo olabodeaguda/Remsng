@@ -1,18 +1,13 @@
-﻿using RemsNG.Services.Interfaces;
+﻿using Microsoft.Extensions.Logging;
+using Remsng.Data;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using RemsNG.Models;
-using RemsNG.ORM;
-using RemsNG.Dao;
-using Microsoft.Extensions.Logging;
-using RemsNG.Common.Interfaces.Managers;
-using RemsNG.Data.Repository;
-using Remsng.Data;
-using RemsNG.Common.Models;
 
-namespace RemsNG.Services
+namespace RemsNG.Infrastructure.Managers
 {
     public class LcdaManagers : ILcdaManagers
     {
@@ -23,11 +18,11 @@ namespace RemsNG.Services
         private readonly StreetRepository streetDao;
         public LcdaManagers(RemsDbContext _db, ILoggerFactory loggerFactory)
         {
-            lcdaDao = new LcdaRepository(_db,loggerFactory);
+            lcdaDao = new LcdaRepository(_db, loggerFactory);
             roleDao = new RoleRepository(_db, loggerFactory);
             taxpayerDao = new TaxpayerRepository(_db);
             wardDao = new WardRepository(_db);
-            streetDao = new StreetRepository(_db,loggerFactory);
+            streetDao = new StreetRepository(_db, loggerFactory);
         }
 
         public async Task<List<LcdaModel>> ActiveLcdaByDomainId(Guid domainId)
@@ -148,6 +143,6 @@ namespace RemsNG.Services
         {
             return await lcdaDao.ByBillingNumber(billingno);
         }
-        
+
     }
 }

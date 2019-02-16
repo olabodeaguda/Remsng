@@ -1,31 +1,29 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
+using RemsNG.Infrastructure.Extensions;
+using RemsNG.Security;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using RemsNG.Utilities;
-using RemsNG.Models;
-using System.Security.Claims;
-using RemsNG.Services.Interfaces;
-using RemsNG.ORM;
-using RemsNG.Exceptions;
-using Microsoft.AspNetCore.Authorization;
-using RemsNG.Security;
 
 namespace RemsNG.Controllers
 {
     [Route("api/v1/lcda")]
     public class LcdaController : Controller
     {
-        private ILcdaService lcdaService;
-        private IUserService userservice;
-        private IRoleService roleService;
-        public LcdaController(ILcdaService _lcdaService,
-            IUserService _userservice, IRoleService _roleService)
+        private ILcdaManagers lcdaService;
+        private IUserManagers userservice;
+        private IRoleManagers roleService;
+        public LcdaController(ILcdaManagers _lcdaService,
+            IUserManagers _userservice, IRoleManagers _roleService)
         {
-            this.lcdaService = _lcdaService;
-            this.userservice = _userservice;
-            this.roleService = _roleService;
+            lcdaService = _lcdaService;
+            userservice = _userservice;
+            roleService = _roleService;
         }
 
         [Route("byusername/{username}")]
@@ -48,7 +46,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            List<Lgda> us = await this.lcdaService.byUsername(username);
+            List<LcdaModel> us = await lcdaService.byUsername(username);
             if (us.Count < 1)
             {
                 return NotFound(new Response
@@ -79,7 +77,7 @@ namespace RemsNG.Controllers
                 Guid currentDomain = ClaimExtension.GetDomainId(User.Claims.ToArray());
                 if (currentDomain == Guid.Empty)
                 {
-                    return new List<Lgda>();
+                    return new List<LcdaModel>();
                 }
 
                 return await lcdaService.UserDomainByUserId(currentDomain);
@@ -91,7 +89,7 @@ namespace RemsNG.Controllers
         [HttpGet]
         public async Task<object> Get([FromRoute] Guid id)
         {
-            Lgda lgda = await lcdaService.Get(id);
+            LcdaModel lgda = await lcdaService.Get(id);
             if (lgda == null)
             {
                 return NotFound(new Response()
@@ -123,8 +121,8 @@ namespace RemsNG.Controllers
                 var domainId = ClaimExtension.GetDomainId(User.Claims.ToArray());
                 if (domainId != Guid.Empty)
                 {
-                    Lgda lgda = await lcdaService.Get(domainId);
-                    List<Lgda> cd = new List<Lgda>();
+                    LcdaModel lgda = await lcdaService.Get(domainId);
+                    List<LcdaModel> cd = new List<LcdaModel>();
                     cd.Add(lgda);
                     return new
                     {
@@ -139,9 +137,9 @@ namespace RemsNG.Controllers
         [Route("create")]
         [RemsRequirementAttribute("ADD_LCDA")]
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Lgda lcda)
+        public async Task<IActionResult> Post([FromBody] LcdaModel lcda)
         {
-            if (string.IsNullOrEmpty(lcda.lcdaCode))
+            if (string.IsNullOrEmpty(lcda.LcdaCode))
             {
                 return BadRequest(new Response()
                 {
@@ -149,7 +147,7 @@ namespace RemsNG.Controllers
                     description = "LCGA Code is required!!!"
                 });
             }
-            else if (string.IsNullOrEmpty(lcda.lcdaName))
+            else if (string.IsNullOrEmpty(lcda.LcdaName))
             {
                 return BadRequest(new Response()
                 {
@@ -157,7 +155,7 @@ namespace RemsNG.Controllers
                     description = "LCGA name is required!!!"
                 });
             }
-            else if (lcda.domainId == default(Guid))
+            else if (lcda.DomainId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -165,20 +163,20 @@ namespace RemsNG.Controllers
                     description = "Domain Code is required!!!"
                 });
             }
-            var oldlcda = await this.lcdaService.byLCDACode(lcda.lcdaCode);
-            if (oldlcda != null && oldlcda.domainId == lcda.domainId)
+            var oldlcda = await lcdaService.ByLcdaCode(lcda.LcdaCode);
+            if (oldlcda != null && oldlcda.DomainId == lcda.DomainId)
             {
                 return new HttpMessageResult(new Response()
                 {
                     code = MsgCode_Enum.DUPLICATE,
-                    description = $"{lcda.lcdaCode} already exist for the selected domain"
+                    description = $"{lcda.LcdaCode} already exist for the selected domain"
                 }, 409);
             }
 
-            lcda.id = Guid.NewGuid();
-            lcda.dateCreated = DateTime.Now;
-            lcda.createdBy = User.Identity.Name;
-            lcda.lcdaStatus = UserStatus.NOT_ACTIVE.ToString();
+            lcda.Id = Guid.NewGuid();
+            lcda.DateCreated = DateTime.Now;
+            lcda.CreatedBy = User.Identity.Name;
+            lcda.LcdaStatus = UserStatus.NOT_ACTIVE.ToString();
             //User.Identity.
             bool result = await lcdaService.Add(lcda);
             if (result)
@@ -186,7 +184,7 @@ namespace RemsNG.Controllers
                 return Ok(new Response()
                 {
                     code = MsgCode_Enum.SUCCESS,
-                    description = $"{lcda.lcdaName} have been added successfully"
+                    description = $"{lcda.LcdaName} have been added successfully"
                 });
             }
             else
@@ -194,7 +192,7 @@ namespace RemsNG.Controllers
                 return BadRequest(new Response()
                 {
                     code = MsgCode_Enum.FAIL,
-                    description = $"{lcda.lcdaName} registration failed"
+                    description = $"{lcda.LcdaName} registration failed"
                 });
             }
         }
@@ -202,9 +200,9 @@ namespace RemsNG.Controllers
         [Route("update")]
         [RemsRequirementAttribute("UPDATE_LCDA")]
         [HttpPost]
-        public async Task<IActionResult> EditLGA([FromBody] Lgda lcda)
+        public async Task<IActionResult> EditLGA([FromBody] LcdaModel lcda)
         {
-            if (string.IsNullOrEmpty(lcda.lcdaCode))
+            if (string.IsNullOrEmpty(lcda.LcdaCode))
             {
                 return BadRequest(new Response()
                 {
@@ -212,7 +210,7 @@ namespace RemsNG.Controllers
                     description = "LCGA Code is required!!!"
                 });
             }
-            else if (string.IsNullOrEmpty(lcda.lcdaName))
+            else if (string.IsNullOrEmpty(lcda.LcdaName))
             {
                 return BadRequest(new Response()
                 {
@@ -220,7 +218,7 @@ namespace RemsNG.Controllers
                     description = "LCGA name is required!!!"
                 });
             }
-            else if (lcda.domainId == default(Guid))
+            else if (lcda.DomainId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -228,7 +226,7 @@ namespace RemsNG.Controllers
                     description = "Domain Code is required!!!"
                 });
             }
-            else if (lcda.id == default(Guid))
+            else if (lcda.Id == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -237,7 +235,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            var oldlcda = await this.lcdaService.Get(lcda.id);
+            var oldlcda = await lcdaService.Get(lcda.Id);
             if (oldlcda == null)
             {
                 return NotFound(new Response()
@@ -247,13 +245,13 @@ namespace RemsNG.Controllers
                 });
             }
 
-            bool result = await this.lcdaService.Update(lcda);
+            bool result = await lcdaService.Update(lcda);
             if (result)
             {
                 return Ok(new Response()
                 {
                     code = MsgCode_Enum.SUCCESS,
-                    description = lcda.lcdaName + " has been updated successfully"
+                    description = lcda.LcdaName + " has been updated successfully"
                 });
             }
             else
@@ -261,7 +259,7 @@ namespace RemsNG.Controllers
                 return BadRequest(new Response()
                 {
                     code = MsgCode_Enum.SUCCESS,
-                    description = lcda.lcdaName + " has been updated successfully"
+                    description = lcda.LcdaName + " has been updated successfully"
                 });
             }
         }
@@ -269,9 +267,9 @@ namespace RemsNG.Controllers
         [Route("changestatus")]
         [RemsRequirementAttribute("CHANGE_LCDA_STATUS")]
         [HttpPost]
-        public async Task<IActionResult> ChangeStatus([FromBody] Lgda lcda)
+        public async Task<IActionResult> ChangeStatus([FromBody] LcdaModel lcda)
         {
-            if (string.IsNullOrEmpty(lcda.lcdaStatus))
+            if (string.IsNullOrEmpty(lcda.LcdaStatus))
             {
                 return BadRequest(new Response()
                 {
@@ -279,7 +277,7 @@ namespace RemsNG.Controllers
                     description = "Status is required!!!"
                 });
             }
-            else if (lcda.id == default(Guid))
+            else if (lcda.Id == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -287,7 +285,7 @@ namespace RemsNG.Controllers
                     description = "Invalid lgda selected"
                 });
             }
-            else if (CommonList.StatusLst.FirstOrDefault(x => x == lcda.lcdaStatus) == null)
+            else if (CommonList.StatusLst.FirstOrDefault(x => x == lcda.LcdaStatus) == null)
             {
                 return BadRequest(new Response()
                 {
@@ -296,7 +294,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            bool result = await lcdaService.Changetatus(lcda.id, lcda.lcdaStatus);
+            bool result = await lcdaService.Changetatus(lcda.Id, lcda.LcdaStatus);
             if (result)
             {
                 return Ok(new Response()
@@ -310,7 +308,7 @@ namespace RemsNG.Controllers
                 return new HttpMessageResult(new Response()
                 {
                     code = MsgCode_Enum.FAIL,
-                    description = $"An error occur while processing {lcda.lcdaName}. Please try again or contact an administrator"
+                    description = $"An error occur while processing {lcda.LcdaName}. Please try again or contact an administrator"
                 }, 409);
             }
         }
@@ -320,7 +318,7 @@ namespace RemsNG.Controllers
         [Route("userdomain/{id}")]
         public async Task<object> UserDomains([FromRoute] Guid id)
         {
-            User user = await userservice.Get(id);
+            UserModel user = await userservice.Get(id);
             if (user == null)
             {
                 return NotFound(new Response()
@@ -338,7 +336,7 @@ namespace RemsNG.Controllers
         [Route("userroledomain/{id}")]
         public async Task<object> UserRoleDomains([FromRoute] Guid id)
         {
-            User user = await userservice.Get(id);
+            UserModel user = await userservice.Get(id);
             if (user == null)
             {
                 return NotFound(new Response()
@@ -376,9 +374,9 @@ namespace RemsNG.Controllers
         [RemsRequirementAttribute("REMOVE_USER_FROM LCDA")]
         [HttpPost]
         [Route("removeuserfromdomain")]
-        public async Task<object> RemoveUserFromDomain([FromBody] UserLcda userLcda)
+        public async Task<object> RemoveUserFromDomain([FromBody] UserLcdaModel userLcda)
         {
-            if (userLcda.userId == default(Guid))
+            if (userLcda.UserId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -386,7 +384,7 @@ namespace RemsNG.Controllers
                     description = "User is required"
                 });
             }
-            else if (userLcda.lgdaId == default(Guid))
+            else if (userLcda.LgdaId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -395,7 +393,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            RoleExtension roleExtension = await roleService.UserDomainRolesByDomainId(userLcda.userId, userLcda.lgdaId);
+            RoleExtensionModel roleExtension = await roleService.UserDomainRolesByDomainId(userLcda.UserId, userLcda.LgdaId);
             if (roleExtension != null)
             {
                 return BadRequest(new Response()
@@ -407,7 +405,7 @@ namespace RemsNG.Controllers
 
             // remove
 
-            bool result = await lcdaService.RemoveUserFromLCDA(userLcda);
+            bool result = await lcdaService.RemoveUserFromLcda(userLcda);
             if (result)
             {
                 return Ok(new Response()

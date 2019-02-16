@@ -8,12 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using RemsNG.Common.Models;
 using RemsNG.Extensions;
-using RemsNG.Models;
-using RemsNG.ORM;
 using RemsNG.Security;
-using RemsNG.Services;
-using RemsNG.Services.Interfaces;
 using System.IO;
 
 namespace RemsNG
@@ -54,7 +51,7 @@ namespace RemsNG
             loggerFactory.AddDebug();
             loggerFactory.AddConsole();
             loggerFactory.AddFile("Logs/remsng-logs-{Date}.txt");
-           // DbInitializer.Initialize(dbContext);
+            // DbInitializer.Initialize(dbContext);
             app.UseCors("CorsPolicy");
             app.UseHangfireDashboard();
 

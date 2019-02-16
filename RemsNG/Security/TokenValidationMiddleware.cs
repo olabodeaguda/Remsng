@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using RemsNG.Services;
-using RemsNG.Services.Interfaces;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -20,7 +20,7 @@ namespace RemsNG.Security
             this.next = next;
         }
 
-        public async Task Invoke(HttpContext context, ILoggerFactory loggerFactory, IUserService userService)
+        public async Task Invoke(HttpContext context, ILoggerFactory loggerFactory, IUserManagers userService)
         {
             logger = loggerFactory;
             try
@@ -52,7 +52,9 @@ namespace RemsNG.Security
                                 }
                             }
 
-                            context.User = handler.ValidateToken(token, ServicesCollection.tokenValidationParameters(), out SecurityToken validatedToken);
+                            context.User = handler.ValidateToken(token,
+                                ServicesCollection.tokenValidationParameters(),
+                                out SecurityToken validatedToken);
                             await next(context);
                         }
                         catch (Exception ex)

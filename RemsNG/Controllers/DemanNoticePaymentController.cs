@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using RemsNG.Exceptions;
-using RemsNG.Models;
-using RemsNG.ORM;
+using RemsNG.Common.Exceptions;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
+using RemsNG.Infrastructure.Extensions;
 using RemsNG.Security;
-using RemsNG.Services.Interfaces;
-using RemsNG.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,17 +20,17 @@ namespace RemsNG.Controllers
     [Route("api/v1/payment")]
     public class DemanNoticePaymentController : Controller
     {
-        private readonly IItemPenaltyService _penaltyService;
-        private readonly IDNPaymentHistoryService dNPaymentHistoryService;
-        private readonly IDemandNoticeTaxpayerService demandNoticeTaxpayerService;
+        private readonly IItemPenaltyManagers _penaltyService;
+        private readonly IDNPaymentHistoryManagers dNPaymentHistoryService;
+        private readonly IDemandNoticeTaxpayerManagers demandNoticeTaxpayerService;
         private ILogger logger;
-        private IDNAmountDueMgtService amountDueMgtService;
-        private IAbstractService abstractService;
-        public DemanNoticePaymentController(IDNPaymentHistoryService _dNPaymentHistoryService,
-            IDemandNoticeTaxpayerService _demandNoticeTaxpayerService,
-            ITaxpayerService _taxpayerService, ILoggerFactory loggerFactory,
-            IDNAmountDueMgtService _amountDueMgtService, IAbstractService _abstractService,
-            IItemPenaltyService penaltyService)
+        private IDNAmountDueMgtManagers amountDueMgtService;
+        private IAbstractManagers abstractService;
+        public DemanNoticePaymentController(IDNPaymentHistoryManagers _dNPaymentHistoryService,
+            IDemandNoticeTaxpayerManagers _demandNoticeTaxpayerService,
+            ITaxpayerManagers _taxpayerService, ILoggerFactory loggerFactory,
+            IDNAmountDueMgtManagers _amountDueMgtService, IAbstractManagers _abstractService,
+            IItemPenaltyManagers penaltyService)
         {
             dNPaymentHistoryService = _dNPaymentHistoryService;
             dNPaymentHistoryService = _dNPaymentHistoryService;
@@ -42,50 +42,50 @@ namespace RemsNG.Controllers
         }
 
         [HttpGet("{billingNumber}")]
-        public async Task<List<DemandNoticePaymentHistoryExt>> Get(string billingNumber)
+        public async Task<List<DemandNoticePaymentHistoryModelExt>> Get(string billingNumber)
         {
             return await dNPaymentHistoryService.ByBillingNumber(billingNumber);
         }
 
         [RemsRequirementAttribute("REGISTER_PAYMENT")]
         [HttpPost]
-        public async Task<Response> Post([FromBody]DemandNoticePaymentHistory value, [FromHeader] string dateCreated)
+        public async Task<Response> Post([FromBody]DemandNoticePaymentHistoryModel value, [FromHeader] string dateCreated)
         {
-            if (value.amount < 1)
+            if (value.Amount < 1)
             {
                 throw new InvalidCredentialsException("Amount is required");
             }
-            else if (value.bankId == default(Guid))
+            else if (value.BankId == default(Guid))
             {
                 throw new InvalidCredentialsException("Bank is required");
             }
-            else if (string.IsNullOrEmpty(value.billingNumber))
+            else if (string.IsNullOrEmpty(value.BillingNumber))
             {
                 throw new InvalidCredentialsException("Bank is required");
             }
-            else if (string.IsNullOrEmpty(value.referenceNumber))
+            else if (string.IsNullOrEmpty(value.ReferenceNumber))
             {
                 throw new InvalidCredentialsException("Reference number is required");
             }
             if (!string.IsNullOrEmpty(dateCreated))
             {
-                value.dateCreated = DateTime.ParseExact(dateCreated, "dd-MM-yyyy", null);
+                value.DateCreated = DateTime.ParseExact(dateCreated, "dd-MM-yyyy", null);
             }
             else
             {
-                value.dateCreated = DateTime.Now;
+                value.DateCreated = DateTime.Now;
             }
 
-            var taxpayeD = await demandNoticeTaxpayerService.TaxpayerMiniByBillingNo(value.billingNumber);
+            var taxpayeD = await demandNoticeTaxpayerService.TaxpayerMiniByBillingNo(value.BillingNumber);
             if (taxpayeD == null)
             {
                 throw new NotFoundException("Billing number not found");
             }
 
             // Lgda lgda = await taxpayerService.getLcda(t.taxpayerId);
-            value.ownerId = taxpayeD.taxpayerId;
-            value.createdBy = User.Identity.Name;
-            value.paymentMode = PaymentModeEnum.BANKS.ToString();
+            value.OwnerId = taxpayeD.TaxpayerId;
+            value.CreatedBy = User.Identity.Name;
+            value.PaymentMode = PaymentModeEnum.BANKS.ToString();
             return await dNPaymentHistoryService.AddAsync(value);
         }
 
@@ -117,7 +117,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            return await dNPaymentHistoryService.ByLcdaId(id, new Models.PageModel() { PageNum = int.Parse(pageNum), PageSize = int.Parse(pageSize) });
+            return await dNPaymentHistoryService.ByLcdaId(id, new PageModel() { PageNum = int.Parse(pageNum), PageSize = int.Parse(pageSize) });
         }
 
         [RemsRequirementAttribute("APPROVE_PAYMENT")]
@@ -143,7 +143,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            DemandNoticePaymentHistory dnph = await dNPaymentHistoryService.ById(id);
+            DemandNoticePaymentHistoryModel dnph = await dNPaymentHistoryService.ById(id);
             if (dnph == null)
             {
                 logger.LogWarning("Payment identity is invalid", id);
@@ -175,14 +175,14 @@ namespace RemsNG.Controllers
 
                 }
 
-                var txpayer = await demandNoticeTaxpayerService.TaxpayerMiniByBillingNo(dnph.billingNumber);
-                var prepay = await dNPaymentHistoryService.GetPrepaymentByTaxpayerId(txpayer.taxpayerId);
+                var txpayer = await demandNoticeTaxpayerService.TaxpayerMiniByBillingNo(dnph.BillingNumber);
+                var prepay = await dNPaymentHistoryService.GetPrepaymentByTaxpayerId(txpayer.TaxpayerId);
                 if (prepay != null)
                 {
-                    dnph.amount = dnph.amount + prepay.amount;
+                    dnph.Amount = dnph.Amount + prepay.amount;
                     query = query + $"update tbl_prepayment set prepaymentStatus = 'CLOSED' where id= {prepay.id};";
                 }
-                if ((dnph.amount + dnph.charges) < 1)
+                if ((dnph.Amount + dnph.Charges) < 1)
                 {
                     logger.LogWarning("Payment amount must be more than zero", dnph);
                     return BadRequest(new Response()
@@ -191,36 +191,36 @@ namespace RemsNG.Controllers
                         description = "Please refresh your page an try again"
                     });
                 }
-                List<DNAmountDueModel> paymentDueList = await amountDueMgtService.ByBillingNo(dnph.billingNumber);
+                List<DNAmountDueModel> paymentDueList = await amountDueMgtService.ByBillingNo(dnph.BillingNumber);
 
-                if ((dnph.amount + dnph.charges) == paymentDueList.Sum(x => (x.itemAmount - x.amountPaid)))
+                if ((dnph.Amount + dnph.Charges) == paymentDueList.Sum(x => (x.itemAmount - x.amountPaid)))
                 {
-                    amountDueMgtService.CurrentAmountDue(paymentDueList, dnph.amount, true);
+                    amountDueMgtService.CurrentAmountDue(paymentDueList, dnph.Amount, true);
 
                     query = query + amountDueMgtService.PaymentQuery(paymentDueList, dnph,
                        DemandNoticeStatus.PAID.ToString(), User.Identity.Name);
                 }
-                else if ((dnph.amount + dnph.charges) > paymentDueList.Sum(x => (x.itemAmount - x.amountPaid)))
+                else if ((dnph.Amount + dnph.Charges) > paymentDueList.Sum(x => (x.itemAmount - x.amountPaid)))
                 {
-                    decimal rmain = (dnph.amount + dnph.charges) - paymentDueList.Sum(x => (x.itemAmount - x.amountPaid));
+                    decimal rmain = (dnph.Amount + dnph.Charges) - paymentDueList.Sum(x => (x.itemAmount - x.amountPaid));
 
-                    amountDueMgtService.CurrentAmountDue(paymentDueList, (dnph.amount + dnph.charges) - rmain, true);
+                    amountDueMgtService.CurrentAmountDue(paymentDueList, (dnph.Amount + dnph.Charges) - rmain, true);
                     query = query + amountDueMgtService.PaymentQuery(paymentDueList, dnph,
                        DemandNoticeStatus.PAID.ToString(), User.Identity.Name);
                     //over payment by taxpayer 
-                    query = query + $"insert into tbl_prepayment(taxpayerId,amount,datecreated) values('{txpayer.taxpayerId}','{rmain}',getdate());";
+                    query = query + $"insert into tbl_prepayment(taxpayerId,amount,datecreated) values('{txpayer.TaxpayerId}','{rmain}',getdate());";
                 }
                 else
                 {
                     List<DNAmountDueModel> paymentDueList2 = paymentDueList.Where(p => p.itemAmount > p.amountPaid).ToList();
-                    amountDueMgtService.CurrentAmountDue(paymentDueList2, dnph.amount, false);
+                    amountDueMgtService.CurrentAmountDue(paymentDueList2, dnph.Amount, false);
 
                     query = query + amountDueMgtService.PaymentQuery(paymentDueList, dnph,
                         DemandNoticeStatus.PART_PAYMENT.ToString(), User.Identity.Name);
                 }
             }
 
-            query = query + $"update tbl_demandNoticeTaxpayers set isUnbilled= 0 where billingNumber = '{dnph.billingNumber}' ";
+            query = query + $"update tbl_demandNoticeTaxpayers set isUnbilled= 0 where billingNumber = '{dnph.BillingNumber}' ";
 
 
             if (!string.IsNullOrEmpty(query))

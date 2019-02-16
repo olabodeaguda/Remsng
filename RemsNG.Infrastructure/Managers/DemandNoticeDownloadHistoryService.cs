@@ -2,16 +2,10 @@
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
-using RemsNG.Dao;
 using RemsNG.Data.Repository;
-using RemsNG.ORM;
-using RemsNG.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
-namespace RemsNG.Services
+namespace RemsNG.Infrastructure.Managers
 {
     public class DemandNoticeDownloadHistoryManagers : IDemandNoticeDownloadHistoryManagers
     {

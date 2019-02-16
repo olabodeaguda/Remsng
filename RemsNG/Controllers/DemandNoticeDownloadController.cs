@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using System.Net.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.NodeServices;
-using Microsoft.AspNetCore.Authorization;
-using RemsNG.Services.Interfaces;
-using RemsNG.Models;
-using RemsNG.Utilities;
-using RemsNG.ORM;
-using RemsNG.Exceptions;
-using RemsNG.Security;
 using Microsoft.Extensions.Logging;
-
+using RemsNG.Common.Exceptions;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
+using RemsNG.Security;
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace RemsNG.Controllers
 {
@@ -25,17 +20,17 @@ namespace RemsNG.Controllers
     {
         private IHostingEnvironment hostingEnvironment;
         private INodeServices nodeServices;
-        private IDnDownloadService dnd;
+        private IDnDownloadManagers dnd;
         private readonly ILogger logger;
-        private readonly IBatchDwnRequestService batchRequestService;
-        private IDNPaymentHistoryService paymentHistoryService;
+        private readonly IBatchDwnRequestManagers batchRequestService;
+        private IDNPaymentHistoryManagers paymentHistoryService;
         public DemandNoticeDownloadController(IHostingEnvironment _hostingEnvironment,
-            INodeServices _nodeServices, IDnDownloadService _dnd, 
-            IBatchDwnRequestService _batchRequestService,
-            IDNPaymentHistoryService _paymentHistoryService,
+            INodeServices _nodeServices, IDnDownloadManagers _dnd,
+            IBatchDwnRequestManagers _batchRequestService,
+            IDNPaymentHistoryManagers _paymentHistoryService,
             ILoggerFactory loggerFactory)
         {
-            this.hostingEnvironment = _hostingEnvironment;
+            hostingEnvironment = _hostingEnvironment;
             nodeServices = _nodeServices;
             dnd = _dnd;
             batchRequestService = _batchRequestService;
@@ -82,9 +77,9 @@ namespace RemsNG.Controllers
         {
             //log zip download by xxx user
 
-           // HttpClient hc = new HttpClient();
+            // HttpClient hc = new HttpClient();
             string rootUrl = hostingEnvironment.WebRootPath; //$"http://{Request.Host}";
-            
+
             var result = await System.IO.File.ReadAllBytesAsync($"{rootUrl}/zipReports/{batchno}/{batchno}.zip");
             //var result = await hc.GetByteArrayAsync($"{rootUrl}/zipReports/{batchno}/{batchno}.zip");
             if (result.Length < 1)
@@ -116,7 +111,7 @@ namespace RemsNG.Controllers
 
             return await batchRequestService.ListByBatchNo(batchno);
         }
-        
+
         [RemsRequirementAttribute("BULK_DOWNLOAD")]
         [HttpPost("{batchno}")]
         public async Task<object> Post(string batchno)
@@ -152,23 +147,23 @@ namespace RemsNG.Controllers
         [Route("receipt/{id}")]
         public async Task<object> DownloadReciept(Guid id)
         {
-            if(id == Guid.Empty)
+            if (id == Guid.Empty)
             {
                 throw new InvalidCredentialsException("Invalid request");
             }
-            DemandNoticePaymentHistory dnph = await paymentHistoryService.ByIdExtended(id);
+            DemandNoticePaymentHistoryModel dnph = await paymentHistoryService.ByIdExtended(id);
             if (dnph == null)
             {
                 throw new NotFoundException("Request not found");
             }
             HttpClient hc = new HttpClient();
-            string template = await dnd.ReceiptTemlate(dnph.billingNumber);
+            string template = await dnd.ReceiptTemlate(dnph.BillingNumber);
 
             string rootUrl = hostingEnvironment.WebRootPath;
             var htmlContent = await System.IO.File.ReadAllTextAsync($"{rootUrl}/templates/{template}");
 
-            htmlContent = await dnd.PopulateReceiptHtml(htmlContent, rootUrl, User.Identity.Name,dnph);
-            htmlContent = htmlContent.Replace("BANK_NAME", dnph.bankName);
+            htmlContent = await dnd.PopulateReceiptHtml(htmlContent, rootUrl, User.Identity.Name, dnph);
+            htmlContent = htmlContent.Replace("BANK_NAME", dnph.BankName);
             var result = await nodeServices.InvokeAsync<byte[]>("./pdf", htmlContent);
 
             HttpContext.Response.ContentType = "application/pdf";

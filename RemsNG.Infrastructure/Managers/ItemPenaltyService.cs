@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RemsNG.Services
+namespace RemsNG.Infrastructure.Managers
 {
     public class ItemPenaltyManagers : IItemPenaltyManagers
     {
@@ -23,7 +23,7 @@ namespace RemsNG.Services
             , IDNAmountDueMgtManagers dNAmountDueMgtService,
             ILoggerFactory loggerFactory)
         {
-            itemPenaltyDao = new ItemPenaltyManagers(_db);
+            itemPenaltyDao = new ItemPenaltyRepository(_db);
             demandNoticeTaxpayersDao = new DemandNoticeTaxpayersRepository(_db);
             _admService = dNAmountDueMgtService;
             demandNoticePenaltyDao = new DemandNoticePenaltyRepository(_db);

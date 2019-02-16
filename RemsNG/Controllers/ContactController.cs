@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RemsNG.Models;
-using RemsNG.Utilities;
-using RemsNG.Services;
-using RemsNG.ORM;
-using RemsNG.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
 using RemsNG.Security;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using System;
+using System.Threading.Tasks;
 
 namespace RemsNG.Controllers
 {
@@ -19,9 +13,9 @@ namespace RemsNG.Controllers
     [Route("api/v1/contact")]
     public class ContactController : Controller
     {
-        private IContactService contactService;
-        private IUserService userService;
-        public ContactController(IUserService _userService, IContactService _contactService)
+        private IContactManagers contactService;
+        private IUserManagers userService;
+        public ContactController(IUserManagers _userService, IContactManagers _contactService)
         {
             contactService = _contactService;
             userService = _userService;
@@ -52,9 +46,9 @@ namespace RemsNG.Controllers
         }
 
         [HttpPost]
-        public async Task<object> Post([FromBody]ContactDetail contactDetail)
+        public async Task<object> Post([FromBody]ContactDetailModel contactDetail)
         {
-            if (string.IsNullOrEmpty(contactDetail.contactType))
+            if (string.IsNullOrEmpty(contactDetail.ContactType))
             {
                 return BadRequest(new Response()
                 {
@@ -62,7 +56,7 @@ namespace RemsNG.Controllers
                     description = "Contact Type is required!!!"
                 });
             }
-            else if (string.IsNullOrEmpty(contactDetail.contactValue))
+            else if (string.IsNullOrEmpty(contactDetail.ContactValue))
             {
                 return BadRequest(new Response()
                 {
@@ -71,9 +65,9 @@ namespace RemsNG.Controllers
                 });
             }
 
-            contactDetail.createdBy = User.Identity.Name;
-            contactDetail.dateCreated = DateTime.Now;
-            contactDetail.id = Guid.NewGuid();
+            contactDetail.CreatedBy = User.Identity.Name;
+            contactDetail.DateCreated = DateTime.Now;
+            contactDetail.Id = Guid.NewGuid();
 
             bool result = await contactService.Add(contactDetail);
 
@@ -87,7 +81,7 @@ namespace RemsNG.Controllers
             }
             else
             {
-                return new  HttpMessageResult(new Response()
+                return new HttpMessageResult(new Response()
                 {
                     code = MsgCode_Enum.FAIL,
                     description = "An error occur while trying to create contact"
@@ -97,7 +91,7 @@ namespace RemsNG.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public async Task<object> Put(Guid id, [FromBody]ContactDetail contactDetail)
+        public async Task<object> Put(Guid id, [FromBody]ContactDetailModel contactDetail)
         {
             if (default(Guid) == id)
             {
@@ -108,7 +102,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            ContactDetail cd = await contactService.ById(id);
+            ContactDetailModel cd = await contactService.ById(id);
             if (cd == null)
             {
                 return NotFound(new Response()
@@ -137,7 +131,7 @@ namespace RemsNG.Controllers
             }
         }
 
-        
+
         [HttpDelete("{id}")]
         public async Task<object> Delete(Guid id)
         {
@@ -150,7 +144,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            ContactDetail cd = await contactService.ById(id);
+            ContactDetailModel cd = await contactService.ById(id);
             if (cd == null)
             {
                 return NotFound(new Response()

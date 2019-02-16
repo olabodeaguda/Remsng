@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RemsNG.Models;
-using RemsNG.ORM;
-using RemsNG.Services.Interfaces;
-using RemsNG.Utilities;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
 using System;
 using System.Threading.Tasks;
 
@@ -15,9 +14,9 @@ namespace RemsNG.Controllers
     [Route("api/v1/street")]
     public class StreetController : Controller
     {
-        private readonly IStreetService streetService;
+        private readonly IStreetManagers streetService;
 
-        public StreetController(IStreetService _streetService)
+        public StreetController(IStreetManagers _streetService)
         {
             streetService = _streetService;
         }
@@ -72,9 +71,9 @@ namespace RemsNG.Controllers
         }
 
         [HttpPost]
-        public async Task<object> Post([FromBody]Street value)
+        public async Task<object> Post([FromBody]StreetModel value)
         {
-            if (value.wardId == default(Guid))
+            if (value.WardId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -82,7 +81,7 @@ namespace RemsNG.Controllers
                     description = "Ward is required"
                 });
             }
-            else if (string.IsNullOrEmpty(value.streetName))
+            else if (string.IsNullOrEmpty(value.StreetName))
             {
                 return BadRequest(new Response()
                 {
@@ -91,16 +90,16 @@ namespace RemsNG.Controllers
                 });
             }
 
-            value.createdBy = User.Identity.Name;
+            value.CreatedBy = User.Identity.Name;
             Response response = await streetService.Add(value);
 
             return Ok(response);
         }
 
         [HttpPut("{id}")]
-        public async Task<object> Put(Guid id, [FromBody]Street value)
+        public async Task<object> Put(Guid id, [FromBody]StreetModel value)
         {
-            if (value.wardId == default(Guid))
+            if (value.WardId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -108,7 +107,7 @@ namespace RemsNG.Controllers
                     description = "Ward is required"
                 });
             }
-            else if (string.IsNullOrEmpty(value.streetName))
+            else if (string.IsNullOrEmpty(value.StreetName))
             {
                 return BadRequest(new Response()
                 {
@@ -116,7 +115,7 @@ namespace RemsNG.Controllers
                     description = "Street Name is required"
                 });
             }
-            else if (value.id == default(Guid))
+            else if (value.Id == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -125,7 +124,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            value.lastmodifiedby = User.Identity.Name;
+            value.Lastmodifiedby = User.Identity.Name;
             Response response = await streetService.Update(value);
             return Ok(response);
         }

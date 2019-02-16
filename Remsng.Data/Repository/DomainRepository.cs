@@ -50,7 +50,17 @@ namespace RemsNG.Data.Repository
         public async Task<bool> Add(DomainModel domain)
         {
             domain.DomainType = EncryptDecryptUtils.ToHexString("others");
-            db.Domains.Add(domain);
+            db.Domains.Add(new Domain()
+            {
+                AddressId = domain.AddressId,
+                Datecreated = domain.Datecreated,
+                DomainCode = domain.DomainCode,
+                DomainName = domain.DomainName,
+                DomainStatus = domain.DomainStatus,
+                DomainType = domain.DomainType,
+                Id = domain.Id,
+                StateId = domain.StateId
+            });
             int count = await db.SaveChangesAsync();
             if (count > 0)
             {

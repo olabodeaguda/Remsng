@@ -7,28 +7,31 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Services;
 using RemsNG.Common.Models;
+using RemsNG.Infrastructure.Managers;
 using RemsNG.Models;
 using RemsNG.Security;
-using RemsNG.Services.Interfaces;
+using RemsNG.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RemsNG.Services
+namespace RemsNG.Extensions
 {
     public class ServicesCollection
     {
-        private static IConfigurationRoot _Configuration;
+        private static IConfiguration _Configuration;
 
-        public static IConfigurationRoot Configuration
+        public static IConfiguration Configuration
         {
             get => _Configuration;
             set => _Configuration = value;
         }
 
-        public static void Initialize(IServiceCollection services, IConfigurationRoot config,
+        public static void Initialize(IServiceCollection services, IConfiguration config,
             ILoggerFactory loggerFactory)
         {
             Configuration = config;
@@ -103,44 +106,44 @@ namespace RemsNG.Services
 
             #region service DI
 
-            services.AddTransient<IUserService, UserService>();
-            services.AddTransient<IDomainService, DomainService>();
-            services.AddTransient<ILcdaService, LcdaService>();
-            services.AddTransient<IWardService, WardService>();
-            services.AddTransient<IRoleService, RoleService>();
-            services.AddTransient<IPermission, PermissionManagers>();
-            services.AddTransient<IContactService, ContactService>();
-            services.AddTransient<IStreetService, StreetManagers>();
-            services.AddTransient<ISectorService, SectorManagers>();
-            services.AddTransient<IItemService, ItemManagers>();
-            services.AddTransient<IItemPenaltyService, ItemPenaltyService>();
-            services.AddTransient<ITaxpayerCategoryService, TaxpayerCategoryService>();
-            services.AddTransient<ITaxpayerService, TaxpayerService>();
-            services.AddTransient<ICompany, CompanyManagers>();
-            services.AddTransient<IAddress, AddressService>();
-            services.AddTransient<ICompanyItemService, CompanyItemManagers>();
-            services.AddTransient<IDemandNoticeService, DemanNoticeService>();
-            services.AddTransient<IRunDemandNoticeService, RunDemandNoticeService>();
-            services.AddTransient<IDnTaxpayer, DnTaxpayerService>();
-            services.AddTransient<IStateService, StateService>();
-            services.AddTransient<IImageService, ImageService>();
-            services.AddTransient<IDemandNoticeTaxpayerService, DemandNoticeTaxpayerManagers>();
-            services.AddTransient<IDemandNoticeItemService, DemandNoticeItemManagers>();
-            services.AddTransient<IDnDownloadService, DnDownloadService>();
-            services.AddTransient<IDemandNoticeCharges, DemandNoticeChargesManagers>();
-            services.AddTransient<IDemandNoticeCharges, DemandNoticeChargesManagers>();
-            services.AddTransient<IDemandNoticeDownloadHistory, DemandNoticeDownloadHistoryManagers>();
-            services.AddTransient<ILcdaBankService, LcdaBankService>();
-            services.AddTransient<IBatchDwnRequestService, BatchDwnRequestService>();
-            services.AddTransient<IListPropertyService, ListPropertyService>();
-            services.AddTransient<IDNAmountDueMgtService, DNAmountDueMgtService>();
-            services.AddTransient<IDNPaymentHistoryService, DNPaymentHistoryService>();
-            services.AddTransient<IBankService, BankManagers>();
-            services.AddTransient<IAbstractService, AbstractManagers>();
-            services.AddTransient<IReportService, ReportService>();
+            services.AddTransient<IUserManagers, UserManagers>();
+            services.AddTransient<IDomainManagers, DomainManagers>();
+            services.AddTransient<ILcdaManagers, LcdaManagers>();
+            services.AddTransient<IWardManagers, WardManagers>();
+            services.AddTransient<IRoleManagers, RoleManagers>();
+            services.AddTransient<IPermissionManagers, PermissionManagers>();
+            services.AddTransient<IContactManagers, ContactManagers>();
+            services.AddTransient<IStreetManagers, StreetManagers>();
+            services.AddTransient<ISectorManagers, SectorManagers>();
+            services.AddTransient<IItemManagers, ItemManagers>();
+            services.AddTransient<IItemPenaltyManagers, ItemPenaltyManagers>();
+            services.AddTransient<ITaxpayerCategoryManagers, TaxpayerCategoryManagers>();
+            services.AddTransient<ITaxpayerManagers, TaxpayerManagers>();
+            services.AddTransient<ICompanyManagers, CompanyManagers>();
+            services.AddTransient<IAddressManagers, AddressManagers>();
+            services.AddTransient<ICompanyItemManagers, CompanyItemManagers>();
+            services.AddTransient<IDemandNoticeManagers, DemanNoticeManagers>();
+            services.AddTransient<IRunDemandNoticeManagers, RunDemandNoticeManagers>();
+            services.AddTransient<IDnTaxpayerManagers, DnTaxpayerManagers>();
+            services.AddTransient<IStateManagers, StateManagers>();
+            services.AddTransient<IImageManagers, ImageManagers>();
+            services.AddTransient<IDemandNoticeTaxpayerManagers, DemandNoticeTaxpayerManagers>();
+            services.AddTransient<IDemandNoticeItemManagers, DemandNoticeItemManagers>();
+            services.AddTransient<IDnDownloadManagers, DnDownloadManagers>();
+            services.AddTransient<IDemandNoticeChargesManagers, DemandNoticeChargesManagers>();
+            services.AddTransient<IDemandNoticeChargesManagers, DemandNoticeChargesManagers>();
+            services.AddTransient<IDemandNoticeDownloadHistoryManagers, DemandNoticeDownloadHistoryManagers>();
+            services.AddTransient<ILcdaBankManagers, LcdaBankManagers>();
+            services.AddTransient<IBatchDwnRequestManagers, BatchDwnRequestManagers>();
+            services.AddTransient<IListPropertyManagers, ListPropertyManagers>();
+            services.AddTransient<IDNAmountDueMgtManagers, DNAmountDueMgtManagers>();
+            services.AddTransient<IDNPaymentHistoryManagers, DNPaymentHistoryManagers>();
+            services.AddTransient<IBankManagers, BankManagers>();
+            services.AddTransient<IAbstractManagers, AbstractManagers>();
+            services.AddTransient<IReportManagers, ReportManagers>();
             services.AddTransient<IExcelService, ExcelService>();
-            services.AddTransient<ISyncService, SyncManagers>();
-            services.AddSingleton<IConfigurationRoot>(provider => Configuration);
+            services.AddTransient<ISyncManagers, SyncManagers>();
+            services.AddSingleton<IConfigurationRoot>(provider => (IConfigurationRoot)Configuration);
             services.AddSingleton(config.GetSection("BankCategory").Get<BankCategory>());
             #endregion
         }
