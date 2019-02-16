@@ -13,7 +13,7 @@ namespace RemsNG.Data.Repository
 {
     public class CompanyRepository : AbstractRepository
     {
-        public CompanyRepository(RemsDbContext _db) : base(_db)
+        public CompanyRepository(DbContext _db) : base(_db)
         {
         }
 
@@ -47,7 +47,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> Update(CompanyModel company)
         {
-            var r = await db.Companies.FindAsync(new object[] { company.Id });
+            var r = await db.Set<Company>().FindAsync(new object[] { company.Id });
             if (r == null)
             {
                 throw new NotFoundException($"{company.CompanyName} can not be found");
@@ -79,7 +79,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> UpdateStatus(CompanyModel company)
         {
-            var r = await db.Companies.FindAsync(new object[] { company.Id });
+            var r = await db.Set<Company>().FindAsync(new object[] { company.Id });
             if (r == null)
             {
                 throw new NotFoundException($"{company.CompanyName} can not be found");
@@ -108,7 +108,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<CompanyModel> ById(Guid id)
         {
-            var p = await db.Companies.FirstOrDefaultAsync(x => x.Id == id);
+            var p = await db.Set<Company>().FirstOrDefaultAsync(x => x.Id == id);
             if (p == null)
             {
                 return null;

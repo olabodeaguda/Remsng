@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Remsng.Data;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Managers;
@@ -19,7 +20,7 @@ namespace RemsNG.Infrastructure.Managers
         private readonly DemandNoticeTaxpayersRepository demandNoticeTaxpayersDao;
         private readonly DemandNoticePenaltyRepository demandNoticePenaltyDao;
         private readonly ILogger logger;
-        public ItemPenaltyManagers(RemsDbContext _db
+        public ItemPenaltyManagers(DbContext _db
             , IDNAmountDueMgtManagers dNAmountDueMgtService,
             ILoggerFactory loggerFactory)
         {

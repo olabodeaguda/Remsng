@@ -1,4 +1,5 @@
-﻿using Remsng.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
@@ -11,7 +12,7 @@ namespace RemsNG.Services
     public class WardManagers : IWardManagers
     {
         private WardRepository wardDao;
-        public WardManagers(RemsDbContext db)
+        public WardManagers(DbContext db)
         {
             wardDao = new WardRepository(db);
         }

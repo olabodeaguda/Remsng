@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
@@ -10,7 +11,7 @@ namespace RemsNG.Infrastructure.Managers
     public class DemandNoticeDownloadHistoryManagers : IDemandNoticeDownloadHistoryManagers
     {
         DemandNoticeDownloadHistoryRepository dndh;
-        public DemandNoticeDownloadHistoryManagers(RemsDbContext _db, ILoggerFactory loggerFactory)
+        public DemandNoticeDownloadHistoryManagers(DbContext _db, ILoggerFactory loggerFactory)
         {
             dndh = new DemandNoticeDownloadHistoryRepository(_db, loggerFactory);
         }

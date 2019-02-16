@@ -12,13 +12,13 @@ namespace RemsNG.Data.Repository
 {
     public class ItemRepository : AbstractRepository
     {
-        public ItemRepository(RemsDbContext _db) : base(_db)
+        public ItemRepository(DbContext _db) : base(_db)
         {
         }
 
         public async Task<Response> Add(ItemModel item)
         {
-            var r = await db.Items.FirstOrDefaultAsync(x => x.ItemDescription.ToLower() == item.ItemDescription.ToLower()
+            var r = await db.Set<Item>().FirstOrDefaultAsync(x => x.ItemDescription.ToLower() == item.ItemDescription.ToLower()
             && item.LcdaId == x.LcdaId);
             if (r != null)
             {
@@ -27,7 +27,7 @@ namespace RemsNG.Data.Repository
             }
 
             item.DateCreated = DateTime.Now;
-            db.Items.Add(new Item()
+            db.Set<Item>().Add(new Item()
             {
                 CreatedBy = item.CreatedBy,
                 DateCreated = item.DateCreated,
@@ -60,7 +60,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> Update(ItemModel item)
         {
-            var r = await db.Items.FindAsync(new object[] { item.Id });
+            var r = await db.Set<Item>().FindAsync(new object[] { item.Id });
             if (r == null)
             {
                 throw new NotFoundException($"{item.ItemDescription} does not exist");
@@ -92,7 +92,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> UpdateStatus(ItemModel item)
         {
-            var r = await db.Items.FindAsync(new object[] { item.Id });
+            var r = await db.Set<Item>()
+                .FindAsync(new object[] { item.Id });
             if (r == null)
             {
                 throw new NotFoundException($"{item.ItemDescription} does not exist");
@@ -123,9 +124,10 @@ namespace RemsNG.Data.Repository
 
         public async Task<object> ListByLcdaId(Guid lcdaId, PageModel pageModel)
         {
-            var results = await db.Items.Where(x => x.LcdaId == lcdaId).Skip((pageModel.PageNum - 1) * pageModel.PageSize)
+            var results = await db.Set<Item>().Where(x => x.LcdaId == lcdaId).Skip((pageModel.PageNum - 1) * pageModel.PageSize)
                 .Take(pageModel.PageSize).ToListAsync();
-            var totalCount = await db.Items.Where(x => x.LcdaId == lcdaId).CountAsync();
+            var totalCount = await db.Set<Item>()
+                .Where(x => x.LcdaId == lcdaId).CountAsync();
             return new
             {
                 data = results,
@@ -136,17 +138,20 @@ namespace RemsNG.Data.Repository
 
         public async Task<object> ListByLcdaId(Guid lcdaId)
         {
-            return await db.Items.Where(x => x.LcdaId == lcdaId).ToListAsync();
+            return await db.Set<Item>()
+                .Where(x => x.LcdaId == lcdaId).ToListAsync();
         }
 
         public async Task<object> GetItemByIdAsync(Guid id)
         {
-            return await db.Items.FirstOrDefaultAsync(x => x.Id == id);
+            return await db.Set<Item>()
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<object> GetByTaxPayersId(Guid taxpayersId)
         {
-            return await db.Items.FromSql("sp_itemByTaxpayersid @p0", new object[] { taxpayersId }).ToListAsync();
+            return await db.Set<Item>()
+                .FromSql("sp_itemByTaxpayersid @p0", new object[] { taxpayersId }).ToListAsync();
         }
     }
 }

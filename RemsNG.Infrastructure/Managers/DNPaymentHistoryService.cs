@@ -1,4 +1,5 @@
-﻿using Remsng.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
@@ -12,7 +13,7 @@ namespace RemsNG.Infrastructure.Managers
     {
         private DNPaymentHistoryRepository _dnpDao;
         private DemandNoticePaymentHistoryRepository dnph;
-        public DNPaymentHistoryManagers(RemsDbContext _db)
+        public DNPaymentHistoryManagers(DbContext _db)
         {
             dnph = new DemandNoticePaymentHistoryRepository(_db);
             _dnpDao = new DNPaymentHistoryRepository(_db);

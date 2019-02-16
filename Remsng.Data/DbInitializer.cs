@@ -1,4 +1,5 @@
-﻿using Remsng.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
 using System;
@@ -8,10 +9,10 @@ namespace RemsNG.ORM
 {
     public class DbInitializer
     {
-        public static async void Initialize(RemsDbContext db)
+        public static async void Initialize(DbContext db)
         {
             db.Database.EnsureCreated();
-            var mosDomain = db.Domains.FirstOrDefault(x => x.DomainCode.ToLower() == "mos-admin");
+            var mosDomain = db.Set<Domain>().FirstOrDefault(x => x.DomainCode.ToLower() == "mos-admin");
             if (mosDomain == null)
             {
                 Domain domain = new Domain()
@@ -22,11 +23,11 @@ namespace RemsNG.ORM
                     Datecreated = DateTime.Now,
                     DomainType = EncryptDecryptUtils.ToHexString("mos-admin")
                 };
-                db.Domains.Add(domain);
+                db.Set<Domain>().Add(domain);
                 mosDomain = domain;
             }
 
-            var mosUser = db.Users.FirstOrDefault(x => x.Username.ToLower() == "mos-admin");
+            var mosUser = db.Set<User>().FirstOrDefault(x => x.Username.ToLower() == "mos-admin");
             if (mosUser == null)
             {
                 User user = new User()
@@ -49,11 +50,11 @@ namespace RemsNG.ORM
                     //    answer = "Aguda Olabode Hassan"
                     //})
                 };
-                db.Users.Add(user);
+                db.Set<User>().Add(user);
                 mosUser = user;
             }
 
-            var userdomain = db.UserDomains.FirstOrDefault(x => x.UserId == mosUser.Id && x.DomainId == mosDomain.Id);
+            var userdomain = db.Set<UserDomain>().FirstOrDefault(x => x.UserId == mosUser.Id && x.DomainId == mosDomain.Id);
             if (userdomain == null)
             {
                 UserDomain ud = new UserDomain()
@@ -62,7 +63,7 @@ namespace RemsNG.ORM
                     UserId = mosUser.Id
                 };
 
-                db.UserDomains.Add(ud);
+                db.Set<UserDomain>().Add(ud);
             }
 
             await db.SaveChangesAsync();

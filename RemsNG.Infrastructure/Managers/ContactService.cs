@@ -1,4 +1,5 @@
-﻿using Remsng.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
@@ -11,7 +12,7 @@ namespace RemsNG.Infrastructure.Managers
     public class ContactManagers : IContactManagers
     {
         private ContactRepository contactDao;
-        public ContactManagers(RemsDbContext db)
+        public ContactManagers(DbContext db)
         {
             contactDao = new ContactRepository(db);
         }

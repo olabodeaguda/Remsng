@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using RemsNG.Common.Models;
+using RemsNG.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +10,14 @@ namespace RemsNG.Data.Repository
 {
     public class LcdaBankRepository : AbstractRepository
     {
-        public LcdaBankRepository(RemsDbContext _db) : base(_db)
+        public LcdaBankRepository(DbContext _db) : base(_db)
         {
         }
 
         public async Task<List<BankLcdaModel>> Get(Guid lcdaId)
         {
-            var result = await db.LcdaBanks.FromSql("sp_getLcdaBank @p0", new object[] { lcdaId }).ToListAsync();
+            var result = await db.Set<BankLcda>()
+                .FromSql("sp_getLcdaBank @p0", new object[] { lcdaId }).ToListAsync();
             return result.Select(x => new BankLcdaModel()
             {
                 bankAccount = x.BankAccount,

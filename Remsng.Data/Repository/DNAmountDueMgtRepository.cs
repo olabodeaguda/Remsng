@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
-using RemsNG.Data.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,13 +8,14 @@ namespace RemsNG.Data.Repository
 {
     public class DNAmountDueMgtRepository : AbstractRepository
     {
-        public DNAmountDueMgtRepository(RemsDbContext _db) : base(_db)
+        public DNAmountDueMgtRepository(DbContext _db) : base(_db)
         {
         }
 
         public async Task<List<DNAmountDueModel>> ByBillingNo(string billingno)
         {
-            var result = await db.DNAmountDueModels.FromSql("sp_getBillingNumberTotalDue @p0", new object[] { billingno }).ToListAsync();
+            var result = await db.Set<DNAmountDueModel>()
+                .FromSql("sp_getBillingNumberTotalDue @p0", new object[] { billingno }).ToListAsync();
             return result;
         }
 
@@ -41,7 +40,8 @@ namespace RemsNG.Data.Repository
                 $"from tbl_demandNoticeItem as dn " +
                 $"inner join tbl_item as tm on tm.id = dn.itemId " +
                 $"where billingNo in ({bnos})  and dn.itemStatus in ('PART_PAYMENT','PENDING')";
-            return await db.DNAmountDueModels.FromSql(query).ToListAsync();
+            return await db.Set<DNAmountDueModel>()
+                .FromSql(query).ToListAsync();
         }
 
         public async Task<Response> UpdateAmount(DNAmountDueModel dnamount)

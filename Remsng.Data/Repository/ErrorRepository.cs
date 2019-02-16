@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Remsng.Data;
 using RemsNG.Common.Models;
+using RemsNG.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,18 +12,19 @@ namespace RemsNG.Data.Repository
     public class ErrorRepository : AbstractRepository
     {
         private readonly ILogger logger;
-        public ErrorRepository(RemsDbContext _db, ILoggerFactory loggerFactory) : base(_db)
+        public ErrorRepository(DbContext _db, ILoggerFactory loggerFactory) : base(_db)
         {
             logger = loggerFactory.CreateLogger("Error Dao");
         }
 
-        public ErrorRepository(RemsDbContext _db) : base(_db)
+        public ErrorRepository(DbContext _db) : base(_db)
         {
         }
 
         public async Task<bool> Add(ErrorModel error)
         {
-            DbResponse dbResponse = await db.DbResponses.FromSql("sp_addError @p0,@p1,@p2", new object[]
+            DbResponse dbResponse = await db.Set<DbResponse>()
+                .FromSql("sp_addError @p0,@p1,@p2", new object[]
             {
                 error.OwnerId,
                 error.ErrorType,
@@ -44,7 +45,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<ErrorModel>> ByOwnerIdAsync(Guid ownerId)
         {
-            var result = await db.Errors.FromSql($"select * from tbl_error where ownerId = '{ownerId}'").ToListAsync();
+            var result = await db.Set<Error>().FromSql($"select * from tbl_error where ownerId = '{ownerId}'").ToListAsync();
             return result.Select(x => new ErrorModel()
             {
                 DateCreated = x.DateCreated,

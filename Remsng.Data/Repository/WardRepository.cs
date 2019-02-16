@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
@@ -13,13 +12,14 @@ namespace RemsNG.Data.Repository
 {
     public class WardRepository : AbstractRepository
     {
-        public WardRepository(RemsDbContext _db) : base(_db)
+        public WardRepository(DbContext _db) : base(_db)
         {
         }
 
         public async Task<List<WardModel>> all1()
         {
-            var p = await db.Wards.ToListAsync();
+            var p = await db.Set<Ward>()
+                .ToListAsync();
             return p.Select(x => new WardModel()
             {
                 CreatedBy = x.CreatedBy,
@@ -35,7 +35,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<WardModel>> All()
         {
-            var p = await db.Wards.FromSql("sp_ward").ToListAsync();
+            var p = await db.Set<Ward>()
+                .FromSql("sp_ward").ToListAsync();
             return p.Select(x => new WardModel()
             {
                 CreatedBy = x.CreatedBy,
@@ -51,7 +52,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<WardModel>> ActiveWard()
         {
-            var p = await db.Wards.Where(x => x.WardStatus.ToUpper() == UserStatus.ACTIVE.ToString()).ToListAsync();
+            var p = await db.Set<Ward>()
+                .Where(x => x.WardStatus.ToUpper() == UserStatus.ACTIVE.ToString()).ToListAsync();
             return p.Select(x => new WardModel()
             {
                 CreatedBy = x.CreatedBy,
@@ -67,7 +69,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> Add(WardModel ward)
         {
-            db.Wards.Add(new Ward()
+            db.Set<Ward>().Add(new Ward()
             {
                 CreatedBy = ward.CreatedBy,
                 DateCreated = ward.DateCreated,
@@ -91,7 +93,7 @@ namespace RemsNG.Data.Repository
         {
             var wardlst = await GetWardByLGDAId(lgdaId);
             var results = wardlst.OrderBy(x => x.WardName).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToList();
-            var totalCount = db.Wards.Count();
+            var totalCount = db.Set<Ward>().Count();
             return new
             {
                 data = results,
@@ -103,7 +105,7 @@ namespace RemsNG.Data.Repository
         {
             var wardlst = await All();
             var results = wardlst.OrderBy(x => x.WardName).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToList();
-            var totalCount = db.Wards.Count();
+            var totalCount = db.Set<Ward>().Count();
             return new
             {
                 data = results,
@@ -113,7 +115,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<WardModel> GetWard(Guid id)
         {
-            var x = await db.Wards.FromSql("sp_wardById @p0", new object[] { id }).FirstOrDefaultAsync();
+            var x = await db.Set<Ward>()
+                .FromSql("sp_wardById @p0", new object[] { id }).FirstOrDefaultAsync();
             return new WardModel()
             {
                 CreatedBy = x.CreatedBy,
@@ -129,7 +132,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<WardModel> GetWard(string wardName, Guid lgdaid)
         {
-            var x = await db.Wards.Where(p => p.WardName.ToLower() == wardName.ToLower() && p.LcdaId == lgdaid).FirstOrDefaultAsync();
+            var x = await db.Set<Ward>()
+                .Where(p => p.WardName.ToLower() == wardName.ToLower() && p.LcdaId == lgdaid).FirstOrDefaultAsync();
             if (x == null)
             {
                 return null;
@@ -150,7 +154,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<WardModel>> GetWardByLGDAId1(Guid lgdaId)
         {
-            var result = await db.Wards.Where(x => x.LcdaId == lgdaId).OrderBy(x => x.WardName).ToListAsync();
+            var result = await db.Set<Ward>()
+                .Where(x => x.LcdaId == lgdaId).OrderBy(x => x.WardName).ToListAsync();
             if (result.Count <= 0)
             {
                 return new List<WardModel>();
@@ -170,7 +175,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<WardModel>> GetWardByLGDAId(Guid lgdaId)
         {
-            var result = await db.Wards.FromSql("sp_wardByLcda @p0", new object[] { lgdaId }).ToListAsync();
+            var result = await db.Set<Ward>()
+                .FromSql("sp_wardByLcda @p0", new object[] { lgdaId }).ToListAsync();
             if (result == null)
             {
                 return new List<WardModel>();
@@ -190,7 +196,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> Update(WardModel ward)
         {
-            var oldWard = db.Wards.FirstOrDefault(x => x.Id == ward.Id);
+            var oldWard = db.Set<Ward>().FirstOrDefault(x => x.Id == ward.Id);
             if (oldWard == null)
             {
                 throw new NotFoundException($"{ward.WardName} not found");
@@ -215,7 +221,8 @@ namespace RemsNG.Data.Repository
                 $"inner join tbl_lcda on tbl_lcda.domainId = tbl_domain.id " +
                 $"inner join tbl_ward on tbl_ward.lcdaId = tbl_lcda.id " +
                 $" where tbl_ward.id = '{wardId}'";
-            var result = await db.Domains.FromSql(query).FirstOrDefaultAsync();
+            var result = await db.Set<Domain>()
+                .FromSql(query).FirstOrDefaultAsync();
             if (result == null)
             {
                 return null;

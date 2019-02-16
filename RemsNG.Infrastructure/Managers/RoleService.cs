@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
@@ -12,7 +13,7 @@ namespace RemsNG.Infrastructure.Managers
     public class RoleManagers : IRoleManagers
     {
         private readonly RoleRepository roleDao;
-        public RoleManagers(RemsDbContext _db, ILoggerFactory loggerFactory)
+        public RoleManagers(DbContext _db, ILoggerFactory loggerFactory)
         {
             roleDao = new RoleRepository(_db, loggerFactory);
         }

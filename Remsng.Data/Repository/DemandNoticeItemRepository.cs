@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -12,13 +11,13 @@ namespace RemsNG.Data.Repository
 {
     public class DemandNoticeItemRepository : AbstractRepository
     {
-        public DemandNoticeItemRepository(RemsDbContext _db) : base(_db)
+        public DemandNoticeItemRepository(DbContext _db) : base(_db)
         {
         }
 
         public async Task<Response> Add(DemandNoticeTaxpayers dntd)
         {
-            DbResponse dbResponse = await db.DbResponses.FromSql("sp_addTaxpayerDemandNoticeItem @p0,@p1,@p2,@p3", new object[] {
+            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addTaxpayerDemandNoticeItem @p0,@p1,@p2,@p3", new object[] {
                 dntd.DnId,
                 dntd.TaxpayerId,
                 dntd.BillingYr,
@@ -45,7 +44,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<DemandNoticeItemModel>> ByBillingNumber(string billingno)
         {
-            List<DemandNoticeItem> lstdbItem = await db.DemandNoticeItems.
+            List<DemandNoticeItem> lstdbItem = await db.Set<DemandNoticeItem>().
                     FromSql($"select tbl_demandNoticeItem.*,0.0 as penaltyAmount,'nil' as duration,-1 " +
                     $" as billingYr from tbl_demandNoticeItem where billingNo = '{billingno}' " +
                     $"and itemStatus not in ('CANCEL')").ToListAsync();
@@ -75,7 +74,7 @@ namespace RemsNG.Data.Repository
                 $"where billingYr={billingYr} and tbl_demandNoticeTaxpayers.demandNoticeStatus in ('PENDING','PART_PAYMENT') " +
                 $"and tbl_demandNoticeItem.taxpayerId = '{taxpayerId}' and billingNo <> '{billNumber}'";
 
-            List<DemandNoticeItem> lstdbItem = await db.DemandNoticeItems.
+            List<DemandNoticeItem> lstdbItem = await db.Set<DemandNoticeItem>().
                     FromSql(query).ToListAsync();
             return lstdbItem.Select(x => new DemandNoticeItemModel()
             {
@@ -101,7 +100,7 @@ namespace RemsNG.Data.Repository
             DateTime endDate = new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59);
 
             List<DemandNoticeItemModelExt> lst =
-                await db.DemandNoticeItemExts.FromSql("sp_getByCategoryDate @p0,@p1",
+                await db.Set<DemandNoticeItemModelExt>().FromSql("sp_getByCategoryDate @p0,@p1",
                 new object[] { startDate, endDate }).ToListAsync();
 
             return lst;

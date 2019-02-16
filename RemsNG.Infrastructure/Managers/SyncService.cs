@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Remsng.Data;
@@ -22,7 +23,7 @@ namespace RemsNG.Infrastructure.Managers
         private SyncRepository syncDao;
         private IConfiguration configuration;
         private ILogger logger;
-        public SyncManagers(RemsDbContext db, ILoggerFactory loggerFactory, IConfigurationRoot _configuration)
+        public SyncManagers(DbContext db, ILoggerFactory loggerFactory, IConfigurationRoot _configuration)
         {
             logger = loggerFactory.CreateLogger("Sync Service");
             syncDao = new SyncRepository(db);

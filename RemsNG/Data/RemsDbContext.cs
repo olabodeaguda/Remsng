@@ -3,7 +3,7 @@ using Remsng.Data.Entities;
 using RemsNG.Common.Models;
 using RemsNG.Data.Entities;
 
-namespace Remsng.Data
+namespace RemsNG.Data
 {
     public class RemsDbContext : DbContext
     {

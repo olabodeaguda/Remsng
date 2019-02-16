@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.NodeServices;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Remsng.Data;
@@ -48,7 +49,7 @@ namespace RemsNG.Infrastructure.Managers
         private IHostingEnvironment hostingEnvironment;
         private IServiceProvider serviceProvider;
 
-        public RunDemandNoticeManagers(RemsDbContext _db,
+        public RunDemandNoticeManagers(DbContext _db,
             ILoggerFactory loggerFactory, IAddressManagers _address,
             ILcdaManagers _lcdaService, IStateManagers _stateService,
             IImageManagers _imageService,

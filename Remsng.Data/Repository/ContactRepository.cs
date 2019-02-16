@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Models;
 using RemsNG.Data.Entities;
@@ -12,7 +11,7 @@ namespace RemsNG.Data.Repository
 {
     public class ContactRepository : AbstractRepository
     {
-        public ContactRepository(RemsDbContext _db) : base(_db)
+        public ContactRepository(DbContext _db) : base(_db)
         {
         }
 
@@ -31,7 +30,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> Update(ContactDetailModel contactDetail)
         {
-            ContactDetail cd = await db.ContactDetails.FindAsync(new object[] { contactDetail.Id });
+            ContactDetail cd = await db.Set<ContactDetail>().FindAsync(new object[] { contactDetail.Id });
 
             if (cd == null)
             {
@@ -54,7 +53,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<ContactDetailModel>> ByOwnerId(Guid ownerId)
         {
-            var entities = await db.ContactDetails.Where(x => x.OwnerId == ownerId).ToListAsync();
+            var entities = await db.Set<ContactDetail>().Where(x => x.OwnerId == ownerId).ToListAsync();
             return entities.Select(x => new ContactDetailModel()
             {
                 ContactType = x.ContactType,
@@ -70,7 +69,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<ContactDetailModel> ByContactValue(ContactDetailModel contactDetail)
         {
-            var x = await db.ContactDetails.Where(p => p.ContactValue.ToLower() == contactDetail.ContactValue &&
+            var x = await db.Set<ContactDetail>().Where(p => p.ContactValue.ToLower() == contactDetail.ContactValue &&
             p.ContactType == contactDetail.ContactType).FirstOrDefaultAsync();
             if (x == null)
             {
@@ -92,7 +91,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<ContactDetailModel> ById(Guid id)
         {
-            var x = await db.ContactDetails.FirstOrDefaultAsync(p => p.Id == id);
+            var x = await db.Set<ContactDetail>().FirstOrDefaultAsync(p => p.Id == id);
             if (x == null)
             {
                 return null;
@@ -113,7 +112,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> Remove(ContactDetailModel contactDetail)
         {
-            db.ContactDetails.Remove(new ContactDetail()
+            db.Set<ContactDetail>().Remove(new ContactDetail()
             {
                 ContactType = contactDetail.ContactType,
                 ContactValue = contactDetail.ContactValue,

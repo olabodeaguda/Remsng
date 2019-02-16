@@ -1,4 +1,5 @@
-﻿using Remsng.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
@@ -15,7 +16,7 @@ namespace RemsNG.Infrastructure.Managers
         private readonly DemandNoticeArrearRepository dnArrearsDao;
         private readonly DemandNoticeItemRepository dnitemDao;
         private readonly ReportRepository reportDao;
-        public ReportManagers(RemsDbContext _db)
+        public ReportManagers(DbContext _db)
         {
             reportDao = new ReportRepository(_db);
             dnitemDao = new DemandNoticeItemRepository(_db);

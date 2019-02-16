@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Remsng.Data;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
@@ -15,14 +14,15 @@ namespace RemsNG.Data.Repository
     public class LcdaRepository : AbstractRepository
     {
         private readonly ILogger logger;
-        public LcdaRepository(RemsDbContext _db, ILoggerFactory loggerFactory) : base(_db)
+        public LcdaRepository(DbContext _db, ILoggerFactory loggerFactory) : base(_db)
         {
             logger = loggerFactory.CreateLogger("LCDA Dao");
         }
 
         public async Task<LcdaModel> Get(Guid id)
         {
-            var result = await db.lgdas.FirstOrDefaultAsync(x => x.Id == id);
+            var result = await db.Set<Lcda>()
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (result == null)
             {
                 return null;
@@ -45,7 +45,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<LcdaModel>> All()
         {
-            var r = await db.lgdas.OrderBy(x => x.LcdaName).ToListAsync();
+            var r = await db.Set<Lcda>()
+                .OrderBy(x => x.LcdaName).ToListAsync();
             return r.Select(result => new LcdaModel()
             {
                 AddressId = result.AddressId,
@@ -66,8 +67,10 @@ namespace RemsNG.Data.Repository
         {
             return await Task.Run(() =>
             {
-                var results = db.lgdas.Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToList();
-                var totalCount = db.lgdas.Count();
+                var results = db.Set<Lcda>()
+                .Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToList();
+                var totalCount = db.Set<Lcda>()
+                .Count();
                 return new
                 {
                     data = results.Select(result => new LcdaModel()
@@ -91,7 +94,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<LcdaModel>> ActiveLCDAByDomainId(Guid domainId)
         {
-            var f = await db.lgdas.Where(x => x.DomainId == domainId && x.LcdaStatus == UserStatus.ACTIVE.ToString()).ToListAsync();
+            var f = await db.Set<Lcda>()
+                .Where(x => x.DomainId == domainId && x.LcdaStatus == UserStatus.ACTIVE.ToString()).ToListAsync();
 
             return f.Select(result => new LcdaModel()
             {
@@ -111,7 +115,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<UserLcdaModel> UserLcdaByIds(Guid lgdaId, Guid userId)
         {
-            var result = await db.UserLcdas.FirstOrDefaultAsync(x => x.UserId == userId && x.LgdaId == lgdaId);
+            var result = await db.Set<UserLcda>()
+                .FirstOrDefaultAsync(x => x.UserId == userId && x.LgdaId == lgdaId);
             if (result == null)
             {
                 return null;
@@ -125,20 +130,21 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> Add(LcdaModel lcda)
         {
-            db.lgdas.Add(new Lcda
-            {
-                AddressId = lcda.AddressId,
-                Charges = lcda.Charges,
-                CreatedBy = lcda.CreatedBy,
-                DateCreated = lcda.DateCreated,
-                DomainId = lcda.DomainId,
-                Id = lcda.Id,
-                Lastmodifiedby = lcda.Lastmodifiedby,
-                LastModifiedDate = lcda.LastModifiedDate,
-                LcdaCode = lcda.LcdaCode,
-                LcdaName = lcda.LcdaName,
-                LcdaStatus = lcda.LcdaStatus
-            });
+            db.Set<Lcda>()
+                .Add(new Lcda
+                {
+                    AddressId = lcda.AddressId,
+                    Charges = lcda.Charges,
+                    CreatedBy = lcda.CreatedBy,
+                    DateCreated = lcda.DateCreated,
+                    DomainId = lcda.DomainId,
+                    Id = lcda.Id,
+                    Lastmodifiedby = lcda.Lastmodifiedby,
+                    LastModifiedDate = lcda.LastModifiedDate,
+                    LcdaCode = lcda.LcdaCode,
+                    LcdaName = lcda.LcdaName,
+                    LcdaStatus = lcda.LcdaStatus
+                });
             int count = await db.SaveChangesAsync();
             if (count > 0)
             {
@@ -149,7 +155,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> Update(LcdaModel lcda)
         {
-            var oldlcda = await db.lgdas.FirstOrDefaultAsync(x => x.Id == lcda.Id);
+            var oldlcda = await db.Set<Lcda>()
+                .FirstOrDefaultAsync(x => x.Id == lcda.Id);
             if (oldlcda == null)
             {
                 throw new NotFoundException($"{lcda.LcdaName} not found");
@@ -171,7 +178,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> Changetatus(Guid id, string lcdastatus)
         {
-            var oldlcda = await db.lgdas.FirstOrDefaultAsync(x => x.Id == id);
+            var oldlcda = await db.Set<Lcda>()
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (oldlcda == null)
             {
                 throw new NotFoundException($"selected LCDA does not exist not found");
@@ -188,7 +196,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<LcdaModel> byLcdaCode(string lcdaCode)
         {
-            var result = await db.lgdas.FirstOrDefaultAsync(x => x.LcdaCode.ToLower() == lcdaCode.ToLower());
+            var result = await db.Set<Lcda>().FirstOrDefaultAsync(x => x.LcdaCode.ToLower() == lcdaCode.ToLower());
             if (result == null)
             {
                 return null;
@@ -211,7 +219,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<LcdaModel>> getLcdaByUsername(string username)
         {
-            var r = await db.lgdas.FromSql("sp_getUserLCDAByUsername @p0", new object[] { username }).ToListAsync();
+            var r = await db.Set<Lcda>().FromSql("sp_getUserLCDAByUsername @p0", new object[] { username }).ToListAsync();
             return r.Select(result => new LcdaModel()
             {
                 AddressId = result.AddressId,
@@ -230,7 +238,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> AssignUserToLgda(UserLcda userLcda)
         {
-            db.UserLcdas.Add(userLcda);
+            db.Set<UserLcda>().Add(userLcda);
             int count = await db.SaveChangesAsync();
             if (count > 0)
             {
@@ -242,7 +250,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<LcdaModel>> UserDomainByUserId(Guid id)
         {
-            var r = await db.lgdas.FromSql("sp_getUserLCDAByuserId @p0", new object[] { id }).ToListAsync();
+            var r = await db.Set<Lcda>().FromSql("sp_getUserLCDAByuserId @p0", new object[] { id }).ToListAsync();
             return r.Select(result => new LcdaModel()
             {
                 AddressId = result.AddressId,
@@ -261,7 +269,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<UserLcdaModel>> UserRoleDomainbyUserId(Guid id)
         {
-            var result = await db.UserLcdas.Include("role").Where(x => x.UserId == id).ToListAsync();
+            var result = await db.Set<UserLcda>()
+                .Include("role").Where(x => x.UserId == id).ToListAsync();
 
             return result.Select(x => new UserLcdaModel()
             {
@@ -272,7 +281,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<LcdaModel>> unAssignUserDomainByUserId(Guid userid)
         {
-            var r = await db.lgdas.FromSql("sp_unAssignUserDomainByuserId @p0", new object[] { userid }).ToListAsync();
+            var r = await db.Set<Lcda>()
+                .FromSql("sp_unAssignUserDomainByuserId @p0", new object[] { userid }).ToListAsync();
             return r.Select(result => new LcdaModel()
             {
                 AddressId = result.AddressId,
@@ -291,7 +301,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> RemoveUserFromLCDA(UserLcdaModel userLcda)
         {
-            DbResponse dbResponse = await db.DbResponses
+            DbResponse dbResponse = await db.Set<DbResponse>()
                 .FromSql("sp_removeUserFromLCDA @p0, @p1",
                 new object[] { userLcda.UserId, userLcda.LgdaId }).FirstOrDefaultAsync();
             if (dbResponse.success)
@@ -308,7 +318,8 @@ namespace RemsNG.Data.Repository
             string query = $"select distinct tbl_lcda.* from tbl_lcda " +
                 $"inner join tbl_ward on tbl_ward.lcdaId = tbl_lcda.id  " +
                 $"inner join tbl_street on tbl_street.wardId = tbl_ward.id where tbl_street.id= '{streetId}'";
-            var result = await db.lgdas.FromSql(query).FirstOrDefaultAsync();
+            var result = await db.Set<Lcda>()
+                .FromSql(query).FirstOrDefaultAsync();
             if (result == null)
             {
                 return null;
@@ -335,7 +346,8 @@ namespace RemsNG.Data.Repository
                 $"inner join tbl_lcda on tbl_lcda.domainId = tbl_domain.id " +
                 $" where tbl_lcda.id = '{lcdaId}'";
 
-            var r = await db.Domains.FromSql(query).FirstOrDefaultAsync();
+            var r = await db.Set<Domain>()
+                .FromSql(query).FirstOrDefaultAsync();
             if (r == null)
             {
                 return null;
@@ -355,7 +367,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<LcdaModel> GetLcdaExtension(Guid lcdaId)
         {
-            var result = await db.lgdas.FromSql($"select * from tbl_lcda where id = '{lcdaId}'").FirstOrDefaultAsync();
+            var result = await db.Set<Lcda>()
+                .FromSql($"select * from tbl_lcda where id = '{lcdaId}'").FirstOrDefaultAsync();
             if (result == null)
             {
                 return null;
@@ -383,7 +396,8 @@ namespace RemsNG.Data.Repository
             query = query + $"inner join tbl_lcda as lc on lc.id = dn.lcdaId ";
             query = query + $"where dnt.billingNumber = '{billingno}'";
 
-            var result = await db.lgdas.FromSql(query).FirstOrDefaultAsync();
+            var result = await db.Set<Lcda>()
+                .FromSql(query).FirstOrDefaultAsync();
             if (result == null)
             {
                 return null;

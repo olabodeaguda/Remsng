@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using RemsNG.Common.Models;
+using RemsNG.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +10,12 @@ namespace RemsNG.Data.Repository
 {
     public class BankRepository : AbstractRepository
     {
-        public BankRepository(RemsDbContext _db) : base(_db)
-        {}
+        public BankRepository(DbContext _db) : base(_db)
+        { }
 
         public async Task<List<BankModel>> GetBankAsync()
         {
-            var bk = await db.Banks.FromSql("select * from tbl_bank order by bankName").ToListAsync();
+            var bk = await db.Set<Bank>().FromSql("select * from tbl_bank order by bankName").ToListAsync();
 
             return bk.Select(x => new BankModel
             {

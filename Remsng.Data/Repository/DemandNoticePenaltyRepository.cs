@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -12,7 +11,7 @@ namespace RemsNG.Data.Repository
 {
     public class DemandNoticePenaltyRepository : AbstractRepository
     {
-        public DemandNoticePenaltyRepository(RemsDbContext _db) : base(_db)
+        public DemandNoticePenaltyRepository(DbContext _db) : base(_db)
         {
         }
 
@@ -85,7 +84,7 @@ namespace RemsNG.Data.Repository
         {
             try
             {
-                List<DemandNoticeItem> demandNotice = await db.DemandNoticeItems.FromSql("sp_penaltyTracker").ToListAsync();
+                List<DemandNoticeItem> demandNotice = await db.Set<DemandNoticeItem>().FromSql("sp_penaltyTracker").ToListAsync();
                 return demandNotice.Select(x => new DemandNoticeItemModel()
                 {
                     AmountPaid = x.AmountPaid,
@@ -113,7 +112,7 @@ namespace RemsNG.Data.Repository
         public async Task<List<DemandNoticeItemPenaltyModelExt>> ByBillingNumber(string billingno)
         {
             string query = $"select tbl_demandNoticePenalty.*,0 as billingYr from tbl_demandNoticePenalty where billingNo = '{billingno}'";
-            List<DemandNoticeItemPenaltyModelExt> lstdbItem = await db.DemandNoticeItemPenaties
+            List<DemandNoticeItemPenaltyModelExt> lstdbItem = await db.Set<DemandNoticeItemPenaltyModelExt>()
                 .FromSql(query).ToListAsync();
             return lstdbItem;
         }
@@ -121,7 +120,7 @@ namespace RemsNG.Data.Repository
         public async Task<List<DemandNoticeItemPenaltyModelExt>> ByTaxpayerId(Guid taxpayerId)
         {
             string query = $"select tbl_demandNoticePenalty.*,0 as billingYr from tbl_demandNoticePenalty where taxpayerId = '{taxpayerId}'";
-            List<DemandNoticeItemPenaltyModelExt> lstdbItem = await db.DemandNoticeItemPenaties
+            List<DemandNoticeItemPenaltyModelExt> lstdbItem = await db.Set<DemandNoticeItemPenaltyModelExt>()
                 .FromSql(query).ToListAsync();
             return lstdbItem;
         }
@@ -130,7 +129,7 @@ namespace RemsNG.Data.Repository
         {
             string query = $"select tbl_demandNoticePenalty.*,0 as billingYr from tbl_demandNoticePenalty " +
                 $"where taxpayerId = '{taxpayerId}' and billingYear = {billingYr}";
-            List<DemandNoticeItemPenaltyModelExt> lstdbItem = await db.DemandNoticeItemPenaties
+            List<DemandNoticeItemPenaltyModelExt> lstdbItem = await db.Set<DemandNoticeItemPenaltyModelExt>()
                 .FromSql(query).ToListAsync();
             return lstdbItem;
         }
@@ -141,7 +140,7 @@ namespace RemsNG.Data.Repository
             DateTime endDate = new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59);
 
             List<DemandNoticeItemPenaltyModelExt> lst =
-                await db.DemandNoticeItemPenaltyExts.FromSql("sp_getPenaltyByCategoryDate @p0,@p1",
+                await db.Set<DemandNoticeItemPenaltyModelExt>().FromSql("sp_getPenaltyByCategoryDate @p0,@p1",
                 new object[] { startDate, endDate }).ToListAsync();
 
             return lst;

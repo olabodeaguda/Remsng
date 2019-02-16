@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using Remsng.Data.Entities;
 using RemsNG.Common.Models;
 using System;
@@ -9,12 +8,13 @@ namespace RemsNG.Data.Repository
 {
     public class DNPaymentHistoryRepository : AbstractRepository
     {
-        public DNPaymentHistoryRepository(RemsDbContext _db) : base(_db)
+        public DNPaymentHistoryRepository(DbContext _db) : base(_db)
         { }
 
         public async Task<PrepaymentModel> Get(Guid taxpayerId)
         {
-            var r = await db.Prepayments.FirstOrDefaultAsync(x => x.taxpayerId == taxpayerId && x.prepaymentStatus == "ACTIVE");
+            var r = await db.Set<Prepayment>()
+                .FirstOrDefaultAsync(x => x.taxpayerId == taxpayerId && x.prepaymentStatus == "ACTIVE");
             if (r == null)
             {
                 return null;
@@ -32,7 +32,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<PrepaymentModel> AddPrepaymentForAlreadyRegisterdAmount(PrepaymentModel prepayment)
         {
-            var prep = await db.Prepayments
+            var prep = await db.Set<Prepayment>()
                 .FirstOrDefaultAsync(x => x.taxpayerId == prepayment.taxpayerId
                 && prepayment.amount == x.amount && x.prepaymentStatus != "CLOSED");
 
@@ -47,7 +47,7 @@ namespace RemsNG.Data.Repository
                     prepaymentStatus = prepayment.prepaymentStatus
                 };
                 pm.datecreated = DateTime.Now;
-                db.Prepayments.Add(pm);
+                db.Set<Prepayment>().Add(pm);
                 await db.SaveChangesAsync();
                 prepayment.id = pm.id;
                 return prepayment;

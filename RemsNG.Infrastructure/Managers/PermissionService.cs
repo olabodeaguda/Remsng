@@ -1,4 +1,5 @@
-﻿using Remsng.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
@@ -11,7 +12,7 @@ namespace RemsNG.Infrastructure.Managers
     public class PermissionManagers : IPermissionManagers
     {
         private readonly PermissionRepository permissionDao;
-        public PermissionManagers(RemsDbContext _db)
+        public PermissionManagers(DbContext _db)
         {
             permissionDao = new PermissionRepository(_db);
         }

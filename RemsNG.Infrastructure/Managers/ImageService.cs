@@ -1,4 +1,5 @@
-﻿using Remsng.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
@@ -11,7 +12,7 @@ namespace RemsNG.Infrastructure.Managers
     public class ImageManagers : IImageManagers
     {
         private readonly ImageRepository imageDao;
-        public ImageManagers(RemsDbContext _db)
+        public ImageManagers(DbContext _db)
         {
             imageDao = new ImageRepository(_db);
         }

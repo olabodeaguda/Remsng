@@ -1,4 +1,4 @@
-﻿using Remsng.Data;
+﻿using Microsoft.EntityFrameworkCore;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
@@ -13,7 +13,7 @@ namespace RemsNG.Infrastructure.Managers
     {
         private readonly AddressRepository addressDao;
 
-        public AddressManagers(RemsDbContext _db)
+        public AddressManagers(DbContext _db)
         {
             addressDao = new AddressRepository(_db);
         }

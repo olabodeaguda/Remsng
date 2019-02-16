@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
@@ -13,13 +12,13 @@ namespace RemsNG.Data.Repository
 {
     public class TaxpayerCatgoryRepository : AbstractRepository
     {
-        public TaxpayerCatgoryRepository(RemsDbContext _db) : base(_db)
+        public TaxpayerCatgoryRepository(DbContext _db) : base(_db)
         {
         }
 
         public async Task<Response> Add(TaxpayerCategoryModel taxpayerCategory)
         {
-            db.TaxPayersCategories.Add(new TaxpayerCategory
+            db.Set<TaxpayerCategory>().Add(new TaxpayerCategory
             {
                 CreatedBy = taxpayerCategory.CreatedBy,
                 DateCreated = taxpayerCategory.DateCreated,
@@ -50,7 +49,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> Update(TaxpayerCategoryModel taxpayerCategory)
         {
-            var category = await db.TaxPayersCategories.FindAsync(new object[] { taxpayerCategory.Id });
+            var category = await db.Set<TaxpayerCategory>()
+                .FindAsync(new object[] { taxpayerCategory.Id });
             if (category == null)
             {
                 throw new NotFoundException("Taxpayer category does not exist");
@@ -82,13 +82,13 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> Delete(Guid id)
         {
-            var category = await db.TaxPayersCategories.FindAsync(new object[] { id });
+            var category = await db.Set<TaxpayerCategory>().FindAsync(new object[] { id });
             if (category == null)
             {
                 throw new NotFoundException("Taxpayer category does not exist");
             }
 
-            db.TaxPayersCategories.Remove(category);
+            db.Set<TaxpayerCategory>().Remove(category);
             int count = await db.SaveChangesAsync();
             if (count > 0)
             {
@@ -111,7 +111,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<TaxpayerCategoryModel> GetById(Guid id)
         {
-            var t = await db.TaxPayersCategories.FirstOrDefaultAsync(x => x.Id == id);
+            var t = await db.Set<TaxpayerCategory>()
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (t == null)
             {
                 return null;
@@ -131,7 +132,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<TaxpayerCategoryModel>> GetListByLcdaIdAsync(Guid lcdaId)
         {
-            var result = await db.TaxPayersCategories.Where(x => x.LcdaId == lcdaId).ToListAsync();
+            var result = await db.Set<TaxpayerCategory>().Where(x => x.LcdaId == lcdaId).ToListAsync();
             return result.Select(t => new TaxpayerCategoryModel()
             {
                 CreatedBy = t.CreatedBy,
@@ -146,9 +147,10 @@ namespace RemsNG.Data.Repository
 
         public async Task<object> GetListByLcdaIdAsync(Guid lcdaId, PageModel pageModel)
         {
-            var results = await db.TaxPayersCategories.Where(x => x.LcdaId == lcdaId).Skip((pageModel.PageNum - 1) * pageModel.PageSize)
+            var results = await db.Set<TaxpayerCategory>().Where(x => x.LcdaId == lcdaId).Skip((pageModel.PageNum - 1) * pageModel.PageSize)
                 .Take(pageModel.PageSize).ToListAsync();
-            var totalCount = await db.TaxPayersCategories.Where(x => x.LcdaId == lcdaId).CountAsync();
+            var totalCount = await db.Set<TaxpayerCategory>()
+                .Where(x => x.LcdaId == lcdaId).CountAsync();
             return new
             {
                 data = results,
@@ -159,7 +161,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<object> GetByNameAndLcdaId(Guid lcdaid, string name)
         {
-            return await db.TaxPayersCategories.FirstOrDefaultAsync(x => x.LcdaId == lcdaid && x.TaxpayerCategoryName.ToLower() == name);
+            return await db.Set<TaxpayerCategory>()
+                .FirstOrDefaultAsync(x => x.LcdaId == lcdaid && x.TaxpayerCategoryName.ToLower() == name);
         }
 
         public async Task<TaxpayerCategoryModel> GetTaxpayerCategory(Guid taxpayerId)
@@ -169,7 +172,8 @@ namespace RemsNG.Data.Repository
                 $"inner join tbl_taxpayerCategory on tbl_taxpayerCategory.id = tbl_company.categoryId " +
                 $"where tbl_taxPayer.id='{taxpayerId}' ";
 
-            var t = await db.TaxPayersCategories.FromSql(query).FirstOrDefaultAsync();
+            var t = await db.Set<TaxpayerCategory>()
+                .FromSql(query).FirstOrDefaultAsync();
             if (t == null)
             {
                 return null;

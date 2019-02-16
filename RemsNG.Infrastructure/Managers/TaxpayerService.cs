@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Remsng.Data;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Managers;
@@ -15,7 +16,7 @@ namespace RemsNG.Infrastructure.Managers
     {
         private IDNAmountDueMgtManagers amountDueMgtService;
         private TaxpayerRepository taxpayerDao;
-        public TaxpayerManagers(RemsDbContext _db, ILoggerFactory loggerFactory, IDNAmountDueMgtManagers _amountDueMgtService)
+        public TaxpayerManagers(DbContext _db, ILoggerFactory loggerFactory, IDNAmountDueMgtManagers _amountDueMgtService)
         {
             taxpayerDao = new TaxpayerRepository(_db);
             amountDueMgtService = _amountDueMgtService;

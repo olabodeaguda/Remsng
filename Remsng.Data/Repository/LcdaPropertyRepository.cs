@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Remsng.Data;
 using RemsNG.Common.Models;
+using RemsNG.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +11,14 @@ namespace RemsNG.Data.Repository
 {
     public class LcdaPropertyRepository : AbstractRepository
     {
-        public LcdaPropertyRepository(RemsDbContext _db) : base(_db)
+        public LcdaPropertyRepository(DbContext _db) : base(_db)
         {
         }
 
         public async Task<List<LcdaPropertyModel>> ByLcda(Guid lcdaId)
         {
-            var result = await db.LcdaProperties.Where(x => x.LcdaId == lcdaId && x.PropertyStatus == "ACTIVE").ToListAsync();
+            var result = await db.Set<LcdaProperty>()
+                .Where(x => x.LcdaId == lcdaId && x.PropertyStatus == "ACTIVE").ToListAsync();
             return result.Select(x => new LcdaPropertyModel()
             {
                 Id = x.Id,

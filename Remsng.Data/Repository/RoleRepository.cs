@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Remsng.Data;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Models;
 using RemsNG.Data.Entities;
@@ -14,7 +13,7 @@ namespace RemsNG.Data.Repository
     public class RoleRepository : AbstractRepository
     {
         private readonly ILogger logger;
-        public RoleRepository(RemsDbContext _db,
+        public RoleRepository(DbContext _db,
             ILoggerFactory loggerFactory) : base(_db)
         {
             logger = loggerFactory.CreateLogger("Role Dao");
@@ -22,17 +21,19 @@ namespace RemsNG.Data.Repository
 
         public async Task<RoleExtensionModel> GetUserDomainRoleByUsername(string username, Guid domainId)
         {
-            return await db.RoleExtensions.FromSql("sp_getUserDomainRoleByUsername @p0, @p1", new object[] { username, domainId }).FirstOrDefaultAsync();
+            return await db.Set<RoleExtensionModel>()
+                .FromSql("sp_getUserDomainRoleByUsername @p0, @p1", new object[] { username, domainId }).FirstOrDefaultAsync();
         }
 
         public async Task<object> Paginated(PageModel pageModel)
         {
             return await Task.Run(() =>
             {
-                List<RoleExtensionModel> AllRole = db.RoleExtensions.FromSql("sp_getRoles @p0, @p1",
+                List<RoleExtensionModel> AllRole = db.Set<RoleExtensionModel>()
+                .FromSql("sp_getRoles @p0, @p1",
                     new object[] { pageModel.PageSize, pageModel.PageNum }).ToList();
 
-                var totalCount = db.Roles.Count();
+                var totalCount = db.Set<Role>().Count();
                 return new
                 {
                     data = AllRole,
@@ -43,9 +44,12 @@ namespace RemsNG.Data.Repository
 
         public async Task<object> Paginated(PageModel pageModel, Guid domainId)
         {
-            List<RoleExtensionModel> AllRole = db.RoleExtensions.FromSql("sp_getRolesByDomainIdPaginated @p0, @p1, @p2", new object[] { pageModel.PageSize, pageModel.PageNum, domainId }).ToList();
+            List<RoleExtensionModel> AllRole = db.Set<RoleExtensionModel>()
+                .FromSql("sp_getRolesByDomainIdPaginated @p0, @p1, @p2",
+                new object[] { pageModel.PageSize, pageModel.PageNum, domainId }).ToList();
 
-            var totalCount = await db.Roles.Where(x => x.DomainId == domainId).CountAsync();
+            var totalCount = await db.Set<Role>()
+                .Where(x => x.DomainId == domainId).CountAsync();
             return new
             {
                 data = AllRole,
@@ -55,7 +59,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> Add(RoleModel role)
         {
-            DbResponse dbResponse = await db.DbResponses.FromSql("sp_createRole @p0,@p1, @p2",
+            DbResponse dbResponse = await db.Set<DbResponse>()
+                .FromSql("sp_createRole @p0,@p1, @p2",
                 new object[] { role.Id, role.RoleName, role.DomainId }).FirstOrDefaultAsync();
 
             if (dbResponse.success)
@@ -68,7 +73,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<UserRoleModel> GetRoleAsync(UserRole userRole)
         {
-            var r = await db.UserRoles.FirstOrDefaultAsync(x => x.RoleId == userRole.RoleId && x.UserId == userRole.UserId);
+            var r = await db.Set<UserRole>()
+                .FirstOrDefaultAsync(x => x.RoleId == userRole.RoleId && x.UserId == userRole.UserId);
             if (r == null)
             {
                 return null;
@@ -83,7 +89,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> Add(RolePermissionModel role)
         {
-            db.RolePermissions.Add(new RolePermission()
+            db.Set<RolePermission>().Add(new RolePermission()
             {
                 PermissionId = role.PermissionId,
                 RoleId = role.RoleId
@@ -100,17 +106,20 @@ namespace RemsNG.Data.Repository
 
         public async Task<RoleExtensionModel> GetByName(string rolename)
         {
-            return await db.RoleExtensions.FromSql("sp_roleByRoleName @p0", new object[] { rolename }).FirstOrDefaultAsync();
+            return await db.Set<RoleExtensionModel>()
+                .FromSql("sp_roleByRoleName @p0", new object[] { rolename }).FirstOrDefaultAsync();
         }
 
         public async Task<RoleExtensionModel> GetById(Guid id)
         {
-            return await db.RoleExtensions.FromSql("sp_roleById @p0", new object[] { id }).FirstOrDefaultAsync();
+            return await db.Set<RoleExtensionModel>()
+                .FromSql("sp_roleById @p0", new object[] { id }).FirstOrDefaultAsync();
         }
 
         public async Task<bool> Update(RoleModel role)
         {
-            DbResponse dbResponse = await db.DbResponses.FromSql("sp_updateRole @p0, @p1, @p2",
+            DbResponse dbResponse = await db.Set<DbResponse>()
+                .FromSql("sp_updateRole @p0, @p1, @p2",
                 new object[] { role.RoleName, role.Id, role.DomainId }).FirstOrDefaultAsync();
             if (dbResponse.success)
             {
@@ -130,7 +139,8 @@ namespace RemsNG.Data.Repository
             }
 
             r.roleName = role.RoleName;
-            DbResponse dbResponse = await db.DbResponses.FromSql("sp_updateRoleStatus",
+            DbResponse dbResponse = await db.Set<DbResponse>()
+                .FromSql("sp_updateRoleStatus",
                 new object[] { role.RoleStatus, role.Id }).FirstOrDefaultAsync();
             if (dbResponse.success)
             {
@@ -142,36 +152,41 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<RoleExtensionModel>> ByDomainId(Guid domainId)
         {
-            return await db.RoleExtensions.FromSql("sp_roleByDomainId @p0", new object[] { domainId }).ToListAsync();
+            return await db.Set<RoleExtensionModel>()
+                .FromSql("sp_roleByDomainId @p0", new object[] { domainId }).ToListAsync();
         }
 
         public async Task<List<RoleExtensionModel>> AllRoleByUserId(Guid id)
         {
-            return await db.RoleExtensions.FromSql("sp_getDomainRolesByUserId @p0", new object[] { id }).ToListAsync();
+            return await db.Set<RoleExtensionModel>().FromSql("sp_getDomainRolesByUserId @p0", new object[] { id }).ToListAsync();
         }
 
         public async Task<List<RoleExtensionModel>> AllRoleByUsername(string username)
         {
-            return await db.RoleExtensions.FromSql("sp_getUserDomainRoleByUsername @p0", new object[] { username }).ToListAsync();
+            return await db.Set<RoleExtensionModel>()
+                .FromSql("sp_getUserDomainRoleByUsername @p0", new object[] { username }).ToListAsync();
         }
 
         public async Task<List<RoleExtensionModel>> AllDomainRolesByUsername(string username)
         {
-            return await db.RoleExtensions.FromSql("sp_getDomainRolesByUsername @p0", new object[] { username }).ToListAsync();
+            return await db.Set<RoleExtensionModel>()
+                .FromSql("sp_getDomainRolesByUsername @p0", new object[] { username }).ToListAsync();
         }
 
         public async Task<RoleExtensionModel> UserDomainRolesByDomainId(Guid userid, Guid domainid)
         {
-            return await db.RoleExtensions.FromSql("sp_getUserDomainRolesByDomainId @p0, @p1", new object[] { userid, domainid }).FirstOrDefaultAsync();
+            return await db.Set<RoleExtensionModel>()
+                .FromSql("sp_getUserDomainRolesByDomainId @p0, @p1", new object[] { userid, domainid }).FirstOrDefaultAsync();
         }
 
         public async Task<bool> AssignRoleToUserAsync(UserRoleModel userRole)
         {
-            db.UserRoles.Add(new UserRole()
-            {
-                RoleId = userRole.RoleId,
-                UserId = userRole.UserId
-            });
+            db.Set<UserRole>()
+                .Add(new UserRole()
+                {
+                    RoleId = userRole.RoleId,
+                    UserId = userRole.UserId
+                });
             int count = await db.SaveChangesAsync();
             if (count > 0)
             {
@@ -183,7 +198,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<UserRoleModel> GetUserRoleAsync(Guid userId, Guid roleId)
         {
-            var r = await db.UserRoles.FirstOrDefaultAsync(x => x.UserId == userId && x.RoleId == roleId);
+            var r = await db.Set<UserRole>()
+                .FirstOrDefaultAsync(x => x.UserId == userId && x.RoleId == roleId);
             if (r == null)
             {
                 return null;
@@ -198,9 +214,10 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> Remove(UserRoleModel userRole)
         {
-            var r = await db.UserRoles.FirstOrDefaultAsync(x => x.UserId == userRole.UserId && x.RoleId == userRole.RoleId);
+            var r = await db.Set<UserRole>()
+                .FirstOrDefaultAsync(x => x.UserId == userRole.UserId && x.RoleId == userRole.RoleId);
 
-            db.UserRoles.Remove(r);
+            db.Set<UserRole>().Remove(r);
 
             int count = await db.SaveChangesAsync();
             if (count > 0)

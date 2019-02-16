@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
@@ -13,13 +12,13 @@ namespace RemsNG.Data.Repository
 {
     public class DomainRepository : AbstractRepository
     {
-        public DomainRepository(RemsDbContext _db) : base(_db)
+        public DomainRepository(DbContext _db) : base(_db)
         {
         }
 
         public async Task<List<DomainModel>> ActiveDomains()
         {
-            var result = await db.Domains.Where(x => x.DomainStatus == UserStatus.ACTIVE.ToString()).OrderBy(x => x.DomainName).ToListAsync();
+            var result = await db.Set<Domain>().Where(x => x.DomainStatus == UserStatus.ACTIVE.ToString()).OrderBy(x => x.DomainName).ToListAsync();
             return result.Select(x => new DomainModel()
             {
                 AddressId = x.AddressId,
@@ -37,8 +36,8 @@ namespace RemsNG.Data.Repository
         {
             return await Task.Run(() =>
             {
-                var results = db.Domains.Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToList();
-                var totalCount = db.Domains.Count();
+                var results = db.Set<Domain>().Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToList();
+                var totalCount = db.Set<Domain>().Count();
                 return new
                 {
                     data = results,
@@ -50,7 +49,7 @@ namespace RemsNG.Data.Repository
         public async Task<bool> Add(DomainModel domain)
         {
             domain.DomainType = EncryptDecryptUtils.ToHexString("others");
-            db.Domains.Add(new Domain()
+            db.Set<Domain>().Add(new Domain()
             {
                 AddressId = domain.AddressId,
                 Datecreated = domain.Datecreated,
@@ -71,7 +70,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<DomainModel>> GetUserDomainByUsername(string username)
         {
-            var result = await db.Domains.FromSql("sp_getUserDomainByUsername @p0", new object[] { username }).ToListAsync();
+            var result = await db.Set<Domain>()
+                .FromSql("sp_getUserDomainByUsername @p0", new object[] { username }).ToListAsync();
             return result.Select(x => new DomainModel()
             {
                 AddressId = x.AddressId,
@@ -87,7 +87,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<DomainModel>> GetUserDomainByUsernameId(Guid id)
         {
-            var result = await db.Domains.FromSql("sp_getUserDomainByUserId @p0", new object[] { id }).ToListAsync();
+            var result = await db.Set<Domain>()
+                .FromSql("sp_getUserDomainByUserId @p0", new object[] { id }).ToListAsync();
             return result.Select(x => new DomainModel()
             {
                 AddressId = x.AddressId,
@@ -103,7 +104,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<DomainModel> byDomainId(Guid id)
         {
-            var x = await db.Domains.FirstOrDefaultAsync(f => f.Id == id);
+            var x = await db.Set<Domain>()
+                .FirstOrDefaultAsync(f => f.Id == id);
             if (x == null)
             {
                 return null;
@@ -143,7 +145,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<DomainModel> byDomainCode(string domainCode)
         {
-            var x = await db.Domains.FirstOrDefaultAsync(p => p.DomainCode.ToLower() == domainCode.ToLower());
+            var x = await db.Set<Domain>()
+                .FirstOrDefaultAsync(p => p.DomainCode.ToLower() == domainCode.ToLower());
             if (x == null)
             {
                 return null;
@@ -163,7 +166,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> UpdateDomain(DomainModel domain)
         {
-            var oldDomain = await db.Domains.FirstOrDefaultAsync(x => x.Id == domain.Id);
+            var oldDomain = await db.Set<Domain>()
+                .FirstOrDefaultAsync(x => x.Id == domain.Id);
             if (oldDomain == null)
             {
                 throw new NotFoundException($"{domain.DomainName} not found");
@@ -182,7 +186,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> changeDomain(Guid domainId, string domainStatus)
         {
-            var oldDomain = await db.Domains.FirstOrDefaultAsync(x => x.Id == domainId);
+            var oldDomain = await db.Set<Domain>()
+                .FirstOrDefaultAsync(x => x.Id == domainId);
             if (oldDomain == null)
             {
                 throw new InvalidCredentialsException("Invalid credentials");

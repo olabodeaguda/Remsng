@@ -1,4 +1,5 @@
-﻿using Remsng.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
@@ -11,7 +12,7 @@ namespace RemsNG.Infrastructure.Managers
     public class StateManagers : IStateManagers
     {
         private readonly StateRepository stateDao;
-        public StateManagers(RemsDbContext _db)
+        public StateManagers(DbContext _db)
         {
             stateDao = new StateRepository(_db);
         }

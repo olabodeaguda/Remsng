@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using RemsNG.Common.Models;
+using RemsNG.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +10,13 @@ namespace RemsNG.Data.Repository
 {
     public class StateRepository : AbstractRepository
     {
-        public StateRepository(RemsDbContext _db) : base(_db)
+        public StateRepository(DbContext _db) : base(_db)
         {
         }
 
         public async Task<List<StateModel>> All()
         {
-            var result = await db.States.OrderBy(x => x.StateName).ToListAsync();
+            var result = await db.Set<State>().OrderBy(x => x.StateName).ToListAsync();
             return result.Select(x => new StateModel()
             {
                 CountryId = x.CountryId,
@@ -32,7 +32,8 @@ namespace RemsNG.Data.Repository
                 $"inner join tbl_lcda as lc on lc.domainId = dm.id " +
                 $"inner join tbl_state as st on st.id = dm.stateId " +
                 $"where lc.id ='{lcdaId}'";
-            var x = await db.States.FromSql(query).FirstOrDefaultAsync();
+            var x = await db.Set<State>()
+                .FromSql(query).FirstOrDefaultAsync();
             if (x == null)
             {
                 return null;

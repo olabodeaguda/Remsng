@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
@@ -23,7 +24,7 @@ namespace RemsNG.Infrastructure.Managers
         private readonly LcdaRepository lcdaDao;
         private readonly UserRepository userDao;
         private readonly PermissionRepository permissionDao;
-        public UserManagers(RemsDbContext _db, ILoggerFactory loggerFactory)
+        public UserManagers(DbContext _db, ILoggerFactory loggerFactory)
         {
             loginDao = new LoginRepository(_db);
             domainDao = new DomainRepository(_db);

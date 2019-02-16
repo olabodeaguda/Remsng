@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Remsng.Data;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
+using RemsNG.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +13,15 @@ namespace RemsNG.Data.Repository
     public class SectorRepository : AbstractRepository
     {
         private readonly ILogger logger;
-        public SectorRepository(RemsDbContext _db, ILoggerFactory loggerFactory) : base(_db)
+        public SectorRepository(DbContext _db, ILoggerFactory loggerFactory) : base(_db)
         {
             logger = loggerFactory.CreateLogger("Sector Dao");
         }
 
         public async Task<Response> Add(SectorModel sector)
         {
-            DbResponse dbResponse = await db.DbResponses.FromSql("sp_createSector @p0, @p1, @p2, @p3", new object[] {
+            DbResponse dbResponse = await db.Set<DbResponse>()
+                .FromSql("sp_createSector @p0, @p1, @p2, @p3", new object[] {
                 sector.SectorName,
                 sector.LcdaId,
                 sector.CreatedBy,
@@ -46,7 +47,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> Update(SectorModel sector)
         {
-            DbResponse dbResponse = await db.DbResponses.FromSql("sp_updateSector @p0, @p1, @p2, @p3", new object[] {
+            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_updateSector @p0, @p1, @p2, @p3", new object[] {
                 sector.Id,
                 sector.SectorName,
                 sector.Lastmodifiedby,
@@ -72,7 +73,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<SectorModel>> ByLcdaId(Guid lcdaId)
         {
-            var result = await db.Sectors.Where(x => x.LcdaId == lcdaId).ToListAsync();
+            var result = await db.Set<SectorModel>()
+                .Where(x => x.LcdaId == lcdaId).ToListAsync();
 
             return result.Select(x => new SectorModel()
             {
@@ -89,7 +91,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<SectorModel> ById(Guid id)
         {
-            var x = await db.Sectors.FirstOrDefaultAsync(p => p.Id == id);
+            var x = await db.Set<SectorModel>()
+                .FirstOrDefaultAsync(p => p.Id == id);
             if (x == null)
             {
                 return null;
@@ -113,7 +116,7 @@ namespace RemsNG.Data.Repository
                 $"inner join tbl_company as cpy on tp.companyId = cpy.id " +
                 $"inner join tbl_sector as sect on sect.id = cpy.sectorId " +
                 $"where tp.id = '{taxpayerId}'";
-            var x = await db.Sectors.FromSql(query).FirstOrDefaultAsync();
+            var x = await db.Set<Sector>().FromSql(query).FirstOrDefaultAsync();
 
             if (x == null)
             {

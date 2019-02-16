@@ -6,8 +6,8 @@ namespace RemsNG.Data.Repository
 {
     public class AbstractRepository
     {
-        protected readonly RemsDbContext db;
-        public AbstractRepository(RemsDbContext _db)
+        protected readonly DbContext db;
+        public AbstractRepository(DbContext _db)
         {
             db = _db;
         }

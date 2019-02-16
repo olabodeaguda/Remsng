@@ -1,10 +1,11 @@
-﻿using Remsng.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 
 namespace RemsNG.Data.Repository
 {
     public class LoginRepository : AbstractRepository
     {
-        public LoginRepository(RemsDbContext _db) : base(_db)
+        public LoginRepository(DbContext _db) : base(_db)
         {
         }
 

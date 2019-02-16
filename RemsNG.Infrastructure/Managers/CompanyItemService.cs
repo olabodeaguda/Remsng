@@ -1,4 +1,5 @@
-﻿using Remsng.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
@@ -11,7 +12,7 @@ namespace RemsNG.Infrastructure.Managers
     public class CompanyItemManagers : ICompanyItemManagers
     {
         private readonly CompanyItemRepository companyItemDao;
-        public CompanyItemManagers(RemsDbContext _db)
+        public CompanyItemManagers(DbContext _db)
         {
             companyItemDao = new CompanyItemRepository(_db);
         }

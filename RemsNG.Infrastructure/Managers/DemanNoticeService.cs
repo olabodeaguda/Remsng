@@ -1,4 +1,5 @@
-﻿using Remsng.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
@@ -11,7 +12,7 @@ namespace RemsNG.Infrastructure.Managers
     {
         private DemandNoticeRepository demandNoticeDao;
         private DemandNoticeArrearRepository dnaDao;
-        public DemanNoticeManagers(RemsDbContext db)
+        public DemanNoticeManagers(DbContext db)
         {
             demandNoticeDao = new DemandNoticeRepository(db);
             dnaDao = new DemandNoticeArrearRepository(db);

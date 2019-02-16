@@ -1,4 +1,5 @@
-﻿using Remsng.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
@@ -10,7 +11,7 @@ namespace RemsNG.Infrastructure.Managers
     public class BankManagers : IBankManagers
     {
         private readonly BankRepository bankDao;
-        public BankManagers(RemsDbContext _db)
+        public BankManagers(DbContext _db)
         {
             bankDao = new BankRepository(_db);
         }

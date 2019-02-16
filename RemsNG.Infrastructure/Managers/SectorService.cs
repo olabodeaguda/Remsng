@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
@@ -12,7 +13,7 @@ namespace RemsNG.Infrastructure.Managers
     public class SectorManagers : ISectorManagers
     {
         SectorRepository sectorDao;
-        public SectorManagers(RemsDbContext _db, ILoggerFactory loggerFactory)
+        public SectorManagers(DbContext _db, ILoggerFactory loggerFactory)
         {
             sectorDao = new SectorRepository(_db, loggerFactory);
         }

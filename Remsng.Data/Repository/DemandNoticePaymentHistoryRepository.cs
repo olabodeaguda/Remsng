@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using System;
@@ -11,13 +10,13 @@ namespace RemsNG.Data.Repository
 {
     public class DemandNoticePaymentHistoryRepository : AbstractRepository
     {
-        public DemandNoticePaymentHistoryRepository(RemsDbContext _db) : base(_db)
+        public DemandNoticePaymentHistoryRepository(DbContext _db) : base(_db)
         {
         }
 
         public async Task<Response> AddAsync(DemandNoticePaymentHistoryModel dnph)
         {
-            DbResponse dbResponse = await db.DbResponses.FromSql("sp_addPayment @p0,@p1,@p2,@p3,@p4,@p5" +
+            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addPayment @p0,@p1,@p2,@p3,@p4,@p5" +
                 ",@p6,@p7,@p8,@p9", new object[] {
                 dnph.OwnerId,
                 dnph.BillingNumber,
@@ -52,7 +51,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> UpdateAsync(DemandNoticePaymentHistoryModel dnph)
         {
-            DbResponse dbResponse = await db.DbResponses.FromSql("sp_addPayment  @p0,@p1,@p2,@p3,@p4,@p5", new object[] {
+            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addPayment  @p0,@p1,@p2,@p3,@p4,@p5", new object[] {
                 dnph.Id,
                 dnph.BankId,
                 dnph.ReferenceNumber,
@@ -82,7 +81,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> UpdateStatusAsync(DemandNoticePaymentHistoryModel dnph)
         {
-            DbResponse dbResponse = await db.DbResponses.FromSql("sp_updatePaymentHistoryStatus @p0,@p1", new object[] {
+            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_updatePaymentHistoryStatus @p0,@p1", new object[] {
                 dnph.Id,
                 dnph.PaymentStatus
             }).FirstOrDefaultAsync();
@@ -111,14 +110,14 @@ namespace RemsNG.Data.Repository
                 $"dnp.taxpayersName from tbl_demandNoticePaymentHistory as dnph " +
                 $"inner join tbl_demandNoticeTaxpayers as dnp on dnp.billingNumber = dnph.billingNumber where dnph.billingNumber = '{billingnumber}'";
 
-            return await db.DemandNoticePaymentHistoryExts.FromSql(query).ToListAsync();
+            return await db.Set<DemandNoticePaymentHistoryModelExt>().FromSql(query).ToListAsync();
         }
 
         public async Task<List<DemandNoticePaymentHistoryModel>> ByBillingNumbers(string billingnumber)
         {
             string query = "select dnph.*,bank.bankName from tbl_demandNoticePaymentHistory as dnph " +
                 $"inner join tbl_bank bank on bank.id = dnph.bankId where paymentStatus = 'APPROVED' and billingNumber in ({billingnumber})";
-            var result = await db.DemandNoticePaymentHistories.FromSql(query).ToListAsync();
+            var result = await db.Set<DemandNoticePaymentHistoryModel>().FromSql(query).ToListAsync();
 
             return result.Select(x => new DemandNoticePaymentHistoryModel()
             {
@@ -144,7 +143,7 @@ namespace RemsNG.Data.Repository
         {
             string query = "select dnph.*,bank.bankName from tbl_demandNoticePaymentHistory as dnph " +
                  $"inner join tbl_bank bank on bank.id = dnph.bankId where dnph.id = '{id}'";
-            var x = await db.DemandNoticePaymentHistories.FromSql(query).FirstOrDefaultAsync();
+            var x = await db.Set<DemandNoticePaymentHistoryModel>().FromSql(query).FirstOrDefaultAsync();
             if (x == null)
             {
                 return null;
@@ -175,7 +174,7 @@ namespace RemsNG.Data.Repository
             string query = "select dnph.*,bank.bankName from tbl_demandNoticePaymentHistory as dnph " +
                 $"inner join tbl_bank bank on bank.id = dnph.bankId where dnph.id = '{id}'";
 
-            var x = await db.DemandNoticePaymentHistories.FromSql(query).FirstOrDefaultAsync();
+            var x = await db.Set<DemandNoticePaymentHistoryModel>().FromSql(query).FirstOrDefaultAsync();
 
             if (x == null)
             {
@@ -226,7 +225,7 @@ namespace RemsNG.Data.Repository
                 $"inner join tbl_demandNoticeTaxpayers on tbl_demandNoticeTaxpayers.taxpayerId = tbl_demandNoticePaymentHistory.ownerId " +
                 $"where tbl_demandNoticePaymentHistory.ownerId = '{ownerId}' and tbl_demandNoticeTaxpayers.billingYr = {currentYr} " +
                 $"and paymentStatus = 'APPROVED'";
-            var result = await db.DemandNoticePaymentHistories.FromSql(query).ToListAsync();
+            var result = await db.Set<DemandNoticePaymentHistoryModel>().FromSql(query).ToListAsync();
             return result
                 .GroupBy(r => r.Id)
                 .Select(p =>

@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
+using RemsNG.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,7 @@ namespace RemsNG.Data.Repository
 {
     public class AddressRepository : AbstractRepository
     {
-        public AddressRepository(RemsDbContext _db) : base(_db)
+        public AddressRepository(DbContext _db) : base(_db)
         {
         }
 
@@ -78,7 +78,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> Remove(AddressModel address)
         {
-            var results = await db.Addresses.FromSql($"select tbl_address.*,'none' as streetName from tbl_address where ownerId = {address.OwnerId} ").ToListAsync();
+            var results = await db.Set<Address>().FromSql($"select tbl_address.*,'none' as streetName from tbl_address where ownerId = {address.OwnerId} ").ToListAsync();
             if (results.Count() < 2)
             {
                 throw new UserValidationException("An account must have atleast one address!!!");
@@ -113,7 +113,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<AddressModel>> ByOwnersId(Guid id, Guid lcdaId)
         {
-            var address = await db.Addresses.FromSql("sp_lcdaAddressByOwnerId @p0, @p1", new object[] { id, lcdaId }).ToListAsync();
+            var address = await db.Set<Address>().FromSql("sp_lcdaAddressByOwnerId @p0, @p1", new object[] { id, lcdaId }).ToListAsync();
             return address.Select(x => new AddressModel
             {
                 Addressnumber = x.Addressnumber,
@@ -130,7 +130,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<AddressModel>> ByOwnersId(Guid id)
         {
-            var address = await db.Addresses.FromSql("sp_AddressByOwnerId @p0", new object[] { id }).ToListAsync();
+            var address = await db.Set<Address>().FromSql("sp_AddressByOwnerId @p0", new object[] { id }).ToListAsync();
             return address.Select(x => new AddressModel
             {
                 Addressnumber = x.Addressnumber,
@@ -147,7 +147,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<AddressModel> ById(Guid id)
         {
-            var x = await db.Addresses.FromSql($"select tbl_address.*,'none' as streetName from tbl_address where id = {id} ").FirstOrDefaultAsync();
+            var x = await db.Set<Address>().FromSql($"select tbl_address.*,'none' as streetName from tbl_address where id = {id} ").FirstOrDefaultAsync();
             if (x == null)
             {
                 return null;

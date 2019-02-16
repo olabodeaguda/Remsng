@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
@@ -13,7 +12,7 @@ namespace RemsNG.Data.Repository
 {
     public class TaxpayerRepository : AbstractRepository
     {
-        public TaxpayerRepository(RemsDbContext _db) : base(_db)
+        public TaxpayerRepository(DbContext _db) : base(_db)
         {
         }
 
@@ -68,7 +67,7 @@ namespace RemsNG.Data.Repository
         {
             string query = $"select tbl_taxPayer.*,'-1' as streetNumber from tbl_taxPayer" +
                 $" where streetId = '{streetId}' and companyId='{companyId}'";
-            var result = await db.Taxpayers.FromSql(query).FirstOrDefaultAsync();
+            var result = await db.Set<TaxPayer>().FromSql(query).FirstOrDefaultAsync();
 
             return new TaxPayerModel()
             {
@@ -92,14 +91,16 @@ namespace RemsNG.Data.Repository
             List<TaxPayer> tx = new List<TaxPayer>();
             if (demandNoticeRequest.streetId != Guid.Empty && demandNoticeRequest.streetId != null)
             {
-                tx = await db.Taxpayers.FromSql($"select tbl_taxPayer.*,'-1' as streetNumber from tbl_taxPayer " +
+                tx = await db.Set<TaxPayer>()
+                    .FromSql($"select tbl_taxPayer.*,'-1' as streetNumber from tbl_taxPayer " +
                     $"where streetId = '{demandNoticeRequest.streetId}' and taxpayerStatus='ACTIVE'").ToListAsync();
             }
             else if (demandNoticeRequest.wardId != Guid.Empty && demandNoticeRequest.wardId != null)
             {
                 string query = $"select tbl_taxPayer.*,'-1' as streetNumber from tbl_taxPayer " +
                     $"inner join tbl_street on tbl_taxPayer.streetId = tbl_street.id where tbl_street.wardId = '{demandNoticeRequest.wardId}' and taxpayerStatus='ACTIVE'";
-                tx = await db.Taxpayers.FromSql(query).ToListAsync();
+                tx = await db.Set<TaxPayer>()
+                    .FromSql(query).ToListAsync();
             }
 
             return tx.Select(result => new TaxPayerModel()
@@ -233,7 +234,7 @@ namespace RemsNG.Data.Repository
 
             query = query + (string.IsNullOrEmpty(subQuery) ? "" : " or ") + (string.IsNullOrEmpty(subQuery) ? "" : $" ( {subQuery} ) ");
 
-            var results = await db.TaxpayerExtensions.FromSql(query).ToListAsync();
+            var results = await db.Set<TaxpayerExtensionModel>().FromSql(query).ToListAsync();
             return results.Distinct().Where(x => x.taxpayerStatus == TaxPayerEnum.ACTIVE.ToString()).OrderBy(x => x.firstname).ToList();
         }
 
@@ -260,7 +261,7 @@ namespace RemsNG.Data.Repository
             query = query + $"inner join tbl_street as st on st.wardId = wd.id ";
             query = query + $"inner join tbl_taxPayer as tp on tp.streetId = st.id ";
             query = query + $"where tp.id= '{taxpayerId}'";
-            var result = await db.lgdas.FromSql(query).FirstOrDefaultAsync();
+            var result = await db.Set<Lcda>().FromSql(query).FirstOrDefaultAsync();
             if (result == null)
             {
                 return null;
@@ -288,7 +289,8 @@ namespace RemsNG.Data.Repository
                 $"inner join tbl_bank bank on bank.id = ndh.bankId " +
                 $"inner join tbl_demandNoticeTaxpayers as dnt on dnt.billingNumber = ndh.billingNumber " +
                 $"where ndh.paymentStatus = 'APPROVED' and  dnt.taxpayerId = '{taxpayerId}' order by ndh.dateCreated desc";
-            var x = await db.DemandNoticePaymentHistories.FromSql(query1).ToListAsync();
+            var x = await db.Set<DemandNoticePaymentHistory>()
+                .FromSql(query1).ToListAsync();
 
             return x.Select(p => new DemandNoticePaymentHistoryModel()
             {
@@ -336,7 +338,8 @@ namespace RemsNG.Data.Repository
                     query = query + " union ";
                 }
             }
-            var results = await db.TaxpayerExtensions.FromSql(query).ToListAsync();
+            var results = await db.Set<TaxpayerExtensionModel>()
+                .FromSql(query).ToListAsync();
 
             var re = results
                 .GroupBy(x => x.id)
@@ -358,7 +361,8 @@ namespace RemsNG.Data.Repository
                 $"billingYr= {billingYear} and tbl_demandNoticeTaxpayers.demandNoticeStatus <> 'CANCEL') " +
                 $"and tbl_taxPayer.taxpayerStatus = 'ACTIVE' ";
 
-            return await db.TaxpayerExtension2s.FromSql(query).ToArrayAsync();
+            return await db.Set<TaxpayerExtensionModel2>()
+                .FromSql(query).ToArrayAsync();
         }
     }
 }

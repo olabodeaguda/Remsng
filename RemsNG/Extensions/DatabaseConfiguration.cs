@@ -2,9 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Remsng.Data;
 using RemsNG.Data;
-using RemsNG.ORM;
 
 namespace RemsNG.Extensions
 {
@@ -14,7 +12,7 @@ namespace RemsNG.Extensions
         {
             services.AddDbContextPool<RemsDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
             services.AddHangfire(x => x.UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
-            //services.AddDbContextPool<RemsContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            services.AddScoped<DbContext, RemsDbContext>();
         }
     }
 }

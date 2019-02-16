@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
@@ -12,13 +11,13 @@ namespace RemsNG.Data.Repository
 {
     public class UserRepository : AbstractRepository
     {
-        public UserRepository(RemsDbContext _db) : base(_db)
+        public UserRepository(DbContext _db) : base(_db)
         {
         }
 
         public async Task<UserModel> Get(Guid id)
         {
-            var result = await db.Users.FirstOrDefaultAsync(x => x.Id == id);
+            var result = await db.Set<User>().FirstOrDefaultAsync(x => x.Id == id);
             if (result == null)
             {
                 return null;
@@ -46,7 +45,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> Update(UserModel user)
         {
-            var usr = await db.Users.FindAsync(new object[] { user.Id });
+            var usr = await db.Set<User>().FindAsync(new object[] { user.Id });
             if (usr != null)
             {
                 usr.LastModifiedDate = user.LastModifiedDate;
@@ -73,7 +72,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> Create(UserModel result)
         {
-            db.Users.Add(new User()
+            db.Set<User>().Add(new User()
             {
                 CreatedBy = result.CreatedBy,
                 DateCreated = result.DateCreated,
@@ -103,7 +102,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> AddAndAssignLGDA(UserModel result, UserLcdaModel userLcda)
         {
-            db.Users.Add(new User()
+            db.Set<User>().Add(new User()
             {
                 CreatedBy = result.CreatedBy,
                 DateCreated = result.DateCreated,
@@ -122,7 +121,7 @@ namespace RemsNG.Data.Repository
                 Username = result.Username,
                 UserStatus = result.UserStatus
             });
-            db.UserLcdas.Add(new UserLcda()
+            db.Set<UserLcda>().Add(new UserLcda()
             {
                 LgdaId = userLcda.LgdaId,
                 UserId = userLcda.UserId
@@ -137,7 +136,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> AssignLGDA(UserLcdaModel userLcda)
         {
-            db.UserLcdas.Add(new UserLcda()
+            db.Set<UserLcda>().Add(new UserLcda()
             {
                 LgdaId = userLcda.LgdaId,
                 UserId = userLcda.UserId
@@ -153,7 +152,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<UserModel> ByEmail(string email)
         {
-            var result = await db.Users.FirstOrDefaultAsync(x => x.Email == email);
+            var result = await db.Set<User>().FirstOrDefaultAsync(x => x.Email == email);
             if (result == null)
             {
                 return null;
@@ -181,7 +180,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<UserModel> ByUserName(string username)
         {
-            var result = await db.Users.FirstOrDefaultAsync(x => x.Username == username);
+            var result = await db.Set<User>().FirstOrDefaultAsync(x => x.Username == username);
             if (result == null)
             {
                 return null;
@@ -211,8 +210,8 @@ namespace RemsNG.Data.Repository
         {
             return await Task.Run(() =>
             {
-                var results = db.Users.Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToList();
-                var totalCount = db.Users.Count();
+                var results = db.Set<User>().Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToList();
+                var totalCount = db.Set<User>().Count();
                 return new
                 {
                     data = results,
@@ -223,12 +222,12 @@ namespace RemsNG.Data.Repository
 
         public async Task<object> Paginated(PageModel pageModel, Guid lcdaId)
         {
-            var results = await db.Users.FromSql("sp_domainUsers @p0, @p1, @p2", new object[] {
+            var results = await db.Set<User>().FromSql("sp_domainUsers @p0, @p1, @p2", new object[] {
                      lcdaId,
                      pageModel.PageNum,
                      pageModel.PageSize
                 }).ToListAsync();
-            var totalCount = await db.UserLcdas.Where(x => x.LgdaId == lcdaId).CountAsync();
+            var totalCount = await db.Set<UserLcda>().Where(x => x.LgdaId == lcdaId).CountAsync();
             return new
             {
                 data = results,
@@ -238,7 +237,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> ChangePwd(Guid id, string newPwd)
         {
-            var user = await db.Users.FindAsync(new object[] { id });
+            var user = await db.Set<User>().FindAsync(new object[] { id });
             if (user == null)
             {
                 throw new NotFoundException("Can't find selected user");

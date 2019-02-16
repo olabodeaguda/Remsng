@@ -1,4 +1,5 @@
-﻿using Remsng.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
@@ -12,7 +13,7 @@ namespace RemsNG.Infrastructure.Managers
     {
         private readonly DomainRepository domainDao;
 
-        public DomainManagers(RemsDbContext _db)
+        public DomainManagers(DbContext _db)
         {
             domainDao = new DomainRepository(_db);
         }

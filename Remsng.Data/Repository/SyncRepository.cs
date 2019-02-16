@@ -9,18 +9,20 @@ namespace RemsNG.Data.Repository
 {
     public class SyncRepository : AbstractRepository
     {
-        public SyncRepository(RemsDbContext _db) : base(_db)
+        public SyncRepository(DbContext _db) : base(_db)
         {
         }
 
         public async Task<List<SyncDataModel>> Get()
         {
-            return await db.SyncDataModels.FromSql("sp_paymentReportSync").ToListAsync();
+            return await db.Set<SyncDataModel>()
+                .FromSql("sp_paymentReportSync").ToListAsync();
         }
 
         public async Task<List<SyncDataModel>> GetApprovalUpdate()
         {
-            return await db.SyncDataModels.FromSql("sp_paymentUpdateSync").ToListAsync();
+            return await db.Set<SyncDataModel>()
+                .FromSql("sp_paymentUpdateSync").ToListAsync();
         }
 
         public async Task<bool> UpdateSyncStatus(Guid[] ids)

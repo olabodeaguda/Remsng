@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
@@ -16,7 +17,7 @@ namespace RemsNG.Infrastructure.Managers
         private readonly TaxpayerRepository taxpayerDao;
         private readonly WardRepository wardDao;
         private readonly StreetRepository streetDao;
-        public LcdaManagers(RemsDbContext _db, ILoggerFactory loggerFactory)
+        public LcdaManagers(DbContext _db, ILoggerFactory loggerFactory)
         {
             lcdaDao = new LcdaRepository(_db, loggerFactory);
             roleDao = new RoleRepository(_db, loggerFactory);

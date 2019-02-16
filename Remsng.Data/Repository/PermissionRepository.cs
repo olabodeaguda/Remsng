@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using RemsNG.Common.Models;
 using RemsNG.Data.Entities;
 using System;
@@ -11,13 +10,14 @@ namespace RemsNG.Data.Repository
 {
     public class PermissionRepository : AbstractRepository
     {
-        public PermissionRepository(RemsDbContext _db) : base(_db)
+        public PermissionRepository(DbContext _db) : base(_db)
         {
         }
 
         public async Task<List<PermissionModel>> byRoleId(Guid roleId)
         {
-            var result = await db.Permissions.FromSql("sp_getRolePermission @p0", new object[] { roleId }).ToListAsync();
+            var result = await db.Set<Permission>()
+                .FromSql("sp_getRolePermission @p0", new object[] { roleId }).ToListAsync();
 
             return result.Select(x => new PermissionModel()
             {
@@ -29,12 +29,14 @@ namespace RemsNG.Data.Repository
 
         public async Task<int> PermissionCountByRoleId(Guid id)
         {
-            return await db.RolePermissions.Where(x => x.RoleId == id).CountAsync();
+            return await db.Set<RolePermission>()
+                .Where(x => x.RoleId == id).CountAsync();
         }
 
         public async Task<List<PermissionModel>> byRoleId(Guid roleId, PageModel pageModel)
         {
-            var result = await db.Permissions.FromSql("sp_getRolePermissionPaginated @p0, @p1, @p2", new object[] {
+            var result = await db.Set<Permission>()
+                .FromSql("sp_getRolePermissionPaginated @p0, @p1, @p2", new object[] {
                 roleId,
                 pageModel.PageNum,
                 pageModel.PageSize
@@ -51,7 +53,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<PermissionModel>> GetPermissionNotInRole(Guid roleId)
         {
-            var result = await db.Permissions.FromSql("sp_getPermissionNotInRole @p0", new object[] {
+            var result = await db.Set<Permission>()
+                .FromSql("sp_getPermissionNotInRole @p0", new object[] {
                 roleId
             }).ToListAsync();
 
@@ -66,7 +69,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<PermissionModel>> All()
         {
-            var result = await db.Permissions.ToListAsync();
+            var result = await db.Set<Permission>().
+                ToListAsync();
             return result.Select(x => new PermissionModel()
             {
                 Id = x.Id,
@@ -77,7 +81,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<RolePermissionModel> ByPermissionAndRoleId(RolePermissionModel rolePermission)
         {
-            var result = await db.RolePermissions.FirstOrDefaultAsync(x => x.PermissionId == rolePermission.PermissionId
+            var result = await db.Set<RolePermission>()
+                .FirstOrDefaultAsync(x => x.PermissionId == rolePermission.PermissionId
             && x.RoleId == rolePermission.RoleId);
 
             if (result == null)
@@ -95,11 +100,12 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> RemovePermission(RolePermissionModel rolePermission)
         {
-            db.RolePermissions.Remove(new RolePermission()
-            {
-                RoleId = rolePermission.RoleId,
-                PermissionId = rolePermission.PermissionId
-            });
+            db.Set<RolePermission>()
+                .Remove(new RolePermission()
+                {
+                    RoleId = rolePermission.RoleId,
+                    PermissionId = rolePermission.PermissionId
+                });
             int count = await db.SaveChangesAsync();
             if (count > 0)
             {

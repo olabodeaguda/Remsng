@@ -1,4 +1,5 @@
-﻿using Remsng.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
@@ -26,7 +27,7 @@ namespace RemsNG.Infrastructure.Managers
         private readonly IDemandNoticeChargesManagers chargesService;
         private readonly ILcdaManagers lcdaService;
         private IDNAmountDueMgtManagers _admService;
-        public DemandNoticeTaxpayerManagers(RemsDbContext _db,
+        public DemandNoticeTaxpayerManagers(DbContext _db,
             IDemandNoticeItemManagers _dnItemService, ITaxpayerManagers _taxpayerService,
              IImageManagers _imageService, ILcdaBankManagers _lcdaBankService,
              IListPropertyManagers _lpService,

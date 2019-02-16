@@ -1,4 +1,5 @@
-﻿using Remsng.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
@@ -10,7 +11,7 @@ namespace RemsNG.Infrastructure.Managers
     public class DemandNoticeItemManagers : IDemandNoticeItemManagers
     {
         private readonly DemandNoticeItemRepository dnDao;
-        public DemandNoticeItemManagers(RemsDbContext _db)
+        public DemandNoticeItemManagers(DbContext _db)
         {
             dnDao = new DemandNoticeItemRepository(_db);
         }

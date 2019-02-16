@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Remsng.Data;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -15,7 +14,7 @@ namespace RemsNG.Data.Repository
     {
         private StreetRepository streetDao;
         WardRepository wardDao;
-        public DemandNoticeRepository(RemsDbContext _db) : base(_db)
+        public DemandNoticeRepository(DbContext _db) : base(_db)
         {
             wardDao = new WardRepository(_db);
             streetDao = new StreetRepository(_db);
@@ -23,7 +22,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> Add(DemandNoticeModel demandNotice)
         {
-            DbResponse dbResponse = await db.DbResponses.FromSql("sp_addDemandNotice @p0,@p1,@p2,@p3,@p4,@p5,@p6,@p7,@p8,@p9", new object[] {
+            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addDemandNotice @p0,@p1,@p2,@p3,@p4,@p5,@p6,@p7,@p8,@p9", new object[] {
                 demandNotice.Id,
                 demandNotice.Query,
                 demandNotice.BatchNo,
@@ -56,7 +55,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<object> SearchDemandNotice2(DemandNoticeModel query, PageModel pageModel)
         {
-            List<DemandNotice> results = await db.DemandNotices
+            List<DemandNotice> results = await db.Set<DemandNotice>()
                 .FromSql("sp_searchdemandNoticePaginated @p0,@p1,@p2",
                 new object[] {
                     pageModel.PageNum,
@@ -92,7 +91,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<object> SearchDemandNotice(DemandNoticeModel query, PageModel pageModel)
         {
-            List<DemandNotice> results = await db.DemandNotices.FromSql("sp_searchdemandNoticePaginated2 @p0,@p1,@p2,@p3",
+            List<DemandNotice> results = await db.Set<DemandNotice>()
+                .FromSql("sp_searchdemandNoticePaginated2 @p0,@p1,@p2,@p3",
                 new object[] {
                     pageModel.PageNum,
                     pageModel.PageSize,
@@ -129,7 +129,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> UpdateQuery(DemandNoticeModel demandNotice)
         {
-            DbResponse dbResponse = await db.DbResponses.FromSql("sp_updateQueryDemandNotice @p0,@p1", new object[] {
+            DbResponse dbResponse = await db.Set<DbResponse>()
+                .FromSql("sp_updateQueryDemandNotice @p0,@p1", new object[] {
                 demandNotice.Id,
                 demandNotice.Query
             }).FirstOrDefaultAsync();
@@ -154,7 +155,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> UpdateBillingYr(DemandNoticeModel demandNotice)
         {
-            DbResponse dbResponse = await db.DbResponses.FromSql("sp_updateBillingYrDemandNotice @p0,@p1", new object[] {
+            DbResponse dbResponse = await db.Set<DbResponse>()
+                .FromSql("sp_updateBillingYrDemandNotice @p0,@p1", new object[] {
                 demandNotice.Id,
                 demandNotice.BillingYear
             }).FirstOrDefaultAsync();
@@ -179,7 +181,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> UpdateStatus(DemandNoticeModel demandNotice)
         {
-            DbResponse dbResponse = await db.DbResponses.FromSql("sp_updateStatusDemandNotice @p0,@p1", new object[] {
+            DbResponse dbResponse = await db.Set<DbResponse>()
+                .FromSql("sp_updateStatusDemandNotice @p0,@p1", new object[] {
                 demandNotice.Id,
                 demandNotice.DemandNoticeStatus
             }).FirstOrDefaultAsync();
@@ -204,7 +207,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel)
         {
-            List<DemandNotice> results = await db.DemandNotices.FromSql("sp_demandNoticeByLcda @p0,@p1, @p2", new object[] { lcdaId, pageModel.PageNum, pageModel.PageSize }).ToListAsync();
+            List<DemandNotice> results = await db.Set<DemandNotice>()
+                .FromSql("sp_demandNoticeByLcda @p0,@p1, @p2", new object[] { lcdaId, pageModel.PageNum, pageModel.PageSize }).ToListAsync();
             var totalCount = 0;
             if (results.Count > 0)
             {
@@ -256,7 +260,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<object> All(PageModel pageModel)
         {
-            List<DemandNotice> results = await db.DemandNotices.FromSql("sp_demandNoticePaginated @p0,@p1", new object[] { pageModel.PageNum, pageModel.PageSize }).ToListAsync();
+            List<DemandNotice> results = await db.Set<DemandNotice>()
+                .FromSql("sp_demandNoticePaginated @p0,@p1", new object[] { pageModel.PageNum, pageModel.PageSize }).ToListAsync();
             var totalCount = 0;
             if (results.Count > 0)
             {
@@ -281,7 +286,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<DemandNoticeModel> GetById(Guid id)
         {
-            var result = await db.DemandNotices.FromSql("sp_getDemandNotice @p0", new object[] { id }).FirstOrDefaultAsync();
+            var result = await db.Set<DemandNotice>()
+                .FromSql("sp_getDemandNotice @p0", new object[] { id }).FirstOrDefaultAsync();
             if (result == null)
             {
                 return null;
@@ -308,7 +314,8 @@ namespace RemsNG.Data.Repository
         {
             try
             {
-                var result = await db.DemandNotices.FromSql("sp_getDemandNoticeByBatchId @p0", new object[] { batchId }).FirstOrDefaultAsync();
+                var result = await db.Set<DemandNotice>()
+                    .FromSql("sp_getDemandNoticeByBatchId @p0", new object[] { batchId }).FirstOrDefaultAsync();
                 return new DemandNoticeModel()
                 {
                     BatchNo = result.BatchNo,
@@ -337,7 +344,8 @@ namespace RemsNG.Data.Repository
             try
             {
 
-                var result = await db.DemandNotices.FromSql("sp_dequeueDemandNotice").FirstOrDefaultAsync();
+                var result = await db.Set<DemandNotice>()
+                    .FromSql("sp_dequeueDemandNotice").FirstOrDefaultAsync();
                 return new DemandNoticeModel()
                 {
                     BatchNo = result.BatchNo,
@@ -365,7 +373,8 @@ namespace RemsNG.Data.Repository
         public async Task<List<DemandNoticeModel>> GetUnSyncData()
         {
             string query = $"select tbl_demandnotice.*,-1 as totalSize from tbl_demandnotice where wardId is null and demandNoticeStatus = 'ERROR'";
-            var results = await db.DemandNotices.FromSql(query).ToListAsync();
+            var results = await db.Set<DemandNotice>()
+                .FromSql(query).ToListAsync();
             return results.Select(result =>
                  new DemandNoticeModel()
                  {

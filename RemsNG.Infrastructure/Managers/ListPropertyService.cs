@@ -1,4 +1,5 @@
-﻿using Remsng.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
@@ -11,7 +12,7 @@ namespace RemsNG.Infrastructure.Managers
     public class ListPropertyManagers : IListPropertyManagers
     {
         private readonly LcdaPropertyRepository lcdaPropertyDao;
-        public ListPropertyManagers(RemsDbContext _db)
+        public ListPropertyManagers(DbContext _db)
         {
             lcdaPropertyDao = new LcdaPropertyRepository(_db);
         }

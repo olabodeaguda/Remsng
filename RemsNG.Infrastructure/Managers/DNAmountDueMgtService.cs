@@ -1,4 +1,5 @@
-﻿using Remsng.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
@@ -11,7 +12,7 @@ namespace RemsNG.Infrastructure.Managers
     public class DNAmountDueMgtManagers : IDNAmountDueMgtManagers
     {
         private DNAmountDueMgtRepository dNAmountDueMgtDao;
-        public DNAmountDueMgtManagers(RemsDbContext _db)
+        public DNAmountDueMgtManagers(DbContext _db)
         {
             dNAmountDueMgtDao = new DNAmountDueMgtRepository(_db);
         }

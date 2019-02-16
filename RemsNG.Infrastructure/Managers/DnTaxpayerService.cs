@@ -1,4 +1,5 @@
-﻿using Remsng.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
@@ -10,7 +11,7 @@ namespace RemsNG.Infrastructure.Managers
     public class DnTaxpayerManagers : IDnTaxpayerManagers
     {
         private readonly DemandNoticeTaxpayersRepository dnTaxpayerDao;
-        public DnTaxpayerManagers(RemsDbContext _db)
+        public DnTaxpayerManagers(DbContext _db)
         {
             dnTaxpayerDao = new DemandNoticeTaxpayersRepository(_db);
         }

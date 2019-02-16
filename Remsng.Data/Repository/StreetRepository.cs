@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Remsng.Data;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -14,12 +13,12 @@ namespace RemsNG.Data.Repository
     public class StreetRepository : AbstractRepository
     {
         private readonly ILogger logger;
-        public StreetRepository(RemsDbContext _db, ILoggerFactory loggerFactory) : base(_db)
+        public StreetRepository(DbContext _db, ILoggerFactory loggerFactory) : base(_db)
         {
             logger = loggerFactory.CreateLogger("LCDA Dao");
         }
 
-        public StreetRepository(RemsDbContext _db) : base(_db)
+        public StreetRepository(DbContext _db) : base(_db)
         {
         }
 
@@ -108,7 +107,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<StreetModel> ById(Guid streetId)
         {
-            var t = await db.Streets.FirstOrDefaultAsync(x => x.Id == streetId);
+            var t = await db.Set<Street>()
+                .FirstOrDefaultAsync(x => x.Id == streetId);
             if (t == null)
             {
                 return null;
@@ -131,7 +131,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<StreetModel>> ByWard(Guid wardId)
         {
-            var result = await db.Streets.Where(x => x.WardId == wardId).OrderBy(x => x.StreetName).ToListAsync();
+            var result = await db.Set<Street>().Where(x => x.WardId == wardId).OrderBy(x => x.StreetName).ToListAsync();
 
             return result.Select(t => new StreetModel()
             {
@@ -150,10 +150,10 @@ namespace RemsNG.Data.Repository
 
         public async Task<object> ByWardpaginated(Guid wardId, PageModel pageModel)
         {
-            var results = await db.Streets.Where(x => x.WardId == wardId)
+            var results = await db.Set<Street>().Where(x => x.WardId == wardId)
                  .Skip((pageModel.PageNum - 1) * pageModel.PageSize)
                  .Take(pageModel.PageSize).ToListAsync();
-            var totalCount = await db.Streets.Where(x => x.WardId == wardId).CountAsync();
+            var totalCount = await db.Set<Street>().Where(x => x.WardId == wardId).CountAsync();
             return new
             {
                 data = results,
@@ -163,12 +163,12 @@ namespace RemsNG.Data.Repository
 
         public async Task<int> ByWardCount(Guid wardId)
         {
-            return await db.Streets.Where(x => x.WardId == wardId).CountAsync();
+            return await db.Set<Street>().Where(x => x.WardId == wardId).CountAsync();
         }
 
         public async Task<List<StreetModel>> ByLcda(Guid lcdaId)
         {
-            var result = await db.Streets.FromSql("sp_streetbyLcda @p0", new object[] { lcdaId }).ToListAsync();
+            var result = await db.Set<Street>().FromSql("sp_streetbyLcda @p0", new object[] { lcdaId }).ToListAsync();
 
             return result.Select(t => new StreetModel()
             {
@@ -192,7 +192,8 @@ namespace RemsNG.Data.Repository
                 $"inner join tbl_ward on tbl_ward.lcdaId = tbl_lcda.id " +
                 $"inner join tbl_street on tbl_street.wardId = tbl_ward.id " +
                 $" where tbl_street.id = '{streetId}'";
-            var result = await db.Domains.FromSql(query).FirstOrDefaultAsync();
+            var result = await db.Set<Domain>()
+                .FromSql(query).FirstOrDefaultAsync();
             if (result == null)
             {
                 return null;
@@ -212,7 +213,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<StreetModel>> SearchStreet(Guid wardId, string searchName)
         {
-            var result = await db.Streets.Where(x => x.WardId == wardId && x.StreetName.Contains(searchName)).ToListAsync();
+            var result = await db.Set<Street>()
+                .Where(x => x.WardId == wardId && x.StreetName.Contains(searchName)).ToListAsync();
 
             return result.Select(t => new StreetModel()
             {

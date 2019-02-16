@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
+using RemsNG.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ namespace RemsNG.Data.Repository
 {
     public class ImageRepository : AbstractRepository
     {
-        public ImageRepository(RemsDbContext _db) : base(_db)
+        public ImageRepository(DbContext _db) : base(_db)
         {
         }
 
@@ -44,7 +44,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<ImagesModel>> ByOwnerId(Guid ownerId)
         {
-            var r = await db.Imagess.Where(x => x.OwnerId == ownerId).ToListAsync();
+            var r = await db.Set<Images>()
+                .Where(x => x.OwnerId == ownerId).ToListAsync();
             return r.Select(x => new ImagesModel()
             {
                 CreatedBy = x.CreatedBy,
@@ -60,7 +61,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<ImagesModel> ByOwnerId(Guid ownerId, string fileType)
         {
-            var x = await db.Imagess.Where(p => p.OwnerId == ownerId && p.ImgType == fileType).FirstOrDefaultAsync();
+            var x = await db.Set<Images>()
+                .Where(p => p.OwnerId == ownerId && p.ImgType == fileType).FirstOrDefaultAsync();
             if (x == null)
             {
                 return null;

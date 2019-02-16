@@ -1,4 +1,5 @@
-﻿using Remsng.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
@@ -11,7 +12,7 @@ namespace RemsNG.Infrastructure.Managers
     public class LcdaBankManagers : ILcdaBankManagers
     {
         private readonly LcdaBankRepository lcdaBankDao;
-        public LcdaBankManagers(RemsDbContext _db)
+        public LcdaBankManagers(DbContext _db)
         {
             lcdaBankDao = new LcdaBankRepository(_db);
         }

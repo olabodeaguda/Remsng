@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -12,7 +11,7 @@ namespace RemsNG.Data.Repository
 {
     public class DemandNoticeArrearRepository : AbstractRepository
     {
-        public DemandNoticeArrearRepository(RemsDbContext _db) : base(_db)
+        public DemandNoticeArrearRepository(DbContext _db) : base(_db)
         {
         }
 
@@ -162,7 +161,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<DemandNoticeArrearsModel>> ByBillingNumber(string billingno)
         {
-            List<DemandNoticeArrears> lstdbItem = await db.DemandNoticeArrearss
+            List<DemandNoticeArrears> lstdbItem = await db.Set<DemandNoticeArrears>()
                 .FromSql($"select tbl_demandNoticeArrears.*, 0 as billingYr from tbl_demandNoticeArrears " +
                 $"where billingNo = '{billingno}'  and arrearsStatus in ('PENDING','PART_PAYMENT')").ToListAsync();
             List<DemandNoticeArrears> lst = new List<DemandNoticeArrears>();
@@ -197,7 +196,7 @@ namespace RemsNG.Data.Repository
             string query = $"select tbl_demandNoticeArrears.*, 0 as billingYr " +
                 $"from tbl_demandNoticeArrears where taxpayerId = '{taxpayerId}' and arrearsStatus in ('PENDING','PART_PAYMENT')";
 
-            var entity = await db.DemandNoticeArrearss.FromSql(query).ToListAsync();
+            var entity = await db.Set<DemandNoticeArrears>().FromSql(query).ToListAsync();
             return entity.Select(x => new DemandNoticeArrearsModel()
             {
                 AmountPaid = x.AmountPaid,
@@ -256,7 +255,7 @@ namespace RemsNG.Data.Repository
             DateTime endDate = new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59);
 
             List<DemandNoticeArrearsModelExt> lst =
-                await db.DemandNoticeArrearsExts.FromSql("sp_getArrearsByCategoryDate @p0,@p1",
+                await db.Set<DemandNoticeArrearsModelExt>().FromSql("sp_getArrearsByCategoryDate @p0,@p1",
                 new object[] { startDate, endDate }).ToListAsync();
 
             return lst;
