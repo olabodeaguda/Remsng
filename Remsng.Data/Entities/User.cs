@@ -23,5 +23,9 @@ namespace RemsNG.Data.Entities
         public string Surname { get; set; }
         public string Firstname { get; set; }
         public string Gender { get; set; }
+
+        public ICollection<UserDomain> UserDomains { get; set; } = new HashSet<UserDomain>();
+        public ICollection<UserLcda> UserLcdas { get; set; } = new HashSet<UserLcda>();
+        public ICollection<UserRole> UserRoles { get; set; } = new HashSet<UserRole>();
     }
 }

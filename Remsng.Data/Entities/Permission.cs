@@ -10,5 +10,8 @@ namespace RemsNG.Data.Entities
         public Guid Id { get; set; }
         public string PermissionName { get; set; }
         public string PermissionDescription { get; set; }
+
+
+        public ICollection<RolePermission> RolePermissions { get; set; } = new HashSet<RolePermission>();
     }
 }

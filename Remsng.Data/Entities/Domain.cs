@@ -15,5 +15,6 @@ namespace RemsNG.Data.Entities
         public string DomainStatus { get; set; }
         public string DomainType { get; set; }
         public Guid? StateId { get; set; }
+        public ICollection<UserDomain> UserDomains { get; set; } = new HashSet<UserDomain>();
     }
 }

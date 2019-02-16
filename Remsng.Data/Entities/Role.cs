@@ -13,5 +13,8 @@ namespace RemsNG.Data.Entities
         public string RoleStatus { get; set; }
 
         public virtual Lcda Domain { get; set; }
+
+        public ICollection<RolePermission> RolePermissions { get; set; } = new HashSet<RolePermission>();
+        public ICollection<UserRole> UserRoles { get; set; } = new HashSet<UserRole>();
     }
 }
