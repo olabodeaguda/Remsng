@@ -140,16 +140,38 @@ namespace RemsNG.Data.Repository
 
         public async Task<object> ByStreetId(Guid streetId, PageModel pageModel)
         {
-            var results = await db.Set<TaxpayerExtensionModel>().FromSql("sp_TaxpayerByStreetIdPaginated @p0,@p1,@p2", new object[] { streetId, pageModel.PageSize, pageModel.PageNum }).ToListAsync();
-            int totalCount = 0;
-            if (results.Count > 0)
-            {
-                totalCount = results[0].totalSize;
-            }
+            var query = db.Set<TaxPayer>()
+               .Include(x => x.Company)
+               .Include(x => x.Address)
+               .Include(p => p.Street)
+               .Include(q => q.Street.Ward)
+               .Where(p => p.StreetId == streetId && p.TaxpayerStatus == TaxPayerEnum.ACTIVE.ToString())
+               .Select(x => new TaxPayerModel()
+               {
+                   AddressId = x.AddressId,
+                   CompanyId = x.CompanyId,
+                   StreetId = x.StreetId,
+                   companyName = x.Company.CompanyName,
+                   CreatedBy = x.CreatedBy,
+                   DateCreated = x.DateCreated.Value,
+                   Firstname = x.Firstname,
+                   Id = x.Id,
+                   Lastmodifiedby = x.Lastmodifiedby,
+                   LastModifiedDate = x.LastModifiedDate,
+                   Lastname = x.Lastname,
+                   StreetNumber = x.Address.Addressnumber,
+                   Surname = x.Surname,
+                   TaxpayerStatus = x.TaxpayerStatus,
+                   WardName = x.Street.Ward.WardName,
+                   StreetName = x.Street.StreetName
+               });
+
+            var results = await query.Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToListAsync();
+            int totalCount = await query.CountAsync();
 
             return new
             {
-                data = results.Where(x => x.taxpayerStatus == TaxPayerEnum.ACTIVE.ToString()).ToList(),
+                data = results,
                 totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
             };
         }
@@ -190,9 +212,24 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<TaxpayerExtensionModel>> ByLcdaId(Guid lcdaId)
         {
-            var results = await db.Set<TaxpayerExtensionModel>().FromSql("sp_TaxpayerByLcdaId @p0", new object[] { lcdaId }).ToListAsync();
-            results = results.Where(x => x.taxpayerStatus == TaxPayerEnum.ACTIVE.ToString()).ToList();
-            return results;
+            return await db.Set<TaxPayer>()
+                .Include(x => x.Company)
+                .Include(x => x.Address)
+                .Where(x => x.TaxpayerStatus == TaxPayerEnum.ACTIVE.ToString()).Select(x => new TaxpayerExtensionModel()
+                {
+                    addressId = x.AddressId.Value,
+                    companyId = x.CompanyId,
+                    companyName = x.Company.CompanyName,
+                    createdBy = x.CreatedBy,
+                    dateCreated = x.DateCreated,
+                    firstname = x.Firstname,
+                    id = x.Id,
+                    lastmodifiedby = x.Lastmodifiedby,
+                    lastModifiedDate = x.LastModifiedDate,
+                    lastname = x.Lastname,
+                    streetId = x.StreetId.Value,
+                    streetNumber = x.Address.Addressnumber
+                }).ToListAsync();
         }
 
         public async Task<List<TaxpayerExtensionModel>> Search(Guid lcdaId, string qu)
@@ -240,16 +277,34 @@ namespace RemsNG.Data.Repository
 
         public async Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel)
         {
-            var results = await db.Set<TaxpayerExtensionModel>().FromSql("sp_TaxpayerByLcdaIdpaginated @p0,@p1,@p2", new object[] { lcdaId, pageModel.PageSize, pageModel.PageNum }).ToListAsync();
-            int totalCount = 0;
-            if (results.Count > 0)
-            {
-                totalCount = results[0].totalSize;
-            }
+            var query = db.Set<TaxPayer>()
+                .Include(x => x.Company)
+                .Include(x => x.Address)
+                .Where(x => x.TaxpayerStatus == TaxPayerEnum.ACTIVE.ToString()).Select(x => new TaxpayerExtensionModel()
+                {
+                    addressId = x.AddressId.Value,
+                    companyId = x.CompanyId,
+                    companyName = x.Company.CompanyName,
+                    createdBy = x.CreatedBy,
+                    dateCreated = x.DateCreated,
+                    firstname = x.Firstname,
+                    id = x.Id,
+                    lastmodifiedby = x.Lastmodifiedby,
+                    lastModifiedDate = x.LastModifiedDate,
+                    lastname = x.Lastname,
+                    streetId = x.StreetId.Value,
+                    streetNumber = x.Address.Addressnumber,
+                    surname = x.Surname,
+                    taxpayerStatus = x.TaxpayerStatus
+                });
+
+            var results = query.OrderBy(x => x.surname).Skip((pageModel.PageNum - 1) * pageModel.PageSize)
+                .Take(pageModel.PageSize); // await db.Set<TaxpayerExtensionModel>().FromSql("sp_TaxpayerByLcdaIdpaginated @p0,@p1,@p2", new object[] { lcdaId, pageModel.PageSize, pageModel.PageNum }).ToListAsync();
+            int totalCount = await query.CountAsync();
 
             return new
             {
-                data = results.Where(x => x.taxpayerStatus == TaxPayerEnum.ACTIVE.ToString()).ToList(),
+                data = results.ToList(),
                 totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
             };
         }
@@ -285,31 +340,39 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<DemandNoticePaymentHistoryModel>> PaymentHistory(Guid taxpayerId)
         {
-            string query1 = $"select ndh.*,bank.bankName  from tbl_demandNoticePaymentHistory as ndh " +
-                $"inner join tbl_bank bank on bank.id = ndh.bankId " +
-                $"inner join tbl_demandNoticeTaxpayers as dnt on dnt.billingNumber = ndh.billingNumber " +
-                $"where ndh.paymentStatus = 'APPROVED' and  dnt.taxpayerId = '{taxpayerId}' order by ndh.dateCreated desc";
-            var x = await db.Set<DemandNoticePaymentHistory>()
-                .FromSql(query1).ToListAsync();
+            //string query1 = $"select ndh.*,bank.bankName  from tbl_demandNoticePaymentHistory as ndh " +
+            //    $"inner join tbl_bank bank on bank.id = ndh.bankId " +
+            //    $"inner join tbl_demandNoticeTaxpayers as dnt on dnt.billingNumber = ndh.billingNumber " +
+            //    $"where ndh.paymentStatus = 'APPROVED' and  dnt.taxpayerId = '{taxpayerId}' order by =>dnt.BillingNumber,)
 
-            return x.Select(p => new DemandNoticePaymentHistoryModel()
-            {
-                Amount = p.Amount,
-                BankId = p.BankId,
-                BillingNumber = p.BillingNumber,
-                Charges = p.Charges,
-                CreatedBy = p.CreatedBy,
-                DateCreated = p.DateCreated,
-                Id = p.Id,
-                IsWaiver = p.IsWaiver,
-                Lastmodifiedby = p.Lastmodifiedby,
-                LastModifiedDate = p.LastModifiedDate,
-                OwnerId = p.OwnerId,
-                PaymentMode = p.PaymentMode,
-                PaymentStatus = p.PaymentStatus,
-                ReferenceNumber = p.ReferenceNumber,
-                SyncStatus = p.SyncStatus
-            }).ToList();
+
+            var res = await db.Set<DemandNoticePaymentHistory>()
+            .Include(p => p.Bank)
+            .Join(db.Set<DemandNoticeTaxpayers>(), dnph => dnph.BillingNumber, dnt => dnt.BillingNumber, (p, dnt) =>
+                  new DemandNoticePaymentHistoryModel()
+                  {
+                      Amount = p.Amount,
+                      BankId = p.BankId,
+                      BillingNumber = p.BillingNumber,
+                      Charges = p.Charges,
+                      CreatedBy = p.CreatedBy,
+                      DateCreated = p.DateCreated,
+                      Id = p.Id,
+                      IsWaiver = p.IsWaiver,
+                      Lastmodifiedby = p.Lastmodifiedby,
+                      LastModifiedDate = p.LastModifiedDate,
+                      OwnerId = p.OwnerId,
+                      PaymentMode = p.PaymentMode,
+                      PaymentStatus = p.PaymentStatus,
+                      ReferenceNumber = p.ReferenceNumber,
+                      SyncStatus = p.SyncStatus,
+                      BankName = p.Bank.BankName
+                  })
+            .Where(p => p.PaymentStatus == "APPROVED" && p.OwnerId == taxpayerId).ToListAsync();
+
+            //.FromSql(query1).ToListAsync();
+
+            return res;
         }
 
         public async Task<int> UpdateStatus(Guid id, string status)
@@ -318,51 +381,101 @@ namespace RemsNG.Data.Repository
             return await db.Database.ExecuteSqlCommandAsync(query);
         }
 
-        public async Task<List<TaxpayerExtensionModel>> SearchInStreet(Guid streetid, string queryParams)
+        public async Task<List<TaxPayerModel>> SearchInStreet(Guid streetid, string queryParams)
         {
             string[] str = queryParams.Split(new char[] { ' ' });
             string query = string.Empty;
 
+            List<TaxPayer> lst = new List<TaxPayer>();
+            var qry = db.Set<TaxPayer>()
+               .Include(x => x.Company)
+               .Include(x => x.Address)
+               .Include(p => p.Street)
+               .Include(q => q.Street.Ward);
+
             for (int i = 0; i < str.Length; i++)
             {
-                query = query + $"select tbl_taxPayer.*,tbl_company.companyName as companyName, " +
-                  $" tbl_Address.addressnumber as streetNumber,0 as totalSize from tbl_taxPayer " +
-                  $"inner join tbl_address on tbl_address.ownerId = tbl_taxPayer.id " +
-                  $"inner join tbl_company on tbl_company.id = tbl_taxPayer.companyId " +
-                  $"inner join tbl_street on tbl_street.id = tbl_taxPayer.streetId " +
-                  $"where (tbl_taxPayer.firstname like '%{str[i]}%' or tbl_taxPayer.lastname like '%{str[i]}%' " +
-                  $"or tbl_taxPayer.surname like '%{str[i]}%') and tbl_street.id = '{streetid}' ";
-
-                if (i < (str.Length - 1))
+                var ru = await qry.Where(x => (EF.Functions.Like(x.Firstname, $"%{str[i]}%") ||
+                  EF.Functions.Like(x.Lastmodifiedby, $"%{str[i]}%") ||
+                  EF.Functions.Like(x.Surname, $"%{str[i]}%")) && x.StreetId == streetid).ToArrayAsync();
+                if (ru.Length > 0)
                 {
-                    query = query + " union ";
+                    lst.AddRange(ru);
                 }
+
             }
-            var results = await db.Set<TaxpayerExtensionModel>()
-                .FromSql(query).ToListAsync();
+
+            var results = lst.Select(x => new TaxPayerModel()
+            {
+                AddressId = x.AddressId,
+                CompanyId = x.CompanyId,
+                StreetId = x.StreetId,
+                companyName = x.Company.CompanyName,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated.Value,
+                Firstname = x.Firstname,
+                Id = x.Id,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                Lastname = x.Lastname,
+                StreetNumber = x.Address.Addressnumber,
+                Surname = x.Surname,
+                TaxpayerStatus = x.TaxpayerStatus,
+                WardName = x.Street.Ward.WardName
+            });
 
             var re = results
-                .GroupBy(x => x.id)
+                .GroupBy(x => x.Id)
                 .Select(p => p.FirstOrDefault())
                 .ToList();
 
             return re;
         }
 
-        public async Task<TaxpayerExtensionModel2[]> GetUnbilledTaxpayer(int billingYear)
+        public async Task<TaxPayerModel[]> GetUnbilledTaxpayer(int billingYear)
         {
-            string query = $"select tbl_taxPayer.*,tbl_company.companyName, tbl_street.streetName, tbl_address.addressnumber, tbl_ward.wardName from tbl_taxPayer " +
-                $"inner join tbl_company on tbl_company.id = tbl_taxPayer.companyId " +
-                $"inner join tbl_street on tbl_street.id = tbl_taxPayer.streetId " +
-                $"inner join tbl_ward on tbl_ward.id = tbl_street.wardId " +
-                $"inner join tbl_address on tbl_address.id = tbl_taxPayer.addressId " +
-                $"where tbl_taxPayer.id  " +
-                $"not in(select taxpayerId from tbl_demandNoticeTaxpayers where " +
-                $"billingYr= {billingYear} and tbl_demandNoticeTaxpayers.demandNoticeStatus <> 'CANCEL') " +
-                $"and tbl_taxPayer.taxpayerStatus = 'ACTIVE' ";
+            //string query = $"select tbl_taxPayer.*,tbl_company.companyName, tbl_street.streetName, tbl_address.addressnumber, tbl_ward.wardName from tbl_taxPayer " +
+            //    $"inner join tbl_company on tbl_company.id = tbl_taxPayer.companyId " +
+            //    $"inner join tbl_street on tbl_street.id = tbl_taxPayer.streetId " +
+            //    $"inner join tbl_ward on tbl_ward.id = tbl_street.wardId " +
+            //    $"inner join tbl_address on tbl_address.id = tbl_taxPayer.addressId " +
+            //    $"where tbl_taxPayer.id  " +
+            //    $"not in(select taxpayerId from tbl_demandNoticeTaxpayers where " +
+            //    $"billingYr= {billingYear} and tbl_demandNoticeTaxpayers.demandNoticeStatus <> 'CANCEL') " +
+            //    $"and tbl_taxPayer.taxpayerStatus = 'ACTIVE' ";
 
-            return await db.Set<TaxpayerExtensionModel2>()
-                .FromSql(query).ToArrayAsync();
+            var alreadyBilledTaxpayerIds = await db.Set<DemandNoticeTaxpayers>()
+                .Where(x => x.BillingYr == billingYear && x.DemandNoticeStatus != "CANCEL")
+                .Select(x => x.TaxpayerId).ToArrayAsync();
+
+            var result = await db.Set<TaxPayer>()
+               .Include(x => x.Company)
+               .Include(x => x.Address)
+               .Include(p => p.Street)
+               .Include(q => q.Street.Ward)
+               .Where(p => p.TaxpayerStatus == "ACTIVE" && alreadyBilledTaxpayerIds.Any(x => x != p.Id))
+               .Select(x => new TaxPayerModel()
+               {
+                   AddressId = x.AddressId,
+                   CompanyId = x.CompanyId,
+                   StreetId = x.StreetId,
+                   companyName = x.Company.CompanyName,
+                   CreatedBy = x.CreatedBy,
+                   DateCreated = x.DateCreated.Value,
+                   Firstname = x.Firstname,
+                   Id = x.Id,
+                   Lastmodifiedby = x.Lastmodifiedby,
+                   LastModifiedDate = x.LastModifiedDate,
+                   Lastname = x.Lastname,
+                   StreetNumber = x.Address.Addressnumber,
+                   Surname = x.Surname,
+                   TaxpayerStatus = x.TaxpayerStatus,
+                   WardName = x.Street.Ward.WardName,
+                   StreetName = x.Street.StreetName
+               }).ToArrayAsync();
+
+            return result; //await db.Set<TaxpayerExtensionModel2>()
+            //    .FromSql(query).ToArrayAsync();
         }
     }
 }

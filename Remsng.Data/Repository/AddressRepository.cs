@@ -18,72 +18,47 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> Add(AddressModel address)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>()
-                .FromSql("sp_addAddress @p0,@p1,@p2,@p3,@p4, @p5", new object[] {
-                    address.Id,
-                    address.Addressnumber,
-                    address.StreetId,
-                    address.OwnerId,
-                    address.Lcdaid,
-                    address.CreatedBy
-                }).FirstOrDefaultAsync();
+            db.Set<Address>().Add(new Address
+            {
+                Addressnumber = address.Addressnumber,
+                StreetId = address.StreetId,
+                OwnerId = address.OwnerId,
+                Lcdaid = address.Lcdaid,
+                CreatedBy = address.CreatedBy
+            });
+            await db.SaveChangesAsync();
 
-            if (dbResponse.success)
+            return new Response()
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = dbResponse.msg
-                };
-            }
-            else
-            {
-                return new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = dbResponse.msg
-                };
-            }
+                code = MsgCode_Enum.SUCCESS,
+                description = $"Address has been added sucessfully"
+            };
+
         }
 
         public async Task<Response> Update(AddressModel address)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>()
-                .FromSql("sp_updateAddress @p0,@p1,@p2,@p3,@p4,@p5", new object[] {
-                    address.Addressnumber,
-                    address.StreetId,
-                    address.OwnerId,
-                    address.Lcdaid,
-                    address.Lastmodifiedby,
-                    address.Id
-                }).FirstOrDefaultAsync();
+            var entity = await db.Set<Address>().FindAsync(address.Id);
+            if (entity == null)
+            {
+                throw new NotFoundException("Address does not exist");
+            }
 
-            if (dbResponse.success)
+            entity.Addressnumber = address.Addressnumber;
+            entity.StreetId = address.StreetId;
+            entity.OwnerId = address.OwnerId;
+            entity.Lcdaid = address.Lcdaid;
+            entity.Lastmodifiedby = address.Lastmodifiedby;
+            await db.SaveChangesAsync();
+            return new Response()
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = "Address has been updated successfully"
-                };
-            }
-            else
-            {
-                return new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = "An error occur.Please contact administrator for help or try again"
-                };
-            }
+                code = MsgCode_Enum.SUCCESS,
+                description = "Address has been updated successfully"
+            };
         }
 
         public async Task<Response> Remove(AddressModel address)
         {
-            var results = await db.Set<Address>().FromSql($"select tbl_address.*,'none' as streetName from tbl_address where ownerId = {address.OwnerId} ").ToListAsync();
-            if (results.Count() < 2)
-            {
-                throw new UserValidationException("An account must have atleast one address!!!");
-            }
-
             var res = await ById(address.Id);
             if (res == null)
             {
@@ -113,58 +88,65 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<AddressModel>> ByOwnersId(Guid id, Guid lcdaId)
         {
-            var address = await db.Set<Address>().FromSql("sp_lcdaAddressByOwnerId @p0, @p1", new object[] { id, lcdaId }).ToListAsync();
-            return address.Select(x => new AddressModel
-            {
-                Addressnumber = x.Addressnumber,
-                CreatedBy = x.CreatedBy,
-                DateCreated = x.DateCreated,
-                Id = x.Id,
-                Lastmodifiedby = x.Lastmodifiedby,
-                LastModifiedDate = x.LastModifiedDate,
-                Lcdaid = x.Lcdaid,
-                OwnerId = x.OwnerId,
-                StreetId = x.StreetId
-            }).ToList();
+            var models = await db.Set<Address>()
+                .Join(db.Set<Street>(), x => x.StreetId, str => str.Id, (x, str) => new AddressModel
+                {
+                    Addressnumber = x.Addressnumber,
+                    CreatedBy = x.CreatedBy,
+                    DateCreated = x.DateCreated,
+                    Id = x.Id,
+                    Lastmodifiedby = x.Lastmodifiedby,
+                    LastModifiedDate = x.LastModifiedDate,
+                    Lcdaid = x.Lcdaid,
+                    OwnerId = x.OwnerId,
+                    StreetId = x.StreetId,
+                    StreetName = str.StreetName
+                }).Where(x => x.OwnerId == id && x.Lcdaid == lcdaId).ToListAsync();
+            return models;
         }
 
         public async Task<List<AddressModel>> ByOwnersId(Guid id)
         {
-            var address = await db.Set<Address>().FromSql("sp_AddressByOwnerId @p0", new object[] { id }).ToListAsync();
-            return address.Select(x => new AddressModel
-            {
-                Addressnumber = x.Addressnumber,
-                CreatedBy = x.CreatedBy,
-                DateCreated = x.DateCreated,
-                Id = x.Id,
-                Lastmodifiedby = x.Lastmodifiedby,
-                LastModifiedDate = x.LastModifiedDate,
-                Lcdaid = x.Lcdaid,
-                OwnerId = x.OwnerId,
-                StreetId = x.StreetId
-            }).ToList();
+            var address = await db.Set<Address>()
+                .Join(db.Set<Street>(), x => x.StreetId, str => str.Id, (x, str) => new AddressModel
+                {
+                    Addressnumber = x.Addressnumber,
+                    CreatedBy = x.CreatedBy,
+                    DateCreated = x.DateCreated,
+                    Id = x.Id,
+                    Lastmodifiedby = x.Lastmodifiedby,
+                    LastModifiedDate = x.LastModifiedDate,
+                    Lcdaid = x.Lcdaid,
+                    OwnerId = x.OwnerId,
+                    StreetId = x.StreetId,
+                    StreetName = str.StreetName
+                })
+                .Where(x => x.OwnerId == id).ToListAsync();//.FromSql("sp_AddressByOwnerId @p0", new object[] { id }).ToListAsync();
+            return address;
         }
 
         public async Task<AddressModel> ById(Guid id)
         {
-            var x = await db.Set<Address>().FromSql($"select tbl_address.*,'none' as streetName from tbl_address where id = {id} ").FirstOrDefaultAsync();
-            if (x == null)
+            var model = await db.Set<Address>()
+                .Join(db.Set<Street>(), x => x.StreetId, str => str.Id, (x, str) => new AddressModel
+                {
+                    Addressnumber = x.Addressnumber,
+                    CreatedBy = x.CreatedBy,
+                    DateCreated = x.DateCreated,
+                    Id = x.Id,
+                    Lastmodifiedby = x.Lastmodifiedby,
+                    LastModifiedDate = x.LastModifiedDate,
+                    Lcdaid = x.Lcdaid,
+                    OwnerId = x.OwnerId,
+                    StreetId = x.StreetId,
+                    StreetName = str.StreetName
+                }).FirstOrDefaultAsync(x => x.Id == id); //await db.Set<Address>().FromSql($"select tbl_address.*,'none' as streetName from tbl_address where id = {id} ").FirstOrDefaultAsync();
+            if (model == null)
             {
                 return null;
             }
 
-            return new AddressModel
-            {
-                Addressnumber = x.Addressnumber,
-                CreatedBy = x.CreatedBy,
-                DateCreated = x.DateCreated,
-                Id = x.Id,
-                Lastmodifiedby = x.Lastmodifiedby,
-                LastModifiedDate = x.LastModifiedDate,
-                Lcdaid = x.Lcdaid,
-                OwnerId = x.OwnerId,
-                StreetId = x.StreetId
-            };
+            return model;
         }
     }
 }

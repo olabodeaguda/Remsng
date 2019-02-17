@@ -15,5 +15,6 @@ namespace RemsNG.Common.Models
         public DateTime? LastModifiedDate { get; set; }
         public Guid OwnerId { get; set; }
         public Guid Lcdaid { get; set; }
+        public string StreetName { get; set; }
     }
 }

@@ -779,7 +779,7 @@ namespace RemsNG.Services
             });
         }
 
-        public async Task<byte[]> TaxpayerWithOutDemandNotice(TaxpayerExtensionModel2[] taxpayers, int billingYear)
+        public async Task<byte[]> TaxpayerWithOutDemandNotice(TaxPayerModel[] taxpayers, int billingYear)
         {
             return await Task.Run(() =>
             {
@@ -845,9 +845,9 @@ namespace RemsNG.Services
                         IRow rowHeader1 = sheet1.CreateRow(rowIndex++);
                         rowHeader1.CreateCell(0).SetCellValue(count++);
                         rowHeader1.CreateCell(1).SetCellValue(tmm.companyName);
-                        rowHeader1.CreateCell(2).SetCellValue($"{tmm.lastname} {tmm.firstname} {tmm.surname}");
+                        rowHeader1.CreateCell(2).SetCellValue($"{tmm.Lastname} {tmm.Firstname} {tmm.Surname}");
                         rowHeader1.CreateCell(3).SetCellValue(tmm.WardName);
-                        rowHeader1.CreateCell(4).SetCellValue($"{tmm.AddressNumber} {tmm.StreetName}");
+                        rowHeader1.CreateCell(4).SetCellValue($"{tmm.StreetNumber} {tmm.StreetName}");
                     }
                 }
 

@@ -21,8 +21,27 @@ namespace RemsNG.Data.Repository
 
         public async Task<RoleExtensionModel> GetUserDomainRoleByUsername(string username, Guid domainId)
         {
-            return await db.Set<RoleExtensionModel>()
-                .FromSql("sp_getUserDomainRoleByUsername @p0, @p1", new object[] { username, domainId }).FirstOrDefaultAsync();
+            var result = await db.Set<UserRole>()
+                .Include(x => x.User)
+                .Include(x => x.Role)
+                .Include(x => x.Role.Domain)
+                .FirstOrDefaultAsync(x => x.User.Username == username && x.Role.DomainId == domainId);
+            if (result == null)
+            {
+                return null;
+            }
+
+            return new RoleExtensionModel
+            {
+                domainId = result.Role.DomainId,
+                domainName = result.Role.Domain.LcdaName,
+                id = result.Role.Id,
+                roleName = result.Role.RoleName,
+                roleStatus = result.Role.RoleStatus
+            };
+
+            //return await db.Set<RoleExtensionModel>()
+            //    .FromSql("sp_getUserDomainRoleByUsername @p0, @p1", new object[] { username, domainId }).FirstOrDefaultAsync();
         }
 
         public async Task<object> Paginated(PageModel pageModel)

@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
@@ -132,21 +131,62 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<CompanyExtModel>> ByLcda(Guid lcdaId)
         {
-            return await db.Set<CompanyExtModel>().FromSql("sp_CompanyBylcdaId  @p0", new object[] { lcdaId }).ToListAsync();
+            return await db.Set<Company>()
+                .Join(db.Set<Sector>(), cyp => cyp.SectorId, sec => sec.Id, (cyp, sec) => new { cyp, sec })
+                .Join(db.Set<TaxpayerCategory>(), cyp => cyp.cyp.CategoryId, tc => tc.Id, (x, tc) => new CompanyExtModel
+                {
+                    addressId = x.cyp.AddressId,
+                    categoryId = tc.Id,
+                    categoryName = tc.TaxpayerCategoryName,
+                    companyName = x.cyp.CompanyName,
+                    companyStatus = x.cyp.CompanyStatus,
+                    createdBy = x.cyp.CreatedBy,
+                    dateCreated = x.cyp.DateCreated,
+                    id = x.cyp.Id,
+                    lastmodifiedby = x.cyp.Lastmodifiedby,
+                    lastModifiedDate = x.cyp.LastModifiedDate,
+                    lcdaId = x.cyp.LcdaId,
+                    sectorId = x.sec.Id,
+                    sectorName = x.sec.SectorName,
+                    streetId = x.cyp.StreetId
+                }).Where(x => x.lcdaId == lcdaId).ToListAsync();
+            //return await db.Set<CompanyExtModel>().FromSql("sp_CompanyBylcdaId  @p0", new object[] { lcdaId }).ToListAsync();
         }
 
         public async Task<object> ByLcda(Guid lcdaId, PageModel pageModel)
         {
-            var results = await db.Set<CompanyExtModel>().FromSql("sp_CompanyBylcdaIdpaginate @p0, @p1, @p2", new object[] {
-                    lcdaId,
-                    pageModel.PageNum,
-                    pageModel.PageSize
-            }).ToListAsync();
-            var totalCount = 0;// db.Companies.Where(x => x.lcdaId == lcdaId).Count();
-            if (results.Count > 0)
+            var query = db.Set<Company>()
+                .Join(db.Set<Sector>(), cyp => cyp.SectorId, sec => sec.Id, (cyp, sec) => new { cyp, sec })
+                .Join(db.Set<TaxpayerCategory>(), cyp => cyp.cyp.CategoryId, tc => tc.Id, (x, tc) => new CompanyModel
+                {
+                    AddressId = x.cyp.AddressId,
+                    CategoryId = tc.Id,
+                    categoryName = tc.TaxpayerCategoryName,
+                    CompanyName = x.cyp.CompanyName,
+                    CompanyStatus = x.cyp.CompanyStatus,
+                    CreatedBy = x.cyp.CreatedBy,
+                    DateCreated = x.cyp.DateCreated,
+                    Id = x.cyp.Id,
+                    Lastmodifiedby = x.cyp.Lastmodifiedby,
+                    LastModifiedDate = x.cyp.LastModifiedDate,
+                    LcdaId = x.cyp.LcdaId,
+                    SectorId = x.sec.Id,
+                    sectorName = x.sec.SectorName,
+                    StreetId = x.cyp.StreetId
+                }).Where(x => x.LcdaId == lcdaId);
+            if (pageModel.PageNum == 0)
             {
-                totalCount = results[0].totalSize.Value;
+                pageModel.PageNum = 1;
             }
+
+            var results = await query.OrderBy(x => x.CompanyName).Skip(pageModel.PageNum).Take(pageModel.PageSize).ToListAsync();
+            //var results = await db.Set<CompanyExtModel>().FromSql("sp_CompanyBylcdaIdpaginate @p0, @p1, @p2", new object[] {
+            //        lcdaId,
+            //        pageModel.PageNum,
+            //        pageModel.PageSize
+            //}).ToListAsync();
+            var totalCount = await query.CountAsync();
+           
             return new
             {
                 data = results,
@@ -156,23 +196,27 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<CompanyModel>> ByStretId(Guid streetId)
         {
-            var r = await db.Set<Company>().FromSql("sp_companyBystreetId @p0", new object[] { streetId }).ToListAsync();
+            var r = await db.Set<Company>()
+                .Join(db.Set<Sector>(), cyp => cyp.SectorId, sec => sec.Id, (cyp, sec) => new { cyp, sec })
+                .Join(db.Set<TaxpayerCategory>(), cyp => cyp.cyp.CategoryId, tc => tc.Id, (x, tc) => new CompanyModel
+                {
+                    AddressId = x.cyp.AddressId,
+                    CategoryId = tc.Id,
+                    categoryName = tc.TaxpayerCategoryName,
+                    CompanyName = x.cyp.CompanyName,
+                    CompanyStatus = x.cyp.CompanyStatus,
+                    CreatedBy = x.cyp.CreatedBy,
+                    DateCreated = x.cyp.DateCreated,
+                    Id = x.cyp.Id,
+                    Lastmodifiedby = x.cyp.Lastmodifiedby,
+                    LastModifiedDate = x.cyp.LastModifiedDate,
+                    LcdaId = x.cyp.LcdaId,
+                    SectorId = x.sec.Id,
+                    sectorName = x.sec.SectorName,
+                    StreetId = x.cyp.StreetId
+                }).Where(x => x.StreetId == streetId).ToListAsync();
 
-            return r.Select(p => new CompanyModel()
-            {
-                AddressId = p.AddressId,
-                CategoryId = p.CategoryId,
-                CompanyName = p.CompanyName,
-                CompanyStatus = p.CompanyStatus,
-                CreatedBy = p.CreatedBy,
-                DateCreated = p.DateCreated,
-                Id = p.Id,
-                Lastmodifiedby = p.Lastmodifiedby,
-                LastModifiedDate = p.LastModifiedDate,
-                LcdaId = p.LcdaId,
-                SectorId = p.SectorId,
-                StreetId = p.StreetId
-            }).ToList();
+            return r;
         }
     }
 }

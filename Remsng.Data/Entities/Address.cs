@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RemsNG.Data.Entities
@@ -16,5 +15,8 @@ namespace RemsNG.Data.Entities
         public DateTime? LastModifiedDate { get; set; }
         public Guid OwnerId { get; set; }
         public Guid Lcdaid { get; set; }
+
+        [ForeignKey("OwnerId")]
+        public TaxPayer Taxpayer { get; set; }
     }
 }

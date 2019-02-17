@@ -145,6 +145,7 @@ namespace RemsNG.Extensions
             services.AddTransient<ISyncManagers, SyncManagers>();
             services.AddSingleton<IConfigurationRoot>(provider => (IConfigurationRoot)Configuration);
             services.AddSingleton(config.GetSection("BankCategory").Get<BankCategory>());
+            
             #endregion
         }
 

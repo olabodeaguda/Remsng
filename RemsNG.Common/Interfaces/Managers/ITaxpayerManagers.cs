@@ -19,7 +19,7 @@ namespace RemsNG.Common.Interfaces.Managers
         Task<List<TaxpayerExtensionModel>> Search(Guid lcdaId, string qu);
         Task<List<DemandNoticePaymentHistoryModel>> PaymentHistory(Guid id);
         Task<bool> Delete(Guid taxpayerId);
-        Task<List<TaxpayerExtensionModel>> SearchInStreet(Guid streetId, string query);
-        Task<TaxpayerExtensionModel2[]> UnBilledTaxpayer(int billingYear);
+        Task<List<TaxPayerModel>> SearchInStreet(Guid streetId, string query);
+        Task<TaxPayerModel[]> UnBilledTaxpayer(int billingYear);
     }
 }

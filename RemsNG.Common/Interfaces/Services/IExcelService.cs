@@ -23,6 +23,6 @@ namespace RemsNG.Common.Interfaces.Services
         Task<byte[]> WriteReportCategory(string domainName, string lcdaName, DateTime startDate,
             DateTime endDate, List<DemandNoticeItemModelExt> dnitem, List<DemandNoticeItemPenaltyModelExt> dnPenalty,
             List<DemandNoticeArrearsModelExt> dnArrears);
-        Task<byte[]> TaxpayerWithOutDemandNotice(TaxpayerExtensionModel2[] taxpayers, int billingYear);
+        Task<byte[]> TaxpayerWithOutDemandNotice(TaxPayerModel[] taxpayers, int billingYear);
     }
 }

@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
+using RemsNG.Data.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
@@ -13,109 +15,140 @@ namespace RemsNG.Data.Repository
         {
         }
 
-        public async Task<Response> Add(CompanyItemModel companyItem)
+        public async Task<Response> Add(CompanyItemModel model)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_createCompanyItem @p0, @p1,@p2,@p3,@p4,@p5,@p6", new object[] {
-                companyItem.Id,
-                companyItem.TaxpayerId,
-                companyItem.ItemId,
-                companyItem.Amount,
-                companyItem.BillingYear,
-                companyItem.CreatedBy,
-                companyItem.CompanyStatus
-            }).FirstOrDefaultAsync();
+            db.Set<CompanyItem>().Add(new CompanyItem()
+            {
+                Amount = model.Amount,
+                BillingYear = model.BillingYear,
+                CompanyStatus = model.CompanyStatus,
+                CreatedBy = model.CreatedBy,
+                DateCreated = model.DateCreated,
+                Id = model.Id,
+                ItemId = model.ItemId,
+                Lastmodifiedby = model.Lastmodifiedby,
+                LastModifiedDate = model.LastModifiedDate,
+                TaxpayerId = model.TaxpayerId
+            });
 
-            if (dbResponse.success)
+            return new Response()
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = dbResponse.msg
-                };
-            }
-            else
-            {
-                return new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = dbResponse.msg
-                };
-            }
+                code = MsgCode_Enum.SUCCESS,
+                description = "Item has been addedd successfully"
+            };
         }
 
-        public async Task<Response> Update(CompanyItemModel companyItem)
+        public async Task<Response> Update(CompanyItemModel model)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_updateCompanyItem @p0, @p1,@p2,@p3,@p4,@p5", new object[] {
-                companyItem.Id,
-                companyItem.TaxpayerId,
-                companyItem.ItemId,
-                companyItem.Amount,
-                companyItem.BillingYear,
-                companyItem.CreatedBy
-            }).FirstOrDefaultAsync();
-
-            if (dbResponse.success)
+            var result = await db.Set<CompanyItem>().FindAsync(model.Id);
+            result.TaxpayerId = model.TaxpayerId;
+            result.ItemId = model.ItemId;
+            result.Amount = model.Amount;
+            result.BillingYear = model.BillingYear;
+            result.CreatedBy = model.CreatedBy;
+            await db.SaveChangesAsync();
+            return new Response()
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = dbResponse.msg
-                };
-            }
-            else
-            {
-                return new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = dbResponse.msg
-                };
-            }
+                code = MsgCode_Enum.SUCCESS,
+                description = ""
+            };
         }
 
         public async Task<Response> UpdateStatus(Guid id, string companystatus)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_updateCompanyItemStatus @p0, @p1", new object[] {
-                id,
-                companystatus
-            }).FirstOrDefaultAsync();
+            var result = await db.Set<CompanyItem>().FindAsync(id);
+            result.CompanyStatus = companystatus;
+            await db.SaveChangesAsync();
 
-            if (dbResponse.success)
+            return new Response()
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = dbResponse.msg
-                };
-            }
-            else
-            {
-                return new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = dbResponse.msg
-                };
-            }
+                code = MsgCode_Enum.SUCCESS,
+                description = "Status has been updated successfully"
+            };
         }
 
-        public async Task<List<CompanyItemModelExt>> ByTaxpayer(Guid taxpayerId)
+        public async Task<List<CompanyItemModel>> ByTaxpayer(Guid taxpayerId)
         {
-            return await db.Set<CompanyItemModelExt>().FromSql("sp_companyItemByTaxpayerId @p0", new object[] { taxpayerId }).ToListAsync();
+            var result = await db.Set<CompanyItem>()
+                .Include(x => x.TaxPayer)
+                .Include(x => x.Item)
+                .Where(x => x.TaxpayerId == taxpayerId)
+                .Select(p => new CompanyItemModel()
+                {
+                    Amount = p.Amount,
+                    BillingYear = p.BillingYear,
+                    CompanyStatus = p.CompanyStatus,
+                    CreatedBy = p.CreatedBy,
+                    DateCreated = p.DateCreated,
+                    Id = p.Id,
+                    ItemId = p.ItemId,
+                    ItemName = p.Item.ItemDescription,
+                    Lastmodifiedby = p.Lastmodifiedby,
+                    LastModifiedDate = p.LastModifiedDate,
+                    TaxpayerId = p.TaxpayerId,
+                    Firstname = p.TaxPayer.Firstname,
+                    Lastname = p.TaxPayer.Lastname,
+                    Surname = p.TaxPayer.Surname
+                }).ToListAsync();
+
+            return result;
         }
 
-        public async Task<CompanyItemModelExt> ById(Guid id)
+        public async Task<CompanyItemModel> ById(Guid id)
         {
-            return await db.Set<CompanyItemModelExt>().FromSql("sp_companyItemById @p0", new object[] { id }).FirstOrDefaultAsync();
+            var result = await db.Set<CompanyItem>()
+                .Include(x => x.TaxPayer)
+                .Include(x => x.Item)
+                .Where(x => x.Id == id)
+                .Select(p => new CompanyItemModel()
+                {
+                    Amount = p.Amount,
+                    BillingYear = p.BillingYear,
+                    CompanyStatus = p.CompanyStatus,
+                    CreatedBy = p.CreatedBy,
+                    DateCreated = p.DateCreated,
+                    Id = p.Id,
+                    ItemId = p.ItemId,
+                    ItemName = p.Item.ItemDescription,
+                    Lastmodifiedby = p.Lastmodifiedby,
+                    LastModifiedDate = p.LastModifiedDate,
+                    TaxpayerId = p.TaxpayerId,
+                    Firstname = p.TaxPayer.Firstname,
+                    Lastname = p.TaxPayer.Lastname,
+                    Surname = p.TaxPayer.Surname
+                }).FirstOrDefaultAsync();
+            return result;// await db.Set<CompanyItemModelExt>().FromSql("sp_companyItemById @p0", new object[] { id }).FirstOrDefaultAsync();
         }
 
         public async Task<object> ByTaxpayerpaginated(Guid id, PageModel pageModel)
         {
-            List<CompanyItemModelExt> results = await db.Set<CompanyItemModelExt>().FromSql("sp_companyItemByTaxpayerIdPaginated @p0,@p1, @p2", new object[] { id, pageModel.PageNum, pageModel.PageSize }).ToListAsync();
-            var totalCount = 0;
-            if (results.Count > 0)
+
+            var query = db.Set<CompanyItem>()
+                .Include(x => x.TaxPayer)
+                .Include(x => x.Item)
+                .Where(x => x.TaxpayerId == id);
+
+
+            List<CompanyItemModel> results = await query.Select(p => new CompanyItemModel()
             {
-                CompanyItemModelExt companyItemExt = results[0];
-                totalCount = companyItemExt.totalSize;
-            }
+                Amount = p.Amount,
+                BillingYear = p.BillingYear,
+                CompanyStatus = p.CompanyStatus,
+                CreatedBy = p.CreatedBy,
+                DateCreated = p.DateCreated,
+                Id = p.Id,
+                ItemId = p.ItemId,
+                ItemName = p.Item.ItemDescription,
+                Lastmodifiedby = p.Lastmodifiedby,
+                LastModifiedDate = p.LastModifiedDate,
+                TaxpayerId = p.TaxpayerId,
+                Firstname = p.TaxPayer.Firstname,
+                Lastname = p.TaxPayer.Lastname,
+                Surname = p.TaxPayer.Surname
+            }).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToListAsync();
+
+
+            var totalCount = await query.CountAsync();
 
             return new
             {

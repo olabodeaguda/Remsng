@@ -103,12 +103,12 @@ namespace RemsNG.Infrastructure.Managers
             return false;
         }
 
-        public async Task<List<TaxpayerExtensionModel>> SearchInStreet(Guid streetId, string query)
+        public async Task<List<TaxPayerModel>> SearchInStreet(Guid streetId, string query)
         {
             return await taxpayerDao.SearchInStreet(streetId, query);
         }
 
-        public async Task<TaxpayerExtensionModel2[]> UnBilledTaxpayer(int billingYear)
+        public async Task<TaxPayerModel[]> UnBilledTaxpayer(int billingYear)
         {
             return await taxpayerDao.GetUnbilledTaxpayer(billingYear);
         }

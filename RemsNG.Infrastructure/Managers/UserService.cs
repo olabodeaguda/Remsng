@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using RemsNG.Infrastructure.Extensions;
+using RemsNG.Models;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -17,14 +18,14 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class UserManagers : IUserManagers
     {
-        // private readonly JwtIssuerOptions jOptions;
+        private readonly JwtIssuerOptions _jOptions;
         private readonly LoginRepository loginDao;
         private readonly DomainRepository domainDao;
         private readonly RoleRepository roleDao;
         private readonly LcdaRepository lcdaDao;
         private readonly UserRepository userDao;
         private readonly PermissionRepository permissionDao;
-        public UserManagers(DbContext _db, ILoggerFactory loggerFactory)
+        public UserManagers(DbContext _db, ILoggerFactory loggerFactory, IOptions<JwtIssuerOptions> jOptions)
         {
             loginDao = new LoginRepository(_db);
             domainDao = new DomainRepository(_db);
@@ -32,6 +33,7 @@ namespace RemsNG.Infrastructure.Managers
             lcdaDao = new LcdaRepository(_db, loggerFactory);
             userDao = new UserRepository(_db);
             permissionDao = new PermissionRepository(_db);
+            _jOptions = jOptions.Value;
         }
 
         public async Task<object> GetToken(UserModel user, Guid lcdaId)
@@ -60,7 +62,7 @@ namespace RemsNG.Infrastructure.Managers
                 domainName = "mos-admin";
             }
 
-            int logTime = 30;// int.TryParse(jwtOptions.logOutTIme, out logTime) ? logTime : 30;
+            int logTime = int.TryParse(_jOptions.logOutTIme, out logTime) ? logTime : 30;
 
             var tokenHandler = new JwtSecurityTokenHandler();
 
@@ -74,12 +76,12 @@ namespace RemsNG.Infrastructure.Managers
 
             var jwt = new SecurityTokenDescriptor
             {
-                // Issuer = jwtOptions.Issuer,
-                // Audience = jwtOptions.Audience,
+                Issuer = _jOptions.Issuer,
+                Audience = _jOptions.Audience,
                 Subject = new ClaimsIdentity(claimLst),
                 Expires = DateTime.UtcNow.AddMinutes(logTime),
                 NotBefore = DateTime.UtcNow,
-                // SigningCredentials = jwtOptions.SigningCredentials,
+                SigningCredentials = _jOptions.SigningCredentials,
                 IssuedAt = DateTime.UtcNow,
 
             };
@@ -117,12 +119,12 @@ namespace RemsNG.Infrastructure.Managers
 
             var jwt = new SecurityTokenDescriptor
             {
-                //Issuer = jwtOptions.Issuer,
-                // Audience = jwtOptions.Audience,
+                Issuer = _jOptions.Issuer,
+                Audience = _jOptions.Audience,
                 Subject = new ClaimsIdentity(claim),
                 Expires = DateTime.UtcNow.AddMinutes(logTime),
                 NotBefore = DateTime.UtcNow,
-                //SigningCredentials = jwtOptions.SigningCredentials,
+                SigningCredentials = _jOptions.SigningCredentials,
                 IssuedAt = DateTime.UtcNow,
 
             };

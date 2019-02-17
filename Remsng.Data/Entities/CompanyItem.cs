@@ -19,5 +19,7 @@ namespace RemsNG.Data.Entities
         public string CompanyStatus { get; set; }
 
         public virtual Item Item { get; set; }
+        [ForeignKey("TaxpayerId")]
+        public TaxPayer TaxPayer { get; set; }
     }
 }

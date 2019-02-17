@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
+using RemsNG.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,61 +17,47 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> AddBatchRequest(BatchDemandNoticeModel bdnModel)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addBatchDownloadRequest @p0,@p1,@p2,@p3", new object[] {
-                bdnModel.batchNo,
-                bdnModel.requestStatus,
-                bdnModel.createdBy,
-                bdnModel.lcdaId
-            }).FirstOrDefaultAsync();
+            db.Set<BatchDownloadRequest>().Add(new BatchDownloadRequest
+            {
+                BatchFileName = bdnModel.batchFileName,
+                BatchNo = bdnModel.batchNo,
+                Createdby = bdnModel.createdBy,
+                DateCreated = bdnModel.dateCreated.Value,
+                Id = bdnModel.id,
+                Lastmodifiedby = bdnModel.lastmodifiedby,
+                LastModifiedDate = bdnModel.lastModifiedDate.Value,
+                LcdaId = bdnModel.lcdaId,
+                RequestStatus = bdnModel.requestStatus
+            });
 
-            if (dbResponse.success)
+            await db.SaveChangesAsync();
+
+            return new Response()
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = dbResponse.msg
-                };
-            }
-            else
-            {
-                return new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = dbResponse.msg
-                };
-            }
+                code = MsgCode_Enum.SUCCESS,
+                description = "Request as been intiated successfully"
+            };
         }
 
-        public async Task<Response> UpdateBatchRequest(BatchDemandNoticeModel bdnModel)
+        public async Task<Response> UpdateBatchRequest(BatchDemandNoticeModel model)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_updateBatchDownloadRequest @p0,@p1,@p2,@p3", new object[] {
-                bdnModel.id,
-                bdnModel.requestStatus,
-                bdnModel.createdBy,
-                bdnModel.batchFileName
-            }).FirstOrDefaultAsync();
+            var result = await db.Set<BatchDownloadRequest>().FindAsync(model.id);
+            result.RequestStatus = model.requestStatus;
+            result.Createdby = model.createdBy;
+            result.BatchFileName = model.batchFileName;
 
-            if (dbResponse.success)
+            await db.SaveChangesAsync();
+            return new Response()
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = dbResponse.msg
-                };
-            }
-            else
-            {
-                return new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = dbResponse.msg
-                };
-            }
+                code = MsgCode_Enum.SUCCESS,
+                description = "Request has been updated successfully"
+            };
         }
 
         public async Task<List<BatchDemandNoticeModel>> ListByBatchNo(string batchno)
         {
-            return await db.Set<BatchDemandNoticeModel>().Where(x => x.batchNo == batchno).OrderByDescending(x => x.dateCreated).ToListAsync(); // db.BatchDemanNoticeModels.FromSql($"select * from tbl_batchDownloadRequest where batchNo = '{batchno}'").ToListAsync();
+            return await db.Set<BatchDemandNoticeModel>()
+                .Where(x => x.batchNo == batchno).OrderByDescending(x => x.dateCreated).ToListAsync(); // db.BatchDemanNoticeModels.FromSql($"select * from tbl_batchDownloadRequest where batchNo = '{batchno}'").ToListAsync();
         }
 
         public async Task<BatchDemandNoticeModel> Dequeue()

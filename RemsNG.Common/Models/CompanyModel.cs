@@ -24,6 +24,9 @@ namespace RemsNG.Common.Models
         public DateTime? LastModifiedDate { get; set; }
         public Guid LcdaId { get; set; }
 
+        public string sectorName { get; set; }
+        public string categoryName { get; set; }
+
         public virtual ICollection<TaxPayerModel> TaxPayer { get; set; }
     }
 }

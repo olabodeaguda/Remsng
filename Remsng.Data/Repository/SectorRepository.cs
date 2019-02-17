@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using RemsNG.Common.Exceptions;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -47,33 +48,26 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> Update(SectorModel sector)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_updateSector @p0, @p1, @p2, @p3", new object[] {
-                sector.Id,
-                sector.SectorName,
-                sector.Lastmodifiedby,
-                sector.Prefix
-            }).FirstOrDefaultAsync();
-
-            if (dbResponse.success)
+            var entity = await db.Set<Sector>().FindAsync(sector.Id);
+            if (entity == null)
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = dbResponse.msg
-                };
+                throw new NotFoundException($"{sector.SectorName} sector does not exist");
             }
+            entity.SectorName = sector.SectorName;
+            entity.Lastmodifiedby = sector.Lastmodifiedby;
+            entity.Prefix = sector.Prefix;
 
-            logger.LogError(dbResponse.msg, dbResponse); //new object[] { userLcda.userId, userLcda.lgdaId });
+            await db.SaveChangesAsync();
             return new Response()
             {
-                code = MsgCode_Enum.FAIL,
-                description = dbResponse.msg
+                code = MsgCode_Enum.SUCCESS,
+                description = "Sector has been update successfully"
             };
         }
 
         public async Task<List<SectorModel>> ByLcdaId(Guid lcdaId)
         {
-            var result = await db.Set<SectorModel>()
+            var result = await db.Set<Sector>()
                 .Where(x => x.LcdaId == lcdaId).ToListAsync();
 
             return result.Select(x => new SectorModel()

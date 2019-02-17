@@ -16,5 +16,10 @@ namespace RemsNG.Common.Models
         public string CompanyStatus { get; set; }
 
         public virtual ItemModel Item { get; set; }
+
+        public string Surname { get; set; }
+        public string Firstname { get; set; }
+        public string Lastname { get; set; }
+        public string ItemName { get; set; }
     }
 }
