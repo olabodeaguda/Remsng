@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.NodeServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
@@ -116,19 +115,6 @@ namespace RemsNG.Infrastructure.Managers
                                 domainName = dd.DomainName;
                             }
                         }
-
-                        //if (demandNoticeRequest.CloseOldData)
-                        //{
-                        //    string[] taxpyIds = taxpayers.Select(x => string.Format("'{0}'", x.id)).ToArray();
-                        //    await ClosedDDTaxpayers(taxpyIds, demandNotice.billingYear);
-                        //    Error error = new Error()
-                        //    {
-                        //        errorType = ErrorType.DEMAND_NOTICE.ToString(),
-                        //        errorvalue = $"{lcda.lcdaName} has been closed. Created by {demandNotice.createdBy}",
-                        //        ownerId = demandNotice.id
-                        //    };
-                        //    bool result = await errorDao.Add(error);
-                        //}
 
                         List<DemandNoticeTaxpayersModel> dt =
                             await demandNoticeTaxpayersDao.getTaxpayerByIds(taxpayers
@@ -502,7 +488,23 @@ namespace RemsNG.Infrastructure.Managers
 
         private async Task RunDemandNoticeItem(DemandNoticeTaxpayers dntd)
         {
-            Response response = await demandNoticeItemDao.Add(dntd);
+            var companyItems = await _companyItemDao.ByTaxpayer(dntd.TaxpayerId);
+            DemandNoticeItemModel[] dniModel = companyItems.Where(x => x.CompanyStatus == CompanyStatus.ACTIVE.ToString())
+                .Select(x => new DemandNoticeItemModel()
+                {
+                    BillingNo = dntd.billingNumber,
+                    CreatedBy = dntd.CreatedBy,
+                    DateCreated = DateTime.Now,
+                    DnTaxpayersDetailsId = dntd.Id,
+                    Id = Guid.NewGuid(),
+                    ItemAmount = x.Amount,
+                    ItemId = x.ItemId,
+                    ItemName = x.ItemName,
+                    TaxpayerId = dntd.TaxpayerId,
+                    ItemStatus = DemandNoticeItemStatus.PENDING.ToString(),
+                    AmountPaid = 0
+                }).ToArray();
+            Response response = await demandNoticeItemDao.Add(dniModel);
             if (response.code != MsgCode_Enum.SUCCESS)
             {
                 logger.LogError(response.description, dntd);

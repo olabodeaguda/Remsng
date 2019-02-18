@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RemsNG.Data.Entities
@@ -7,7 +6,6 @@ namespace RemsNG.Data.Entities
     [Table("tbl_demandNoticeTaxpayers")]
     public class DemandNoticeTaxpayers
     {
-        public string billingNumber;
         public Guid Id { get; set; }
         public Guid DnId { get; set; }
         public Guid TaxpayerId { get; set; }

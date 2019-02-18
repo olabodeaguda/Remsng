@@ -22,4 +22,9 @@ namespace RemsNG.Common.Models
         public string Lastname { get; set; }
         public string ItemName { get; set; }
     }
+
+    public enum CompanyStatus
+    {
+        ACTIVE,NOT_ACTIVE
+    }
 }

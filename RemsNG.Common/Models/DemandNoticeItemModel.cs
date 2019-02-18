@@ -17,8 +17,15 @@ namespace RemsNG.Common.Models
         public DateTime? DateCreated { get; set; }
         public string Lastmodifiedby { get; set; }
         public DateTime? LastModifiedDate { get; set; }
+        public string category { get; set; }
+        public string wardName { get; set; }
 
         public virtual DemandNoticeModel DnTaxpayersDetails { get; set; }
         public virtual ItemModel Item { get; set; }
+    }
+
+    public enum DemandNoticeItemStatus
+    {
+        CANCEL, PAID, PENDING, PART_PAYMENT
     }
 }

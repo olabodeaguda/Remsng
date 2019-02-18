@@ -21,7 +21,10 @@ namespace RemsNG.Data.Entities
         public string Lastmodifiedby { get; set; }
         public DateTime? LastModifiedDate { get; set; }
 
-        public virtual DemandNotice DnTaxpayersDetails { get; set; }
+        public virtual DemandNotice DemandNotice { get; set; }
         public virtual Item Item { get; set; }
+
+        [ForeignKey("TaxpayerId")]
+        public TaxPayer TaxPayer { get; set; }
     }
 }

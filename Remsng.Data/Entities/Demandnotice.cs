@@ -27,5 +27,8 @@ namespace RemsNG.Data.Entities
         public bool? IsUnbilled { get; set; }
 
         public virtual ICollection<DemandNoticeItem> DemandNoticeItem { get; set; }
+
+        [ForeignKey("WardId")]
+        public Ward Ward { get; set; }
     }
 }

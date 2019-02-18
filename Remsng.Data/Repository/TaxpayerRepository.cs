@@ -474,8 +474,7 @@ namespace RemsNG.Data.Repository
                    StreetName = x.Street.StreetName
                }).ToArrayAsync();
 
-            return result; //await db.Set<TaxpayerExtensionModel2>()
-            //    .FromSql(query).ToArrayAsync();
+            return result;
         }
     }
 }

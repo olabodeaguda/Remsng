@@ -16,18 +16,26 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<DemandNoticeArrearsModel>> ByBillingNumber(string billingno)
         {
-            List<DemandNoticeArrears> lstdbItem = await db.Set<DemandNoticeArrears>()
-                .FromSql($"select tbl_demandNoticeArrears.*, 0 as billingYr from tbl_demandNoticeArrears " +
-                $"where billingNo = '{billingno}'  and arrearsStatus in ('PENDING','PART_PAYMENT')").ToListAsync();
-            List<DemandNoticeArrears> lst = new List<DemandNoticeArrears>();
-            foreach (var tm in lstdbItem)
-            {
-                var t = lst.FirstOrDefault(x => x.BillingNo == tm.BillingNo && x.TotalAmount == tm.TotalAmount);
-                if (t == null)
-                {
-                    lst.Add(tm);
-                }
-            }
+            //List<DemandNoticeArrears> lst =
+            //await db.Set<DemandNoticeArrears>()
+            //    .Where(x => x.BillingNo == billingno && x.ArrearsStatus.)
+            //    .FromSql($"select tbl_demandNoticeArrears.*, 0 as billingYr from tbl_demandNoticeArrears " +
+            //    $"where billingNo = '{billingno}'  and arrearsStatus in ('PENDING','PART_PAYMENT')").ToListAsync();
+            //List<DemandNoticeArrears> lst = new List<DemandNoticeArrears>();
+            //foreach (var tm in lstdbItem)
+            //{
+            //    var t = lst.FirstOrDefault(x => x.BillingNo == tm.BillingNo && x.TotalAmount == tm.TotalAmount);
+            //    if (t == null)
+            //    {
+            //        lst.Add(tm);
+            //    }
+            //}
+            string[] statuss = { "PENDING", "PART_PAYMENT" };
+
+            List<DemandNoticeArrears> lst = await db.Set<DemandNoticeArrears>()
+                .Where(x => x.BillingNo == billingno && statuss.Any(p => p == x.ArrearsStatus)).ToListAsync();
+
+
             return lst.Select(x => new DemandNoticeArrearsModel()
             {
                 AmountPaid = x.AmountPaid,
@@ -48,11 +56,15 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<DemandNoticeArrearsModel>> ByTaxpayer(Guid taxpayerId)
         {
-            string query = $"select tbl_demandNoticeArrears.*, 0 as billingYr " +
-                $"from tbl_demandNoticeArrears where taxpayerId = '{taxpayerId}' and arrearsStatus in ('PENDING','PART_PAYMENT')";
+            //string query = $"select tbl_demandNoticeArrears.*, 0 as billingYr " +
+            //    $"from tbl_demandNoticeArrears where taxpayerId = '{taxpayerId}' and arrearsStatus in ('PENDING','PART_PAYMENT')";
+            //var entity = await db.Set<DemandNoticeArrears>().FromSql(query).ToListAsync();
 
-            var entity = await db.Set<DemandNoticeArrears>().FromSql(query).ToListAsync();
-            return entity.Select(x => new DemandNoticeArrearsModel()
+            string[] statuss = { "PENDING", "PART_PAYMENT" };
+            List<DemandNoticeArrears> lst = await db.Set<DemandNoticeArrears>()
+                .Where(x => x.TaxpayerId == taxpayerId && statuss.Any(p => p == x.ArrearsStatus)).ToListAsync();
+
+            return lst.Select(x => new DemandNoticeArrearsModel()
             {
                 AmountPaid = x.AmountPaid,
                 ArrearsStatus = x.ArrearsStatus,
