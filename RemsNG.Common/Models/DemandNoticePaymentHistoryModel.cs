@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RemsNG.Common.Models
 {
@@ -23,5 +21,6 @@ namespace RemsNG.Common.Models
         public bool IsWaiver { get; set; }
         public decimal TotalBillAmount { get; set; }
         public string BankName { get; set; }
+        public int BillingYear { get; set; }
     }
 }

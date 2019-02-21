@@ -10,7 +10,7 @@ namespace RemsNG.Common.Interfaces.Managers
         Task<Response> Add(CompanyItemModel companyItem);
         Task<Response> Update(CompanyItemModel companyItem);
         Task<Response> UpdateStatus(Guid id, string companystatus);
-        Task<List<CompanyItemModelExt>> ByTaxpayer(Guid companyId);
+        Task<List<CompanyItemModel>> ByTaxpayer(Guid companyId);
         Task<CompanyItemModelExt> ById(Guid id);
         Task<object> ByTaxpayerpaginated(Guid id, PageModel pageModel);
     }

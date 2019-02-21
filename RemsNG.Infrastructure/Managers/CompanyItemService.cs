@@ -22,7 +22,7 @@ namespace RemsNG.Infrastructure.Managers
             return await companyItemDao.Add(companyItem);
         }
 
-        public async Task<List<CompanyItemModelExt>> ByTaxpayer(Guid taxpayerId)
+        public async Task<List<CompanyItemModel>> ByTaxpayer(Guid taxpayerId)
         {
             return await companyItemDao.ByTaxpayer(taxpayerId);
         }
