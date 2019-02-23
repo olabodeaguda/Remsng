@@ -10,6 +10,7 @@ namespace RemsNG.Common.Models
         public string RoleName { get; set; }
         public Guid DomainId { get; set; }
         public string RoleStatus { get; set; }
+        public string domainName { get; set; }
 
         public virtual LcdaModel Domain { get; set; }
     }

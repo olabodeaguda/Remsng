@@ -393,7 +393,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            RoleExtensionModel roleExtension = await roleService.UserDomainRolesByDomainId(userLcda.UserId, userLcda.LgdaId);
+            RoleModel roleExtension = await roleService.UserDomainRolesByDomainId(userLcda.UserId, userLcda.LgdaId);
             if (roleExtension != null)
             {
                 return BadRequest(new Response()

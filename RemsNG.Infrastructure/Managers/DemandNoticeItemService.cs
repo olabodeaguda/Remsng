@@ -35,7 +35,7 @@ namespace RemsNG.Infrastructure.Managers
             DemandNoticeItemModel[] dniModel = companyItems.Where(x => x.CompanyStatus == CompanyStatus.ACTIVE.ToString())
                 .Select(x => new DemandNoticeItemModel()
                 {
-                    BillingNo = dntd.billingNumber,
+                    BillingNo = dntd.BillingNumber,
                     CreatedBy = dntd.CreatedBy,
                     DateCreated = DateTime.Now,
                     DnTaxpayersDetailsId = dntd.Id,

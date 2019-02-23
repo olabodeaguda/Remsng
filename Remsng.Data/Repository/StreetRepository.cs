@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using RemsNG.Common.Exceptions;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -24,85 +25,90 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> Add(StreetModel street)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addStreet @p0, @p1, @p2, @p3, @p4, @p5", new object[] {
-                street.Id,
-                street.WardId,
-                street.StreetName,
-                street.NumberOfHouse,
-                street.CreatedBy,
-                street.StreetDescription
-            }).FirstOrDefaultAsync();
+            db.Set<Street>().Add(new Street
+            {
+                Id = street.Id,
+                WardId = street.WardId,
+                StreetName = street.StreetName,
+                NumberOfHouse = street.NumberOfHouse,
+                CreatedBy = street.CreatedBy,
+                StreetDescription = street.StreetDescription
+            });
 
-            if (dbResponse.success)
+            //DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addStreet @p0, @p1, @p2, @p3, @p4, @p5", new object[] {
+            //    street.Id,
+            //    street.WardId,
+            //    street.StreetName,
+            //    street.NumberOfHouse,
+            //    street.CreatedBy,
+            //    street.StreetDescription
+            //}).FirstOrDefaultAsync();
+
+            //if (dbResponse.success)
+            //{
+            return new Response()
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = dbResponse.msg
-                };
-            }
-            else
-            {
-                return new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = dbResponse.msg
-                };
-            }
+                code = MsgCode_Enum.SUCCESS,
+                description = "Street has been added sucessfully"
+            };
+            //}
+            //else
+            //{
+            //    return new Response()
+            //    {
+            //        code = MsgCode_Enum.FAIL,
+            //        description = dbResponse.msg
+            //    };
+            //}
         }
 
         public async Task<Response> Update(StreetModel street)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_updateStreet @p0, @p1, @p2, @p3, @p4, @p5", new object[] {
-                street.Id,
-                street.WardId,
-                street.StreetName,
-                street.NumberOfHouse,
-                street.Lastmodifiedby,
-                street.StreetDescription
-            }).FirstOrDefaultAsync();
+            //DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_updateStreet @p0, @p1, @p2, @p3, @p4, @p5", new object[] {
+            //    street.Id,
+            //    street.WardId,
+            //    street.StreetName,
+            //    street.NumberOfHouse,
+            //    street.Lastmodifiedby,
+            //    street.StreetDescription
+            //}).FirstOrDefaultAsync();
 
-            if (dbResponse.success)
+            Street s = await db.Set<Street>().FindAsync(street.Id);
+            if (s == null)
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = dbResponse.msg
-                };
+                throw new NotFoundException($"{street.StreetName} street can not be found");
             }
-            else
+
+            s.WardId = street.WardId;
+            s.StreetName = street.StreetName;
+            s.NumberOfHouse = street.NumberOfHouse;
+            s.Lastmodifiedby = street.Lastmodifiedby;
+            s.StreetDescription = street.StreetDescription;
+
+            await db.SaveChangesAsync();
+            return new Response()
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = dbResponse.msg
-                };
-            }
+                code = MsgCode_Enum.SUCCESS,
+                description = "Street has been updated successfully"
+            };
         }
 
         public async Task<Response> ChangeStatus(Guid id, string streetStatus)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_StreetchangeStatus @p0, @p1", new object[] {
-                id,
-                streetStatus
-            }).FirstOrDefaultAsync();
+            Street s = await db.Set<Street>().FindAsync(id);
+            if (s == null)
+            {
+                throw new NotFoundException($"street can not be found");
+            }
 
-            if (dbResponse.success)
+            s.StreetStatus = streetStatus;
+
+            await db.SaveChangesAsync();
+            return new Response()
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = dbResponse.msg
-                };
-            }
-            else
-            {
-                return new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = dbResponse.msg
-                };
-            }
+                code = MsgCode_Enum.SUCCESS,
+                description = "Street has been updated successfully"
+            };
         }
 
         public async Task<StreetModel> ById(Guid streetId)
@@ -157,7 +163,7 @@ namespace RemsNG.Data.Repository
             return new
             {
                 data = results,
-                totalPageCount = totalCount//(totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
+                totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
             };
         }
 
@@ -168,7 +174,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<StreetModel>> ByLcda(Guid lcdaId)
         {
-            var result = await db.Set<Street>().FromSql("sp_streetbyLcda @p0", new object[] { lcdaId }).ToListAsync();
+            var result = await db.Set<Street>().Include(x => x.Ward)
+                .Where(p => p.Ward.LcdaId == lcdaId).ToListAsync();
 
             return result.Select(t => new StreetModel()
             {

@@ -116,7 +116,7 @@ namespace RemsNG.Data.Repository
             return false;
         }
 
-        public async Task<List<DemandNoticeArrearsModelExt>> ReportByCategory(DateTime fromDate, DateTime toDate)
+        public async Task<List<DemandNoticeArrearsModel>> ReportByCategory(DateTime fromDate, DateTime toDate)
         {
             DateTime startDate = new DateTime(fromDate.Year, fromDate.Month, fromDate.Day, 0, 0, 0);
             DateTime endDate = new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59);
@@ -128,22 +128,22 @@ namespace RemsNG.Data.Repository
                 .Include(s => s.TaxPayer.Street)
                 .ThenInclude(w => w.Ward)
                 .Where(x => x.DateCreated >= startDate && x.DateCreated <= endDate)
-                .Select(e => new DemandNoticeArrearsModelExt()
+                .Select(e => new DemandNoticeArrearsModel()
                 {
-                    amountPaid = e.AmountPaid,
-                    arrearsStatus = e.ArrearsStatus,
-                    billingNo = e.BillingNo,
-                    createdBy = e.CreatedBy,
-                    category = e.TaxPayer.Company.TaxPayerCatgeory.TaxpayerCategoryName,
-                    dateCreated = e.DateCreated,
-                    id = e.Id,
-                    itemId = e.ItemId,
-                    lastmodifiedby = e.Lastmodifiedby,
-                    lastModifiedDate = e.LastModifiedDate,
-                    originatedYear = e.OriginatedYear,
-                    taxpayerId = e.TaxpayerId,
-                    totalAmount = e.TotalAmount,
-                    wardName = e.TaxPayer.Street.Ward.WardName
+                    AmountPaid = e.AmountPaid,
+                    ArrearsStatus = e.ArrearsStatus,
+                    BillingNo = e.BillingNo,
+                    CreatedBy = e.CreatedBy,
+                    Category = e.TaxPayer.Company.TaxPayerCatgeory.TaxpayerCategoryName,
+                    DateCreated = e.DateCreated,
+                    Id = e.Id,
+                    ItemId = e.ItemId,
+                    Lastmodifiedby = e.Lastmodifiedby,
+                    LastModifiedDate = e.LastModifiedDate,
+                    OriginatedYear = e.OriginatedYear,
+                    TaxpayerId = e.TaxpayerId,
+                    TotalAmount = e.TotalAmount,
+                    WardName = e.TaxPayer.Street.Ward.WardName
                 })
                 .ToListAsync();
 

@@ -9,5 +9,6 @@ namespace RemsNG.Common.Models
         public Guid lcdaId { get; set; }
         public string bankAccount { get; set; }
         public string bankName { get; set; }
+
     }
 }

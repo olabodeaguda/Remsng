@@ -12,6 +12,7 @@ namespace RemsNG.Data.Entities
         public Guid DomainId { get; set; }
         public string RoleStatus { get; set; }
 
+        [ForeignKey("DomainId")]
         public virtual Lcda Domain { get; set; }
 
         public ICollection<RolePermission> RolePermissions { get; set; } = new HashSet<RolePermission>();

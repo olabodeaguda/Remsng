@@ -15,6 +15,29 @@ namespace RemsNG.Data.Repository
         {
         }
 
+        public async Task<DemandNoticePenaltyModel> CreatePenalty(DemandNoticePenaltyModel dnp)
+        {
+            DemandNoticePenalty demandNoticePenalty = new DemandNoticePenalty()
+            {
+                AmountPaid = dnp.AmountPaid,
+                BillingNo = dnp.BillingNo,
+                BillingYear = dnp.BillingYear,
+                CreatedBy = dnp.CreatedBy,
+                DateCreated = dnp.DateCreated,
+                Id = Guid.NewGuid(),
+                ItemId = dnp.ItemId,
+                ItemPenaltyStatus = dnp.ItemPenaltyStatus,
+                Lastmodifiedby = dnp.Lastmodifiedby,
+                OriginatedYear = dnp.OriginatedYear,
+                TaxpayerId = dnp.TaxpayerId,
+                TotalAmount = dnp.TotalAmount
+            };
+            db.Set<DemandNoticePenalty>().Add(demandNoticePenalty);
+            await db.SaveChangesAsync();
+            dnp.Id = demandNoticePenalty.Id;
+            return dnp;
+        }
+
         public string AddQuery(DemandNoticePenaltyModel dnp)
         {
             return $"INSERT INTO tbl_demandNoticePenalty" +
@@ -45,105 +68,113 @@ namespace RemsNG.Data.Repository
             }
         }
 
-        public async Task<Response> AddUnpaidPenaltyAsync(DN_ArrearsModel dN_ArrearsModel)
+        public async Task<List<DemandNoticePenaltyModel>> ByTaxpayerId(Guid taxpayerId)
         {
-            try
-            {
-                DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_moveTaxpayersPenalty @p0, @p1, @p2, @p3", new object[] {
-                dN_ArrearsModel.billingNo,
-                dN_ArrearsModel.taxpayerId,
-                dN_ArrearsModel.billingYr,
-                dN_ArrearsModel.createdBy
-            }).FirstOrDefaultAsync();
+            //string query = $"select tbl_demandNoticePenalty.*,0 as billingYr from tbl_demandNoticePenalty where taxpayerId = '{taxpayerId}'";
+            //List<DemandNoticeItemPenaltyModelExt> lstdbItem = await db.Set<DemandNoticeItemPenaltyModelExt>()
+            //    .FromSql(query).ToListAsync();
 
-                if (dbResponse.success)
+            var result = await db.Set<DemandNoticePenalty>()
+                .Join(db.Set<TaxPayer>()
+                .Include(x => x.Company)
+                .ThenInclude(x => x.TaxPayerCatgeory), dnp => dnp.TaxpayerId, tp => tp.Id, (dnp, tp) => new { dnp, tp })
+                .Join(db.Set<Street>().Include(x => x.Ward), res => res.tp.StreetId, str => str.Id,
+                (res, str) => new DemandNoticePenaltyModel
                 {
-                    return new Response()
-                    {
-                        code = MsgCode_Enum.SUCCESS,
-                        description = dbResponse.msg
-                    };
-                }
-                else
-                {
-                    return new Response()
-                    {
-                        code = MsgCode_Enum.FAIL,
-                        description = dbResponse.msg
-                    };
-                }
-            }
-            catch (Exception)
-            {
+                    AmountPaid = res.dnp.AmountPaid,
+                    BillingNo = res.dnp.BillingNo,
+                    BillingYear = res.dnp.BillingYear,
+                    CreatedBy = res.dnp.CreatedBy,
+                    DateCreated = res.dnp.DateCreated,
+                    Id = res.dnp.Id,
+                    ItemId = res.dnp.ItemId,
+                    ItemPenaltyStatus = res.dnp.ItemPenaltyStatus,
+                    Lastmodifiedby = res.dnp.Lastmodifiedby,
+                    LastModifiedDate = res.dnp.LastModifiedDate,
+                    OriginatedYear = res.dnp.OriginatedYear,
+                    TaxpayerId = res.dnp.TaxpayerId,
+                    TotalAmount = res.dnp.TotalAmount,
+                    wardName = str.Ward.WardName,
+                    category = res.tp.Company.TaxPayerCatgeory.TaxpayerCategoryName
+                })
+                .Where(x => x.TaxpayerId == taxpayerId).ToListAsync();
 
-                throw;
-            }
+            return result;
         }
 
-        public async Task<List<DemandNoticeItemModel>> OverDueDemandNotice()
+        public async Task<List<DemandNoticePenaltyModel>> ByTaxpayerId(Guid taxpayerId, int billingYr)
         {
-            try
-            {
-                List<DemandNoticeItem> demandNotice = await db.Set<DemandNoticeItem>().FromSql("sp_penaltyTracker").ToListAsync();
-                return demandNotice.Select(x => new DemandNoticeItemModel()
-                {
-                    AmountPaid = x.AmountPaid,
-                    BillingNo = x.BillingNo,
-                    CreatedBy = x.CreatedBy,
-                    DateCreated = x.DateCreated,
-                    Id = x.Id,
-                    DnTaxpayersDetailsId = x.DnTaxpayersDetailsId,
-                    ItemAmount = x.ItemAmount,
-                    ItemId = x.ItemId,
-                    ItemName = x.ItemName,
-                    ItemStatus = x.ItemStatus,
-                    Lastmodifiedby = x.Lastmodifiedby,
-                    LastModifiedDate = x.LastModifiedDate,
-                    TaxpayerId = x.TaxpayerId
-                }).ToList();
-            }
-            catch (Exception)
-            {
+            //string query = $"select tbl_demandNoticePenalty.*,0 as billingYr from tbl_demandNoticePenalty " +
+            //    $"where taxpayerId = '{taxpayerId}' and billingYear = {billingYr}";
+            //List<DemandNoticeItemPenaltyModelExt> lstdbItem = await db.Set<DemandNoticeItemPenaltyModelExt>()
+            //    .FromSql(query).ToListAsync();
+            //return lstdbItem;
 
-                throw;
-            }
+            var result = await db.Set<DemandNoticePenalty>()
+               .Join(db.Set<TaxPayer>()
+               .Include(x => x.Company)
+               .ThenInclude(x => x.TaxPayerCatgeory), dnp => dnp.TaxpayerId, tp => tp.Id, (dnp, tp) => new { dnp, tp })
+               .Join(db.Set<Street>().Include(x => x.Ward), res => res.tp.StreetId, str => str.Id,
+               (res, str) => new DemandNoticePenaltyModel
+               {
+                   AmountPaid = res.dnp.AmountPaid,
+                   BillingNo = res.dnp.BillingNo,
+                   BillingYear = res.dnp.BillingYear,
+                   CreatedBy = res.dnp.CreatedBy,
+                   DateCreated = res.dnp.DateCreated,
+                   Id = res.dnp.Id,
+                   ItemId = res.dnp.ItemId,
+                   ItemPenaltyStatus = res.dnp.ItemPenaltyStatus,
+                   Lastmodifiedby = res.dnp.Lastmodifiedby,
+                   LastModifiedDate = res.dnp.LastModifiedDate,
+                   OriginatedYear = res.dnp.OriginatedYear,
+                   TaxpayerId = res.dnp.TaxpayerId,
+                   TotalAmount = res.dnp.TotalAmount,
+                   wardName = str.Ward.WardName,
+                   category = res.tp.Company.TaxPayerCatgeory.TaxpayerCategoryName
+               })
+               .Where(x => x.TaxpayerId == taxpayerId && x.BillingYear == billingYr).ToListAsync();
+            return result;
         }
 
-        public async Task<List<DemandNoticeItemPenaltyModelExt>> ByBillingNumber(string billingno)
-        {
-            string query = $"select tbl_demandNoticePenalty.*,0 as billingYr from tbl_demandNoticePenalty where billingNo = '{billingno}'";
-            List<DemandNoticeItemPenaltyModelExt> lstdbItem = await db.Set<DemandNoticeItemPenaltyModelExt>()
-                .FromSql(query).ToListAsync();
-            return lstdbItem;
-        }
-
-        public async Task<List<DemandNoticeItemPenaltyModelExt>> ByTaxpayerId(Guid taxpayerId)
-        {
-            string query = $"select tbl_demandNoticePenalty.*,0 as billingYr from tbl_demandNoticePenalty where taxpayerId = '{taxpayerId}'";
-            List<DemandNoticeItemPenaltyModelExt> lstdbItem = await db.Set<DemandNoticeItemPenaltyModelExt>()
-                .FromSql(query).ToListAsync();
-            return lstdbItem;
-        }
-
-        public async Task<List<DemandNoticeItemPenaltyModelExt>> ByTaxpayerId(Guid taxpayerId, int billingYr)
-        {
-            string query = $"select tbl_demandNoticePenalty.*,0 as billingYr from tbl_demandNoticePenalty " +
-                $"where taxpayerId = '{taxpayerId}' and billingYear = {billingYr}";
-            List<DemandNoticeItemPenaltyModelExt> lstdbItem = await db.Set<DemandNoticeItemPenaltyModelExt>()
-                .FromSql(query).ToListAsync();
-            return lstdbItem;
-        }
-
-        public async Task<List<DemandNoticeItemPenaltyModelExt>> ReportByCategory(DateTime fromDate, DateTime toDate)
+        public async Task<List<DemandNoticePenaltyModel>> ReportByCategory(DateTime fromDate, DateTime toDate)
         {
             DateTime startDate = new DateTime(fromDate.Year, fromDate.Month, fromDate.Day, 0, 0, 0);
             DateTime endDate = new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59);
 
-            List<DemandNoticeItemPenaltyModelExt> lst =
-                await db.Set<DemandNoticeItemPenaltyModelExt>().FromSql("sp_getPenaltyByCategoryDate @p0,@p1",
-                new object[] { startDate, endDate }).ToListAsync();
+            string[] status = { "PENDING", "PART_PAYMENT", "PAID" };
 
-            return lst;
+            var result = await db.Set<DemandNoticePenalty>()
+                .Join(db.Set<TaxPayer>()
+                .Include(x => x.Company)
+                .ThenInclude(x => x.TaxPayerCatgeory), dnp => dnp.TaxpayerId, tp => tp.Id, (dnp, tp) => new { dnp, tp })
+                .Join(db.Set<Street>().Include(x => x.Ward), res => res.tp.StreetId, str => str.Id,
+                (res, str) => new DemandNoticePenaltyModel
+                {
+                    AmountPaid = res.dnp.AmountPaid,
+                    BillingNo = res.dnp.BillingNo,
+                    BillingYear = res.dnp.BillingYear,
+                    CreatedBy = res.dnp.CreatedBy,
+                    DateCreated = res.dnp.DateCreated,
+                    Id = res.dnp.Id,
+                    ItemId = res.dnp.ItemId,
+                    ItemPenaltyStatus = res.dnp.ItemPenaltyStatus,
+                    Lastmodifiedby = res.dnp.Lastmodifiedby,
+                    LastModifiedDate = res.dnp.LastModifiedDate,
+                    OriginatedYear = res.dnp.OriginatedYear,
+                    TaxpayerId = res.dnp.TaxpayerId,
+                    TotalAmount = res.dnp.TotalAmount,
+                    wardName = str.Ward.WardName,
+                    category = res.tp.Company.TaxPayerCatgeory.TaxpayerCategoryName
+                })
+                .Where(x => x.DateCreated >= startDate && x.DateCreated <= endDate && status.Any(p => p == x.ItemPenaltyStatus)).ToListAsync();
+
+
+            //List<DemandNoticeItemPenaltyModelExt> lst =
+            //    await db.Set<DemandNoticeItemPenaltyModelExt>().FromSql("sp_getPenaltyByCategoryDate @p0,@p1",
+            //    new object[] { startDate, endDate }).ToListAsync();
+
+            return result;
         }
 
     }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RemsNG.Data.Entities
@@ -20,5 +19,11 @@ namespace RemsNG.Data.Entities
         public DateTime? DateCreated { get; set; }
         public string Lastmodifiedby { get; set; }
         public DateTime? LastModifiedDate { get; set; }
+
+        [ForeignKey("ItemId")]
+        public Item Item { get; set; }
+
+        [ForeignKey("TaxpayerId")]
+        public TaxPayer TaxPayer { get; set; }
     }
 }

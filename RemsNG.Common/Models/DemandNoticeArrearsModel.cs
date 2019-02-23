@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RemsNG.Common.Models
 {
@@ -19,5 +17,7 @@ namespace RemsNG.Common.Models
         public DateTime? DateCreated { get; set; }
         public string Lastmodifiedby { get; set; }
         public DateTime? LastModifiedDate { get; set; }
+        public string Category { get; set; }
+        public string WardName { get; set; }
     }
 }

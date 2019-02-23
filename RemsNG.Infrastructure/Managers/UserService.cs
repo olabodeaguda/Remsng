@@ -39,7 +39,7 @@ namespace RemsNG.Infrastructure.Managers
         public async Task<object> GetToken(UserModel user, Guid lcdaId)
         {
             String domainName = "";
-            RoleExtensionModel role = null;
+            RoleModel role = null;
             string permissions = string.Empty;
             List<Claim> claimLst = new List<Claim>();
             if (user.Username.ToLower() != "mos-admin")
@@ -52,7 +52,7 @@ namespace RemsNG.Infrastructure.Managers
                     role = await roleDao.GetUserDomainRoleByUsername(user.Username, lcdaId);
                     if (role != null)
                     {
-                        List<PermissionModel> permissionlst = await permissionDao.byRoleId(role.id);
+                        List<PermissionModel> permissionlst = await permissionDao.byRoleId(role.Id);
                         claimLst.AddRange(permissionlst.Select(x => new Claim(ClaimTypes.Role, x.PermissionName)));
                     }
                 }
@@ -94,7 +94,7 @@ namespace RemsNG.Infrastructure.Managers
                 fullname = $"{user.Surname} {user.Firstname} {user.Lastname}",
                 userStatus = user.UserStatus,
                 domainName = domainName,
-                role = role?.roleName,
+                role = role?.RoleName,
                 id = user.Id
             };
         }

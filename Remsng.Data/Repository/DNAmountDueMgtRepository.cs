@@ -1,7 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RemsNG.Common.Exceptions;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
+using RemsNG.Data.Entities;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
@@ -14,34 +17,136 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<DNAmountDueModel>> ByBillingNo(string billingno)
         {
-            var result = await db.Set<DNAmountDueModel>()
-                .FromSql("sp_getBillingNumberTotalDue @p0", new object[] { billingno }).ToListAsync();
-            return result;
+            //var result = await db.Set<DNAmountDueModel>()
+            //    .FromSql("sp_getBillingNumberTotalDue @p0", new object[] { billingno }).ToListAsync();
+
+            List<DNAmountDueModel> results = new List<DNAmountDueModel>();
+            var arrears = await db.Set<DemandNoticeArrears>()
+                .Where(r => r.BillingNo == billingno)
+                .Select(x => new DNAmountDueModel()
+                {
+                    id = x.Id,
+                    itemAmount = x.TotalAmount,
+                    amountPaid = x.AmountPaid,
+                    billingNo = x.BillingNo,
+                    category = "ARREARS",
+                    itemDescription = "description",
+                    itemId = x.ItemId,
+                    itemStatus = x.ArrearsStatus
+                }).ToListAsync();
+            results.AddRange(arrears);
+            DemandNoticeTaxpayers dnTaxpayer = await db.Set<DemandNoticeTaxpayers>().FirstOrDefaultAsync(x => x.BillingNumber == billingno);
+            if (dnTaxpayer != null)
+            {
+                throw new NotFoundException("Demand notice does not exist");
+            }
+
+            var penalty = await db.Set<DemandNoticePenalty>().Where(x => x.TaxpayerId == dnTaxpayer.TaxpayerId).Select(x => new DNAmountDueModel
+            {
+                id = x.Id,
+                itemAmount = x.TotalAmount,
+                amountPaid = x.AmountPaid,
+                billingNo = x.BillingNo,
+                category = "PENALTY",
+                itemDescription = "Penalty",
+                itemId = x.ItemId,
+                itemStatus = x.ItemPenaltyStatus
+            }).ToListAsync();
+            results.AddRange(penalty);
+            var items = await db.Set<DemandNoticeItem>().Include(s => s.Item)
+                 .Where(p => p.BillingNo == billingno).Select(x => new DNAmountDueModel
+                 {
+                     id = x.Id,
+                     itemAmount = x.ItemAmount,
+                     amountPaid = x.AmountPaid,
+                     billingNo = x.BillingNo,
+                     category = "PENALTY",
+                     itemDescription = "Penalty",
+                     itemId = x.ItemId,
+                     itemStatus = x.ItemStatus
+                 }).ToListAsync();
+            results.AddRange(items);
+            return results;
         }
 
         public async Task<List<DNAmountDueModel>> ByBillingNo(string[] bills)
         {
-            string bnos = bills.FormatString();
+            //string bnos = bills.FormatString();
 
-            string query = $"select dn.id,dn.totalAmount as itemAmount,dn.amountPaid,dn.arrearsStatus as itemStatus, " +
-                $"'description' as itemDescription,'ARREARS' as category,dn.itemId, dn.billingNo " +
-                $"from tbl_demandNoticeArrears as dn " +
-                //$"inner join tbl_item as tm on tm.id = dn.itemId " +
-                $"where dn.billingNo in ({bnos})  and dn.arrearsStatus in ('PART_PAYMENT','PENDING')" +
-                $"union " +
-                $"select dn.id,dn.totalAmount,dn.amountPaid,dn.itemPenaltyStatus as itemStatus, " +
-                $"tm.itemDescription,'PENALTY' as category,dn.itemId, dn.billingNo " +
-                $"from tbl_demandNoticePenalty as dn " +
-                $"inner join tbl_item as tm on tm.id = dn.itemId " +
-                $"where billingNo in ({bnos})  and dn.itemPenaltyStatus in ('PART_PAYMENT','PENDING')" +
-                $"union " +
-                $"select dn.id,dn.itemAmount,dn.amountPaid,dn.itemStatus, " +
-                $"tm.itemDescription,'ITEMS' as category,dn.itemId, dn.billingNo " +
-                $"from tbl_demandNoticeItem as dn " +
-                $"inner join tbl_item as tm on tm.id = dn.itemId " +
-                $"where billingNo in ({bnos})  and dn.itemStatus in ('PART_PAYMENT','PENDING')";
-            return await db.Set<DNAmountDueModel>()
-                .FromSql(query).ToListAsync();
+            //string query = $"select dn.id,dn.totalAmount as itemAmount,dn.amountPaid,dn.arrearsStatus as itemStatus, " +
+            //    $"'description' as itemDescription,'ARREARS' as category,dn.itemId, dn.billingNo " +
+            //    $"from tbl_demandNoticeArrears as dn " +
+            //    //$"inner join tbl_item as tm on tm.id = dn.itemId " +
+            //    $"where dn.billingNo in ({bnos})  and dn.arrearsStatus in ('PART_PAYMENT','PENDING')" +
+            //    $"union " +
+            //    $"select dn.id,dn.totalAmount,dn.amountPaid,dn.itemPenaltyStatus as itemStatus, " +
+            //    $"tm.itemDescription,'PENALTY' as category,dn.itemId, dn.billingNo " +
+            //    $"from tbl_demandNoticePenalty as dn " +
+            //    $"inner join tbl_item as tm on tm.id = dn.itemId " +
+            //    $"where billingNo in ({bnos})  and dn.itemPenaltyStatus in ('PART_PAYMENT','PENDING')" +
+            //    $"union " +
+            //    $"select dn.id,dn.itemAmount,dn.amountPaid,dn.itemStatus, " +
+            //    $"tm.itemDescription,'ITEMS' as category,dn.itemId, dn.billingNo " +
+            //    $"from tbl_demandNoticeItem as dn " +
+            //    $"inner join tbl_item as tm on tm.id = dn.itemId " +
+            //    $"where billingNo in ({bnos})  and dn.itemStatus in ('PART_PAYMENT','PENDING')";
+            //return await db.Set<DNAmountDueModel>()
+            //    .FromSql(query).ToListAsync();
+
+            string[] status = { "PART_PAYMENT", "PENDING" };
+
+            List<DNAmountDueModel> results = new List<DNAmountDueModel>();
+            var arrears = await db.Set<DemandNoticeArrears>()
+                .Where(p => bills.Any(x => x == p.BillingNo) && status.Any(x => x == p.ArrearsStatus))
+                .Select(x => new DNAmountDueModel()
+                {
+                    id = x.Id,
+                    itemAmount = x.TotalAmount,
+                    amountPaid = x.AmountPaid,
+                    billingNo = x.BillingNo,
+                    category = "ARREARS",
+                    itemDescription = "description",
+                    itemId = x.ItemId,
+                    itemStatus = x.ArrearsStatus
+                }).ToListAsync();
+            results.AddRange(arrears);
+            //DemandNoticeTaxpayers dnTaxpayer = await db.Set<DemandNoticeTaxpayers>().FirstOrDefaultAsync(x => x.BillingNumber == billingno);
+            //if (dnTaxpayer != null)
+            //{
+            //    throw new NotFoundException("Demand notice does not exist");
+            //}
+
+            var penalty = await db.Set<DemandNoticePenalty>()
+                 .Where(p => bills.Any(x => x == p.BillingNo) && status.Any(x => x == p.ItemPenaltyStatus))
+                .Select(x => new DNAmountDueModel
+                {
+                    id = x.Id,
+                    itemAmount = x.TotalAmount,
+                    amountPaid = x.AmountPaid,
+                    billingNo = x.BillingNo,
+                    category = "PENALTY",
+                    itemDescription = "Penalty",
+                    itemId = x.ItemId,
+                    itemStatus = x.ItemPenaltyStatus
+                }).ToListAsync();
+            results.AddRange(penalty);
+
+            var items = await db.Set<DemandNoticeItem>().Include(s => s.Item)
+                  .Where(p => bills.Any(x => x == p.BillingNo) && status.Any(x => x == p.ItemStatus))
+                 .Select(x => new DNAmountDueModel
+                 {
+                     id = x.Id,
+                     itemAmount = x.ItemAmount,
+                     amountPaid = x.AmountPaid,
+                     billingNo = x.BillingNo,
+                     category = "PENALTY",
+                     itemDescription = "Penalty",
+                     itemId = x.ItemId,
+                     itemStatus = x.ItemStatus
+                 }).ToListAsync();
+            results.AddRange(items);
+            return results;
+
         }
 
         public async Task<Response> UpdateAmount(DNAmountDueModel dnamount)

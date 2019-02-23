@@ -21,8 +21,8 @@ namespace RemsNG.Common.Interfaces.Services
         Task<string> WriteReportSummaryConsolidatedSeperate(List<ItemReportSummaryModel> rptLst,
            string domainName, string lcdaName, DateTime startDate, DateTime endDate, List<DemandNoticePaymentHistoryModel> dnph);
         Task<byte[]> WriteReportCategory(string domainName, string lcdaName, DateTime startDate,
-            DateTime endDate, List<DemandNoticeItemModelExt> dnitem, List<DemandNoticeItemPenaltyModelExt> dnPenalty,
-            List<DemandNoticeArrearsModelExt> dnArrears);
+            DateTime endDate, List<DemandNoticeItemModel> dnitem, List<DemandNoticePenaltyModel> dnPenalty,
+            List<DemandNoticeArrearsModel> dnArrears);
         Task<byte[]> TaxpayerWithOutDemandNotice(TaxPayerModel[] taxpayers, int billingYear);
     }
 }

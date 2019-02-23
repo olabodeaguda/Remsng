@@ -53,10 +53,11 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<PermissionModel>> GetPermissionNotInRole(Guid roleId)
         {
+            string query = $"select tbl_permission.* from tbl_permission " +
+                $"where id not in(select permissionId from tbl_rolePermission where roleId = '{roleId}') " +
+                $"order by tbl_permission.permissionName";
             var result = await db.Set<Permission>()
-                .FromSql("sp_getPermissionNotInRole @p0", new object[] {
-                roleId
-            }).ToListAsync();
+                .FromSql(query).ToListAsync();
 
             return result.Select(x => new PermissionModel()
             {

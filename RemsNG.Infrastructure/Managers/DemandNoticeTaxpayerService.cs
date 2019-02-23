@@ -112,14 +112,14 @@ namespace RemsNG.Infrastructure.Managers
 
                 var penalties = await dnp.ByTaxpayerId(dnrm.TaxpayerId);
 
-                dnrm.penalty = penalties.Sum(x => (x.totalAmount - x.amountPaid));
-                dnrm.amountPaid = dnrm.amountPaid + penalties.Sum(x => x.amountPaid);
+                dnrm.penalty = penalties.Sum(x => (x.TotalAmount - x.AmountPaid));
+                dnrm.amountPaid = dnrm.amountPaid + penalties.Sum(x => x.AmountPaid);
 
                 var arrears = await dna.ByBillingNumber(billingNo);
                 dnrm.arrears = arrears.Sum(x => (x.TotalAmount - x.AmountPaid));
                 var amtDue = await _dphDao.ByBillingNumber(billingNo);
 
-                dnrm.amountPaid = amtDue.Sum(x => x.amount);//dnrm.amountPaid + arrears.Sum(x => x.amountPaid);
+                dnrm.amountPaid = amtDue.Sum(x => x.Amount);//dnrm.amountPaid + arrears.Sum(x => x.amountPaid);
 
                 LcdaPropertyModel isEnablePayment = ls.FirstOrDefault(x =>
                 x.PropertyKey == "ALLOW_PAYMENT_SERVICES" && x.PropertyStatus == "ACTIVE");

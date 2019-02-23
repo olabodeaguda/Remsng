@@ -280,10 +280,10 @@ namespace RemsNG.Controllers
         }
 
         [HttpPut]
-        public async Task<object> Put([FromBody]TaxpayerExtensionModel taxpayerExtension)
+        public async Task<object> Put([FromBody]TaxPayerModel taxpayerExtension)
         {
-            if (taxpayerExtension.id == default(Guid) || taxpayerExtension.addressId == default(Guid)
-                || taxpayerExtension.companyId == default(Guid))
+            if (taxpayerExtension.Id == default(Guid) || taxpayerExtension.AddressId == default(Guid)
+                || taxpayerExtension.CompanyId == default(Guid))
             {
                 return BadRequest(new Response()
                 {
@@ -291,7 +291,7 @@ namespace RemsNG.Controllers
                     description = "Bad request"
                 });
             }
-            else if (string.IsNullOrEmpty(taxpayerExtension.streetNumber))
+            else if (string.IsNullOrEmpty(taxpayerExtension.StreetNumber))
             {
                 return BadRequest(new Response()
                 {
@@ -300,7 +300,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            AddressModel address = await addressservice.ById(taxpayerExtension.addressId);
+            AddressModel address = await addressservice.ById(taxpayerExtension.AddressId.Value);
             if (address == null)
             {
                 logger.LogError($"Not Found" + JsonConvert.SerializeObject(address));
@@ -311,7 +311,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            TaxpayerExtensionModel te = await taxpayerService.ById(taxpayerExtension.id);
+            TaxPayerModel te = await taxpayerService.ById(taxpayerExtension.Id);
             if (te == null)
             {
                 return BadRequest(new Response()
@@ -321,13 +321,13 @@ namespace RemsNG.Controllers
                 });
             }
             int sucessCount = 0;
-            if (address.Addressnumber != taxpayerExtension.streetNumber || taxpayerExtension.companyId != te.companyId
-                || taxpayerExtension.firstname != te.firstname ||
-                    taxpayerExtension.lastname != te.lastname || taxpayerExtension.surname != te.surname)
+            if (address.Addressnumber != taxpayerExtension.StreetNumber || taxpayerExtension.CompanyId != te.CompanyId
+                || taxpayerExtension.Firstname != te.Firstname ||
+                    taxpayerExtension.Lastname != te.Lastname || taxpayerExtension.Surname != te.Surname)
             {
-                if (address.Addressnumber != taxpayerExtension.streetNumber)
+                if (address.Addressnumber != taxpayerExtension.StreetNumber)
                 {
-                    address.Addressnumber = taxpayerExtension.streetNumber;
+                    address.Addressnumber = taxpayerExtension.StreetNumber;
                     address.LastModifiedDate = DateTime.Now;
                     address.Lastmodifiedby = User.Identity.Name;
                     Response addressResp = await addressservice.Update(address);
@@ -346,20 +346,20 @@ namespace RemsNG.Controllers
                     }
                 }
 
-                if (taxpayerExtension.companyId != te.companyId || taxpayerExtension.firstname != te.firstname ||
-                    taxpayerExtension.lastname != te.lastname || taxpayerExtension.surname != te.surname)
+                if (taxpayerExtension.CompanyId != te.CompanyId || taxpayerExtension.Firstname != te.Firstname ||
+                    taxpayerExtension.Lastname != te.Lastname || taxpayerExtension.Surname != te.Surname)
                 {
                     Response tsResponse = await taxpayerService.Update(new TaxPayerModel()
                     {
-                        AddressId = te.addressId,
-                        CompanyId = taxpayerExtension.companyId,
-                        Id = taxpayerExtension.id,
+                        AddressId = te.AddressId,
+                        CompanyId = taxpayerExtension.CompanyId,
+                        Id = taxpayerExtension.Id,
                         Lastmodifiedby = User.Identity.Name,
                         LastModifiedDate = DateTime.Now,
-                        StreetId = taxpayerExtension.streetId,
-                        Firstname = taxpayerExtension.firstname,
-                        Lastname = taxpayerExtension.lastname,
-                        Surname = taxpayerExtension.surname
+                        StreetId = taxpayerExtension.StreetId,
+                        Firstname = taxpayerExtension.Firstname,
+                        Lastname = taxpayerExtension.Lastname,
+                        Surname = taxpayerExtension.Surname
                     });
 
                     if (tsResponse.code != MsgCode_Enum.SUCCESS)

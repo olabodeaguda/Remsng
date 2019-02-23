@@ -13,8 +13,8 @@ namespace RemsNG.Common.Interfaces.Managers
             List<ItemReportSummaryModel> previousYearList);
         Task<List<ChartReportModel>> ReportByCurrentYear();
         Task<string> HtmlByDate(List<ItemReportSummaryModel> rptLst);
-        Task<List<DemandNoticeItemModelExt>> ReportitemsByCategory(DateTime startDate, DateTime endDate);
-        Task<List<DemandNoticeArrearsModelExt>> ReportArrearsByCategory(DateTime startDate, DateTime endDate);
-        Task<List<DemandNoticeItemPenaltyModelExt>> ReportPenaltyByCategory(DateTime startDate, DateTime endDate);
+        Task<List<DemandNoticeItemModel>> ReportitemsByCategory(DateTime startDate, DateTime endDate);
+        Task<List<DemandNoticeArrearsModel>> ReportArrearsByCategory(DateTime startDate, DateTime endDate);
+        Task<List<DemandNoticePenaltyModel>> ReportPenaltyByCategory(DateTime startDate, DateTime endDate);
     }
 }

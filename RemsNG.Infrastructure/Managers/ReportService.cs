@@ -195,15 +195,15 @@ namespace RemsNG.Infrastructure.Managers
 
         }
 
-        public async Task<List<DemandNoticeItemModelExt>> ReportitemsByCategory(DateTime startDate, DateTime endDate)
+        public async Task<List<DemandNoticeItemModel>> ReportitemsByCategory(DateTime startDate, DateTime endDate)
         {
             return await dnitemDao.ReportByCategory(startDate, endDate);
         }
-        public async Task<List<DemandNoticeArrearsModelExt>> ReportArrearsByCategory(DateTime startDate, DateTime endDate)
+        public async Task<List<DemandNoticeArrearsModel>> ReportArrearsByCategory(DateTime startDate, DateTime endDate)
         {
             return await dnArrearsDao.ReportByCategory(startDate, endDate);
         }
-        public async Task<List<DemandNoticeItemPenaltyModelExt>> ReportPenaltyByCategory(DateTime startDate, DateTime endDate)
+        public async Task<List<DemandNoticePenaltyModel>> ReportPenaltyByCategory(DateTime startDate, DateTime endDate)
         {
             return await dnPenaltyDao.ReportByCategory(startDate, endDate);
         }

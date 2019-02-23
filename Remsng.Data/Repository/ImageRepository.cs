@@ -17,29 +17,29 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> Add(ImagesModel images)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addImages @p0, @p1, @p2, @p3", new object[] {
-               images.ImgFilename,
-               images.OwnerId,
-               images.ImgType,
-               images.CreatedBy
-            }).FirstOrDefaultAsync();
+            //DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addImages @p0, @p1, @p2, @p3", new object[] {
+            //   images.ImgFilename,
+            //   images.OwnerId,
+            //   images.ImgType,
+            //   images.CreatedBy
+            //}).FirstOrDefaultAsync();
 
-            if (dbResponse.success)
-            {
-                return new Response()
+            db.Set<Images>()
+                .Add(new Images
                 {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = dbResponse.msg
-                };
-            }
-            else
+                    CreatedBy = images.CreatedBy,
+                    DateCreated = DateTime.Now,
+                    Id = Guid.NewGuid(),
+                    ImgFilename = images.ImgFilename,
+                    ImgType = images.ImgType,
+                    OwnerId = images.OwnerId
+                });
+            await db.SaveChangesAsync();
+            return new Response()
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = dbResponse.msg
-                };
-            }
+                code = MsgCode_Enum.SUCCESS,
+                description = "Images has been save successfuly"
+            };
         }
 
         public async Task<List<ImagesModel>> ByOwnerId(Guid ownerId)

@@ -31,29 +31,31 @@ namespace RemsNG.Data.Repository
                 error.Errorvalue
             }).FirstOrDefaultAsync();
 
-            if (dbResponse.success)
+            db.Set<Error>().Add(new Error
             {
-                return true;
-            }
-
-            if (logger != null)
-            {
-                logger.LogError(dbResponse.msg, error);
-            }
-            return false;
+                DateCreated = DateTime.Now,
+                ErrorType = error.ErrorType,
+                Errorvalue = error.Errorvalue,
+                Id = Guid.NewGuid(),
+                OwnerId = error.OwnerId
+            });
+            await db.SaveChangesAsync();
+            return true;
         }
 
         public async Task<List<ErrorModel>> ByOwnerIdAsync(Guid ownerId)
         {
-            var result = await db.Set<Error>().FromSql($"select * from tbl_error where ownerId = '{ownerId}'").ToListAsync();
-            return result.Select(x => new ErrorModel()
-            {
-                DateCreated = x.DateCreated,
-                ErrorType = x.ErrorType,
-                Errorvalue = x.Errorvalue,
-                Id = x.Id,
-                OwnerId = x.OwnerId
-            }).ToList();
+            var result = await db.Set<Error>()
+                .Where(x => x.OwnerId == ownerId)
+                .Select(x => new ErrorModel()
+                {
+                    DateCreated = x.DateCreated,
+                    ErrorType = x.ErrorType,
+                    Errorvalue = x.Errorvalue,
+                    Id = x.Id,
+                    OwnerId = x.OwnerId
+                }).ToListAsync();
+            return result;
         }
 
     }

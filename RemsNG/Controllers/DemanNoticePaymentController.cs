@@ -42,7 +42,7 @@ namespace RemsNG.Controllers
         }
 
         [HttpGet("{billingNumber}")]
-        public async Task<List<DemandNoticePaymentHistoryModelExt>> Get(string billingNumber)
+        public async Task<List<DemandNoticePaymentHistoryModel>> Get(string billingNumber)
         {
             return await dNPaymentHistoryService.ByBillingNumber(billingNumber);
         }

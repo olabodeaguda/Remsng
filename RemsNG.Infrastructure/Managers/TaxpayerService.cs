@@ -22,17 +22,17 @@ namespace RemsNG.Infrastructure.Managers
             amountDueMgtService = _amountDueMgtService;
         }
 
-        public async Task<List<TaxpayerExtensionModel>> ByCompanyId(Guid companyId)
+        public async Task<List<TaxPayerModel>> ByCompanyId(Guid companyId)
         {
             return await taxpayerDao.ByCompanyId(companyId);
         }
 
-        public async Task<TaxpayerExtensionModel> ById(Guid id)
+        public async Task<TaxPayerModel> ById(Guid id)
         {
             return await taxpayerDao.ById(id);
         }
 
-        public async Task<List<TaxpayerExtensionModel>> ByLcdaId(Guid lcdaId)
+        public async Task<List<TaxPayerModel>> ByLcdaId(Guid lcdaId)
         {
             return await taxpayerDao.ByLcdaId(lcdaId);
         }
@@ -42,7 +42,7 @@ namespace RemsNG.Infrastructure.Managers
             return await taxpayerDao.ByLcdaId(lcdaId, pageModel);
         }
 
-        public async Task<List<TaxpayerExtensionModel>> ByStreetId(Guid streetId)
+        public async Task<List<TaxPayerModel>> ByStreetId(Guid streetId)
         {
             return await taxpayerDao.ByStreetId(streetId);
         }
@@ -62,7 +62,7 @@ namespace RemsNG.Infrastructure.Managers
             return await taxpayerDao.getLcda(taxpayerId);
         }
 
-        public async Task<List<TaxpayerExtensionModel>> Search(Guid lcdaId, string qu)
+        public async Task<List<TaxPayerModel>> Search(Guid lcdaId, string qu)
         {
             return await taxpayerDao.Search(lcdaId, qu);
         }

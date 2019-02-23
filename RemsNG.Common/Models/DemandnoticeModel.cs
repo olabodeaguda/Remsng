@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RemsNG.Common.Models
 {
@@ -24,6 +23,8 @@ namespace RemsNG.Common.Models
         public Guid? WardId { get; set; }
         public Guid? StreetId { get; set; }
         public bool? IsUnbilled { get; set; }
+
+        public DemandNoticeRequestModel DemandNoticeRequest { get; set; }
 
         public virtual ICollection<DemandNoticeItemModel> DemandNoticeItem { get; set; }
         public int? TotalSize { get; set; }

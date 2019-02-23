@@ -28,22 +28,22 @@ namespace RemsNG.Infrastructure.Managers
             return await roleDao.Add(role);
         }
 
-        public async Task<RoleExtensionModel> UserDomainRolesByDomainId(Guid userid, Guid domainid)
+        public async Task<RoleModel> UserDomainRolesByDomainId(Guid userid, Guid domainid)
         {
             return await roleDao.UserDomainRolesByDomainId(userid, domainid);
         }
 
-        public async Task<List<RoleExtensionModel>> AllDomainRolesByUsername(string username)
+        public async Task<List<RoleModel>> AllDomainRolesByUsername(string username)
         {
             return await roleDao.AllDomainRolesByUsername(username);
         }
 
-        public async Task<List<RoleExtensionModel>> AllRoleByUserId(Guid id)
+        public async Task<List<RoleModel>> AllRoleByUserId(Guid id)
         {
             return await roleDao.AllRoleByUserId(id);
         }
 
-        public async Task<List<RoleExtensionModel>> AllRoleByUsername(string username)
+        public async Task<List<RoleModel>> AllRoleByUsername(string username)
         {
             return await roleDao.AllRoleByUsername(username);
         }
@@ -53,22 +53,22 @@ namespace RemsNG.Infrastructure.Managers
             return await roleDao.AssignRoleToUserAsync(userRole);
         }
 
-        public async Task<List<RoleExtensionModel>> ByDomainId(Guid domainId)
+        public async Task<List<RoleModel>> ByDomainId(Guid domainId)
         {
             return await roleDao.ByDomainId(domainId);
         }
 
-        public async Task<RoleExtensionModel> GetById(Guid id)
+        public async Task<RoleModel> GetById(Guid id)
         {
             return await roleDao.GetById(id);
         }
 
-        public async Task<RoleExtensionModel> GetByName(string rolename)
+        public async Task<RoleModel> GetByName(string rolename)
         {
             return await roleDao.GetByName(rolename);
         }
 
-        public async Task<RoleExtensionModel> GetUserDomainRoleByUsername(string username, Guid domainId)
+        public async Task<RoleModel> GetUserDomainRoleByUsername(string username, Guid domainId)
         {
             return await roleDao.GetUserDomainRoleByUsername(username, domainId);
         }

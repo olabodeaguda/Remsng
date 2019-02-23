@@ -75,7 +75,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            RoleExtensionModel role = await roleservice.GetById(id);
+            RoleModel role = await roleservice.GetById(id);
             if (role == null)
             {
                 return NotFound(new Response()

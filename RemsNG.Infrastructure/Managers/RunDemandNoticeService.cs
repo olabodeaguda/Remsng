@@ -137,7 +137,7 @@ namespace RemsNG.Infrastructure.Managers
                             }
                             else
                             {
-                                DemandNoticeTaxpayers dntd = new DemandNoticeTaxpayers();
+                                DemandNoticeTaxpayersModel dntd = new DemandNoticeTaxpayersModel();
                                 dntd.BillingYr = demandNotice.BillingYear;
                                 dntd.DnId = demandNotice.Id;
                                 dntd.CreatedBy = demandNoticeRequest.createdBy;
@@ -221,11 +221,6 @@ namespace RemsNG.Infrastructure.Managers
                 }
                 logger.LogError(x.Message);
             }
-        }
-
-        private async Task<bool> ClosedDDTaxpayers(string[] taxpayerIds, int billingYr)
-        {
-            return await demandNoticeTaxpayersDao.UpdateTaxpayers(taxpayerIds, billingYr, DemandNoticeStatus.CLOSED.ToString());
         }
 
         public async Task GenerateBulkDemandNotice()
@@ -319,81 +314,7 @@ namespace RemsNG.Infrastructure.Managers
             }
         }
 
-        public async Task GenerateBulkDemandNotice2()
-        {
-            BatchDemandNoticeModel bdnm = null;// await batchDwnRequestService.Dequeue();
-            try
-            {
-                bdnm = await batchDwnRequestService.Dequeue();
-                if (bdnm != null)
-                {
-                    List<DemandNoticeTaxpayersModel> lstOfDN = await demandNoticeTaxpayerService.GetDNTaxpayerByBatchNoAsync(bdnm.batchNo);
-                    if (lstOfDN.Count > 0)
-                    {
-                        var firstTaxpayer = lstOfDN[0];
-                        LcdaModel lgda = await taxpayerService.getLcda(firstTaxpayer.TaxpayerId);
-                        string template = await dnDownloadService.LcdaTemlateByLcda(lgda.Id);
-                        string rootUrl = hostingEnvironment.WebRootPath;
-                        string rootPath = Path.Combine(hostingEnvironment.WebRootPath, "zipReports", bdnm.batchNo);
-                        if (!Directory.Exists(rootPath))
-                        {
-                            Directory.CreateDirectory(rootPath);
-                        }
-                        using (FileStream zipToOpen = new FileStream($"{rootPath}/{bdnm.batchNo}.zip", FileMode.Create))
-                        {
-                            using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
-                            {
-                                foreach (var dnt in lstOfDN)
-                                {
-                                    var htmlContent = await File.ReadAllTextAsync($"{rootUrl}/templates/{template}");
-                                    htmlContent = await dnDownloadService.PopulateReportHtml(htmlContent, dnt.BillingNumber, rootUrl, bdnm.createdBy);
-
-                                    htmlContent = htmlContent.Replace("PATCH1", "");
-                                    htmlContent = htmlContent.Replace("PATCH2", "");
-
-                                    var result = await nodeServices.InvokeAsync<byte[]>("./pdf",
-                                        htmlContent);
-
-                                    string filePath = Path.Combine(rootPath, $"{dnt.BillingNumber}.pdf");
-                                    using (FileStream fs = System.IO.File.Create(filePath))
-                                    {
-                                        await fs.WriteAsync(result, 0, result.Length);
-                                        fs.Flush();
-                                    }
-                                    archive.CreateEntryFromFile(filePath, $"{dnt.BillingNumber}.pdf");
-                                    //ZipArchiveEntry readmeEntry = archive.CreateEntry(filePath);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Response response = await batchDwnRequestService.UpdateBatchRequest(new BatchDemandNoticeModel
-                {
-                    id = bdnm.id,
-                    batchFileName = $"{bdnm.batchNo}.zip",
-                    requestStatus = "COMPLETED",
-                    createdBy = "APPLICATION"
-
-                });
-            }
-            catch (Exception x)
-            {
-                if (bdnm != null)
-                {
-                    Response response = await batchDwnRequestService.UpdateBatchRequest(new BatchDemandNoticeModel
-                    {
-                        id = bdnm.id,
-                        batchFileName = $"{bdnm.batchNo}.zip",
-                        requestStatus = "ERROR",
-                        createdBy = "APPLICATION"
-                    });
-                }
-                logger.LogError(x.Message);
-            }
-        }
-
-        private async Task<bool> RunArrears(DemandNoticeTaxpayers dntd, string billNumber, int arrearCategory)
+        private async Task<bool> RunArrears(DemandNoticeTaxpayersModel dntd, string billNumber, int arrearCategory)
         {
             int billingYr = arrearCategory > 3 ? dntd.BillingYr - 1 : dntd.BillingYr;
             try
@@ -407,7 +328,7 @@ namespace RemsNG.Infrastructure.Managers
                     var penalty = await demandNoticePenaltyDao.ByTaxpayerId(dntd.TaxpayerId, billingYr);
 
                     decimal amountDue = items.Sum(x => x.ItemAmount) + arrears.Sum(x => x.TotalAmount)
-                        + penalty.Sum(x => x.totalAmount)
+                        + penalty.Sum(x => x.TotalAmount)
                          - payments.Sum(x => x.Amount);
 
                     if (amountDue > 0)
@@ -469,30 +390,13 @@ namespace RemsNG.Infrastructure.Managers
 
         }
 
-        private async Task MovedUnpaidPenalty(DN_ArrearsModel dN_ArrearsModel)
-        {
-            Response responseUnpaidPenalty = await demandNoticePenaltyDao.AddUnpaidPenaltyAsync(dN_ArrearsModel);
-            if (responseUnpaidPenalty.code != MsgCode_Enum.SUCCESS)
-            {
-                logger.LogError(responseUnpaidPenalty.description);
-                ErrorModel error = new ErrorModel()
-                {
-                    ErrorType = ErrorType.DEMAND_NOTICE.ToString(),
-                    Errorvalue = $"Unpaid demand notice Penalty movement section: " +
-                    $"{responseUnpaidPenalty.description}, {JsonConvert.SerializeObject(dN_ArrearsModel)}",
-                    OwnerId = dN_ArrearsModel.dnId
-                };
-                bool result = await errorDao.Add(error);
-            }
-        }
-
-        private async Task RunDemandNoticeItem(DemandNoticeTaxpayers dntd)
+        private async Task RunDemandNoticeItem(DemandNoticeTaxpayersModel dntd)
         {
             var companyItems = await _companyItemDao.ByTaxpayer(dntd.TaxpayerId);
             DemandNoticeItemModel[] dniModel = companyItems.Where(x => x.CompanyStatus == CompanyStatus.ACTIVE.ToString())
                 .Select(x => new DemandNoticeItemModel()
                 {
-                    BillingNo = dntd.billingNumber,
+                    BillingNo = dntd.BillingNumber,
                     CreatedBy = dntd.CreatedBy,
                     DateCreated = DateTime.Now,
                     DnTaxpayersDetailsId = dntd.Id,
@@ -508,35 +412,6 @@ namespace RemsNG.Infrastructure.Managers
             if (response.code != MsgCode_Enum.SUCCESS)
             {
                 logger.LogError(response.description, dntd);
-            }
-        }
-
-        public async Task ReconcileDemandNotice()
-        {
-            List<DemandNoticeModel> lst = await demandNoticeDao.GetUnSyncData();
-            if (lst.Count > 0)
-            {
-                string query = string.Empty;
-                foreach (var tm in lst)
-                {
-                    string qy = EncryptDecryptUtils.FromHexString(tm.Query);
-                    DemandNoticeRequestModel dnr = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(qy);
-                    if (dnr.wardId == null)
-                    {
-                        continue;
-                    }
-                    query = query + $"update tbl_demandnotice set wardId='{dnr.wardId}'," +
-                        $" streetId='{dnr.streetId}' where id='{tm.Id}';";
-                }
-
-                if (!string.IsNullOrEmpty(query))
-                {
-                    bool result = await demandNoticeDao.updateData(query);
-                    if (!result)
-                    {
-                        logger.LogError("no record(s)");
-                    }
-                }
             }
         }
 

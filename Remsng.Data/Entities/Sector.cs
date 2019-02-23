@@ -17,5 +17,6 @@ namespace RemsNG.Data.Entities
         public string Prefix { get; set; }
 
         public virtual Lcda Lcda { get; set; }
+
     }
 }

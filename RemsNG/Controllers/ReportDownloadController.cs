@@ -414,9 +414,9 @@ namespace RemsNG.Controllers
             ed = ed.AddHours(23);
             ed = ed.AddMinutes(59);
 
-            List<DemandNoticeItemModelExt> dnitem = await reportService.ReportitemsByCategory(sd, ed);
-            List<DemandNoticeItemPenaltyModelExt> dnPenalty = await reportService.ReportPenaltyByCategory(sd, ed);
-            List<DemandNoticeArrearsModelExt> dnArrears = await reportService.ReportArrearsByCategory(sd, ed);
+            List<DemandNoticeItemModel> dnitem = await reportService.ReportitemsByCategory(sd, ed);
+            List<DemandNoticePenaltyModel> dnPenalty = await reportService.ReportPenaltyByCategory(sd, ed);
+            List<DemandNoticeArrearsModel> dnArrears = await reportService.ReportArrearsByCategory(sd, ed);
 
             Guid lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
             LcdaModel lgda = await lcdaService.Get(lcdaId);

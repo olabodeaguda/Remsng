@@ -19,7 +19,7 @@ namespace RemsNG.Data.Repository
             logger = loggerFactory.CreateLogger("Role Dao");
         }
 
-        public async Task<RoleExtensionModel> GetUserDomainRoleByUsername(string username, Guid domainId)
+        public async Task<RoleModel> GetUserDomainRoleByUsername(string username, Guid domainId)
         {
             var result = await db.Set<UserRole>()
                 .Include(x => x.User)
@@ -31,13 +31,13 @@ namespace RemsNG.Data.Repository
                 return null;
             }
 
-            return new RoleExtensionModel
+            return new RoleModel
             {
-                domainId = result.Role.DomainId,
+                DomainId = result.Role.DomainId,
                 domainName = result.Role.Domain.LcdaName,
-                id = result.Role.Id,
-                roleName = result.Role.RoleName,
-                roleStatus = result.Role.RoleStatus
+                Id = result.Role.Id,
+                RoleName = result.Role.RoleName,
+                RoleStatus = result.Role.RoleStatus
             };
 
             //return await db.Set<RoleExtensionModel>()
@@ -46,64 +46,63 @@ namespace RemsNG.Data.Repository
 
         public async Task<object> Paginated(PageModel pageModel)
         {
-            return await Task.Run(() =>
-            {
-                List<RoleExtensionModel> AllRole = db.Set<RoleExtensionModel>()
-                .FromSql("sp_getRoles @p0, @p1",
-                    new object[] { pageModel.PageSize, pageModel.PageNum }).ToList();
+            var query = db.Set<Role>().Include(x => x.Domain);
 
-                var totalCount = db.Set<Role>().Count();
-                return new
-                {
-                    data = AllRole,
-                    totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
-                };
-            });
+            var roles = await query.Select(x => new RoleModel
+            {
+                domainName = x.Domain.LcdaName,
+                Id = x.Id,
+                RoleName = x.RoleName,
+                RoleStatus = x.RoleStatus
+            }).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize)
+            .OrderByDescending(x => x.RoleName)
+            .ToListAsync();
+
+            int totalCount = await query.CountAsync();
+            return new
+            {
+                data = roles,
+                totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
+            };
         }
 
         public async Task<object> Paginated(PageModel pageModel, Guid domainId)
         {
-            List<RoleExtensionModel> AllRole = db.Set<RoleExtensionModel>()
-                .FromSql("sp_getRolesByDomainIdPaginated @p0, @p1, @p2",
-                new object[] { pageModel.PageSize, pageModel.PageNum, domainId }).ToList();
-
-            var totalCount = await db.Set<Role>()
-                .Where(x => x.DomainId == domainId).CountAsync();
+            //List<RoleExtensionModel> AllRole = db.Set<RoleExtensionModel>()
+            //    .FromSql("sp_getRolesByDomainIdPaginated @p0, @p1, @p2",
+            //    new object[] { pageModel.PageSize, pageModel.PageNum, domainId }).ToList();
+            var query = db.Set<Role>().Include(x => x.Domain).Where(x => x.DomainId == domainId);
+            var totalCount = await query.CountAsync();
+            var roles = await query.Select(x => new RoleModel
+            {
+                domainName = x.Domain.LcdaName,
+                Id = x.Id,
+                RoleName = x.RoleName,
+                RoleStatus = x.RoleStatus
+            }).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize)
+            .OrderByDescending(x => x.RoleName)
+            .ToListAsync();
             return new
             {
-                data = AllRole,
+                data = roles,
                 totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
             };
         }
 
         public async Task<bool> Add(RoleModel role)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>()
-                .FromSql("sp_createRole @p0,@p1, @p2",
-                new object[] { role.Id, role.RoleName, role.DomainId }).FirstOrDefaultAsync();
+            //DbResponse dbResponse = await db.Set<DbResponse>()
+            //    .FromSql("sp_createRole @p0,@p1, @p2",
+            //    new object[] { role.Id, role.RoleName, role.DomainId }).FirstOrDefaultAsync();
 
-            if (dbResponse.success)
+            db.Set<Role>().Add(new Role
             {
-                return true;
-            }
-            logger.LogError(dbResponse.msg, new object[] { role.RoleName, role.Id });
-            return false;
-        }
-
-        public async Task<UserRoleModel> GetRoleAsync(UserRole userRole)
-        {
-            var r = await db.Set<UserRole>()
-                .FirstOrDefaultAsync(x => x.RoleId == userRole.RoleId && x.UserId == userRole.UserId);
-            if (r == null)
-            {
-                return null;
-            }
-
-            return new UserRoleModel()
-            {
-                RoleId = r.RoleId,
-                UserId = r.UserId
-            };
+                DomainId = role.DomainId,
+                Id = role.Id,
+                RoleName = role.RoleName
+            });
+            await db.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> Add(RolePermissionModel role)
@@ -123,79 +122,146 @@ namespace RemsNG.Data.Repository
             return false;
         }
 
-        public async Task<RoleExtensionModel> GetByName(string rolename)
+        public async Task<RoleModel> GetByName(string rolename)
         {
-            return await db.Set<RoleExtensionModel>()
-                .FromSql("sp_roleByRoleName @p0", new object[] { rolename }).FirstOrDefaultAsync();
+            //return await db.Set<RoleExtensionModel>()
+            //    .FromSql("sp_roleByRoleName @p0", new object[] { rolename }).FirstOrDefaultAsync();
+            return await db.Set<Role>().Include(x => x.Domain).Select(d => new RoleModel
+            {
+                domainName = d.Domain.LcdaName,
+                Id = d.Id,
+                RoleName = d.RoleName,
+                RoleStatus = d.RoleStatus
+            }).FirstOrDefaultAsync(x => x.RoleName == rolename);
         }
 
-        public async Task<RoleExtensionModel> GetById(Guid id)
+        public async Task<RoleModel> GetById(Guid id)
         {
-            return await db.Set<RoleExtensionModel>()
-                .FromSql("sp_roleById @p0", new object[] { id }).FirstOrDefaultAsync();
+            //return await db.Set<RoleExtensionModel>()
+            //    .FromSql("sp_roleById @p0", new object[] { id }).FirstOrDefaultAsync();
+            return await db.Set<Role>().Include(x => x.Domain).Select(d => new RoleModel
+            {
+                domainName = d.Domain.LcdaName,
+                Id = d.Id,
+                RoleName = d.RoleName,
+                RoleStatus = d.RoleStatus
+            }).FirstOrDefaultAsync(x => x.Id == id);
+
         }
 
         public async Task<bool> Update(RoleModel role)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>()
-                .FromSql("sp_updateRole @p0, @p1, @p2",
-                new object[] { role.RoleName, role.Id, role.DomainId }).FirstOrDefaultAsync();
-            if (dbResponse.success)
+            //DbResponse dbResponse = await db.Set<DbResponse>()
+            //    .FromSql("sp_updateRole @p0, @p1, @p2",
+            //    new object[] { role.RoleName, role.Id, role.DomainId }).FirstOrDefaultAsync();
+            //if (dbResponse.success)
+            //{
+            //    return true;
+            //}
+            //logger.LogError(dbResponse.msg, new object[] { role.RoleName, role.Id });
+            //return false;
+
+            var entity = await db.Set<Role>().FindAsync(role.Id);
+            if (entity == null)
             {
-                return true;
+                throw new NotFoundException("Role does not exist");
             }
-            logger.LogError(dbResponse.msg, new object[] { role.RoleName, role.Id });
-            return false;
+            entity.RoleName = role.RoleName;
+            await db.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> UpdateStatus(RoleModel role)
         {
-            var r = await GetById(role.Id);
 
-            if (r == null)
+            var entity = await db.Set<Role>().FindAsync(role.Id);
+            if (entity == null)
             {
-                throw new NotFoundException($"{role.RoleName} was not found");
+                throw new NotFoundException("Role does not exist");
             }
-
-            r.roleName = role.RoleName;
-            DbResponse dbResponse = await db.Set<DbResponse>()
-                .FromSql("sp_updateRoleStatus",
-                new object[] { role.RoleStatus, role.Id }).FirstOrDefaultAsync();
-            if (dbResponse.success)
-            {
-                return true;
-            }
-            logger.LogError(dbResponse.msg, new object[] { role.RoleName, role.Id });
-            return false;
+            entity.RoleStatus = role.RoleStatus;
+            await db.SaveChangesAsync();
+            return true;
         }
 
-        public async Task<List<RoleExtensionModel>> ByDomainId(Guid domainId)
+        public async Task<List<RoleModel>> ByDomainId(Guid domainId)
         {
-            return await db.Set<RoleExtensionModel>()
-                .FromSql("sp_roleByDomainId @p0", new object[] { domainId }).ToListAsync();
+            //return await db.Set<RoleExtensionModel>()
+            //    .FromSql("sp_roleByDomainId @p0", new object[] { domainId }).ToListAsync();
+            return await db.Set<Role>().Include(x => x.Domain)
+                .Where(p => p.DomainId == domainId)
+                .Select(d => new RoleModel
+                {
+                    domainName = d.Domain.LcdaName,
+                    Id = d.Id,
+                    RoleName = d.RoleName,
+                    RoleStatus = d.RoleStatus
+                }).ToListAsync();
         }
 
-        public async Task<List<RoleExtensionModel>> AllRoleByUserId(Guid id)
+        public async Task<List<RoleModel>> AllRoleByUserId(Guid id)
         {
-            return await db.Set<RoleExtensionModel>().FromSql("sp_getDomainRolesByUserId @p0", new object[] { id }).ToListAsync();
+            //return await db.Set<RoleExtensionModel>().FromSql("sp_getDomainRolesByUserId @p0", new object[] { id }).ToListAsync();
+            return await db.Set<UserRole>()
+                .Include(x => x.Role)
+                .ThenInclude(x => x.Domain)
+                .Where(p => p.UserId == id).Select(d => new RoleModel
+                {
+                    domainName = d.Role.Domain.LcdaName,
+                    Id = d.RoleId,
+                    RoleName = d.Role.RoleName,
+                    RoleStatus = d.Role.RoleStatus
+                }).ToListAsync();
         }
 
-        public async Task<List<RoleExtensionModel>> AllRoleByUsername(string username)
+        public async Task<List<RoleModel>> AllRoleByUsername(string username)
         {
-            return await db.Set<RoleExtensionModel>()
-                .FromSql("sp_getUserDomainRoleByUsername @p0", new object[] { username }).ToListAsync();
+            //return await db.Set<RoleExtensionModel>()
+            //    .FromSql("sp_getUserDomainRoleByUsername @p0", new object[] { username }).ToListAsync();
+            //return await db.Set<RoleExtensionModel>().FromSql("sp_getDomainRolesByUserId @p0", new object[] { id }).ToListAsync();
+            return await db.Set<UserRole>()
+                .Include(x => x.Role)
+                .ThenInclude(x => x.Domain)
+                .Where(p => p.User.Username == username).Select(d => new RoleModel
+                {
+                    domainName = d.Role.Domain.LcdaName,
+                    Id = d.RoleId,
+                    RoleName = d.Role.RoleName,
+                    RoleStatus = d.Role.RoleStatus
+                }).ToListAsync();
         }
 
-        public async Task<List<RoleExtensionModel>> AllDomainRolesByUsername(string username)
+        public async Task<List<RoleModel>> AllDomainRolesByUsername(string username)
         {
-            return await db.Set<RoleExtensionModel>()
-                .FromSql("sp_getDomainRolesByUsername @p0", new object[] { username }).ToListAsync();
+            //return await db.Set<RoleExtensionModel>()
+            //    .FromSql("sp_getDomainRolesByUsername @p0", new object[] { username }).ToListAsync();
+
+            return await db.Set<UserRole>()
+                .Include(x => x.Role)
+                .ThenInclude(x => x.Domain)
+                .Where(p => p.User.Username == username).Select(d => new RoleModel
+                {
+                    domainName = d.Role.Domain.LcdaName,
+                    Id = d.RoleId,
+                    RoleName = d.Role.RoleName,
+                    RoleStatus = d.Role.RoleStatus
+                }).ToListAsync();
         }
 
-        public async Task<RoleExtensionModel> UserDomainRolesByDomainId(Guid userid, Guid domainid)
+        public async Task<RoleModel> UserDomainRolesByDomainId(Guid userid, Guid domainid)
         {
-            return await db.Set<RoleExtensionModel>()
-                .FromSql("sp_getUserDomainRolesByDomainId @p0, @p1", new object[] { userid, domainid }).FirstOrDefaultAsync();
+            //return await db.Set<RoleExtensionModel>()
+            //    .FromSql("sp_getUserDomainRolesByDomainId @p0, @p1", new object[] { userid, domainid }).FirstOrDefaultAsync();
+            return await db.Set<UserRole>()
+                .Include(x => x.Role)
+                .ThenInclude(x => x.Domain)
+                .Where(p => p.UserId == userid && p.Role.DomainId == domainid).Select(d => new RoleModel
+                {
+                    domainName = d.Role.Domain.LcdaName,
+                    Id = d.RoleId,
+                    RoleName = d.Role.RoleName,
+                    RoleStatus = d.Role.RoleStatus
+                }).FirstOrDefaultAsync();
         }
 
         public async Task<bool> AssignRoleToUserAsync(UserRoleModel userRole)

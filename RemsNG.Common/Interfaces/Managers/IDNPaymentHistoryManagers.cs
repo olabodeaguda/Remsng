@@ -10,7 +10,7 @@ namespace RemsNG.Common.Interfaces.Managers
         Task<Response> AddAsync(DemandNoticePaymentHistoryModel dnph);
         Task<Response> UpdateAsync(DemandNoticePaymentHistoryModel dnph);
         Task<Response> UpdateStatusAsync(DemandNoticePaymentHistoryModel dnph);
-        Task<List<DemandNoticePaymentHistoryModelExt>> ByBillingNumber(string billingnumber);
+        Task<List<DemandNoticePaymentHistoryModel>> ByBillingNumber(string billingnumber);
         Task<List<DemandNoticePaymentHistoryModel>> ByBillingNumbers(string billingnumber);
         Task<DemandNoticePaymentHistoryModel> ById(Guid id);
         Task<DemandNoticePaymentHistoryModel> ByIdExtended(Guid id);

@@ -22,5 +22,8 @@ namespace RemsNG.Data.Entities
 
         [ForeignKey("TaxpayerId")]
         public TaxPayer TaxPayer { get; set; }
+
+        [ForeignKey("ItemId")]
+        public Item Item { get; set; }
     }
 }

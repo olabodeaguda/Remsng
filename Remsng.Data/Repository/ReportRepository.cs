@@ -16,30 +16,220 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<ItemReportSummaryModel>> ByDate(DateTime startDate, DateTime endDate)
         {
-            try
-            {
-                return await db.Set<ItemReportSummaryModel>().
-                    FromSql("sp_paymentSummaryByItems @p0,@p1",
-                       new object[]
-                       {
-                    startDate,endDate
-                       }).ToListAsync();
-            }
-            catch (Exception)
-            {
+            //try
+            //{
+            List<ItemReportSummaryModel> results = new List<ItemReportSummaryModel>();
+            var items = await db.Set<DemandNoticeItem>()
+                 .Include(x => x.Item)
+                 .Include(p => p.TaxPayer)
+                 .ThenInclude(s => s.Street)
+                 .ThenInclude(s => s.Ward)
+                 .Join(db.Set<DemandNoticeTaxpayers>(),
+                 itm => itm.BillingNo, dnt => dnt.BillingNumber, (itm, dnt) => new { itm, dnt })
+                 .Where(q => q.itm.TaxPayer.Street.Ward.WardName == "ACTIVE"
+                 && (q.itm.DateCreated >= startDate && q.itm.DateCreated <= endDate)
+                 && (q.itm.LastModifiedDate >= startDate && q.itm.LastModifiedDate <= endDate) && q.dnt.IsUnbilled == false)
+                 .Select(s => new ItemReportSummaryModel
+                 {
+                     id = s.itm.Id,
+                     itemAmount = s.itm.ItemAmount,
+                     amountPaid = s.itm.AmountPaid,
+                     billingNo = s.itm.BillingNo,
+                     category = "ITEMS",
+                     wardId = s.itm.TaxPayer.Street.WardId,
+                     wardName = s.itm.TaxPayer.Street.Ward.WardName,
+                     taxpayersName = $"{s.itm.TaxPayer.Firstname} {s.itm.TaxPayer.Lastname} {s.itm.TaxPayer.Surname}",
+                     itemCode = s.itm.Item.ItemCode,
+                     itemDescription = s.itm.Item.ItemDescription,
+                     lastModifiedDate = s.itm.LastModifiedDate,
+                     addressName = s.dnt.AddressName
+                 }).ToListAsync();
+            results.AddRange(items);
 
-                throw;
-            }
+            var arrears = await db.Set<DemandNoticeArrears>()
+                 .Include(x => x.Item)
+                 .Include(p => p.TaxPayer)
+                 .ThenInclude(s => s.Street)
+                 .ThenInclude(s => s.Ward)
+                 .Join(db.Set<DemandNoticeTaxpayers>(),
+                 itm => itm.BillingNo, dnt => dnt.BillingNumber, (itm, dnt) => new { itm, dnt })
+                 .Where(q => q.itm.TaxPayer.Street.Ward.WardName == "ACTIVE"
+                 && (q.itm.DateCreated >= startDate && q.itm.DateCreated <= endDate)
+                 && (q.itm.LastModifiedDate >= startDate && q.itm.LastModifiedDate <= endDate) && q.dnt.IsUnbilled == false)
+                 .Select(s => new ItemReportSummaryModel
+                 {
+                     id = s.itm.Id,
+                     itemAmount = s.itm.TotalAmount,
+                     amountPaid = s.itm.AmountPaid,
+                     billingNo = s.itm.BillingNo,
+                     category = "ARREARS",
+                     wardId = s.itm.TaxPayer.Street.WardId,
+                     wardName = s.itm.TaxPayer.Street.Ward.WardName,
+                     taxpayersName = $"{s.itm.TaxPayer.Firstname} {s.itm.TaxPayer.Lastname} {s.itm.TaxPayer.Surname}",
+                     itemCode = s.itm.Item.ItemCode,
+                     itemDescription = s.itm.Item.ItemDescription,
+                     lastModifiedDate = s.itm.LastModifiedDate,
+                     addressName = s.dnt.AddressName
+                 }).ToListAsync();
+            results.AddRange(arrears);
+
+            var penalty = await db.Set<DemandNoticePenalty>()
+                 .Include(x => x.Item)
+                 .Include(p => p.TaxPayer)
+                 .ThenInclude(s => s.Street)
+                 .ThenInclude(s => s.Ward)
+                 .Join(db.Set<DemandNoticeTaxpayers>(),
+                 itm => itm.BillingNo, dnt => dnt.BillingNumber, (itm, dnt) => new { itm, dnt })
+                 .Where(q => q.itm.TaxPayer.Street.Ward.WardName == "ACTIVE"
+                 && (q.itm.DateCreated >= startDate && q.itm.DateCreated <= endDate)
+                 && (q.itm.LastModifiedDate >= startDate && q.itm.LastModifiedDate <= endDate) && q.dnt.IsUnbilled == false)
+                 .Select(s => new ItemReportSummaryModel
+                 {
+                     id = s.itm.Id,
+                     itemAmount = s.itm.TotalAmount,
+                     amountPaid = s.itm.AmountPaid,
+                     billingNo = s.itm.BillingNo,
+                     category = "PENALTY",
+                     wardId = s.itm.TaxPayer.Street.WardId,
+                     wardName = s.itm.TaxPayer.Street.Ward.WardName,
+                     taxpayersName = $"{s.itm.TaxPayer.Firstname} {s.itm.TaxPayer.Lastname} {s.itm.TaxPayer.Surname}",
+                     itemCode = s.itm.Item.ItemCode,
+                     itemDescription = s.itm.Item.ItemDescription,
+                     lastModifiedDate = s.itm.LastModifiedDate,
+                     addressName = s.dnt.AddressName
+                 }).ToListAsync();
+            results.AddRange(penalty);
+
+
+            //return await db.Set<ItemReportSummaryModel>().
+            //    FromSql("sp_paymentSummaryByItems @p0,@p1",
+            //       new object[]
+            //       {
+            //    startDate,endDate
+            //       }).ToListAsync();
+
+            //}
+            //catch (Exception)
+            //{
+
+            //    throw;
+            //}
+
+            return results;
         }
 
         public async Task<List<ItemReportSummaryModel>> ByDate2(DateTime startDate, DateTime endDate)
         {
-            return await db.Set<ItemReportSummaryModel>()
-                .FromSql("sp_paymentSummaryByItems2 @p0,@p1",
-                new object[]
-                {
-                    startDate,endDate
-                }).ToListAsync();
+            //return await db.Set<ItemReportSummaryModel>()
+            //    .FromSql("sp_paymentSummaryByItems2 @p0,@p1",
+            //    new object[]
+            //    {
+            //        startDate,endDate
+            //    }).ToListAsync();
+            string[] status = { "PAID", "PENDING", "PART_PAYMENT" };
+
+            List<ItemReportSummaryModel> results = new List<ItemReportSummaryModel>();
+            var items = await db.Set<DemandNoticeItem>()
+                 .Include(x => x.Item)
+                 .Include(p => p.TaxPayer)
+                 .ThenInclude(s => s.Street)
+                 .ThenInclude(s => s.Ward)
+                 .Join(db.Set<DemandNoticeTaxpayers>(),
+                 itm => itm.BillingNo, dnt => dnt.BillingNumber, (itm, dnt) => new { itm, dnt })
+                 .Where(q => q.itm.TaxPayer.Street.Ward.WardName == "ACTIVE"
+                 && (q.itm.DateCreated >= startDate && q.itm.DateCreated <= endDate)
+                 && (q.itm.LastModifiedDate >= startDate && q.itm.LastModifiedDate <= endDate)
+                 && q.dnt.IsUnbilled == false && status.Any(x => x == q.itm.ItemStatus))
+                 .Select(s => new ItemReportSummaryModel
+                 {
+                     id = s.itm.Id,
+                     itemAmount = s.itm.ItemAmount,
+                     amountPaid = s.itm.AmountPaid,
+                     billingNo = s.itm.BillingNo,
+                     category = "ITEMS",
+                     wardId = s.itm.TaxPayer.Street.WardId,
+                     wardName = s.itm.TaxPayer.Street.Ward.WardName,
+                     taxpayersName = $"{s.itm.TaxPayer.Firstname} {s.itm.TaxPayer.Lastname} {s.itm.TaxPayer.Surname}",
+                     itemCode = s.itm.Item.ItemCode,
+                     itemDescription = s.itm.Item.ItemDescription,
+                     lastModifiedDate = s.itm.LastModifiedDate,
+                     addressName = s.dnt.AddressName
+                 }).ToListAsync();
+            results.AddRange(items);
+
+            var arrears = await db.Set<DemandNoticeArrears>()
+                 .Include(x => x.Item)
+                 .Include(p => p.TaxPayer)
+                 .ThenInclude(s => s.Street)
+                 .ThenInclude(s => s.Ward)
+                 .Join(db.Set<DemandNoticeTaxpayers>(),
+                 itm => itm.BillingNo, dnt => dnt.BillingNumber, (itm, dnt) => new { itm, dnt })
+                 .Where(q => q.itm.TaxPayer.Street.Ward.WardName == "ACTIVE"
+                 && (q.itm.DateCreated >= startDate && q.itm.DateCreated <= endDate)
+                 && (q.itm.LastModifiedDate >= startDate && q.itm.LastModifiedDate <= endDate)
+                 && q.dnt.IsUnbilled == false && status.Any(x => x == q.itm.ArrearsStatus))
+                 .Select(s => new ItemReportSummaryModel
+                 {
+                     id = s.itm.Id,
+                     itemAmount = s.itm.TotalAmount,
+                     amountPaid = s.itm.AmountPaid,
+                     billingNo = s.itm.BillingNo,
+                     category = "ARREARS",
+                     wardId = s.itm.TaxPayer.Street.WardId,
+                     wardName = s.itm.TaxPayer.Street.Ward.WardName,
+                     taxpayersName = $"{s.itm.TaxPayer.Firstname} {s.itm.TaxPayer.Lastname} {s.itm.TaxPayer.Surname}",
+                     itemCode = s.itm.Item.ItemCode,
+                     itemDescription = s.itm.Item.ItemDescription,
+                     lastModifiedDate = s.itm.LastModifiedDate,
+                     addressName = s.dnt.AddressName
+                 }).ToListAsync();
+            results.AddRange(arrears);
+
+            var penalty = await db.Set<DemandNoticePenalty>()
+                 .Include(x => x.Item)
+                 .Include(p => p.TaxPayer)
+                 .ThenInclude(s => s.Street)
+                 .ThenInclude(s => s.Ward)
+                 .Join(db.Set<DemandNoticeTaxpayers>(),
+                 itm => itm.BillingNo, dnt => dnt.BillingNumber, (itm, dnt) => new { itm, dnt })
+                 .Where(q => q.itm.TaxPayer.Street.Ward.WardName == "ACTIVE"
+                 && (q.itm.DateCreated >= startDate && q.itm.DateCreated <= endDate)
+                 && (q.itm.LastModifiedDate >= startDate && q.itm.LastModifiedDate <= endDate)
+                 && q.dnt.IsUnbilled == false && status.Any(x => x == q.itm.ItemPenaltyStatus))
+                 .Select(s => new ItemReportSummaryModel
+                 {
+                     id = s.itm.Id,
+                     itemAmount = s.itm.TotalAmount,
+                     amountPaid = s.itm.AmountPaid,
+                     billingNo = s.itm.BillingNo,
+                     category = "PENALTY",
+                     wardId = s.itm.TaxPayer.Street.WardId,
+                     wardName = s.itm.TaxPayer.Street.Ward.WardName,
+                     taxpayersName = $"{s.itm.TaxPayer.Firstname} {s.itm.TaxPayer.Lastname} {s.itm.TaxPayer.Surname}",
+                     itemCode = s.itm.Item.ItemCode,
+                     itemDescription = s.itm.Item.ItemDescription,
+                     lastModifiedDate = s.itm.LastModifiedDate,
+                     addressName = s.dnt.AddressName
+                 }).ToListAsync();
+            results.AddRange(penalty);
+
+
+            //return await db.Set<ItemReportSummaryModel>().
+            //    FromSql("sp_paymentSummaryByItems @p0,@p1",
+            //       new object[]
+            //       {
+            //    startDate,endDate
+            //       }).ToListAsync();
+
+            //}
+            //catch (Exception)
+            //{
+
+            //    throw;
+            //}
+
+            return results;
+
         }
 
         public async Task<List<ChartReportModel>> ReportByYear()
@@ -47,7 +237,7 @@ namespace RemsNG.Data.Repository
             int billingYr = DateTime.Now.Year;
             var items = await db.Set<DemandNoticeItem>()
                 .Join(db.Set<DemandNoticeTaxpayers>(), dni => dni.BillingNo,
-                dnt => dnt.billingNumber, (dni, dnt) => new ChartReportModel
+                dnt => dnt.BillingNumber, (dni, dnt) => new ChartReportModel
                 {
                     amountPaid = dni.AmountPaid,
                     itemAmount = dni.ItemAmount,
@@ -58,7 +248,7 @@ namespace RemsNG.Data.Repository
 
             var arrears = await db.Set<DemandNoticeArrears>()
                .Join(db.Set<DemandNoticeTaxpayers>(), dni => dni.BillingNo,
-               dnt => dnt.billingNumber, (dni, dnt) => new ChartReportModel
+               dnt => dnt.BillingNumber, (dni, dnt) => new ChartReportModel
                {
                    amountPaid = dni.AmountPaid,
                    itemAmount = dni.TotalAmount,
@@ -69,7 +259,7 @@ namespace RemsNG.Data.Repository
 
             var penalty = await db.Set<DemandNoticePenalty>()
                .Join(db.Set<DemandNoticeTaxpayers>(), dni => dni.BillingNo,
-               dnt => dnt.billingNumber, (dni, dnt) => new ChartReportModel
+               dnt => dnt.BillingNumber, (dni, dnt) => new ChartReportModel
                {
                    amountPaid = dni.AmountPaid,
                    itemAmount = dni.TotalAmount,

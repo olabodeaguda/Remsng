@@ -658,8 +658,8 @@ namespace RemsNG.Services
         }
 
         public async Task<byte[]> WriteReportCategory(string domainName, string lcdaName, DateTime startDate,
-            DateTime endDate, List<DemandNoticeItemModelExt> dnitem, List<DemandNoticeItemPenaltyModelExt> dnPenalty,
-            List<DemandNoticeArrearsModelExt> dnArrears)
+            DateTime endDate, List<DemandNoticeItemModel> dnitem, List<DemandNoticePenaltyModel> dnPenalty,
+            List<DemandNoticeArrearsModel> dnArrears)
         {
             return await Task.Run(() =>
             {
@@ -737,25 +737,25 @@ namespace RemsNG.Services
 
 
                         int cc = 0;
-                        foreach (var t in rptWardData.GroupBy(x => x.itemName))
+                        foreach (var t in rptWardData.GroupBy(x => x.ItemName))
                         {
                             IRow rowHeader1 = sheet1.CreateRow(rowIndex++);
                             rowHeader1.CreateCell(0).SetCellValue(cc + 1);
                             rowHeader1.CreateCell(1).SetCellValue(t.Key);
-                            rowHeader1.CreateCell(2).SetCellValue(String.Format("{0:n}", decimal.Round(t.Sum(x => x.itemAmount), 2)));
-                            rowHeader1.CreateCell(3).SetCellValue(String.Format("{0:n}", decimal.Round(t.Sum(x => x.amountPaid), 2)));
+                            rowHeader1.CreateCell(2).SetCellValue(String.Format("{0:n}", decimal.Round(t.Sum(x => x.ItemAmount), 2)));
+                            rowHeader1.CreateCell(3).SetCellValue(String.Format("{0:n}", decimal.Round(t.Sum(x => x.AmountPaid), 2)));
                             cc++;
                         }
 
-                        var arrears = dnArrears.Where(x => x.wardName == rmp.Key && x.category == tm.Key);
+                        var arrears = dnArrears.Where(x => x.WardName == rmp.Key && x.Category == tm.Key);
                         if (arrears.Count() > 0)
                         {
 
                             IRow rowHeader1 = sheet1.CreateRow(rowIndex++);
                             rowHeader1.CreateCell(0).SetCellValue(cc + 1);
                             rowHeader1.CreateCell(1).SetCellValue("Arrears");
-                            rowHeader1.CreateCell(2).SetCellValue(String.Format("{0:n}", decimal.Round(arrears.Sum(x => x.totalAmount), 2)));
-                            rowHeader1.CreateCell(3).SetCellValue(String.Format("{0:n}", decimal.Round(arrears.Sum(x => x.amountPaid), 2)));
+                            rowHeader1.CreateCell(2).SetCellValue(String.Format("{0:n}", decimal.Round(arrears.Sum(x => x.TotalAmount), 2)));
+                            rowHeader1.CreateCell(3).SetCellValue(String.Format("{0:n}", decimal.Round(arrears.Sum(x => x.AmountPaid), 2)));
                             cc++;
                         }
 
@@ -766,8 +766,8 @@ namespace RemsNG.Services
                             IRow rowHeader1 = sheet1.CreateRow(rowIndex++);
                             rowHeader1.CreateCell(0).SetCellValue(cc + 1);
                             rowHeader1.CreateCell(1).SetCellValue("Penalty");
-                            rowHeader1.CreateCell(2).SetCellValue(String.Format("{0:n}", decimal.Round(penalty.Sum(x => x.totalAmount), 2)));
-                            rowHeader1.CreateCell(3).SetCellValue(String.Format("{0:n}", decimal.Round(penalty.Sum(x => x.amountPaid), 2)));
+                            rowHeader1.CreateCell(2).SetCellValue(String.Format("{0:n}", decimal.Round(penalty.Sum(x => x.TotalAmount), 2)));
+                            rowHeader1.CreateCell(3).SetCellValue(String.Format("{0:n}", decimal.Round(penalty.Sum(x => x.AmountPaid), 2)));
                             cc++;
                         }
                     }
@@ -856,5 +856,7 @@ namespace RemsNG.Services
                 return memo.ToArray();
             });
         }
+
+      
     }
 }

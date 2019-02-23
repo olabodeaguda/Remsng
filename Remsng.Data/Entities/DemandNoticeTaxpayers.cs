@@ -28,5 +28,8 @@ namespace RemsNG.Data.Entities
         public DateTime? LastModifiedDate { get; set; }
         public string DemandNoticeStatus { get; set; }
         public bool? IsUnbilled { get; set; }
+
+        [ForeignKey("DnId")]
+        public DemandNotice DemandNotice { get; set; }
     }
 }

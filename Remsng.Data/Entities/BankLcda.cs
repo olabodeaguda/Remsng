@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RemsNG.Data.Entities
@@ -8,8 +7,14 @@ namespace RemsNG.Data.Entities
     public partial class BankLcda
     {
         public Guid Id { get; set; }
-        public Guid? BankId { get; set; }
-        public Guid? LcdaId { get; set; }
+        public Guid BankId { get; set; }
+        public Guid LcdaId { get; set; }
         public string BankAccount { get; set; }
+
+        [ForeignKey("BankId")]
+        public Bank Bank { get; set; }
+
+        [ForeignKey("LcdaId")]
+        public Lcda Lcda { get; set; }
     }
 }

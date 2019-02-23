@@ -111,11 +111,11 @@ namespace RemsNG.Infrastructure.Managers
             };
         }
 
-        public async Task<List<DemandNoticeItemPenaltyModelExt>> ActivePenalty(Guid taxpayerId)
+        public async Task<List<DemandNoticePenaltyModel>> ActivePenalty(Guid taxpayerId)
         {
             var result = await demandNoticePenaltyDao.ByTaxpayerId(taxpayerId);
             return result
-                .Where(x => x.itemPenaltyStatus == "PENDING" || x.itemPenaltyStatus == "PART_PAYMENT")
+                .Where(x => x.ItemPenaltyStatus == "PENDING" || x.ItemPenaltyStatus == "PART_PAYMENT")
                 .ToList();
         }
     }

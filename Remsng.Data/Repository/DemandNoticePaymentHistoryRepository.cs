@@ -273,59 +273,70 @@ namespace RemsNG.Data.Repository
 
         public async Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel)
         {
-            var results = await db.Set<DemandNoticePaymentHistoryModelExt>()
-                .FromSql("sp_paymenthistoryByLcda @p0,@p1,@p2",
-                new object[] { lcdaId, pageModel.PageSize, pageModel.PageNum }).ToListAsync();
-            int totalCount = 0;
-            if (results.Count > 0)
-            {
-                totalCount = results[0].totalSize;
-            }
+            var query = db.Set<DemandNoticePaymentHistory>()
+                .Join(db.Set<TaxPayer>().Include(x => x.Company),
+                dnph => dnph.OwnerId, tp => tp.Id, (dnph, tp) => new { dnph, tp })
+                .Where(x => x.tp.Company.LcdaId == lcdaId)
+                .Select(x => new DemandNoticePaymentHistoryModel
+                {
+                    Amount = x.dnph.Amount,
+                    BankId = x.dnph.BankId,
+                    BillingNumber = x.dnph.BillingNumber,
+                    Charges = x.dnph.Charges,
+                    CreatedBy = x.dnph.CreatedBy,
+                    DateCreated = x.dnph.DateCreated,
+                    Id = x.dnph.Id,
+                    IsWaiver = x.dnph.IsWaiver,
+                    Lastmodifiedby = x.dnph.Lastmodifiedby,
+                    LastModifiedDate = x.dnph.LastModifiedDate,
+                    OwnerId = x.dnph.OwnerId,
+                    PaymentMode = x.dnph.PaymentMode,
+                    PaymentStatus = x.dnph.PaymentStatus,
+                    ReferenceNumber = x.dnph.ReferenceNumber,
+                    SyncStatus = x.dnph.SyncStatus
+                });
+
+            var result = query.ToListAsync();
+            int totalCount = await query.CountAsync();
 
             return new
             {
-                data = results,
+                data = result,
                 totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
             };
         }
 
         public async Task<List<DemandNoticePaymentHistoryModel>> ApprovedPaymentHistory(Guid ownerId, int currentYr)
         {
-            string query = $"select tbl_demandNoticePaymentHistory.*,bank.bankName from tbl_demandNoticePaymentHistory " +
-                $"inner join tbl_bank bank on bank.id = tbl_demandNoticePaymentHistory.bankId " +
-                $"inner join tbl_demandNoticeTaxpayers on tbl_demandNoticeTaxpayers.taxpayerId = tbl_demandNoticePaymentHistory.ownerId " +
-                $"where tbl_demandNoticePaymentHistory.ownerId = '{ownerId}' and tbl_demandNoticeTaxpayers.billingYr = {currentYr} " +
-                $"and paymentStatus = 'APPROVED'";
-            var result = await db.Set<DemandNoticePaymentHistoryModel>().FromSql(query).ToListAsync();
-            return result
-                .GroupBy(r => r.Id)
-                .Select(p =>
+            //string query = $"select tbl_demandNoticePaymentHistory.*,bank.bankName from tbl_demandNoticePaymentHistory " +
+            //    $"inner join tbl_bank bank on bank.id = tbl_demandNoticePaymentHistory.bankId " +
+            //    $"inner join tbl_demandNoticeTaxpayers on tbl_demandNoticeTaxpayers.taxpayerId = tbl_demandNoticePaymentHistory.ownerId " +
+            //    $"where tbl_demandNoticePaymentHistory.ownerId = '{ownerId}' and tbl_demandNoticeTaxpayers.billingYr = {currentYr} " +
+            //    $"and paymentStatus = 'APPROVED'";
+            var result = await db.Set<DemandNoticePaymentHistory>().Include(x => x.Bank)
+                .Join(db.Set<DemandNoticeTaxpayers>(), dnph => dnph.BillingNumber, dnt => dnt.BillingNumber, (dnph, dnt) => new
+                { dnph, dnt }).Where(p => p.dnph.OwnerId == ownerId && p.dnt.BillingYr == currentYr && p.dnph.PaymentStatus == "APPROVED")
+                .Select(x => new DemandNoticePaymentHistoryModel()
                 {
-                    var x = p.FirstOrDefault();
-                    if (x == null)
-                    {
-                        return null;
-                    }
-                    return new DemandNoticePaymentHistoryModel()
-                    {
-                        Amount = x.Amount,
-                        BankId = x.BankId,
-                        BillingNumber = x.BillingNumber,
-                        Charges = x.Charges,
-                        CreatedBy = x.CreatedBy,
-                        DateCreated = x.DateCreated,
-                        Id = x.Id,
-                        IsWaiver = x.IsWaiver,
-                        Lastmodifiedby = x.Lastmodifiedby,
-                        LastModifiedDate = x.LastModifiedDate,
-                        OwnerId = x.OwnerId,
-                        PaymentMode = x.PaymentMode,
-                        PaymentStatus = x.PaymentStatus,
-                        ReferenceNumber = x.ReferenceNumber,
-                        SyncStatus = x.SyncStatus
-                    };
-                })
-                .ToList();
+                    Amount = x.dnph.Amount,
+                    BankId = x.dnph.BankId,
+                    BillingNumber = x.dnph.BillingNumber,
+                    Charges = x.dnph.Charges,
+                    CreatedBy = x.dnph.CreatedBy,
+                    DateCreated = x.dnph.DateCreated,
+                    Id = x.dnph.Id,
+                    IsWaiver = x.dnph.IsWaiver,
+                    Lastmodifiedby = x.dnph.Lastmodifiedby,
+                    LastModifiedDate = x.dnph.LastModifiedDate,
+                    OwnerId = x.dnph.OwnerId,
+                    PaymentMode = x.dnph.PaymentMode,
+                    PaymentStatus = x.dnph.PaymentStatus,
+                    ReferenceNumber = x.dnph.ReferenceNumber,
+                    SyncStatus = x.dnph.SyncStatus,
+                    BankName = x.dnph.Bank.BankName
+                }).ToListAsync();
+
+            return result;
         }
     }
 }

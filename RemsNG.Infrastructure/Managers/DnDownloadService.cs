@@ -70,16 +70,16 @@ namespace RemsNG.Infrastructure.Managers
             htmlContent = htmlContent.Replace("PAYMENT_DATE", dnph.DateCreated.Value.ToString("dd-MM-yyyy"));
 
             // total amount paid from reciept page
-            List<DemandNoticePaymentHistoryModelExt> dnpHistory =
+            List<DemandNoticePaymentHistoryModel> dnpHistory =
                 await dNPaymentHistoryService.ByBillingNumber(dnph.BillingNumber);
-            dnpHistory = dnpHistory.Where(x => x.paymentStatus == "APPROVED").ToList();
-            decimal amtPaid = dnpHistory.Sum(x => x.amount);
+            dnpHistory = dnpHistory.Where(x => x.PaymentStatus == "APPROVED").ToList();
+            decimal amtPaid = dnpHistory.Sum(x => x.Amount);
             decimal amtDue = dnrp.amountDue;
             dnrp.amountPaid = amtPaid;
             if (dnpHistory.Count > 0)
             {
-                var tt = dnpHistory.OrderByDescending(x => x.dateCreated).FirstOrDefault();
-                htmlContent = htmlContent.Replace("PAYMENT_DATE", tt.dateCreated.ToString("dd-MM-yyyy"));
+                var tt = dnpHistory.OrderByDescending(x => x.DateCreated).FirstOrDefault();
+                htmlContent = htmlContent.Replace("PAYMENT_DATE", tt.DateCreated.Value.ToString("dd-MM-yyyy"));
             }
 
             htmlContent = htmlContent.Replace("TOTAL_AMOUNT", $"{String.Format("{0:n}", decimal.Round(dnrp.amountPaid, 2))} naira");
@@ -212,11 +212,11 @@ namespace RemsNG.Infrastructure.Managers
 
             htmlContent = htmlContent.Replace("CHARGES", String.Format("{0:n}", decimal.Round(dnrp.charges, 2)));
             decimal amountPaid = 0;
-            List<DemandNoticePaymentHistoryModelExt> dnpHistory = await dNPaymentHistoryService.ByBillingNumber(billingno);
-            dnpHistory = dnpHistory.Where(x => x.paymentStatus == "APPROVED").ToList();
+            List<DemandNoticePaymentHistoryModel> dnpHistory = await dNPaymentHistoryService.ByBillingNumber(billingno);
+            dnpHistory = dnpHistory.Where(x => x.PaymentStatus == "APPROVED").ToList();
             if (dnpHistory.Count > 0)
             {
-                amountPaid = decimal.Round(dnpHistory.Sum(x => x.amount), 2);
+                amountPaid = decimal.Round(dnpHistory.Sum(x => x.Amount), 2);
             }
             decimal finalTotal = gtotal + dnrp.charges - amountPaid;
             var prepayment = await dNPaymentHistoryService.GetPrepaymentByTaxpayerId(dnrp.TaxpayerId);

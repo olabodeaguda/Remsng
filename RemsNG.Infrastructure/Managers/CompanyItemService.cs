@@ -27,7 +27,7 @@ namespace RemsNG.Infrastructure.Managers
             return await companyItemDao.ByTaxpayer(taxpayerId);
         }
 
-        public async Task<CompanyItemModelExt> ById(Guid id)
+        public async Task<CompanyItemModel> ById(Guid id)
         {
             return await companyItemDao.ById(id);
         }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using RemsNG.Common.Exceptions;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -22,70 +23,40 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> Add(DemandNoticeModel demandNotice)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addDemandNotice @p0,@p1,@p2,@p3,@p4,@p5,@p6,@p7,@p8,@p9", new object[] {
-                demandNotice.Id,
-                demandNotice.Query,
-                demandNotice.BatchNo,
-                demandNotice.DemandNoticeStatus,
-                demandNotice.BillingYear,
-                demandNotice.LcdaId,
-                demandNotice.CreatedBy,
-                demandNotice.WardId,
-                demandNotice.StreetId,
-                demandNotice.IsUnbilled
-            }).FirstOrDefaultAsync();
+            //DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addDemandNotice @p0,@p1,@p2,@p3,@p4,@p5,@p6,@p7,@p8,@p9", new object[] {
+            //    demandNotice.Id,
+            //    demandNotice.Query,
+            //    demandNotice.BatchNo,
+            //    demandNotice.DemandNoticeStatus,
+            //    demandNotice.BillingYear,
+            //    demandNotice.LcdaId,
+            //    demandNotice.CreatedBy,
+            //    demandNotice.WardId,
+            //    demandNotice.StreetId,
+            //    demandNotice.IsUnbilled
+            //}).FirstOrDefaultAsync();
 
-            if (dbResponse.success)
+            db.Set<DemandNotice>().Add(new DemandNotice()
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = dbResponse.msg
-                };
-            }
-            else
-            {
-                return new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = dbResponse.msg
-                };
-            }
-        }
+                BatchNo = demandNotice.BatchNo,
+                BillingYear = demandNotice.BillingYear,
+                CreatedBy = demandNotice.CreatedBy,
+                DateCreated = DateTime.Now,
+                Id = demandNotice.Id,
+                DemandNoticeStatus = demandNotice.DemandNoticeStatus,
+                LcdaId = demandNotice.LcdaId,
+                StreetId = demandNotice.StreetId,
+                WardId = demandNotice.WardId,
+                IsUnbilled = demandNotice.IsUnbilled,
+                Query = demandNotice.Query
+            });
 
-        public async Task<object> SearchDemandNotice2(DemandNoticeModel query, PageModel pageModel)
-        {
-            List<DemandNotice> results = await db.Set<DemandNotice>()
-                .FromSql("sp_searchdemandNoticePaginated @p0,@p1,@p2",
-                new object[] {
-                    pageModel.PageNum,
-                    pageModel.PageSize,
-                    query.Query
-                }).ToListAsync();
-            var totalCount = 0;
-            if (results.Count > 0)
-            {
-                DemandNotice demandNotice = results[0];
-                totalCount = 0;// demandNotice.TotalSize.HasValue ? demandNotice.TotalSize.Value : 1;
-            }
+            await db.SaveChangesAsync();
 
-            List<DemandNoticeModelExt> lst = new List<DemandNoticeModelExt>();
-            foreach (var x in results)
+            return new Response()
             {
-                DemandNoticeModelExt dne = new DemandNoticeModelExt();
-                dne.batchNo = x.BatchNo;
-                dne.billingYear = x.BillingYear;
-                dne.demandNoticeStatus = x.DemandNoticeStatus;
-                dne.id = x.Id;
-                dne.lcdaId = x.LcdaId;
-                dne.demandNoticeRequestModel = await TranslateDemandNoticeRequest(x.Query);
-                lst.Add(dne);
-            }
-
-            return new
-            {
-                data = lst,
-                totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
+                code = MsgCode_Enum.SUCCESS,
+                description = "Demand notice has been created"
             };
         }
 
@@ -106,16 +77,16 @@ namespace RemsNG.Data.Repository
                 totalCount = 0;// demandNotice.totalSize.HasValue ? demandNotice.totalSize.Value : 1;
             }
 
-            List<DemandNoticeModelExt> lst = new List<DemandNoticeModelExt>();
+            List<DemandNoticeModel> lst = new List<DemandNoticeModel>();
             foreach (var x in results)
             {
-                DemandNoticeModelExt dne = new DemandNoticeModelExt();
-                dne.batchNo = x.BatchNo;
-                dne.billingYear = x.BillingYear;
-                dne.demandNoticeStatus = x.DemandNoticeStatus;
-                dne.id = x.Id;
-                dne.lcdaId = x.LcdaId;
-                dne.demandNoticeRequestModel = await TranslateDemandNoticeRequest(x.Query);
+                DemandNoticeModel dne = new DemandNoticeModel();
+                dne.BatchNo = x.BatchNo;
+                dne.BillingYear = x.BillingYear;
+                dne.DemandNoticeStatus = x.DemandNoticeStatus;
+                dne.Id = x.Id;
+                dne.LcdaId = x.LcdaId;
+                dne.DemandNoticeRequest = await TranslateDemandNoticeRequest(x.Query);
                 lst.Add(dne);
             }
 
@@ -129,110 +100,109 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> UpdateQuery(DemandNoticeModel demandNotice)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>()
-                .FromSql("sp_updateQueryDemandNotice @p0,@p1", new object[] {
-                demandNotice.Id,
-                demandNotice.Query
-            }).FirstOrDefaultAsync();
+            //DbResponse dbResponse = await db.Set<DbResponse>()
+            //    .FromSql("sp_updateQueryDemandNotice @p0,@p1", new object[] {
+            //    demandNotice.Id,
+            //    demandNotice.Query
+            //}).FirstOrDefaultAsync();
 
-            if (dbResponse.success)
+            var entity = await db.Set<DemandNotice>().FindAsync(demandNotice.Id);
+            if (entity == null)
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = dbResponse.msg
-                };
+                throw new NotFoundException("Demand Notice can not be found");
             }
-            else
+
+            entity.Query = demandNotice.Query;
+            await db.SaveChangesAsync();
+
+            return new Response()
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = dbResponse.msg
-                };
-            }
+                code = MsgCode_Enum.SUCCESS,
+                description = "Demand Notice has been updated successfully"
+            };
+
         }
 
         public async Task<Response> UpdateBillingYr(DemandNoticeModel demandNotice)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>()
-                .FromSql("sp_updateBillingYrDemandNotice @p0,@p1", new object[] {
-                demandNotice.Id,
-                demandNotice.BillingYear
-            }).FirstOrDefaultAsync();
+            //DbResponse dbResponse = await db.Set<DbResponse>()
+            //    .FromSql("sp_updateBillingYrDemandNotice @p0,@p1", new object[] {
+            //    demandNotice.Id,
+            //    demandNotice.BillingYear
+            //}).FirstOrDefaultAsync();
+            var entity = await db.Set<DemandNotice>().FindAsync(demandNotice.Id);
+            if (entity == null)
+            {
+                throw new NotFoundException("Demand Notice can not be found");
+            }
 
-            if (dbResponse.success)
+            entity.BillingYear = demandNotice.BillingYear;
+            await db.SaveChangesAsync();
+
+            return new Response()
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = dbResponse.msg
-                };
-            }
-            else
-            {
-                return new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = dbResponse.msg
-                };
-            }
+                code = MsgCode_Enum.SUCCESS,
+                description = "Demand Notice billing year has been updated successfully"
+            };
+
         }
 
         public async Task<Response> UpdateStatus(DemandNoticeModel demandNotice)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>()
-                .FromSql("sp_updateStatusDemandNotice @p0,@p1", new object[] {
-                demandNotice.Id,
-                demandNotice.DemandNoticeStatus
-            }).FirstOrDefaultAsync();
+            //DbResponse dbResponse = await db.Set<DbResponse>()
+            //    .FromSql("sp_updateStatusDemandNotice @p0,@p1", new object[] {
+            //    demandNotice.Id,
+            //    demandNotice.DemandNoticeStatus
+            //}).FirstOrDefaultAsync();
 
-            if (dbResponse.success)
+            var entity = await db.Set<DemandNotice>().FindAsync(demandNotice.Id);
+            if (entity == null)
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = dbResponse.msg
-                };
+                throw new NotFoundException("Demand Notice can not be found");
             }
-            else
+
+            entity.Query = demandNotice.Query;
+            await db.SaveChangesAsync();
+
+            return new Response()
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = dbResponse.msg
-                };
-            }
+                code = MsgCode_Enum.SUCCESS,
+                description = "Demand Notice has been added successfully"
+            };
         }
 
         public async Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel)
         {
-            List<DemandNotice> results = await db.Set<DemandNotice>()
-                .FromSql("sp_demandNoticeByLcda @p0,@p1, @p2", new object[] { lcdaId, pageModel.PageNum, pageModel.PageSize }).ToListAsync();
             var totalCount = 0;
-            if (results.Count > 0)
-            {
-                DemandNotice demandNotice = results[0];
-                totalCount = 0;// demandNotice.totalSize.HasValue ? demandNotice.totalSize.Value : 1;
-            }
-            List<DemandNoticeModelExt> lst = new List<DemandNoticeModelExt>();
-            foreach (var x in results)
-            {
-                DemandNoticeModelExt dne = new DemandNoticeModelExt();
-                dne.batchNo = x.BatchNo;
-                dne.billingYear = x.BillingYear;
-                dne.demandNoticeStatus = x.DemandNoticeStatus;
-                dne.id = x.Id;
-                dne.lcdaId = x.LcdaId;
-                dne.demandNoticeRequestModel = await TranslateDemandNoticeRequest(x.Query);
-                dne.CreatedDate = x.DateCreated.Value;
-                lst.Add(dne);
-            }
+            var query = db.Set<DemandNotice>()
+                .Where(x => x.LcdaId == lcdaId);
+            totalCount = await query.CountAsync();
 
-            return new
+            var results = query.Select(x => new DemandNoticeModel
             {
-                data = lst,
-                totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
+                BatchNo = x.BatchNo,
+                BillingYear = x.BillingYear,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                DemandNoticeStatus = x.DemandNoticeStatus,
+                Id = x.Id,
+                IsUnbilled = x.IsUnbilled,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                LcdaId = x.LcdaId,
+                Query = x.Query,
+                StreetId = x.StreetId,
+                WardId = x.WardId
+            }).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToArray();
+
+            return new PageModel<DemandNoticeModel[]>
+            {
+                data = results.Select(x =>
+                {
+                    x.DemandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(EncryptDecryptUtils.FromHexString(x.Query));
+                    return x;
+                }).ToArray(),
+                totalPageCount = int.Parse(Math.Round((totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)).ToString())
             };
         }
 
@@ -260,90 +230,159 @@ namespace RemsNG.Data.Repository
 
         public async Task<object> All(PageModel pageModel)
         {
-            List<DemandNotice> results = await db.Set<DemandNotice>()
-                .FromSql("sp_demandNoticePaginated @p0,@p1", new object[] { pageModel.PageNum, pageModel.PageSize }).ToListAsync();
-            var totalCount = 0;
-            if (results.Count > 0)
-            {
-                DemandNotice demandNotice = results[0];
-                totalCount = 0;// demandNotice.totalSize.HasValue ? demandNotice.totalSize.Value : 1;
-            }
+            //List<DemandNotice> results = await db.Set<DemandNotice>()
+            //    .FromSql("sp_demandNoticePaginated @p0,@p1", new object[] { pageModel.PageNum, pageModel.PageSize }).ToListAsync();
+            //var totalCount = 0;
+            //if (results.Count > 0)
+            //{
+            //    DemandNotice demandNotice = results[0];
+            //    totalCount = 0;
+            //}
 
-            return new
+            var totalCount = 0;
+            var query = db.Set<DemandNotice>();
+            totalCount = await query.CountAsync();
+
+            var results = query.Select(x => new DemandNoticeModel
             {
-                data = results.Select(x => new DemandNoticeModelExt()
+                BatchNo = x.BatchNo,
+                BillingYear = x.BillingYear,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                DemandNoticeStatus = x.DemandNoticeStatus,
+                Id = x.Id,
+                IsUnbilled = x.IsUnbilled,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                LcdaId = x.LcdaId,
+                Query = x.Query,
+                StreetId = x.StreetId,
+                WardId = x.WardId
+            }).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToArray();
+
+
+            return new PageModel<DemandNoticeModel[]>
+            {
+                data = results.Select(x =>
                 {
-                    batchNo = x.BatchNo,
-                    billingYear = x.BillingYear,
-                    demandNoticeStatus = x.DemandNoticeStatus,
-                    id = x.Id,
-                    lcdaId = x.LcdaId,
-                    demandNoticeRequestModel = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(EncryptDecryptUtils.FromHexString(x.Query))
-                }),
-                totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
+                    x.DemandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(EncryptDecryptUtils.FromHexString(x.Query));
+                    return x;
+                }).ToArray(),
+                totalPageCount = int.Parse(Math.Round((totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)).ToString())
             };
+
+            //return new
+            //{
+            //    data = results.Select(x => new DemandNoticeModelExt()
+            //    {
+            //        batchNo = x.BatchNo,
+            //        billingYear = x.BillingYear,
+            //        demandNoticeStatus = x.DemandNoticeStatus,
+            //        id = x.Id,
+            //        lcdaId = x.LcdaId,
+            //        demandNoticeRequestModel = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(EncryptDecryptUtils.FromHexString(x.Query))
+            //    }),
+            //    totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
+            //};
         }
 
         public async Task<DemandNoticeModel> GetById(Guid id)
         {
-            var result = await db.Set<DemandNotice>()
-                .FromSql("sp_getDemandNotice @p0", new object[] { id }).FirstOrDefaultAsync();
-            if (result == null)
+            //var result = await db.Set<DemandNotice>()
+            //    .FromSql("sp_getDemandNotice @p0", new object[] { id }).FirstOrDefaultAsync();
+            //if (result == null)
+            //{
+            //    return null;
+            //}
+            //return new DemandNoticeModel()
+            //{
+            //    BatchNo = result.BatchNo,
+            //    BillingYear = result.BillingYear,
+            //    CreatedBy = result.CreatedBy,
+            //    DateCreated = result.DateCreated,
+            //    DemandNoticeStatus = result.DemandNoticeStatus,
+            //    Id = result.Id,
+            //    IsUnbilled = result.IsUnbilled,
+            //    Lastmodifiedby = result.Lastmodifiedby,
+            //    LastModifiedDate = result.LastModifiedDate,
+            //    LcdaId = result.LcdaId,
+            //    Query = result.Query,
+            //    StreetId = result.StreetId,
+            //    WardId = result.WardId
+            //};
+            var x = await db.Set<DemandNotice>().FindAsync(id);
+
+            return new DemandNoticeModel
             {
-                return null;
-            }
-            return new DemandNoticeModel()
-            {
-                BatchNo = result.BatchNo,
-                BillingYear = result.BillingYear,
-                CreatedBy = result.CreatedBy,
-                DateCreated = result.DateCreated,
-                DemandNoticeStatus = result.DemandNoticeStatus,
-                Id = result.Id,
-                IsUnbilled = result.IsUnbilled,
-                Lastmodifiedby = result.Lastmodifiedby,
-                LastModifiedDate = result.LastModifiedDate,
-                LcdaId = result.LcdaId,
-                Query = result.Query,
-                StreetId = result.StreetId,
-                WardId = result.WardId
+                BatchNo = x.BatchNo,
+                BillingYear = x.BillingYear,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                DemandNoticeStatus = x.DemandNoticeStatus,
+                Id = x.Id,
+                IsUnbilled = x.IsUnbilled,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                LcdaId = x.LcdaId,
+                Query = x.Query,
+                StreetId = x.StreetId,
+                WardId = x.WardId,
+                DemandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(EncryptDecryptUtils.FromHexString(x.Query))
             };
         }
 
         public async Task<DemandNoticeModel> GetByBatchId(string batchId)
         {
-            try
+            //try
+            //{
+            //    var result = await db.Set<DemandNotice>()
+            //        .FromSql("sp_getDemandNoticeByBatchId @p0", new object[] { batchId }).FirstOrDefaultAsync();
+            //    return new DemandNoticeModel()
+            //    {
+            //        BatchNo = result.BatchNo,
+            //        BillingYear = result.BillingYear,
+            //        CreatedBy = result.CreatedBy,
+            //        DateCreated = result.DateCreated,
+            //        DemandNoticeStatus = result.DemandNoticeStatus,
+            //        Id = result.Id,
+            //        IsUnbilled = result.IsUnbilled,
+            //        Lastmodifiedby = result.Lastmodifiedby,
+            //        LastModifiedDate = result.LastModifiedDate,
+            //        LcdaId = result.LcdaId,
+            //        Query = result.Query,
+            //        StreetId = result.StreetId,
+            //        WardId = result.WardId
+            //    };
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
+            var x = await db.Set<DemandNotice>().FirstOrDefaultAsync(p => p.BatchNo == batchId);
+
+            return new DemandNoticeModel
             {
-                var result = await db.Set<DemandNotice>()
-                    .FromSql("sp_getDemandNoticeByBatchId @p0", new object[] { batchId }).FirstOrDefaultAsync();
-                return new DemandNoticeModel()
-                {
-                    BatchNo = result.BatchNo,
-                    BillingYear = result.BillingYear,
-                    CreatedBy = result.CreatedBy,
-                    DateCreated = result.DateCreated,
-                    DemandNoticeStatus = result.DemandNoticeStatus,
-                    Id = result.Id,
-                    IsUnbilled = result.IsUnbilled,
-                    Lastmodifiedby = result.Lastmodifiedby,
-                    LastModifiedDate = result.LastModifiedDate,
-                    LcdaId = result.LcdaId,
-                    Query = result.Query,
-                    StreetId = result.StreetId,
-                    WardId = result.WardId
-                };
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+                BatchNo = x.BatchNo,
+                BillingYear = x.BillingYear,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                DemandNoticeStatus = x.DemandNoticeStatus,
+                Id = x.Id,
+                IsUnbilled = x.IsUnbilled,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                LcdaId = x.LcdaId,
+                Query = x.Query,
+                StreetId = x.StreetId,
+                WardId = x.WardId,
+                DemandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(EncryptDecryptUtils.FromHexString(x.Query))
+            };
         }
 
         public async Task<DemandNoticeModel> DequeueDemandNotice()
         {
             try
             {
-
                 var result = await db.Set<DemandNotice>()
                     .FromSql("sp_dequeueDemandNotice").FirstOrDefaultAsync();
                 return new DemandNoticeModel()
@@ -368,38 +407,5 @@ namespace RemsNG.Data.Repository
                 throw;
             }
         }
-
-
-        public async Task<List<DemandNoticeModel>> GetUnSyncData()
-        {
-            string query = $"select tbl_demandnotice.*,-1 as totalSize from tbl_demandnotice where wardId is null and demandNoticeStatus = 'ERROR'";
-            var results = await db.Set<DemandNotice>()
-                .FromSql(query).ToListAsync();
-            return results.Select(result =>
-                 new DemandNoticeModel()
-                 {
-                     BatchNo = result.BatchNo,
-                     BillingYear = result.BillingYear,
-                     CreatedBy = result.CreatedBy,
-                     DateCreated = result.DateCreated,
-                     DemandNoticeStatus = result.DemandNoticeStatus,
-                     Id = result.Id,
-                     IsUnbilled = result.IsUnbilled,
-                     Lastmodifiedby = result.Lastmodifiedby,
-                     LastModifiedDate = result.LastModifiedDate,
-                     LcdaId = result.LcdaId,
-                     Query = result.Query,
-                     StreetId = result.StreetId,
-                     WardId = result.WardId
-                 }).ToList();
-        }
-
-        public async Task<bool> updateData(string query)
-        {
-            int count = await db.Database.ExecuteSqlCommandAsync(query);
-
-            return count > 0;
-        }
-
     }
 }

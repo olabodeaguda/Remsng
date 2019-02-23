@@ -234,7 +234,7 @@ namespace RemsNG.Controllers
                     description = "Role not found"
                 });
             }
-            else if (r.roleStatus == role.RoleStatus)
+            else if (r.RoleStatus == role.RoleStatus)
             {
                 return Ok(new Response()
                 {
@@ -276,7 +276,7 @@ namespace RemsNG.Controllers
                     description = "Role not found"
                 });
             }
-            else if (role.roleStatus != UserStatus.ACTIVE.ToString())
+            else if (role.RoleStatus != UserStatus.ACTIVE.ToString())
             {
                 return BadRequest(new Response()
                 {
@@ -284,7 +284,7 @@ namespace RemsNG.Controllers
                     description = "Selected role is not active"
                 });
             }
-            RoleExtensionModel roleex = await roleservice.UserDomainRolesByDomainId(userRole.UserId, role.domainId);
+            RoleModel roleex = await roleservice.UserDomainRolesByDomainId(userRole.UserId, role.DomainId);
 
             if (roleex != null)
             {
@@ -430,7 +430,7 @@ namespace RemsNG.Controllers
         [HttpGet]
         public async Task<object> Get([FromRoute] Guid id)
         {
-            RoleExtensionModel role = await roleservice.GetById(id);
+            RoleModel role = await roleservice.GetById(id);
             if (role == null)
             {
                 return NotFound(new Response()
@@ -456,7 +456,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            List<RoleExtensionModel> roleExtensions = await roleservice.AllRoleByUserId(id);
+            List<RoleModel> roleExtensions = await roleservice.AllRoleByUserId(id);
             Response response = new Response();
             response.code = MsgCode_Enum.SUCCESS;
             Guid domainId = ClaimExtension.GetDomainId(User.Claims.ToArray());
@@ -466,7 +466,7 @@ namespace RemsNG.Controllers
             }
             else
             {
-                response.data = roleExtensions.Where(x => x.domainId == domainId);
+                response.data = roleExtensions.Where(x => x.DomainId == domainId);
             }
 
             return Ok(response);
@@ -494,7 +494,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            RoleExtensionModel roleExtension = await roleservice.UserDomainRolesByDomainId(userId, domainId);
+            RoleModel roleExtension = await roleservice.UserDomainRolesByDomainId(userId, domainId);
 
             return Ok(new Response()
             {

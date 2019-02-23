@@ -19,5 +19,7 @@ namespace RemsNG.Common.Models
         public DateTime? DateCreated { get; set; }
         public string Lastmodifiedby { get; set; }
         public DateTime? LastModifiedDate { get; set; }
+        public string category { get; set; }
+        public string wardName { get; set; }
     }
 }
