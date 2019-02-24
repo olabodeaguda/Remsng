@@ -20,9 +20,9 @@ namespace RemsNG.Common.Models
         public DateTime? DateCreated { get; set; }
         public string Lastmodifiedby { get; set; }
         public DateTime? LastModifiedDate { get; set; }
-        public Guid? WardId { get; set; }
-        public Guid? StreetId { get; set; }
-        public bool? IsUnbilled { get; set; }
+        public Guid WardId { get; set; }
+        public Guid StreetId { get; set; }
+        public bool IsUnbilled { get; set; } = false;
 
         public DemandNoticeRequestModel DemandNoticeRequest { get; set; }
 

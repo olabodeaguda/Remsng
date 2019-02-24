@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Infrastructure.Extensions;
 using RemsNG.Security;
-using RemsNG.Utilities;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/v1/demandnotice")]
     public class DemandNoticeController : Controller
     {
@@ -129,7 +127,7 @@ namespace RemsNG.Controllers
         {
             if (demandNoticeRequest.streetId != null && demandNoticeRequest.streetId != default(Guid))
             {
-                StreetModel street = await streetService.ById(demandNoticeRequest.streetId.Value);
+                StreetModel street = await streetService.ById(demandNoticeRequest.streetId);
                 if (street == null)
                 {
                     return BadRequest(new Response()
@@ -142,8 +140,8 @@ namespace RemsNG.Controllers
             }
             else if (demandNoticeRequest.wardId != null && demandNoticeRequest.wardId != default(Guid))
             {
-                Guid s = demandNoticeRequest.wardId.Value;
-                WardModel ward = await wardService.GetWard(demandNoticeRequest.wardId.Value);
+                Guid s = demandNoticeRequest.wardId;
+                WardModel ward = await wardService.GetWard(demandNoticeRequest.wardId);
                 if (ward == null)
                 {
                     return BadRequest(new Response()
@@ -192,68 +190,36 @@ namespace RemsNG.Controllers
             }
         }
 
-        [HttpPost("search/{pagenum}/{pagesize}")]
-        public async Task<object> SearchDemandNotice([FromBody]DemandNoticeRequestModel demandNoticeRequest, [FromHeader] string pageNum, [FromHeader] string pageSize)
+        [HttpPost("search/{pageNum}/{pageSize}")]
+        public async Task<IActionResult> SearchDemandNotice([FromBody] SearchDNModel model, int pageNum = 1, int pageSize = 20)
         {
-            if (demandNoticeRequest.streetId != null && demandNoticeRequest.streetId != default(Guid))
+            var modl = new DemandNoticeRequestModel();
+            modl.dateYear = model.DateYear;
+            modl.lcdaId = string.IsNullOrEmpty(model.LcdaId) ? default(Guid) : Guid.Parse(model.LcdaId);
+            modl.searchByName = model.SearchByName;
+            modl.streetId = string.IsNullOrEmpty(model.StreetId) ? default(Guid) : Guid.Parse(model.StreetId);
+            modl.wardId = string.IsNullOrEmpty(model.WardId) ? default(Guid) : Guid.Parse(model.WardId);
+
+            return Ok(await demandService.SearchDemandNotice(modl, new PageModel()
             {
-                StreetModel street = await streetService.ById(demandNoticeRequest.streetId.Value);
-                if (street == null)
-                {
-                    return BadRequest(new Response()
-                    {
-                        code = MsgCode_Enum.NOTFOUND,
-                        description = "Street not found"
-                    });
-                }
+                PageNum = pageNum,
+                PageSize = pageSize
+            }));
+        }
 
-            }
-            else if (demandNoticeRequest.wardId != null && demandNoticeRequest.wardId != default(Guid))
-            {
-                Guid s = demandNoticeRequest.wardId.Value;
-                WardModel ward = await wardService.GetWard(demandNoticeRequest.wardId.Value);
-                if (ward == null)
-                {
-                    return BadRequest(new Response()
-                    {
-                        code = MsgCode_Enum.NOTFOUND,
-                        description = "Ward not found"
-                    });
-                }
-            }
-            else if (demandNoticeRequest.dateYear == 0)
-            {
-                return BadRequest(new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = "Billing year is required"
-                });
-            }
+        [HttpPost("searchinfo")]
+        public async Task<IActionResult> GetSearchInfo([FromBody] SearchDNModel model)
+        {
+            var modl = new DemandNoticeRequestModel();
+            modl.dateYear = model.DateYear;
+            modl.lcdaId = string.IsNullOrEmpty(model.LcdaId) ? default(Guid) : Guid.Parse(model.LcdaId);
+            modl.searchByName = model.SearchByName;
+            modl.streetId = string.IsNullOrEmpty(model.StreetId) ? default(Guid) : Guid.Parse(model.StreetId);
+            modl.wardId = string.IsNullOrEmpty(model.WardId) ? default(Guid) : Guid.Parse(model.WardId);
 
-            pageSize = string.IsNullOrEmpty(pageSize) ? "1" : pageSize;
-            pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
+            var result = await demandService.SearchInfo(modl);
 
-            // demandNoticeRequest.createdBy = User.Identity.Name;
-            DemandNoticeModel demandNotice = new DemandNoticeModel();
-            demandNotice.LcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
-            string encr = JsonConvert.SerializeObject(demandNoticeRequest);
-            string dx = Utilities.EncryptDecryptUtils.ToHexString(encr); ;
-
-            string ddx = Utilities.EncryptDecryptUtils.FromHexString(dx);
-            demandNotice.Query = Utilities.EncryptDecryptUtils.ToHexString(encr);
-            demandNotice.BillingYear = demandNoticeRequest.dateYear;
-            demandNotice.CreatedBy = User.Identity.Name;
-            demandNotice.Id = Guid.NewGuid();
-            demandNotice.BatchNo = CommonList.GetBatchNo();
-            demandNotice.DemandNoticeStatus = DemandNoticeStatus.SUBMITTED.ToString();
-            demandNotice.WardId = demandNoticeRequest.wardId;
-            demandNotice.StreetId = demandNoticeRequest.streetId;
-
-            return await demandService.SearchDemandNotice(demandNotice, new PageModel()
-            {
-                PageNum = int.Parse(pageNum),
-                PageSize = int.Parse(pageSize)
-            });
+            return Ok(result);
         }
 
         [HttpPut("updatequery/{id}")]

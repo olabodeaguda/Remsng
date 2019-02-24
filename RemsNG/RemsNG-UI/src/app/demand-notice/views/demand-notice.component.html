@@ -13,7 +13,8 @@
                     <br> Are you sure?
                 </div>
                 <div class="box-footer">
-                    <button [ladda]="isLoadingMini" type="submit" class="btn btn-success" (click)="addRaiseRequest()">Submit</button>
+                    <button [ladda]="isLoadingMini" type="submit" class="btn btn-success"
+                        (click)="addRaiseRequest()">Submit</button>
                     <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -43,7 +44,8 @@
                         </select>
                     </div>
                     <div class="form-check col-sm-12">
-                        <input type="checkbox" class="form-check-input" id="isClosedData" [checked]="searchModel.isClosedData"
+                        <input type="checkbox" class="form-check-input" id="isClosedData"
+                            [checked]="searchModel.isClosedData"
                             (change)="searchModel.isClosedData = !searchModel.isClosedData">
                         <label class="form-check-label" for="isClosedData">Closed Previous record(s)</label>
                     </div>
@@ -53,19 +55,22 @@
                             (change)="searchModel.runArrears = !searchModel.runArrears">
                     </div> -->
                     <div class="form-check col-sm-12">
-                        <input type="checkbox" class="form-check-input" id="isUnbilled" [checked]="searchModel.isUnbilled"
+                        <input type="checkbox" class="form-check-input" id="isUnbilled"
+                            [checked]="searchModel.isUnbilled"
                             (change)="searchModel.isUnbilled = !searchModel.isUnbilled">
                         <label class="form-check-label" for="isUnbilled">Is Unbilled</label>
                     </div>
                     <div class="form-check col-sm-12">
-                        <input type="checkbox" class="form-check-input" id="runPenalty" [checked]="searchModel.runPenalty"
+                        <input type="checkbox" class="form-check-input" id="runPenalty"
+                            [checked]="searchModel.runPenalty"
                             (change)="searchModel.runPenalty = !searchModel.runPenalty">
                         <label class="form-check-label" for="runPenalty">Process Penalty</label>
                     </div>
                 </div>
                 <div class="box-footer">
                     <!--<button [ladda]="isLoadingMini" type="submit" class="btn btn-success" (click)="addRaiseRequest()">Submit</button>-->
-                    <button [ladda]="searchModel.isProcessingRequest" type="submit" class="btn btn-primary" (click)="submitDemandRequest()">Run</button>
+                    <button [ladda]="searchModel.isProcessingRequest" type="submit" class="btn btn-primary"
+                        (click)="submitDemandRequest()">Run</button>
                     <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -98,7 +103,8 @@
                                 <tbody>
                                     <tr *ngFor="let data of dowloadRequestList; let i=index">
                                         <td>
-                                            <a *ngIf="data.requestStatus === 'COMPLETED'" href="javascript:;" (click)="downloadDN(data.batchNo)">
+                                            <a *ngIf="data.requestStatus === 'COMPLETED'" href="javascript:;"
+                                                (click)="downloadDN(data.batchNo)">
                                                 <i class="fa fa-download"></i> Download
                                             </a>
                                         </td>
@@ -151,14 +157,16 @@
                                 <select (change)="loadStreets($event.target.value)" name="wardId" class="form-control"
                                     [(ngModel)]="searchModel.wardId">
                                     <option>Select Ward</option>
-                                    <option *ngFor="let data of wardLst;" [ngValue]="data.id">{{data.wardName}}({{data.lcdaName}})</option>
+                                    <option *ngFor="let data of wardLst;" [ngValue]="data.id">
+                                        {{data.wardName}}({{data.lcdaName}})</option>
                                 </select>
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="streetId">Select Street</label>
                                 <select name="streetId" class="form-control" [(ngModel)]="searchModel.streetId">
                                     <option>Select Street</option>
-                                    <option *ngFor="let data of streetLst;" [ngValue]="data.id">{{data.streetName}}</option>
+                                    <option *ngFor="let data of streetLst;" [ngValue]="data.id">{{data.streetName}}
+                                    </option>
                                 </select>
                             </div>
                             <div class="form-group col-md-3">
@@ -168,31 +176,40 @@
                                     <option *ngFor="let data of yrLst;" [ngValue]="data">{{data}}</option>
                                 </select>
                             </div>
+
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-xs-12">
-                            <div class=" col-sm-3">
-                                <div class="btn-group">
-                                    <button type="submit" class="btn btn-primary" (click)="openConstraint()">Run</button>
+                            <div class="col-sm-6">
+                                <label for="searchByName">Taxpayer Name</label>
+                                <input name="searchByName" type="text" class="form-control"
+                                    [(ngModel)]="searchModel.searchByName" />
+                            </div>
+                            <div class="col-sm-3">
+                                <label for="searchByName"></label>
+                                <div class="btn-group form-control" style="border-color: white;">
+                                    <button type="submit" class="btn btn-primary" (click)="navigateView()">View</button>
                                     <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary"
                                         (click)="searchDemandNotice()">Search</button>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <br /><br />
 
                     <div class="row">
                         <div class="col-xs-12">
                             <table class="table table-bordered table-hover">
                                 <thead>
                                     <th style="width:120px;"></th>
-                                    <th>Batch Number</th>
+                                    <th>Billing Number</th>
+                                    <th>Taxpayer</th>
                                     <th>Ward Name</th>
                                     <th>Street Name</th>
                                     <th>Billing Year</th>
                                     <th>Status</th>
-                                    <!-- <th>Errors Updates</th>-->
+                                    <th>Is Unbilled</th>
                                 </thead>
                                 <tbody>
                                     <tr *ngFor="let data of demandNoticeLst; let i=index">
@@ -217,19 +234,19 @@
                                             </div>
 
                                         </td>
-                                        <td>
-                                            <a [routerLink]="['taxpayer',data.batchNo]">{{data.batchNo}}</a>
-                                        </td>
-                                        <td>{{data.demandNoticeRequest.wardName}}</td>
-                                        <td>{{data.demandNoticeRequest.streetName}}</td>
-                                        <td>{{data.billingYear}}</td>
-                                        <td>{{data.demandNoticeStatus}}</td>
                                         <!-- <td>
-                                                <a href="javascript:;">Error update</a>
-                                            </td>-->
+                                            <a [routerLink]="['taxpayer',data.batchNo]">{{data.batchNo}}</a>
+                                        </td> -->
+                                        <td>{{data.billingNumber}}</td>
+                                        <td>{{data.taxpayersName}}</td>
+                                        <td>{{data.wardName}}</td>
+                                        <td>{{data.streetName}}</td>
+                                        <td>{{data.billingYr}}</td>
+                                        <td>{{data.demandNoticeStatus}}</td>
+                                        <td>{{data.isUnbilled? "Yes":"No"}}</td>
                                     </tr>
                                     <tr *ngIf="demandNoticeLst.length < 1">
-                                        <td style="width:100%" colspan="6">No record !!!</td>
+                                        <td style="width:100%" colspan="8">No record !!!</td>
                                     </tr>
                                 </tbody>
                                 <tfoot>

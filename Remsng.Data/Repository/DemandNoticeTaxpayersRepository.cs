@@ -559,11 +559,15 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<DemandNoticeTaxpayersModel>> GetTaxpayerPayables(Guid taxpayerId)
         {
-            string query = $"select tbl_demandNoticeTaxpayers.* from tbl_demandNoticeTaxpayers " +
-                $"where taxpayerId = '{taxpayerId}' and demandNoticeStatus in ('PART_PAYMENT','PENDING','PAID','CLOSED') order by  dateCreated";
+            //string query = $"select tbl_demandNoticeTaxpayers.* from tbl_demandNoticeTaxpayers " +
+            //    $"where taxpayerId = '{taxpayerId}' and demandNoticeStatus in ('PART_PAYMENT','PENDING','PAID','CLOSED') order by  dateCreated";
+
+            string[] status = { "PART_PAYMENT", "PENDING", "PAID", "CLOSED" };
+
             var result = await db.Set<DemandNoticeTaxpayers>()
-                .FromSql(query,
-                new object[] { taxpayerId.ToString() }).ToListAsync();
+                .Where(x => x.TaxpayerId == taxpayerId && status.Any(p => p == x.DemandNoticeStatus))
+                .OrderByDescending(d => d.DateCreated).ToListAsync();
+
             return result.Select(x => new DemandNoticeTaxpayersModel()
             {
                 AddressName = x.AddressName,
@@ -606,5 +610,62 @@ namespace RemsNG.Data.Repository
             return count > 0;
         }
 
+        public async Task<PageModel<DemandNoticeTaxpayersModel[]>> Search(DemandNoticeRequestModel rhModel, PageModel pageModel)
+        {
+            var query = db.Set<DemandNoticeTaxpayers>()
+                .Include(p => p.DemandNotice)
+                .ThenInclude(d => d.Street)
+                .Where(x => x.BillingYr == rhModel.dateYear);
+
+            if (rhModel.streetId != default(Guid))
+            {
+                query = query.Where(x => x.DemandNotice.StreetId == rhModel.streetId);
+            }
+            else if (rhModel.wardId != default(Guid))
+            {
+                query = query.Where(x => x.DemandNotice.WardId == rhModel.wardId);
+            }
+
+            if (!string.IsNullOrEmpty(rhModel.searchByName))
+            {
+                query = query.Where(x => EF.Functions.Like(x.TaxpayersName, $"%{rhModel.searchByName}%"));
+            }
+
+            var result = await query.Select(x => new DemandNoticeTaxpayersModel()
+            {
+                AddressName = x.AddressName,
+                BillingNumber = x.BillingNumber,
+                BillingYr = x.BillingYr,
+                CouncilTreasurerMobile = x.CouncilTreasurerMobile,
+                CouncilTreasurerSigFilen = x.CouncilTreasurerSigFilen,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                DemandNoticeStatus = x.DemandNoticeStatus,
+                DnId = x.DnId,
+                DomainName = x.DomainName,
+                Id = x.Id,
+                IsUnbilled = x.IsUnbilled,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                LcdaAddress = x.LcdaAddress,
+                LcdaLogoFileName = x.LcdaLogoFileName,
+                LcdaName = x.LcdaName,
+                LcdaState = x.LcdaState,
+                RevCoodinatorSigFilen = x.RevCoodinatorSigFilen,
+                TaxpayerId = x.TaxpayerId,
+                TaxpayersName = x.TaxpayersName,
+                WardName = x.WardName,
+                StreetName = x.DemandNotice.Street.StreetName
+            }).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).OrderByDescending(x => x.DateCreated).ToArrayAsync();
+
+            int totalCount = await query.CountAsync();
+            return new PageModel<DemandNoticeTaxpayersModel[]>
+            {
+                PageNum = pageModel.PageNum,
+                PageSize = pageModel.PageSize,
+                data = result,
+                totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + (int)(((double)totalCount / pageModel.PageSize))
+            };
+        }
     }
 }

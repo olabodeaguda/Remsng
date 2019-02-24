@@ -46,6 +46,7 @@ namespace RemsNG.Data.Repository
 
             //if (dbResponse.success)
             //{
+            await db.SaveChangesAsync();
             return new Response()
             {
                 code = MsgCode_Enum.SUCCESS,
@@ -220,8 +221,11 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<StreetModel>> SearchStreet(Guid wardId, string searchName)
         {
+            //var result = await db.Set<Street>()
+            //    .Where(x => x.WardId == wardId && x.StreetName.Contains(searchName)).ToListAsync();
+
             var result = await db.Set<Street>()
-                .Where(x => x.WardId == wardId && x.StreetName.Contains(searchName)).ToListAsync();
+                .Where(x => x.WardId == wardId && EF.Functions.Like(x.StreetName, $"%{searchName}%")).ToListAsync();
 
             return result.Select(t => new StreetModel()
             {

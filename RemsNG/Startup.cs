@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using RemsNG.Common.Models;
 using RemsNG.Extensions;
 using RemsNG.Security;
@@ -39,7 +40,12 @@ namespace RemsNG
             services.AddDatabaseService(Configuration);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             ServicesCollection.Initialize(services, Configuration, loggerFactory);
-            services.AddMvc();
+            services.AddMvc().AddJsonOptions(options =>
+            {
+                options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+                options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -85,7 +91,7 @@ namespace RemsNG
                     });
             });
 
-           // app.UseMiddleware(typeof(HangfireMiddleware));
+            // app.UseMiddleware(typeof(HangfireMiddleware));
             app.UseMiddleware(typeof(ErrorHandlingMiddleware));
 
             app.UseDefaultFiles();

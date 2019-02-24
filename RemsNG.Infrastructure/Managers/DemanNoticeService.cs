@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
@@ -10,12 +9,18 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class DemanNoticeManagers : IDemandNoticeManagers
     {
+        private StreetRepository _streetRepository;
+        private WardRepository _wardRepository;
         private DemandNoticeRepository demandNoticeDao;
         private DemandNoticeArrearRepository dnaDao;
+        private DemandNoticeTaxpayersRepository _dnTaxpayerRepo;
         public DemanNoticeManagers(DbContext db)
         {
             demandNoticeDao = new DemandNoticeRepository(db);
             dnaDao = new DemandNoticeArrearRepository(db);
+            _dnTaxpayerRepo = new DemandNoticeTaxpayersRepository(db);
+            _wardRepository = new WardRepository(db);
+            _streetRepository = new StreetRepository(db);
         }
 
         public async Task<Response> Add(DemandNoticeModel demandNotice)
@@ -23,9 +28,10 @@ namespace RemsNG.Infrastructure.Managers
             return await demandNoticeDao.Add(demandNotice);
         }
 
-        public async Task<object> SearchDemandNotice(DemandNoticeModel demandNotice, PageModel pageModel)
+        public async Task<object> SearchDemandNotice(DemandNoticeModel query, PageModel pageModel)
         {
-            return await demandNoticeDao.SearchDemandNotice(demandNotice, pageModel);
+
+            return await demandNoticeDao.SearchDemandNotice(query, pageModel);
         }
 
         public async Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel)
@@ -66,6 +72,35 @@ namespace RemsNG.Infrastructure.Managers
         public async Task<bool> AddArrears(DemandNoticeArrearsModel dna)
         {
             return await dnaDao.AddArrears(dna);
+        }
+
+        public async Task<PageModel<DemandNoticeTaxpayersModel[]>> SearchDemandNotice(DemandNoticeRequestModel rhModel, PageModel pageModel)
+        {
+            var result = await _dnTaxpayerRepo.Search(rhModel, pageModel);
+            return result;
+        }
+
+        public async Task<DemandNoticeRequestModel> SearchInfo(DemandNoticeRequestModel model)
+        {
+            if (model.wardId != default(Guid))
+            {
+                WardModel wardModel = await _wardRepository.GetWard(model.wardId);
+                if (wardModel != null)
+                {
+                    model.wardName = wardModel.WardName;
+                }
+            }
+
+            if (model.streetId != default(Guid))
+            {
+                StreetModel streetModel = await _streetRepository.ById(model.streetId);
+                if (streetModel != null)
+                {
+                    model.streetName = streetModel.StreetName;
+                }
+            }
+
+            return model;
         }
     }
 }

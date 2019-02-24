@@ -171,14 +171,17 @@ namespace RemsNG.Data.Repository
             };
         }
 
-        public async Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel)
+        public async Task<PageModel<List<DemandNoticeModel>>> ByLcdaId(Guid lcdaId, PageModel pageModel)
         {
             var totalCount = 0;
             var query = db.Set<DemandNotice>()
+                .Include(x => x.Ward)
+                .ThenInclude(d => d.Street)
                 .Where(x => x.LcdaId == lcdaId);
             totalCount = await query.CountAsync();
 
-            var results = query.Select(x => new DemandNoticeModel
+            var ty = await query.ToListAsync();
+            var results = await query.Select(x => new DemandNoticeModel
             {
                 BatchNo = x.BatchNo,
                 BillingYear = x.BillingYear,
@@ -193,15 +196,18 @@ namespace RemsNG.Data.Repository
                 Query = x.Query,
                 StreetId = x.StreetId,
                 WardId = x.WardId
-            }).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToArray();
+            }).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToArrayAsync();
 
-            return new PageModel<DemandNoticeModel[]>
+            List<DemandNoticeModel> lst = new List<DemandNoticeModel>();
+            foreach (var tm in results)
             {
-                data = results.Select(x =>
-                {
-                    x.DemandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(EncryptDecryptUtils.FromHexString(x.Query));
-                    return x;
-                }).ToArray(),
+                tm.DemandNoticeRequest = await TranslateDemandNoticeRequest(tm.Query);
+                lst.Add(tm);
+            }
+
+            return new PageModel<List<DemandNoticeModel>>
+            {
+                data = lst,
                 totalPageCount = int.Parse(Math.Round((totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)).ToString())
             };
         }
@@ -211,7 +217,7 @@ namespace RemsNG.Data.Repository
             DemandNoticeRequestModel s = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(EncryptDecryptUtils.FromHexString(jsonObject));
             if (s.wardId != null)
             {
-                WardModel ward = await wardDao.GetWard(s.wardId.Value);
+                WardModel ward = await wardDao.GetWard(s.wardId);
                 if (ward != null)
                 {
                     s.wardName = ward.WardName;
@@ -219,7 +225,7 @@ namespace RemsNG.Data.Repository
             }
             if (s.streetId != null)
             {
-                StreetModel street = await streetDao.ById(s.streetId.Value);
+                StreetModel street = await streetDao.ById(s.streetId);
                 if (street != null)
                 {
                     s.streetName = street.StreetName;
@@ -381,31 +387,30 @@ namespace RemsNG.Data.Repository
 
         public async Task<DemandNoticeModel> DequeueDemandNotice()
         {
-            try
+            var result = await db.Set<DemandNotice>()
+                .FromSql("sp_dequeueDemandNotice").FirstOrDefaultAsync();
+            if (result == null)
             {
-                var result = await db.Set<DemandNotice>()
-                    .FromSql("sp_dequeueDemandNotice").FirstOrDefaultAsync();
-                return new DemandNoticeModel()
-                {
-                    BatchNo = result.BatchNo,
-                    BillingYear = result.BillingYear,
-                    CreatedBy = result.CreatedBy,
-                    DateCreated = result.DateCreated,
-                    DemandNoticeStatus = result.DemandNoticeStatus,
-                    Id = result.Id,
-                    IsUnbilled = result.IsUnbilled,
-                    Lastmodifiedby = result.Lastmodifiedby,
-                    LastModifiedDate = result.LastModifiedDate,
-                    LcdaId = result.LcdaId,
-                    Query = result.Query,
-                    StreetId = result.StreetId,
-                    WardId = result.WardId
-                };
+                return null;
             }
-            catch (Exception x)
+            return new DemandNoticeModel()
             {
-                throw;
-            }
+                BatchNo = result.BatchNo,
+                BillingYear = result.BillingYear,
+                CreatedBy = result.CreatedBy,
+                DateCreated = result.DateCreated,
+                DemandNoticeStatus = result.DemandNoticeStatus,
+                Id = result.Id,
+                IsUnbilled = result.IsUnbilled,
+                Lastmodifiedby = result.Lastmodifiedby,
+                LastModifiedDate = result.LastModifiedDate,
+                LcdaId = result.LcdaId,
+                Query = result.Query,
+                StreetId = result.StreetId,
+                WardId = result.WardId
+            };
         }
+
+        
     }
 }

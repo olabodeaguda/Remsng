@@ -49,9 +49,9 @@ export class DemandNoticeService {
         this.datataservice.addToHeader('pageSize', pageModel.pageSize.toString());
         let s: any = {
             wardId: searchModel.wardId,
-            streetId: searchModel.streetId.length <= 0 ? null : searchModel.streetId,
-            searchByName: null,
-            dateYear: searchModel.dateYear <= 0 ? null : searchModel.dateYear,
+            streetId: searchModel.streetId,
+            searchByName: searchModel.searchByName,
+            dateYear: searchModel.dateYear,
             lcdaId: null
         };
 
@@ -105,6 +105,19 @@ export class DemandNoticeService {
 
     MovetoUnBills(billno) {
         return this.datataservice.get('dnt/movetoUnbill/' + billno).catch(x => this.datataservice.handleError(x));
+    }
+
+    searchInfo(searchModel: DemandNoticeSearch){
+        let s: any = {
+            wardId: searchModel.wardId,
+            streetId: searchModel.streetId,
+            searchByName: searchModel.searchByName,
+            dateYear: searchModel.dateYear,
+            lcdaId: null
+        };
+        return this.datataservice
+        .post('demandnotice/searchinfo/', s)
+        .catch(x => this.datataservice.handleError(x));
     }
 
 }

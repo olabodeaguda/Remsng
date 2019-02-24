@@ -30,7 +30,7 @@ namespace RemsNG.Data.Repository
                 LastModifiedDate = model.LastModifiedDate,
                 TaxpayerId = model.TaxpayerId
             });
-
+            await db.SaveChangesAsync();
             return new Response()
             {
                 code = MsgCode_Enum.SUCCESS,

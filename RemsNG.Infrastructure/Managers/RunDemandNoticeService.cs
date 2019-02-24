@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
-using RemsNG.Data.Entities;
 using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
@@ -43,9 +42,8 @@ namespace RemsNG.Infrastructure.Managers
         private readonly IDemandNoticeTaxpayerManagers demandNoticeTaxpayerService;
         private readonly ITaxpayerManagers taxpayerService;
         private readonly IListPropertyManagers listPropertyService;
-        //private IHttpContextAccessor httpContextAccessor;
+        private IHostingEnvironment _hostEnvironment;
         private INodeServices nodeServices;
-        private IHostingEnvironment hostingEnvironment;
         private IServiceProvider serviceProvider;
 
         public RunDemandNoticeManagers(DbContext _db,
@@ -56,15 +54,14 @@ namespace RemsNG.Infrastructure.Managers
             IDemandNoticeTaxpayerManagers _demandNoticeTaxpayerService
             , ITaxpayerManagers _taxpayerService,
             IListPropertyManagers _listPropertyService,
-            //IHttpContextAccessor _httpContextAccessor,
             INodeServices _nodeServices,
-            IHostingEnvironment _hostingEnvironment,
+            IHostingEnvironment hostingEnvironment,
             IServiceProvider _serviceProvider,
             IDNAmountDueMgtManagers dNAmountDueMgtService)
         {
             logger = loggerFactory.CreateLogger("Demand Notice Jobs");
             nodeServices = _nodeServices;
-            //hostingEnvironment = _hostingEnvironment;
+            _hostEnvironment = hostingEnvironment;
             serviceProvider = _serviceProvider;
             taxpayerDao = new TaxpayerRepository(_db);
             demandNoticeDao = new DemandNoticeRepository(_db);
@@ -238,7 +235,7 @@ namespace RemsNG.Infrastructure.Managers
                         LcdaModel lgda = await taxpayerService.getLcda(firstTaxpayer.TaxpayerId);
                         string template = await dnDownloadService.LcdaTemlateByLcda(lgda.Id);
 
-                        string rootUrl = hostingEnvironment.WebRootPath == null ? @"C:\" : hostingEnvironment.WebRootPath;
+                        string rootUrl = _hostEnvironment.WebRootPath == null ? @"C:\" : _hostEnvironment.WebRootPath;
 
                         string rootPath = Path.Combine(rootUrl, "zipReports", bdnm.batchNo);
                         if (!Directory.Exists(rootPath))

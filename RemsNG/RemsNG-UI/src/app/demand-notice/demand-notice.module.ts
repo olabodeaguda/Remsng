@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule} from '@angular/forms';
-import { BrowserModule} from '@angular/platform-browser';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
 import { LaddaModule } from 'angular2-ladda';
 import { SharedModule } from '../shared/shared.module';
@@ -14,44 +14,49 @@ import { DemandNoticeSearchComponent } from './components/demand-notice-search.c
 import { DemandNoticePaymentService } from './services/demand-notice-payment.service';
 import { DemandNoticeErrorComponent } from './components/demand-notice-error.component';
 import { MyDatePickerModule } from 'mydatepicker';
+import { DemandNoticeViewComponent } from './components/demand-notice-view.component';
 
 const appRoutes: Routes = [
-    { path: 'demandnotice', component: DemandNoticeIndexComponent,
-        children:[
+    {
+        path: 'demandnotice', component: DemandNoticeIndexComponent,
+        children: [
             { path: '', component: DemandNoticeComponent, pathMatch: 'full' },
-            { path: 'taxpayer/:batchId', component: DemandNoticeTaxpayersComponent, pathMatch: 'full' },            
+            { path: 'taxpayer/:batchId', component: DemandNoticeTaxpayersComponent, pathMatch: 'full' },
             { path: 'searchtaxpayer', component: DemandNoticeSearchComponent },
-            { path: 'dnerror/:id', component: DemandNoticeErrorComponent }
+            {
+                path: 'dnerror/:id', component: DemandNoticeErrorComponent,
+            },
+            { path: 'dnoticeview/:qry', component: DemandNoticeViewComponent, pathMatch: 'full' }
         ]
     },
- ];
+];
 
 @NgModule({
     imports: [
-      BrowserModule,
-      LaddaModule,
-      FormsModule,MyDatePickerModule,
-      ReactiveFormsModule,
-      SharedModule,
-      ItemPenaltyModule,
-      RouterModule.forChild(appRoutes)
+        BrowserModule,
+        LaddaModule,
+        FormsModule, MyDatePickerModule,
+        ReactiveFormsModule,
+        SharedModule,
+        ItemPenaltyModule,
+        RouterModule.forChild(appRoutes)
     ],
     declarations: [
-        DemandNoticeComponent,DemandNoticeTaxpayersComponent,
-        DemandNoticeIndexComponent,DemandNoticeSearchComponent,
-        DemandNoticeErrorComponent
+        DemandNoticeComponent, DemandNoticeTaxpayersComponent,
+        DemandNoticeIndexComponent, DemandNoticeSearchComponent,
+        DemandNoticeErrorComponent, DemandNoticeViewComponent
     ],
-    providers: [ 
+    providers: [
         DemandNoticeService,
-         DemandNoticeTaxpayerService,
+        DemandNoticeTaxpayerService,
         DemandNoticePaymentService
     ],
     exports: [
-        DemandNoticeComponent,DemandNoticeTaxpayersComponent,
-        DemandNoticeIndexComponent,DemandNoticeSearchComponent,
-        DemandNoticeErrorComponent
+        DemandNoticeComponent, DemandNoticeTaxpayersComponent,
+        DemandNoticeIndexComponent, DemandNoticeSearchComponent,
+        DemandNoticeErrorComponent, DemandNoticeViewComponent
     ]
-  })
+})
 
 export class DemandNoticeModule {
 

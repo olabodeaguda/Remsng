@@ -45,7 +45,7 @@ export class DashboardComponent implements OnInit {
 
     ngOnInit() {
         this.getLabel();
-        this.getReceivables();
+       // this.getReceivables();
     }
 
     getLabel() {

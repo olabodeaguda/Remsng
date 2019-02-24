@@ -26,5 +26,6 @@ namespace RemsNG.Common.Models
         public DateTime? LastModifiedDate { get; set; }
         public string DemandNoticeStatus { get; set; }
         public bool? IsUnbilled { get; set; }
+        public string StreetName { get; set; }
     }
 }

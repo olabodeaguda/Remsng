@@ -20,9 +20,8 @@ namespace RemsNG.Controllers
     {
         private IHostingEnvironment hostingEnvironment;
         private IImageManagers imageService;
-        private readonly ILogger logger;
         public MediaController(IHostingEnvironment _hostingEnvironment,
-            IImageManagers _imageService, ILoggerFactory loggerFactory)
+            IImageManagers _imageService)
         {
             hostingEnvironment = _hostingEnvironment;
             imageService = _imageService;

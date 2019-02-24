@@ -13,6 +13,7 @@ import { DemandNoticeTaxpayerService } from '../services/demand-noticeTaxpayer.s
 declare var jQuery: any;
 import * as FileSaver from 'file-saver'
 import { Router } from '@angular/router';
+import { isNullOrUndefined, isNull } from 'util';
 
 @Component({
     selector: 'demand-notice',
@@ -29,7 +30,7 @@ export class DemandNoticeComponent implements OnInit {
     pageModel: PageModel;
     isLoading: boolean = false;
     downloadRequestmodel: DownloadRequestModel;
-    batchNo: string;//
+    batchNo: string;
     @ViewChild('downRequestPrompt') downRequestPromptModal: ElementRef;
     @ViewChild('downloadRequestModal') downloadRequestModal: ElementRef;
     @ViewChild('PromptConstraint') PromptConstraint: ElementRef;
@@ -49,7 +50,8 @@ export class DemandNoticeComponent implements OnInit {
 
     ngOnInit(): void {
         this.yrLst = this.appsettings.getYearList();
-        this.getDemandNotice();
+        // this.getDemandNotice();
+        this.GetDemandNotice(new Date().getFullYear());
         this.getWards();
     }
     openConstraint() {
@@ -73,7 +75,13 @@ export class DemandNoticeComponent implements OnInit {
             this.toasterService.pop('error', 'Error', 'Billing year is required')
             return;
         }
+        this.getDemandNotice();
+    }
 
+    GetDemandNotice(yr: number) {
+        if (!isNullOrUndefined(yr)) {
+            this.searchModel.dateYear = yr;
+        }
         this.isLoading = true;
         this.demandnoticeservice.searchDemandNotice(this.searchModel, this.pageModel).subscribe(
             response => {
@@ -87,7 +95,6 @@ export class DemandNoticeComponent implements OnInit {
                 this.isLoading = false;
                 this.toasterService.pop('error', 'Error', error);
             });
-
     }
 
     submitDemandRequest() {
@@ -221,6 +228,18 @@ export class DemandNoticeComponent implements OnInit {
         }, error => {
             //  this.toasterService.pop('error', 'Error', error);
         })
+    }
+
+    navigateView() {
+        if (isNullOrUndefined(this.searchModel.wardId) &&
+            isNullOrUndefined(this.searchModel.streetId)
+            && isNullOrUndefined(this.searchModel.searchByName)
+            && this.searchModel.dateYear <= 0) {
+            return;
+        }
+        this.router.navigateByUrl('demandnotice/dnoticeview/' + btoa(JSON.stringify(this.searchModel)));
+
+       // this.router.navigate(['demandnotice', 'dnoticeview'], { queryParams: { qry: btoa(JSON.stringify(this.searchModel)) } })
     }
 
     next() {

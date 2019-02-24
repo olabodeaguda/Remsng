@@ -113,7 +113,7 @@ namespace RemsNG.Infrastructure.Managers
             LcdaModel lgda = null;
             if (dnr.wardId != null)
             {
-                WardModel ward = await wardDao.GetWard(dnr.wardId.Value);
+                WardModel ward = await wardDao.GetWard(dnr.wardId);
                 if (ward != null)
                 {
                     lgda = await lcdaDao.Get(ward.LcdaId);
@@ -121,7 +121,7 @@ namespace RemsNG.Infrastructure.Managers
             }
             else if (dnr.streetId != null)
             {
-                StreetModel str = await streetDao.ById(dnr.streetId.Value);
+                StreetModel str = await streetDao.ById(dnr.streetId);
                 if (str != null)
                 {
                     WardModel ward = await wardDao.GetWard(str.WardId);

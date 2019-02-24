@@ -7,7 +7,7 @@ namespace RemsNG.Infrastructure.Services
 {
     public class TokenService : ITokenService
     {
-        private readonly JwtIssuerOptions jOptions;
+        // private readonly JwtIssuerOptions jOptions;
         public string GenerateToken(List<Claim> lst)
         {
             throw new System.NotImplementedException();
