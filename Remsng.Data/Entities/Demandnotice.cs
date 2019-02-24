@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RemsNG.Data.Entities
@@ -30,5 +31,8 @@ namespace RemsNG.Data.Entities
 
         [ForeignKey("WardId")]
         public Ward Ward { get; set; }
+
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
     }
 }

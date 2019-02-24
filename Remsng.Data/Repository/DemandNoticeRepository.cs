@@ -402,7 +402,7 @@ namespace RemsNG.Data.Repository
                     WardId = result.WardId
                 };
             }
-            catch (Exception)
+            catch (Exception x)
             {
                 throw;
             }

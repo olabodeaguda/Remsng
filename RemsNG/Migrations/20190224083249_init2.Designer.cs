@@ -11,8 +11,8 @@ using System;
 namespace RemsNG.Migrations
 {
     [DbContext(typeof(RemsDbContext))]
-    [Migration("20190216223027_initialize")]
-    partial class initialize
+    [Migration("20190224080331_allupdate")]
+    partial class allupdate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -44,6 +44,8 @@ namespace RemsNG.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("OwnerId");
+
                     b.ToTable("tbl_address");
                 });
 
@@ -68,13 +70,65 @@ namespace RemsNG.Migrations
 
                     b.Property<string>("BankAccount");
 
-                    b.Property<Guid?>("BankId");
+                    b.Property<Guid>("BankId");
 
-                    b.Property<Guid?>("LcdaId");
+                    b.Property<Guid>("LcdaId");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BankId");
+
+                    b.HasIndex("LcdaId");
+
                     b.ToTable("tbl_bank_lcda");
+                });
+
+            modelBuilder.Entity("RemsNG.Data.Entities.BatchDownloadRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("BatchFileName");
+
+                    b.Property<string>("BatchNo");
+
+                    b.Property<string>("Createdby");
+
+                    b.Property<DateTime>("DateCreated");
+
+                    b.Property<DateTime?>("LastModifiedDate");
+
+                    b.Property<string>("Lastmodifiedby");
+
+                    b.Property<Guid?>("LcdaId");
+
+                    b.Property<string>("RequestStatus");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("tbl_batchDownloadRequest");
+                });
+
+            modelBuilder.Entity("RemsNG.Data.Entities.CloudData", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("BillingNumber");
+
+                    b.Property<string>("DataTitle");
+
+                    b.Property<DateTime?>("DateCreated");
+
+                    b.Property<Guid>("DomainId");
+
+                    b.Property<string>("JsonContent");
+
+                    b.Property<string>("SyncStatus");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("tbl_cloudData");
                 });
 
             modelBuilder.Entity("RemsNG.Data.Entities.Company", b =>
@@ -104,7 +158,11 @@ namespace RemsNG.Migrations
 
                     b.Property<Guid?>("StreetId");
 
+                    b.Property<Guid?>("TaxPayerCatgeoryId");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TaxPayerCatgeoryId");
 
                     b.ToTable("tbl_company");
                 });
@@ -136,6 +194,8 @@ namespace RemsNG.Migrations
 
                     b.HasIndex("ItemId");
 
+                    b.HasIndex("TaxpayerId");
+
                     b.ToTable("tbl_companyItem");
                 });
 
@@ -161,6 +221,32 @@ namespace RemsNG.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("tbl_contactDetail");
+                });
+
+            modelBuilder.Entity("RemsNG.Data.Entities.ContactPerson", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("CreatedBy");
+
+                    b.Property<DateTime?>("DateCreated");
+
+                    b.Property<string>("Firstname");
+
+                    b.Property<DateTime?>("LastModifiedDate");
+
+                    b.Property<string>("Lastmodifiedby");
+
+                    b.Property<string>("Lastname");
+
+                    b.Property<string>("Surname");
+
+                    b.Property<Guid?>("TaxPayerId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("tbl_contactPerson");
                 });
 
             modelBuilder.Entity("RemsNG.Data.Entities.Country", b =>
@@ -202,11 +288,17 @@ namespace RemsNG.Migrations
 
                     b.Property<string>("Query");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
                     b.Property<Guid?>("StreetId");
 
                     b.Property<Guid?>("WardId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("WardId");
 
                     b.ToTable("tbl_demandnotice");
                 });
@@ -241,6 +333,10 @@ namespace RemsNG.Migrations
                     b.Property<decimal>("TotalAmount");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("TaxpayerId");
 
                     b.ToTable("tbl_demandNoticeArrears");
                 });
@@ -282,6 +378,8 @@ namespace RemsNG.Migrations
 
                     b.Property<DateTime?>("DateCreated");
 
+                    b.Property<Guid?>("DemandNoticeId");
+
                     b.Property<Guid>("DnTaxpayersDetailsId");
 
                     b.Property<decimal>("ItemAmount");
@@ -300,9 +398,11 @@ namespace RemsNG.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DnTaxpayersDetailsId");
+                    b.HasIndex("DemandNoticeId");
 
                     b.HasIndex("ItemId");
+
+                    b.HasIndex("TaxpayerId");
 
                     b.ToTable("tbl_demandNoticeItem");
                 });
@@ -342,7 +442,47 @@ namespace RemsNG.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BankId");
+
                     b.ToTable("tbl_demandNoticePaymentHistory");
+                });
+
+            modelBuilder.Entity("RemsNG.Data.Entities.DemandNoticePenalty", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<decimal>("AmountPaid");
+
+                    b.Property<string>("BillingNo");
+
+                    b.Property<int>("BillingYear");
+
+                    b.Property<string>("CreatedBy");
+
+                    b.Property<DateTime?>("DateCreated");
+
+                    b.Property<Guid>("ItemId");
+
+                    b.Property<string>("ItemPenaltyStatus");
+
+                    b.Property<DateTime?>("LastModifiedDate");
+
+                    b.Property<string>("Lastmodifiedby");
+
+                    b.Property<int>("OriginatedYear");
+
+                    b.Property<Guid>("TaxpayerId");
+
+                    b.Property<decimal>("TotalAmount");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("TaxpayerId");
+
+                    b.ToTable("tbl_demandNoticePenalty");
                 });
 
             modelBuilder.Entity("RemsNG.Data.Entities.DemandNoticeTaxpayers", b =>
@@ -393,6 +533,8 @@ namespace RemsNG.Migrations
                     b.Property<string>("WardName");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DnId");
 
                     b.ToTable("tbl_demandNoticeTaxpayers");
                 });
@@ -735,6 +877,10 @@ namespace RemsNG.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AddressId")
+                        .IsUnique()
+                        .HasFilter("[AddressId] IS NOT NULL");
+
                     b.HasIndex("CompanyId");
 
                     b.HasIndex("StreetId");
@@ -869,24 +1015,110 @@ namespace RemsNG.Migrations
                     b.ToTable("tbl_ward");
                 });
 
+            modelBuilder.Entity("RemsNG.Data.Entities.Address", b =>
+                {
+                    b.HasOne("RemsNG.Data.Entities.TaxPayer", "Taxpayer")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("RemsNG.Data.Entities.BankLcda", b =>
+                {
+                    b.HasOne("RemsNG.Data.Entities.Bank", "Bank")
+                        .WithMany()
+                        .HasForeignKey("BankId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("RemsNG.Data.Entities.Lcda", "Lcda")
+                        .WithMany()
+                        .HasForeignKey("LcdaId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("RemsNG.Data.Entities.Company", b =>
+                {
+                    b.HasOne("RemsNG.Data.Entities.TaxpayerCategory", "TaxPayerCatgeory")
+                        .WithMany()
+                        .HasForeignKey("TaxPayerCatgeoryId");
+                });
+
             modelBuilder.Entity("RemsNG.Data.Entities.CompanyItem", b =>
                 {
                     b.HasOne("RemsNG.Data.Entities.Item", "Item")
                         .WithMany("CompanyItem")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("RemsNG.Data.Entities.TaxPayer", "TaxPayer")
+                        .WithMany()
+                        .HasForeignKey("TaxpayerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("RemsNG.Data.Entities.DemandNotice", b =>
+                {
+                    b.HasOne("RemsNG.Data.Entities.Ward", "Ward")
+                        .WithMany()
+                        .HasForeignKey("WardId");
+                });
+
+            modelBuilder.Entity("RemsNG.Data.Entities.DemandNoticeArrears", b =>
+                {
+                    b.HasOne("RemsNG.Data.Entities.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("RemsNG.Data.Entities.TaxPayer", "TaxPayer")
+                        .WithMany()
+                        .HasForeignKey("TaxpayerId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("RemsNG.Data.Entities.DemandNoticeItem", b =>
                 {
-                    b.HasOne("RemsNG.Data.Entities.DemandNotice", "DnTaxpayersDetails")
+                    b.HasOne("RemsNG.Data.Entities.DemandNotice", "DemandNotice")
                         .WithMany("DemandNoticeItem")
-                        .HasForeignKey("DnTaxpayersDetailsId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("DemandNoticeId");
 
                     b.HasOne("RemsNG.Data.Entities.Item", "Item")
                         .WithMany("DemandNoticeItem")
                         .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("RemsNG.Data.Entities.TaxPayer", "TaxPayer")
+                        .WithMany()
+                        .HasForeignKey("TaxpayerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("RemsNG.Data.Entities.DemandNoticePaymentHistory", b =>
+                {
+                    b.HasOne("RemsNG.Data.Entities.Bank", "Bank")
+                        .WithMany()
+                        .HasForeignKey("BankId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("RemsNG.Data.Entities.DemandNoticePenalty", b =>
+                {
+                    b.HasOne("RemsNG.Data.Entities.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("RemsNG.Data.Entities.TaxPayer", "TaxPayer")
+                        .WithMany()
+                        .HasForeignKey("TaxpayerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("RemsNG.Data.Entities.DemandNoticeTaxpayers", b =>
+                {
+                    b.HasOne("RemsNG.Data.Entities.DemandNotice", "DemandNotice")
+                        .WithMany()
+                        .HasForeignKey("DnId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -953,6 +1185,10 @@ namespace RemsNG.Migrations
 
             modelBuilder.Entity("RemsNG.Data.Entities.TaxPayer", b =>
                 {
+                    b.HasOne("RemsNG.Data.Entities.Address", "Address")
+                        .WithOne()
+                        .HasForeignKey("RemsNG.Data.Entities.TaxPayer", "AddressId");
+
                     b.HasOne("RemsNG.Data.Entities.Company", "Company")
                         .WithMany("TaxPayer")
                         .HasForeignKey("CompanyId")
