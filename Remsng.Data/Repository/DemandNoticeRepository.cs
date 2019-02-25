@@ -410,7 +410,5 @@ namespace RemsNG.Data.Repository
                 WardId = result.WardId
             };
         }
-
-        
     }
 }

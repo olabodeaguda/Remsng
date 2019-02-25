@@ -1,10 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
-using RemsNG.Data.Entities;
 using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
@@ -210,6 +208,7 @@ namespace RemsNG.Infrastructure.Managers
         {
             return await dntDao.MoveToBills(billno);
         }
+
         public async Task<bool> MoveToUnBills(string billno)
         {
             return await dntDao.MoveToUnBills(billno);
@@ -218,6 +217,17 @@ namespace RemsNG.Infrastructure.Managers
         public async Task<List<DemandNoticeArrearsModel>> GetArrearsByTaxpayerId(Guid taxpayerId)
         {
             return await dna.ByTaxpayer(taxpayerId);
+        }
+
+        public async Task<PageModel<DemandNoticeTaxpayersModel[]>> SearchByLcdaId(DemandNoticeRequestModel rhModel,
+            PageModel pageModel, Guid lcdaId)
+        {
+            if (lcdaId == default(Guid))
+            {
+                throw new UserValidationException("User lcda is invalid...");
+            }
+
+            return await dntDao.SearchByLcdaId(rhModel, pageModel, lcdaId);
         }
     }
 }

@@ -50,7 +50,6 @@ export class DemandNoticeComponent implements OnInit {
 
     ngOnInit(): void {
         this.yrLst = this.appsettings.getYearList();
-        // this.getDemandNotice();
         this.GetDemandNotice(new Date().getFullYear());
         this.getWards();
     }
@@ -75,7 +74,7 @@ export class DemandNoticeComponent implements OnInit {
             this.toasterService.pop('error', 'Error', 'Billing year is required')
             return;
         }
-        this.getDemandNotice();
+        this.GetDemandNotice(null);
     }
 
     GetDemandNotice(yr: number) {
@@ -113,7 +112,7 @@ export class DemandNoticeComponent implements OnInit {
                 this.searchModel.isProcessingRequest = false;
                 if (response.code === '00') {
                     this.toasterService.pop('success', 'Success', response.description);
-                    this.getDemandNotice();
+                    this.GetDemandNotice(null);
                     this.searchModel = new DemandNoticeSearch();
                 } else {
                     this.toasterService.pop('error', 'Error', response.description);
@@ -205,30 +204,19 @@ export class DemandNoticeComponent implements OnInit {
         })
     }
 
-    getDemandNotice() {
-        this.isLoading = true;
-        this.demandnoticeservice.get(this.pageModel).subscribe(response => {
-            const objschema = { data: [], totalPageCount: 0 };
-            const res = Object.assign(objschema, response);
-            this.demandNoticeLst = res.data;
-            this.pageModel.totalPageCount = res.totalPageCount;
-            this.isLoading = false;
-        }, error => {
-            this.isLoading = false;
-            this.toasterService.pop('error', 'Error', error);
-        })
-    }
-
-    getDemandNotice2() {
-        this.demandnoticeservice.get2(this.pageModel).subscribe(response => {
-            const objschema = { data: [], totalPageCount: 0 };
-            const res = Object.assign(objschema, response);
-            this.demandNoticeLst = res.data;
-            this.pageModel.totalPageCount = res.totalPageCount;
-        }, error => {
-            //  this.toasterService.pop('error', 'Error', error);
-        })
-    }
+    // getDemandNotice() {
+    //     this.isLoading = true;
+    //     this.demandnoticeservice.get(this.pageModel).subscribe(response => {
+    //         const objschema = { data: [], totalPageCount: 0 };
+    //         const res = Object.assign(objschema, response);
+    //         this.demandNoticeLst = res.data;
+    //         this.pageModel.totalPageCount = res.totalPageCount;
+    //         this.isLoading = false;
+    //     }, error => {
+    //         this.isLoading = false;
+    //         this.toasterService.pop('error', 'Error', error);
+    //     })
+    // }
 
     navigateView() {
         if (isNullOrUndefined(this.searchModel.wardId) &&
@@ -247,7 +235,7 @@ export class DemandNoticeComponent implements OnInit {
             return;
         }
         this.pageModel.pageNum += 1;
-        this.getDemandNotice();
+        this.GetDemandNotice(null);
     }
 
     previous() {
@@ -255,7 +243,7 @@ export class DemandNoticeComponent implements OnInit {
         if (this.pageModel.pageNum < 1) {
             this.pageModel.pageNum = 1;
         }
-        this.getDemandNotice();
+        this.GetDemandNotice(null);
     }
 
 }

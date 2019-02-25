@@ -30,7 +30,6 @@ export class DemandNoticeViewComponent implements OnInit {
             .subscribe(response => {
                 this.isLoading = false;
                 this.searchModel = <DemandNoticeSearch>response;
-                console.log(this.searchModel);
             }, error => {
                 this.isLoading = false;
                 this.toasterService.pop('error', 'Error', 'An error occur retrieving parameters information');

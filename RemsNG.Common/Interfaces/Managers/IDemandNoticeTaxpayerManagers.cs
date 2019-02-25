@@ -18,5 +18,7 @@ namespace RemsNG.Common.Interfaces.Managers
         Task<bool> MoveToBill(string billno);
         Task<bool> MoveToUnBills(string billno);
         Task<List<DemandNoticeArrearsModel>> GetArrearsByTaxpayerId(Guid taxpayerId);
+        Task<PageModel<DemandNoticeTaxpayersModel[]>> SearchByLcdaId(DemandNoticeRequestModel rhModel,
+            PageModel pageModel, Guid lcdaId);
     }
 }

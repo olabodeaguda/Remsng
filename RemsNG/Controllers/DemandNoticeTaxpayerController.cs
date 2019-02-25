@@ -4,7 +4,9 @@ using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
+using RemsNG.Infrastructure.Extensions;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 
@@ -197,6 +199,24 @@ namespace RemsNG.Controllers
                 code = MsgCode_Enum.FAIL,
                 description = "Request failed.Please try again"
             });
+        }
+
+        [HttpPost("searchbylcda/{pageNum}/{pageSize}")]
+        public async Task<IActionResult> SearchDemandNotice([FromBody] SearchDNModel model, int pageNum = 1, int pageSize = 20)
+        {
+            Guid lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
+            var modl = new DemandNoticeRequestModel();
+            modl.dateYear = model.DateYear;
+            modl.lcdaId = string.IsNullOrEmpty(model.LcdaId) ? default(Guid) : Guid.Parse(model.LcdaId);
+            modl.searchByName = model.SearchByName;
+            modl.streetId = string.IsNullOrEmpty(model.StreetId) ? default(Guid) : Guid.Parse(model.StreetId);
+            modl.wardId = string.IsNullOrEmpty(model.WardId) ? default(Guid) : Guid.Parse(model.WardId);
+
+            return Ok(await demandNoticeTaxpayerService.SearchByLcdaId(modl, new PageModel()
+            {
+                PageNum = pageNum,
+                PageSize = pageSize
+            }, lcdaId));
         }
     }
 }

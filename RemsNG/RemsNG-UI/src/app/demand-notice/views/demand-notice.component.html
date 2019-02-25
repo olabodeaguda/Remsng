@@ -203,6 +203,7 @@
                             <table class="table table-bordered table-hover">
                                 <thead>
                                     <th style="width:120px;"></th>
+                                    <th>S/N</th>
                                     <th>Billing Number</th>
                                     <th>Taxpayer</th>
                                     <th>Ward Name</th>
@@ -237,6 +238,7 @@
                                         <!-- <td>
                                             <a [routerLink]="['taxpayer',data.batchNo]">{{data.batchNo}}</a>
                                         </td> -->
+                                        <td>{{((pageModel.pageNum-1)*pageModel.pageSize)+(i+1)}}</td>
                                         <td>{{data.billingNumber}}</td>
                                         <td>{{data.taxpayersName}}</td>
                                         <td>{{data.wardName}}</td>

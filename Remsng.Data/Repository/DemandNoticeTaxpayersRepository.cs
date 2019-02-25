@@ -610,12 +610,74 @@ namespace RemsNG.Data.Repository
             return count > 0;
         }
 
-        public async Task<PageModel<DemandNoticeTaxpayersModel[]>> Search(DemandNoticeRequestModel rhModel, PageModel pageModel)
+        public async Task<PageModel<DemandNoticeTaxpayersModel[]>> Search(DemandNoticeRequestModel rhModel, 
+            PageModel pageModel)
         {
             var query = db.Set<DemandNoticeTaxpayers>()
                 .Include(p => p.DemandNotice)
                 .ThenInclude(d => d.Street)
                 .Where(x => x.BillingYr == rhModel.dateYear);
+
+            if (rhModel.streetId != default(Guid))
+            {
+                query = query.Where(x => x.DemandNotice.StreetId == rhModel.streetId);
+            }
+            else if (rhModel.wardId != default(Guid))
+            {
+                query = query.Where(x => x.DemandNotice.WardId == rhModel.wardId);
+            }
+
+            if (!string.IsNullOrEmpty(rhModel.searchByName))
+            {
+                query = query.Where(x => EF.Functions.Like(x.TaxpayersName, $"%{rhModel.searchByName}%"));
+                //pageModel.PageNum = 1;
+                //pageModel.PageSize = 20;
+            }
+
+            var result = await query.Select(x => new DemandNoticeTaxpayersModel()
+            {
+                AddressName = x.AddressName,
+                BillingNumber = x.BillingNumber,
+                BillingYr = x.BillingYr,
+                CouncilTreasurerMobile = x.CouncilTreasurerMobile,
+                CouncilTreasurerSigFilen = x.CouncilTreasurerSigFilen,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                DemandNoticeStatus = x.DemandNoticeStatus,
+                DnId = x.DnId,
+                DomainName = x.DomainName,
+                Id = x.Id,
+                IsUnbilled = x.IsUnbilled,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                LcdaAddress = x.LcdaAddress,
+                LcdaLogoFileName = x.LcdaLogoFileName,
+                LcdaName = x.LcdaName,
+                LcdaState = x.LcdaState,
+                RevCoodinatorSigFilen = x.RevCoodinatorSigFilen,
+                TaxpayerId = x.TaxpayerId,
+                TaxpayersName = x.TaxpayersName,
+                WardName = x.WardName,
+                StreetName = x.DemandNotice.Street.StreetName
+            }).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).OrderByDescending(x => x.DateCreated).ToArrayAsync();
+
+            int totalCount = await query.CountAsync();
+            return new PageModel<DemandNoticeTaxpayersModel[]>
+            {
+                PageNum = pageModel.PageNum,
+                PageSize = pageModel.PageSize,
+                data = result,
+                totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + (int)(((double)totalCount / pageModel.PageSize))
+            };
+        }
+
+        public async Task<PageModel<DemandNoticeTaxpayersModel[]>> SearchByLcdaId(DemandNoticeRequestModel rhModel, 
+            PageModel pageModel, Guid lcdaId)
+        {
+            var query = db.Set<DemandNoticeTaxpayers>()
+                .Include(p => p.DemandNotice)
+                .ThenInclude(d => d.Street)
+                .Where(x => x.BillingYr == rhModel.dateYear && x.DemandNotice.LcdaId == lcdaId);
 
             if (rhModel.streetId != default(Guid))
             {
@@ -667,5 +729,6 @@ namespace RemsNG.Data.Repository
                 totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + (int)(((double)totalCount / pageModel.PageSize))
             };
         }
+
     }
 }
