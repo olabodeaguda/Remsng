@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Remsng.Data;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -148,10 +148,26 @@ namespace RemsNG.Data.Repository
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<object> GetByTaxPayersId(Guid taxpayersId)
+        public async Task<List<ItemModel>> GetByTaxPayersId(Guid taxpayersId)
         {
-            return await db.Set<Item>()
-                .FromSql("sp_itemByTaxpayersid @p0", new object[] { taxpayersId }).ToListAsync();
+            var result = await db.Set<Item>()
+                .Join(db.Set<TaxPayer>().Include(d=>d.Company), t => t.LcdaId, tp => tp.Company.LcdaId,
+                (t, tp) => new { t, tp })
+                .Where(x => x.tp.Id == taxpayersId)
+                .Select(x => new ItemModel()
+                {
+                    CreatedBy = x.t.CreatedBy,
+                    DateCreated = x.t.DateCreated,
+                    Id = x.t.Id,
+                    ItemCode = x.t.ItemCode,
+                    ItemDescription = x.t.ItemDescription,
+                    ItemStatus = x.t.ItemStatus,
+                    Lastmodifiedby = x.t.Lastmodifiedby,
+                    LastModifiedDate = x.t.LastModifiedDate,
+                    LcdaId = x.t.LcdaId
+                }).ToListAsync();
+
+            return result;
         }
     }
 }

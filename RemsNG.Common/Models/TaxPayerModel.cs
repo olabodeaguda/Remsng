@@ -24,6 +24,9 @@ namespace RemsNG.Common.Models
 
         public string StreetNumber { get; set; }
         public string StreetName { get; set; }
+
+        public Guid WardId { get; set; }
+        public int ItemCount { get; set; }
     }
 
     public enum TaxPayerEnum

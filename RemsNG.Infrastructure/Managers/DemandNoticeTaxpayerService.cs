@@ -229,5 +229,7 @@ namespace RemsNG.Infrastructure.Managers
 
             return await dntDao.SearchByLcdaId(rhModel, pageModel, lcdaId);
         }
+
+
     }
 }

@@ -27,7 +27,5 @@ namespace RemsNG.Data.Entities
 
         public virtual ICollection<TaxPayer> TaxPayer { get; set; }
         public TaxpayerCategory TaxPayerCatgeory { get; set; }
-
-
     }
 }

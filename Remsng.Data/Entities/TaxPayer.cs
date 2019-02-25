@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RemsNG.Data.Entities
@@ -23,5 +24,7 @@ namespace RemsNG.Data.Entities
         public virtual Street Street { get; set; }
         [ForeignKey("AddressId")]
         public virtual Address Address { get; set; }
+
+        public ICollection<CompanyItem> Items { get; set; }
     }
 }

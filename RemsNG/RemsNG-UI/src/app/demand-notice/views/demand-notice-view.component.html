@@ -21,13 +21,80 @@
                 </div>
                 <div class="box-body">
                     <div class="row">
-                        <div class="col-xs-3">Ward: {{searchModel?.wardName}}</div>
-                        <div class="col-xs-3">Street: {{searchModel?.streetName}}</div>
-                        <div class="col-xs-3">Search Query: {{searchModel?.searchByName}}</div>
-                        <div class="col-xs-3">Billing Year: {{searchModel?.dateYear}}</div>
+                        <div class="col-xs-3"><b>Ward</b>: {{searchModel?.wardName}}</div>
+                        <div class="col-xs-3"><b>Street</b>: {{searchModel?.streetName}}</div>
+                        <div class="col-xs-3"><b>Search Query</b>: {{searchModel?.searchByName}}</div>
+                        <div class="col-xs-3"><b>Billing Year</b>: {{searchModel?.dateYear}}</div>
                     </div>
-                    <div>
-                        
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="dateYear">Select Arrears Category</label>
+                                <select name="dateYear" class="form-control"
+                                    [(ngModel)]="searchModel.runArrearsCategory">
+                                    <option selected="selected" value="-1">Select Arrears Type</option>
+                                    <option value="1">1st Quarter</option>
+                                    <option value="2">2nd Quarter</option>
+                                    <option value="3">3rd Quarter</option>
+                                    <option value="4">Yearly</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check col-sm-12">
+                                <label class="form-check-label" for="period">Select Period</label>
+                                <select name="period" class="form-control" [(ngModel)]="searchModel.period">
+                                    <option selected="selected" value="-1">Select Demand Notice Period</option>
+                                    <option value="1">1st Quarter</option>
+                                    <option value="2">2nd Quarter</option>
+                                    <option value="3">3rd Quarter</option>
+                                    <option value="4">Yearly</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="isUnbilled"
+                                    [checked]="searchModel.isUnbilled"
+                                    (change)="searchModel.isUnbilled = !searchModel.isUnbilled">
+                                <label class="form-check-label" for="isUnbilled">Is Unbilled</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="runPenalty"
+                                    [checked]="searchModel.runPenalty"
+                                    (change)="searchModel.runPenalty = !searchModel.runPenalty">
+                                <label class="form-check-label" for="runPenalty">Process Penalty</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="btn-group form-control" style="border-color: white;">
+                                <button type="submit" class="btn btn-primary" (click)="navigateView()">View</button>
+                                <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary"
+                                    (click)="searchDemandNotice()">Save Batch</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <td class="col-md-12">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                        <th></th>
+                        <th>S/N</th>
+                        <th>Taxpayer's Name</th>
+                        <th>Item Count</th>
+                        <th>Will be included</th>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let data of taxpayers; let i=index">
+
+                            </tr>
+                            <tr *ngIf="taxpayers.length < 1">
+                                <td style="width:100%" colspan="5">No record !!!</td>
+                            </tr>
+                        </tbody>
+                        </table>
+                        </td>
                     </div>
                 </div>
             </div>

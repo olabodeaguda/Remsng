@@ -12,4 +12,5 @@ export class DemandNoticeSearch {
     runArrearsCategory: number = -1;
     isUnbilled: boolean = false;
     runPenalty: boolean = false;
+    period: string;
 }

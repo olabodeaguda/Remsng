@@ -10,7 +10,7 @@ import { ToasterService } from 'angular2-toaster';
 
 export class DemandNoticeViewComponent implements OnInit {
 
-
+    taxpayers = [];
     searchModel: DemandNoticeSearch;
     isLoading: boolean = false;
     constructor(private activeRouter: ActivatedRoute,
