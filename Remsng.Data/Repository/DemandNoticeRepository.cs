@@ -194,8 +194,8 @@ namespace RemsNG.Data.Repository
                 LastModifiedDate = x.LastModifiedDate,
                 LcdaId = x.LcdaId,
                 Query = x.Query,
-                StreetId = x.StreetId,
-                WardId = x.WardId
+                StreetId = x.StreetId.Value,
+                WardId = x.WardId.Value
             }).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToArrayAsync();
 
             List<DemandNoticeModel> lst = new List<DemandNoticeModel>();
@@ -262,8 +262,8 @@ namespace RemsNG.Data.Repository
                 LastModifiedDate = x.LastModifiedDate,
                 LcdaId = x.LcdaId,
                 Query = x.Query,
-                StreetId = x.StreetId,
-                WardId = x.WardId
+                StreetId = x.StreetId.Value,
+                WardId = x.WardId.Value
             }).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToArray();
 
 
@@ -331,8 +331,8 @@ namespace RemsNG.Data.Repository
                 LastModifiedDate = x.LastModifiedDate,
                 LcdaId = x.LcdaId,
                 Query = x.Query,
-                StreetId = x.StreetId,
-                WardId = x.WardId,
+                StreetId = x.StreetId.Value,
+                WardId = x.WardId.Value,
                 DemandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(EncryptDecryptUtils.FromHexString(x.Query))
             };
         }
@@ -379,8 +379,8 @@ namespace RemsNG.Data.Repository
                 LastModifiedDate = x.LastModifiedDate,
                 LcdaId = x.LcdaId,
                 Query = x.Query,
-                StreetId = x.StreetId,
-                WardId = x.WardId,
+                StreetId = x.StreetId.Value,
+                WardId = x.WardId.Value,
                 DemandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(EncryptDecryptUtils.FromHexString(x.Query))
             };
         }
@@ -406,8 +406,8 @@ namespace RemsNG.Data.Repository
                 LastModifiedDate = result.LastModifiedDate,
                 LcdaId = result.LcdaId,
                 Query = result.Query,
-                StreetId = result.StreetId,
-                WardId = result.WardId
+                StreetId = result.StreetId.Value,
+                WardId = result.WardId.Value
             };
         }
     }

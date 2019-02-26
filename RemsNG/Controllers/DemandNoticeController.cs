@@ -190,6 +190,14 @@ namespace RemsNG.Controllers
             }
         }
 
+        [RemsRequirementAttribute("DEMANDNOTICE_REQUEST")]
+        [HttpPost("run/bytaxpayer")]
+        public async Task<IActionResult> PostDemandNoticeRequest([FromBody] DemandNoticeRequestModel demandNoticeRequest)
+        {
+            return Created("/demandNotice", null);
+        }
+
+
         [HttpPost("search/{pageNum}/{pageSize}")]
         public async Task<IActionResult> SearchDemandNotice([FromBody] SearchDNModel model, int pageNum = 1, int pageSize = 20)
         {
@@ -381,6 +389,22 @@ namespace RemsNG.Controllers
         }
 
 
+        [HttpPost("validtaxpayers")]
+        public async Task<IActionResult> ValidTaxpayer([FromBody] SearchDNModel model)
+        {
+            var modl = new DemandNoticeRequestModel();
+            modl.dateYear = model.DateYear;
+            modl.lcdaId = string.IsNullOrEmpty(model.LcdaId) ? default(Guid) : Guid.Parse(model.LcdaId);
+            modl.searchByName = model.SearchByName;
+            modl.streetId = string.IsNullOrEmpty(model.StreetId) ? default(Guid) : Guid.Parse(model.StreetId);
+            modl.wardId = string.IsNullOrEmpty(model.WardId) ? default(Guid) : Guid.Parse(model.WardId);
 
+            TaxPayerModel[] taxpayers = await demandService.ValidTaxpayers(modl);
+            return Ok(new Response
+            {
+                code = MsgCode_Enum.SUCCESS,
+                data = taxpayers
+            });
+        }
     }
 }

@@ -107,7 +107,7 @@ export class DemandNoticeService {
         return this.datataservice.get('dnt/movetoUnbill/' + billno).catch(x => this.datataservice.handleError(x));
     }
 
-    searchInfo(searchModel: DemandNoticeSearch){
+    searchInfo(searchModel: DemandNoticeSearch) {
         let s: any = {
             wardId: searchModel.wardId,
             streetId: searchModel.streetId,
@@ -116,8 +116,20 @@ export class DemandNoticeService {
             lcdaId: null
         };
         return this.datataservice
-        .post('demandnotice/searchinfo/', s)
-        .catch(x => this.datataservice.handleError(x));
+            .post('demandnotice/searchinfo/', s)
+            .catch(x => this.datataservice.handleError(x));
     }
 
+    validTaxpayer(searchModel: DemandNoticeSearch) {
+        let s: any = {
+            wardId: searchModel.wardId,
+            streetId: searchModel.streetId,
+            searchByName: searchModel.searchByName,
+            dateYear: searchModel.dateYear,
+            lcdaId: null
+        };
+        return this.datataservice
+        .post('demandnotice/validtaxpayers/', s)
+        .catch(x => this.datataservice.handleError(x));
+    }
 }

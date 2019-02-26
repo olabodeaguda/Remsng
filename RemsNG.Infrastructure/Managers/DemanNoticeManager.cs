@@ -3,24 +3,27 @@ using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace RemsNG.Infrastructure.Managers
 {
-    public class DemanNoticeManagers : IDemandNoticeManagers
+    public class DemanNoticeManager : IDemandNoticeManagers
     {
+        private TaxpayerRepository _taxpayerRepository;
         private StreetRepository _streetRepository;
         private WardRepository _wardRepository;
         private DemandNoticeRepository demandNoticeDao;
         private DemandNoticeArrearRepository dnaDao;
         private DemandNoticeTaxpayersRepository _dnTaxpayerRepo;
-        public DemanNoticeManagers(DbContext db)
+        public DemanNoticeManager(DbContext db)
         {
             demandNoticeDao = new DemandNoticeRepository(db);
             dnaDao = new DemandNoticeArrearRepository(db);
             _dnTaxpayerRepo = new DemandNoticeTaxpayersRepository(db);
             _wardRepository = new WardRepository(db);
             _streetRepository = new StreetRepository(db);
+            _taxpayerRepository = new TaxpayerRepository(db);
         }
 
         public async Task<Response> Add(DemandNoticeModel demandNotice)
@@ -101,6 +104,20 @@ namespace RemsNG.Infrastructure.Managers
             }
 
             return model;
+        }
+
+        public async Task<TaxPayerModel[]> ValidTaxpayers(DemandNoticeRequestModel model)
+        {
+            DemandNoticeTaxpayersModel[] dntModel = await _dnTaxpayerRepo.Search(model);
+            TaxPayerModel[] taxPayers = await _taxpayerRepository.SearchByDNRequest(model, dntModel.Select(x => x.TaxpayerId).ToArray());
+            return taxPayers;
+        }
+
+        public async Task<bool> AddDemanNotice(DemandNoticeRequestModel model)
+        {
+            // create demandNotice
+            // create ids in 
+            return true;
         }
     }
 }

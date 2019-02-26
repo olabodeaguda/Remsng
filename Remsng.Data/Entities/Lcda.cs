@@ -32,6 +32,8 @@ namespace RemsNG.Data.Entities
         public virtual ICollection<Sector> Sector { get; set; }
         public virtual ICollection<Ward> Ward { get; set; }
 
+        public Domain Domain { get; set; }
+
         public ICollection<UserLcda> UserLcdas { get; set; } = new HashSet<UserLcda>();
     }
 }

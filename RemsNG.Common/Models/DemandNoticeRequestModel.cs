@@ -22,6 +22,10 @@ namespace RemsNG.Common.Models
         public bool isUnbilled { get; set; }
         public bool RunPenalty { get; set; } = false;
         public int RunArrearsCategory { get; set; }
+        public int Period { get; set; }
+        public bool useSingleBill { get; set; }
+
+        public Guid[] TaxpayerIds { get; set; }
     }
 }
 

@@ -292,7 +292,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<TaxPayerModel>> Search(Guid lcdaId, string qu)
         {
-            string[] q = qu.Split(new char[] { ' ' });
+            //string[] q = qu.Split(new char[] { ' ' });
 
             //string query = $"select tbl_taxPayer.*,tbl_company.companyName as companyName, tbl_Address.addressnumber as streetNumber,-1 as totalSize  from tbl_taxPayer " +
             //   $"inner join tbl_company on tbl_company.id = tbl_taxPayer.companyId " +
@@ -309,35 +309,8 @@ namespace RemsNG.Data.Repository
                 .Include(x => x.Company)
                 .Include(x => x.Street)
                 .ThenInclude(x => x.Ward)
-                .Where(x => x.Company.LcdaId == lcdaId);
-
-
-            string subQuery = string.Empty;
-
-            for (int i = 0; i < q.Length; i++)
-            {
-                if (string.IsNullOrEmpty(q[i].Trim()))
-                {
-                    continue;
-                }
-                //if (query != string.Empty && i < q.Length)
-                //{
-                //    query = query + $" union ";
-                //}
-                //string t = $" (tbl_taxPayer.surname like '%{q[i]}%' or tbl_taxPayer.firstname like '%{q[i]}%' " +
-                //$"or tbl_taxPayer.lastname like '%{q[i]}%' " +
-                //$" or tbl_company.companyName like '%{q[i]}%')";
-
-                //if (!string.IsNullOrEmpty(subQuery))
-                //{
-                //    subQuery = subQuery + " and ";
-                //}
-                //subQuery = subQuery + t;
-                query.Where(x => EF.Functions.Like(x.Surname, $"%{q[i]}%") || EF.Functions.Like(x.Firstname, $"%{q[i]}%")
-                || EF.Functions.Like(x.Lastname, $"%{q[i]}%") || EF.Functions.Like(x.Company.CompanyName, $"%{q[i]}%"));
-            }
-
-            //query = query + (string.IsNullOrEmpty(subQuery) ? "" : " or ") + (string.IsNullOrEmpty(subQuery) ? "" : $" ( {subQuery} ) ");
+                .Where(x => x.Company.LcdaId == lcdaId
+                && EF.Functions.Like($"{x.Surname} {x.Firstname} {x.Lastname}".Trim(), $"%{qu.Trim()}%"));
 
             var results = await query.Select(x => new TaxPayerModel
             {
@@ -352,11 +325,14 @@ namespace RemsNG.Data.Repository
                 LastModifiedDate = x.LastModifiedDate,
                 Lastname = x.Lastname,
                 StreetId = x.StreetId.Value,
-                StreetNumber = x.Address.Addressnumber
+                StreetNumber = x.Address.Addressnumber,
+                TaxpayerStatus = x.TaxpayerStatus,
+                Surname = x.Surname,
+                StreetName = x.Street.StreetName,
+                WardName = x.Street.Ward.WardName
             }).ToListAsync();
 
-            return results.Distinct().Where(x => x.TaxpayerStatus == TaxPayerEnum.ACTIVE.ToString()).OrderBy(x => x.Firstname).ToList();
-
+            return results.Distinct().OrderBy(x => x.Firstname).ToList();
         }
 
         public async Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel)

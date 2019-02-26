@@ -122,7 +122,7 @@ namespace RemsNG.Extensions
             services.AddTransient<ICompanyManagers, CompanyManagers>();
             services.AddTransient<IAddressManagers, AddressManagers>();
             services.AddTransient<ICompanyItemManagers, CompanyItemManagers>();
-            services.AddTransient<IDemandNoticeManagers, DemanNoticeManagers>();
+            services.AddTransient<IDemandNoticeManagers, DemanNoticeManager>();
             services.AddTransient<IRunDemandNoticeManagers, RunDemandNoticeManagers>();
             services.AddTransient<IDnTaxpayerManagers, DnTaxpayerManagers>();
             services.AddTransient<IStateManagers, StateManagers>();

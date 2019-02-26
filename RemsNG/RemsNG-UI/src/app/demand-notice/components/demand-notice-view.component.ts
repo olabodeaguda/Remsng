@@ -3,6 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { DemandNoticeSearch } from '../models/demand-notice.search';
 import { DemandNoticeService } from '../services/demand-notice.service';
 import { ToasterService } from 'angular2-toaster';
+import { DemandNoticeViewModel } from '../models/demand-notice-viewmodel';
+import { ResponseModel } from '../../shared/models/response.model';
 @Component({
     selector: 'app-dn-view',
     templateUrl: '../views/demand-notice-view.component.html'
@@ -10,9 +12,11 @@ import { ToasterService } from 'angular2-toaster';
 
 export class DemandNoticeViewComponent implements OnInit {
 
+    masterCheck: boolean = false;
     taxpayers = [];
-    searchModel: DemandNoticeSearch;
+    searchModel: DemandNoticeSearch = new DemandNoticeSearch();
     isLoading: boolean = false;
+    savebatchLoading = false;
     constructor(private activeRouter: ActivatedRoute,
         private demandnoticeService: DemandNoticeService,
         private toasterService: ToasterService) {
@@ -36,5 +40,31 @@ export class DemandNoticeViewComponent implements OnInit {
             });
     }
 
+    getValidTaxpayers() {
+        this.isLoading = true;
+        this.demandnoticeService.validTaxpayer(this.searchModel)
+            .subscribe(response => {
+                const t: ResponseModel = <ResponseModel>response;
+                this.taxpayers = t.data.map(x => new DemandNoticeViewModel(x));
+                this.isLoading = false;
+            }, error => {
+                this.isLoading = false;
 
+            });
+    }
+
+    CheckAll() {
+        this.masterCheck = !this.masterCheck;
+        for (let i = 0; i < this.taxpayers.length; i++) {
+            const model: DemandNoticeViewModel = this.taxpayers[i];
+            if (model.itemCount > 0) {
+                this.taxpayers[i].isChecked = this.masterCheck;
+            }
+        }
+    }
+
+    saveBatch() {
+        const v = this.taxpayers.filter(b=>b.isChecked == true);
+        
+    }
 }

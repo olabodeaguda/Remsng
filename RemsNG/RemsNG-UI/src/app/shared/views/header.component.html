@@ -29,9 +29,21 @@
                 </a>
             </li>
             <li class="active">
-                <a [routerLink]="['/demandnotice']">Demand Notice
+                <!-- <a [routerLink]="['/demandnotice']">Demand Notice
                     <span class="sr-only">(current)</span>
+                </a> -->
+                <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" 
+                aria-expanded="false">Demand Notice
+                    <span class="caret"></span>
                 </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a [routerLink]="['/demandnotice']">Demand Notice by Taxpayer </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['/report']">Demand Notice by batch</a>
+                    </li>
+                </ul>
             </li>
             <li class="active">
                 <a [routerLink]="['/demandnotice/searchtaxpayer']">

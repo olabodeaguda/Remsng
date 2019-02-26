@@ -12,6 +12,7 @@ namespace RemsNG.Common.Models
 
         public Guid Id { get; set; }
         public string Query { get; set; }
+        public string PlainTextQuery { get; set; }
         public string BatchNo { get; set; }
         public string DemandNoticeStatus { get; set; }
         public int BillingYear { get; set; }

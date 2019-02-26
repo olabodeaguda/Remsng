@@ -13,4 +13,5 @@ export class DemandNoticeSearch {
     isUnbilled: boolean = false;
     runPenalty: boolean = false;
     period: string;
+    useSingleBill: boolean = false;
 }

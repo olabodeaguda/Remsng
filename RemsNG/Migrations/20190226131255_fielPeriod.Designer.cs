@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RemsNG.Data;
 
 namespace RemsNG.Migrations
 {
     [DbContext(typeof(RemsDbContext))]
-    partial class RemsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190226131255_fielPeriod")]
+    partial class fielPeriod
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -291,9 +293,9 @@ namespace RemsNG.Migrations
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
-                    b.Property<Guid?>("StreetId");
+                    b.Property<Guid>("StreetId");
 
-                    b.Property<Guid?>("WardId");
+                    b.Property<Guid>("WardId");
 
                     b.HasKey("Id");
 
@@ -1063,11 +1065,13 @@ namespace RemsNG.Migrations
                 {
                     b.HasOne("RemsNG.Data.Entities.Street", "Street")
                         .WithMany()
-                        .HasForeignKey("StreetId");
+                        .HasForeignKey("StreetId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("RemsNG.Data.Entities.Ward", "Ward")
                         .WithMany()
-                        .HasForeignKey("WardId");
+                        .HasForeignKey("WardId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("RemsNG.Data.Entities.DemandNoticeArrears", b =>

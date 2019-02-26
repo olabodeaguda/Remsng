@@ -130,7 +130,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            if (!r.IsUnbilled.Value)
+            if (!r.IsUnbilled)
             {
                 return BadRequest(new Response()
                 {
@@ -176,7 +176,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            if (r.IsUnbilled.Value)
+            if (r.IsUnbilled)
             {
                 return BadRequest(new Response()
                 {
@@ -218,5 +218,6 @@ namespace RemsNG.Controllers
                 PageSize = pageSize
             }, lcdaId));
         }
+
     }
 }

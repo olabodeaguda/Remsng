@@ -21,17 +21,24 @@
                 </div>
                 <div class="box-body">
                     <div class="row">
-                        <div class="col-xs-3"><b>Ward</b>: {{searchModel?.wardName}}</div>
-                        <div class="col-xs-3"><b>Street</b>: {{searchModel?.streetName}}</div>
-                        <div class="col-xs-3"><b>Search Query</b>: {{searchModel?.searchByName}}</div>
-                        <div class="col-xs-3"><b>Billing Year</b>: {{searchModel?.dateYear}}</div>
+                        <div class="col-xs-2"><b>Ward</b>: {{ searchModel.wardName?
+                            searchModel.wardName:'Nil'}}</div>
+                        <div class="col-xs-3"><b>Street</b>: {{searchModel.streetName ? searchModel?.streetName:'Nil'}}</div>
+                        <div class="col-xs-2"><b>Search Query</b>: {{searchModel.searchByName ?
+                            searchModel?.searchByName: 'Nil'}}</div>
+                        <div class="col-xs-2"><b>Billing Year</b>: {{searchModel?.dateYear}}</div>
+                        <div class="col-xs-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="useSingleBill" (change)="searchModel.useSingleBill = !searchModel.useSingleBill">
+                                <label class="form-check-label" for="useSingleBill">Allow single bill number</label>
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="dateYear">Select Arrears Category</label>
-                                <select name="dateYear" class="form-control"
-                                    [(ngModel)]="searchModel.runArrearsCategory">
+                                <select name="dateYear" class="form-control" [(ngModel)]="searchModel.runArrearsCategory">
                                     <option selected="selected" value="-1">Select Arrears Type</option>
                                     <option value="1">1st Quarter</option>
                                     <option value="2">2nd Quarter</option>
@@ -54,23 +61,21 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="isUnbilled"
-                                    [checked]="searchModel.isUnbilled"
+                                <input type="checkbox" class="form-check-input" id="isUnbilled" [checked]="searchModel.isUnbilled"
                                     (change)="searchModel.isUnbilled = !searchModel.isUnbilled">
                                 <label class="form-check-label" for="isUnbilled">Is Unbilled</label>
                             </div>
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="runPenalty"
-                                    [checked]="searchModel.runPenalty"
+                                <input type="checkbox" class="form-check-input" id="runPenalty" [checked]="searchModel.runPenalty"
                                     (change)="searchModel.runPenalty = !searchModel.runPenalty">
                                 <label class="form-check-label" for="runPenalty">Process Penalty</label>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="btn-group form-control" style="border-color: white;">
-                                <button type="submit" class="btn btn-primary" (click)="navigateView()">View</button>
-                                <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary"
-                                    (click)="searchDemandNotice()">Save Batch</button>
+                                <button type="submit" class="btn btn-primary" (click)="getValidTaxpayers()">View</button>
+                                <button [ladda]="savebatchLoading" type="submit" class="btn btn-primary" (click)="saveBatch()">Save
+                                    Batch</button>
                             </div>
                         </div>
                     </div>
@@ -79,7 +84,13 @@
                         <td class="col-md-12">
                             <table class="table table-bordered table-hover">
                                 <thead>
-                        <th></th>
+                        <th>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="masterCheck" [checked]="masterCheck"
+                                    (change)="CheckAll()">
+                                <label class="form-check-label" for="masterCheck">All</label>
+                            </div>
+                        </th>
                         <th>S/N</th>
                         <th>Taxpayer's Name</th>
                         <th>Item Count</th>
@@ -87,7 +98,16 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let data of taxpayers; let i=index">
-
+                                <td>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" [(ngModel)]="data.isChecked" id="{{data.id}}">
+                                        <label class="form-check-label" for="runAll"></label>
+                                    </div>
+                                </td>
+                                <td>{{i+1}}</td>
+                                <td>{{data.taxpayerName}}</td>
+                                <td>{{data.itemCount}}</td>
+                                <td>{{data.itemCount > 0?"Yes":"No"}}</td>
                             </tr>
                             <tr *ngIf="taxpayers.length < 1">
                                 <td style="width:100%" colspan="5">No record !!!</td>
