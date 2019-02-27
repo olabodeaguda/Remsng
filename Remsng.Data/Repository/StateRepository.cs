@@ -31,9 +31,9 @@ namespace RemsNG.Data.Repository
             string query = $" select distinct st.* from tbl_domain as dm " +
                 $"inner join tbl_lcda as lc on lc.domainId = dm.id " +
                 $"inner join tbl_state as st on st.id = dm.stateId " +
-                $"where lc.id ='{lcdaId}'";
+                $"where lc.id ='{0}'";
             var x = await db.Set<State>()
-                .FromSql(query).FirstOrDefaultAsync();
+                .FromSql(query, new { lcdaId }).FirstOrDefaultAsync();
             if (x == null)
             {
                 return null;

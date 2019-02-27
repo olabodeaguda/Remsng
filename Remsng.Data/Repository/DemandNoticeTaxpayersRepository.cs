@@ -779,34 +779,38 @@ namespace RemsNG.Data.Repository
             return result;
         }
 
-        public async Task<DemandNoticeTaxpayersModel[]> ConstructByTaxpayerIds(Guid[] ids, DemandNoticeRequestModel model)
+        public async Task<DemandNoticeTaxpayersModel[]> ConstructByTaxpayerIds(DemandNoticeRequestModel model, Dictionary<string, ImagesModel> images)
         {
+            string LcdaLogoFileName = images[ImgTypesEnum.LOGO.ToString()].ImgFilename;
+            string RevCoodinatorSigFilen = images[ImgTypesEnum.REVENUE_COORDINATOR_SIGNATURE.ToString()].ImgFilename;
+            string CouncilTreasurerSigFilen = images[ImgTypesEnum.COUNCIL_TREASURER_SIGNATURE.ToString()].ImgFilename;
+
             var query = db.Set<TaxPayer>()
                 .Include(x => x.Street)
                 .ThenInclude(x => x.Ward)
                 .ThenInclude(x => x.Lcda)
                 .ThenInclude(r => r.Domain)
                 .Include(x => x.Address)
-                .Where(x => x.TaxpayerStatus == "ACTIVE" && ids.Any(p => p == x.Id))
+                .Where(x => x.TaxpayerStatus == "ACTIVE" && model.TaxpayerIds.Any(p => p == x.Id))
                 .Select(x => new DemandNoticeTaxpayersModel()
                 {
-                    AddressName = x.Address.Addressnumber,
+                    AddressName = $"{x.Address.Addressnumber}, {x.Street.StreetName}",
                     BillingYr = model.dateYear,
-                    //CouncilTreasurerMobile = x.CouncilTreasurerMobile,
-                    //CouncilTreasurerSigFilen = x.CouncilTreasurerSigFilen,
+                    CouncilTreasurerSigFilen = CouncilTreasurerSigFilen,
                     CreatedBy = x.CreatedBy,
                     DateCreated = x.DateCreated,
                     DemandNoticeStatus = "PENDING",
                     DomainName = x.Street.Ward.Lcda.Domain.DomainName,
-                    Id = x.Id,
+                    Id = Guid.NewGuid(),
                     IsUnbilled = model.isUnbilled,
                     Lastmodifiedby = x.Lastmodifiedby,
                     LastModifiedDate = x.LastModifiedDate,
-                    //LcdaAddress = x.LcdaAddress,
-                    //LcdaLogoFileName = x.LcdaLogoFileName,
+                    LcdaAddress = model.LcdaAddress,
+                    LcdaState = model.LcdaState,
+                    CouncilTreasurerMobile = model.TreasurerMobile,
+                    LcdaLogoFileName = LcdaLogoFileName,
                     LcdaName = x.Street.Ward.Lcda.LcdaName,
-                    //LcdaState = x.LcdaState,
-                    //RevCoodinatorSigFilen = x.RevCoodinatorSigFilen,
+                    RevCoodinatorSigFilen = RevCoodinatorSigFilen,
                     TaxpayerId = x.Id,
                     TaxpayersName = $"{x.Surname} {x.Firstname} {x.Lastname}",
                     WardName = x.Street.Ward.WardName,
@@ -815,7 +819,5 @@ namespace RemsNG.Data.Repository
 
             return await query.ToArrayAsync();
         }
-
-
     }
 }

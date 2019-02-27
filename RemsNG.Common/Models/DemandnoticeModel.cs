@@ -28,6 +28,8 @@ namespace RemsNG.Common.Models
         public DemandNoticeRequestModel DemandNoticeRequest { get; set; }
 
         public virtual ICollection<DemandNoticeItemModel> DemandNoticeItem { get; set; }
+
+        public ICollection<DemandNoticeTaxpayersModel> TaxpayerModel { get; set; }
         public int? TotalSize { get; set; }
     }
 }

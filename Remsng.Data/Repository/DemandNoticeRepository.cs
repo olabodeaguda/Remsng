@@ -23,19 +23,6 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> Add(DemandNoticeModel demandNotice)
         {
-            //DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addDemandNotice @p0,@p1,@p2,@p3,@p4,@p5,@p6,@p7,@p8,@p9", new object[] {
-            //    demandNotice.Id,
-            //    demandNotice.Query,
-            //    demandNotice.BatchNo,
-            //    demandNotice.DemandNoticeStatus,
-            //    demandNotice.BillingYear,
-            //    demandNotice.LcdaId,
-            //    demandNotice.CreatedBy,
-            //    demandNotice.WardId,
-            //    demandNotice.StreetId,
-            //    demandNotice.IsUnbilled
-            //}).FirstOrDefaultAsync();
-
             db.Set<DemandNotice>().Add(new DemandNotice()
             {
                 BatchNo = demandNotice.BatchNo,
@@ -389,6 +376,31 @@ namespace RemsNG.Data.Repository
         {
             var result = await db.Set<DemandNotice>()
                 .FromSql("sp_dequeueDemandNotice").FirstOrDefaultAsync();
+            if (result == null)
+            {
+                return null;
+            }
+            return new DemandNoticeModel()
+            {
+                BatchNo = result.BatchNo,
+                BillingYear = result.BillingYear,
+                CreatedBy = result.CreatedBy,
+                DateCreated = result.DateCreated,
+                DemandNoticeStatus = result.DemandNoticeStatus,
+                Id = result.Id,
+                IsUnbilled = result.IsUnbilled,
+                Lastmodifiedby = result.Lastmodifiedby,
+                LastModifiedDate = result.LastModifiedDate,
+                LcdaId = result.LcdaId,
+                Query = result.Query,
+                StreetId = result.StreetId.Value,
+                WardId = result.WardId.Value
+            };
+        }
+
+        public async Task<DemandNoticeModel> GetLastEntry()
+        {
+            var result = await db.Set<DemandNotice>().OrderByDescending(x => x.DateCreated).FirstOrDefaultAsync();
             if (result == null)
             {
                 return null;

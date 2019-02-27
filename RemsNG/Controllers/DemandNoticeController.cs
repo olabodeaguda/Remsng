@@ -194,7 +194,21 @@ namespace RemsNG.Controllers
         [HttpPost("run/bytaxpayer")]
         public async Task<IActionResult> PostDemandNoticeRequest([FromBody] DemandNoticeRequestModel demandNoticeRequest)
         {
-            return Created("/demandNotice", null);
+            bool result = await demandService.AddDemanNotice(demandNoticeRequest);
+            if (!result)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "request failed"
+                });
+            }
+
+            return Created("/demandNotice", new Response
+            {
+                code = MsgCode_Enum.SUCCESS,
+                description = "Demand notice has been added for onward processing"
+            });
         }
 
 

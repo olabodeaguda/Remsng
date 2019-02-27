@@ -108,7 +108,7 @@ namespace RemsNG.Data.Repository
         public async Task<List<AddressModel>> ByOwnersId(Guid id)
         {
             var address = await db.Set<Address>()
-                .Join(db.Set<Street>(), x => x.StreetId, str => str.Id, (x, str) => new AddressModel
+                .Include(x => x.Street).Select(x => new AddressModel
                 {
                     Addressnumber = x.Addressnumber,
                     CreatedBy = x.CreatedBy,
@@ -119,7 +119,7 @@ namespace RemsNG.Data.Repository
                     Lcdaid = x.Lcdaid,
                     OwnerId = x.OwnerId,
                     StreetId = x.StreetId,
-                    StreetName = str.StreetName
+                    StreetName = x.Street.StreetName
                 })
                 .Where(x => x.OwnerId == id).ToListAsync();//.FromSql("sp_AddressByOwnerId @p0", new object[] { id }).ToListAsync();
             return address;

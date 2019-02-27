@@ -26,6 +26,10 @@ namespace RemsNG.Common.Models
         public bool useSingleBill { get; set; }
 
         public Guid[] TaxpayerIds { get; set; }
+
+        public string LcdaAddress { get; set; }
+        public string LcdaState { get; set; }
+        public string TreasurerMobile { get; set; }
     }
 }
 

@@ -18,5 +18,8 @@ namespace RemsNG.Data.Entities
 
         [ForeignKey("OwnerId")]
         public TaxPayer Taxpayer { get; set; }
+
+        [ForeignKey("StreetId")]
+        public Street Street { get; set; }
     }
 }
