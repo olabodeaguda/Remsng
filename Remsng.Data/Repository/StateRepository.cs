@@ -32,8 +32,11 @@ namespace RemsNG.Data.Repository
                 $"inner join tbl_lcda as lc on lc.domainId = dm.id " +
                 $"inner join tbl_state as st on st.id = dm.stateId " +
                 $"where lc.id ='{0}'";
-            var x = await db.Set<State>()
-                .FromSql(query, new { lcdaId }).FirstOrDefaultAsync();
+            var x = await db.Set<Lcda>()
+                .Include(d => d.Domain)
+                .ThenInclude(s => s.State)
+                .Where(r => r.Id == lcdaId)
+                .Select(ss => ss.Domain.State).FirstOrDefaultAsync();
             if (x == null)
             {
                 return null;

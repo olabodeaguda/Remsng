@@ -14,4 +14,5 @@ export class DemandNoticeSearch {
     runPenalty: boolean = false;
     period: string;
     useSingleBill: boolean = false;
+    taxpayerIds = [];
 }

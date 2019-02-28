@@ -43,6 +43,24 @@ export class DemandNoticeService {
 
         return this.datataservice.post('demandnotice', s).catch(x => this.datataservice.handleError(x));
     }
+    add2(searchModel: DemandNoticeSearch) {
+        let s = {
+            wardId: searchModel.wardId,
+            streetId: searchModel.streetId.length <= 0 ? null : searchModel.streetId,
+            searchByName: null,
+            dateYear: searchModel.dateYear <= 0 ? null : searchModel.dateYear,
+            lcdaId: null,
+            RunArrears: searchModel.runArrears,
+            IsUnbilled: searchModel.isUnbilled,
+            RunPenalty: searchModel.runPenalty,
+            RunArrearsCategory: searchModel.runArrearsCategory,
+            useSingleBill: searchModel.useSingleBill,
+            Period: searchModel.period,
+            taxpayerIds: searchModel.taxpayerIds
+        };
+
+        return this.datataservice.post('demandnotice/run/bytaxpayer', s).catch(x => this.datataservice.handleError(x));
+    }
 
     searchDemandNotice(searchModel: DemandNoticeSearch, pageModel: PageModel) {
         this.datataservice.addToHeader('pageNum', pageModel.pageNum.toString());

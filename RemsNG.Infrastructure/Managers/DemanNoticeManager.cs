@@ -148,7 +148,7 @@ namespace RemsNG.Infrastructure.Managers
             var lastDN = await demandNoticeDao.GetLastEntry();
             if (lastDN != null)
             {
-                string serial = lastDN.BatchNo.Substring(0, lastDN.BatchNo.Length - 7);
+                string serial = lastDN.BatchNo.Substring(0, lastDN.BatchNo.Length);
                 batchNo = int.Parse(serial);
             }
 

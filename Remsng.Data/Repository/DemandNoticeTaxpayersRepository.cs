@@ -781,9 +781,9 @@ namespace RemsNG.Data.Repository
 
         public async Task<DemandNoticeTaxpayersModel[]> ConstructByTaxpayerIds(DemandNoticeRequestModel model, Dictionary<string, ImagesModel> images)
         {
-            string LcdaLogoFileName = images[ImgTypesEnum.LOGO.ToString()].ImgFilename;
-            string RevCoodinatorSigFilen = images[ImgTypesEnum.REVENUE_COORDINATOR_SIGNATURE.ToString()].ImgFilename;
-            string CouncilTreasurerSigFilen = images[ImgTypesEnum.COUNCIL_TREASURER_SIGNATURE.ToString()].ImgFilename;
+            string LcdaLogoFileName = images.ContainsKey(ImgTypesEnum.LOGO.ToString()) ? images[ImgTypesEnum.LOGO.ToString()].ImgFilename : string.Empty;
+            string RevCoodinatorSigFilen = images.ContainsKey(ImgTypesEnum.REVENUE_COORDINATOR_SIGNATURE.ToString()) ? images[ImgTypesEnum.REVENUE_COORDINATOR_SIGNATURE.ToString()].ImgFilename : string.Empty;
+            string CouncilTreasurerSigFilen = images.ContainsKey(ImgTypesEnum.COUNCIL_TREASURER_SIGNATURE.ToString()) ? images[ImgTypesEnum.COUNCIL_TREASURER_SIGNATURE.ToString()].ImgFilename : string.Empty;
 
             var query = db.Set<TaxPayer>()
                 .Include(x => x.Street)

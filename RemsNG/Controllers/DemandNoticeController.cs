@@ -194,6 +194,17 @@ namespace RemsNG.Controllers
         [HttpPost("run/bytaxpayer")]
         public async Task<IActionResult> PostDemandNoticeRequest([FromBody] DemandNoticeRequestModel demandNoticeRequest)
         {
+            Guid lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
+            bool ismosdmin = ClaimExtension.IsMosAdmin(User.Claims.ToArray());
+            if (lcdaId == default(Guid) && !ismosdmin)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Bad request"
+                });
+            }
+            demandNoticeRequest.lcdaId = lcdaId;
             bool result = await demandService.AddDemanNotice(demandNoticeRequest);
             if (!result)
             {

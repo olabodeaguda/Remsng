@@ -49,7 +49,6 @@ export class DemandNoticeViewComponent implements OnInit {
                 this.isLoading = false;
             }, error => {
                 this.isLoading = false;
-
             });
     }
 
@@ -64,7 +63,22 @@ export class DemandNoticeViewComponent implements OnInit {
     }
 
     saveBatch() {
-        const v = this.taxpayers.filter(b=>b.isChecked == true);
-        
+        this.searchModel.taxpayerIds = this.taxpayers.filter(b => b.isChecked == true).map(x => x.id);
+        if (this.searchModel.taxpayerIds.length <= 0) {
+            return;
+        }
+        this.isLoading = true;
+        this.demandnoticeService.add2(this.searchModel)
+            .subscribe(response => {
+                this.isLoading = false;
+                if (response.code == '00') {
+                    this.toasterService.pop('success', 'Successful', response.description);
+                } else {                    
+                    this.toasterService.pop('error', 'Error', response.description);
+                }
+            }, error => {
+                this.isLoading = false;
+                this.toasterService.pop('error', 'Error', error);
+            });
     }
 }
