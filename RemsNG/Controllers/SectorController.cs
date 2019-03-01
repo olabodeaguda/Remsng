@@ -14,8 +14,8 @@ namespace RemsNG.Controllers
     [Route("api/v1/sector")]
     public class SectorController : Controller
     {
-        private readonly ISectorManagers sectorService;
-        public SectorController(ISectorManagers _sectorService)
+        private readonly ISectorManager sectorService;
+        public SectorController(ISectorManager _sectorService)
         {
             sectorService = _sectorService;
         }

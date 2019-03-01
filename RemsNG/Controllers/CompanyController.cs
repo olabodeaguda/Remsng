@@ -15,11 +15,11 @@ namespace RemsNG.Controllers
     [Route("api/v1/company")]
     public class CompanyController : Controller
     {
-        private ICompanyManagers companyService;
-        private ILcdaManagers lcdaService;
-        private IDemandNoticeTaxpayerManagers demandNoticeTaxpayerService;
-        public CompanyController(ICompanyManagers _companyservice, ILcdaManagers _lcdaService,
-            IDemandNoticeTaxpayerManagers _demandNoticeTaxpayerService)
+        private ICompanyManager companyService;
+        private ILcdaManager lcdaService;
+        private IDemandNoticeTaxpayerManager demandNoticeTaxpayerService;
+        public CompanyController(ICompanyManager _companyservice, ILcdaManager _lcdaService,
+            IDemandNoticeTaxpayerManager _demandNoticeTaxpayerService)
         {
             companyService = _companyservice;
             lcdaService = _lcdaService;

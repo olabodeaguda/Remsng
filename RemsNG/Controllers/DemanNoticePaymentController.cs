@@ -20,17 +20,17 @@ namespace RemsNG.Controllers
     [Route("api/v1/payment")]
     public class DemanNoticePaymentController : Controller
     {
-        private readonly IItemPenaltyManagers _penaltyService;
-        private readonly IDNPaymentHistoryManagers dNPaymentHistoryService;
-        private readonly IDemandNoticeTaxpayerManagers demandNoticeTaxpayerService;
+        private readonly IItemPenaltyManager _penaltyService;
+        private readonly IDNPaymentHistoryManager dNPaymentHistoryService;
+        private readonly IDemandNoticeTaxpayerManager demandNoticeTaxpayerService;
         private ILogger logger;
-        private IDNAmountDueMgtManagers amountDueMgtService;
-        private IAbstractManagers abstractService;
-        public DemanNoticePaymentController(IDNPaymentHistoryManagers _dNPaymentHistoryService,
-            IDemandNoticeTaxpayerManagers _demandNoticeTaxpayerService,
-            ITaxpayerManagers _taxpayerService, ILoggerFactory loggerFactory,
-            IDNAmountDueMgtManagers _amountDueMgtService, IAbstractManagers _abstractService,
-            IItemPenaltyManagers penaltyService)
+        private IDNAmountDueMgtManager amountDueMgtService;
+        private IAbstractManager abstractService;
+        public DemanNoticePaymentController(IDNPaymentHistoryManager _dNPaymentHistoryService,
+            IDemandNoticeTaxpayerManager _demandNoticeTaxpayerService,
+            ITaxpayerManager _taxpayerService, ILoggerFactory loggerFactory,
+            IDNAmountDueMgtManager _amountDueMgtService, IAbstractManager _abstractService,
+            IItemPenaltyManager penaltyService)
         {
             dNPaymentHistoryService = _dNPaymentHistoryService;
             dNPaymentHistoryService = _dNPaymentHistoryService;

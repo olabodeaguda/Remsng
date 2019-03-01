@@ -205,7 +205,8 @@ namespace RemsNG.Data.Repository
                 Lastmodifiedby = dnt.Lastmodifiedby,
                 LastModifiedDate = dnt.LastModifiedDate,
                 TaxpayersName = dnt.TaxpayersName,
-                WardName = dnt.WardName
+                WardName = dnt.WardName,
+                Period = dnt.Period
             }).ToArray();
             db.Set<DemandNoticeTaxpayers>().AddRange(d);
             await db.SaveChangesAsync();
@@ -857,7 +858,8 @@ namespace RemsNG.Data.Repository
                     WardName = x.Street.Ward.WardName,
                     StreetName = x.Street.StreetName,
                     DnId = model.DemandNoticeId,
-                    BillingNumber = billNumber.ToString()
+                    BillingNumber = billNumber.ToString(),
+                    Period = model.Period
                 }).ToArrayAsync();
             DemandNoticeTaxpayersModel[] lst = new DemandNoticeTaxpayersModel[query.Length];
 

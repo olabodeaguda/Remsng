@@ -13,8 +13,8 @@ namespace RemsNG.Controllers
     [Route("api/v1/taxpayercategory")]
     public class TaxpayerCategoryController : Controller
     {
-        private ITaxpayerCategoryManagers taxpayerCategoryService;
-        public TaxpayerCategoryController(ITaxpayerCategoryManagers _taxpayerCategoryService)
+        private ITaxpayerCategoryManager taxpayerCategoryService;
+        public TaxpayerCategoryController(ITaxpayerCategoryManager _taxpayerCategoryService)
         {
             taxpayerCategoryService = _taxpayerCategoryService;
         }

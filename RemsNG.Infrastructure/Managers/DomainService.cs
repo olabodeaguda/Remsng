@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Infrastructure.Managers
 {
-    public class DomainManagers : IDomainManagers
+    public class DomainManager : IDomainManager
     {
         private readonly DomainRepository domainDao;
 
-        public DomainManagers(DbContext _db)
+        public DomainManager(DbContext _db)
         {
             domainDao = new DomainRepository(_db);
         }

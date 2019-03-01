@@ -15,9 +15,9 @@ namespace RemsNG.Controllers
     [Route("api/v1/itempenalty")]
     public class ItemPenaltyController : Controller
     {
-        private IItemPenaltyManagers itemPenaltyService;
-        private IItemManagers itemservice;
-        public ItemPenaltyController(IItemPenaltyManagers _itemPenaltyService, IItemManagers _itemservice)
+        private IItemPenaltyManager itemPenaltyService;
+        private IItemManager itemservice;
+        public ItemPenaltyController(IItemPenaltyManager _itemPenaltyService, IItemManager _itemservice)
         {
             itemPenaltyService = _itemPenaltyService;
             itemservice = _itemservice;

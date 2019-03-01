@@ -163,7 +163,7 @@ export class DemandNoticeComponent implements OnInit {
     }
 
     runArrears(lt) {
-
+        
     }
 
     runPenalty(lt) {

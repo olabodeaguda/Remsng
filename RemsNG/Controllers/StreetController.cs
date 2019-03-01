@@ -14,9 +14,9 @@ namespace RemsNG.Controllers
     [Route("api/v1/street")]
     public class StreetController : Controller
     {
-        private readonly IStreetManagers streetService;
+        private readonly IStreetManager streetService;
 
-        public StreetController(IStreetManagers _streetService)
+        public StreetController(IStreetManager _streetService)
         {
             streetService = _streetService;
         }

@@ -15,11 +15,11 @@ namespace RemsNG.Controllers
     [Route("api/v1/lcda")]
     public class LcdaController : Controller
     {
-        private ILcdaManagers lcdaService;
-        private IUserManagers userservice;
-        private IRoleManagers roleService;
-        public LcdaController(ILcdaManagers _lcdaService,
-            IUserManagers _userservice, IRoleManagers _roleService)
+        private ILcdaManager lcdaService;
+        private IUserManager userservice;
+        private IRoleManager roleService;
+        public LcdaController(ILcdaManager _lcdaService,
+            IUserManager _userservice, IRoleManager _roleService)
         {
             lcdaService = _lcdaService;
             userservice = _userservice;

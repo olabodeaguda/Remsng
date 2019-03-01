@@ -20,14 +20,14 @@ namespace RemsNG.Controllers
     {
         private IHostingEnvironment hostingEnvironment;
         private INodeServices nodeServices;
-        private IDnDownloadManagers dnd;
+        private IDnDownloadManager dnd;
         private readonly ILogger logger;
-        private readonly IBatchDwnRequestManagers batchRequestService;
-        private IDNPaymentHistoryManagers paymentHistoryService;
+        private readonly IBatchDwnRequestManager batchRequestService;
+        private IDNPaymentHistoryManager paymentHistoryService;
         public DemandNoticeDownloadController(IHostingEnvironment _hostingEnvironment,
-            INodeServices _nodeServices, IDnDownloadManagers _dnd,
-            IBatchDwnRequestManagers _batchRequestService,
-            IDNPaymentHistoryManagers _paymentHistoryService,
+            INodeServices _nodeServices, IDnDownloadManager _dnd,
+            IBatchDwnRequestManager _batchRequestService,
+            IDNPaymentHistoryManager _paymentHistoryService,
             ILoggerFactory loggerFactory)
         {
             hostingEnvironment = _hostingEnvironment;
@@ -169,6 +169,12 @@ namespace RemsNG.Controllers
             HttpContext.Response.ContentType = "application/pdf";
             HttpContext.Response.Body.Write(result, 0, result.Length);
             return new ContentResult();
+        }
+
+        [HttpPost("downloadbytx")]
+        public async Task<IActionResult> DownloadDNbyTaxpayer([FromBody] Guid[] dnId)
+        {
+            return Ok();
         }
     }
 }

@@ -12,9 +12,9 @@ namespace RemsNG.Controllers
     [Route("api/v1/permission")]
     public class PermissionController : Controller
     {
-        IPermissionManagers permissionService;
-        IRoleManagers roleservice;
-        public PermissionController(IPermissionManagers _permissionService, IRoleManagers _roleservice)
+        IPermissionManager permissionService;
+        IRoleManager roleservice;
+        public PermissionController(IPermissionManager _permissionService, IRoleManager _roleservice)
         {
             permissionService = _permissionService;
             roleservice = _roleservice;

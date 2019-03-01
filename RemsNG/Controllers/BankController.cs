@@ -11,8 +11,8 @@ namespace RemsNG.Controllers
     [Route("api/v1/banks")]
     public class BankController : Controller
     {
-        private readonly IBankManagers bankService;
-        public BankController(IBankManagers _bankService)
+        private readonly IBankManager bankService;
+        public BankController(IBankManager _bankService)
         {
             bankService = _bankService;
         }

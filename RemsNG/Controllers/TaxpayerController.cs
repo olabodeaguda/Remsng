@@ -18,16 +18,16 @@ namespace RemsNG.Controllers
     [Route("api/v1/taxpayer")]
     public class TaxpayerController : Controller
     {
-        private ITaxpayerManagers taxpayerService;
-        private ILcdaManagers lcdaService;
+        private ITaxpayerManager taxpayerService;
+        private ILcdaManager lcdaService;
         private ILogger logger;
-        private IAddressManagers addressservice;
-        private ICompanyManagers companyService;
-        private IStreetManagers streetservice;
-        public TaxpayerController(ITaxpayerManagers _taxpayerService, ILcdaManagers _lcdaService,
-            ILoggerFactory _logger, IAddressManagers address,
-            ICompanyManagers _companyservice,
-            IStreetManagers _streetservice)
+        private IAddressManager addressservice;
+        private ICompanyManager companyService;
+        private IStreetManager streetservice;
+        public TaxpayerController(ITaxpayerManager _taxpayerService, ILcdaManager _lcdaService,
+            ILoggerFactory _logger, IAddressManager address,
+            ICompanyManager _companyservice,
+            IStreetManager _streetservice)
         {
             taxpayerService = _taxpayerService;
             lcdaService = _lcdaService;

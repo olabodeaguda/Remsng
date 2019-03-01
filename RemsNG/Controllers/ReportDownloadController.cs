@@ -20,16 +20,16 @@ namespace RemsNG.Controllers
     [Route("api/v1/report")]
     public class ReportDownloadController : Controller
     {
-        private readonly ITaxpayerManagers _taxpayerService;
-        private readonly IReportManagers reportService;
+        private readonly ITaxpayerManager _taxpayerService;
+        private readonly IReportManager reportService;
         private readonly IExcelService excelService;
-        private readonly ILcdaManagers lcdaService;
-        private readonly IDNPaymentHistoryManagers dNPaymentHistoryService;
+        private readonly ILcdaManager lcdaService;
+        private readonly IDNPaymentHistoryManager dNPaymentHistoryService;
         private readonly IHostingEnvironment hostingEnvironment;
-        public ReportDownloadController(IReportManagers _reportService,
-            IExcelService _excelService, ILcdaManagers _lcdaService,
-            IDNPaymentHistoryManagers _dNPaymentHistoryService,
-            IHostingEnvironment _hostingEnvironment, ITaxpayerManagers taxpayerService)
+        public ReportDownloadController(IReportManager _reportService,
+            IExcelService _excelService, ILcdaManager _lcdaService,
+            IDNPaymentHistoryManager _dNPaymentHistoryService,
+            IHostingEnvironment _hostingEnvironment, ITaxpayerManager taxpayerService)
         {
             reportService = _reportService;
             excelService = _excelService;

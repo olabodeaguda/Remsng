@@ -16,8 +16,8 @@ namespace RemsNG.Controllers
     [Route("api/v1/amountdue")]
     public class DNAmountDueMgtController : Controller
     {
-        private IDNAmountDueMgtManagers amountDueMgtService;
-        public DNAmountDueMgtController(IDNAmountDueMgtManagers _amountDueMgtService)
+        private IDNAmountDueMgtManager amountDueMgtService;
+        public DNAmountDueMgtController(IDNAmountDueMgtManager _amountDueMgtService)
         {
             amountDueMgtService = _amountDueMgtService;
         }

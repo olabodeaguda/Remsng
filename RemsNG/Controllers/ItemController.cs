@@ -13,8 +13,8 @@ namespace RemsNG.Controllers
     [Route("api/v1/item")]
     public class ItemController : Controller
     {
-        IItemManagers itemService;
-        public ItemController(IItemManagers _itemService)
+        IItemManager itemService;
+        public ItemController(IItemManager _itemService)
         {
             itemService = _itemService;
         }

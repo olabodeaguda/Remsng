@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Infrastructure.Managers
 {
-    public class DemanNoticeManager : IDemandNoticeManagers
+    public class DemanNoticeManager : IDemandNoticeManager
     {
         private LcdaPropertyRepository _lcdaPropertyRepo;
         private StateRepository _stateRepository;
@@ -141,6 +141,10 @@ namespace RemsNG.Infrastructure.Managers
             if (model.lcdaId == default(Guid))
             {
                 throw new InvalidCredentialsException("Request is invalid");
+            }
+            if (model.Period < 0)
+            {
+                throw new InvalidCredentialsException("Period is required");
             }
 
             if (model.TaxpayerIds.Length <= 0)

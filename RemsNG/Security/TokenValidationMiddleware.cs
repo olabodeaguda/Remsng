@@ -20,7 +20,7 @@ namespace RemsNG.Security
             this.next = next;
         }
 
-        public async Task Invoke(HttpContext context, ILoggerFactory loggerFactory, IUserManagers userService)
+        public async Task Invoke(HttpContext context, ILoggerFactory loggerFactory, IUserManager userService)
         {
             logger = loggerFactory;
             try

@@ -16,12 +16,12 @@ namespace RemsNG.Controllers
     [Route("api/v1/demandnotice")]
     public class DemandNoticeController : Controller
     {
-        private IDemandNoticeManagers demandService;
-        private IStreetManagers streetService;
-        private IWardManagers wardService;
-        private IDemandNoticeTaxpayerManagers dnTaxpayerService;
-        public DemandNoticeController(IDemandNoticeManagers _demandService, IStreetManagers _streetService,
-            IWardManagers _wardService, IDemandNoticeTaxpayerManagers _dnTaxpayerService)
+        private IDemandNoticeManager demandService;
+        private IStreetManager streetService;
+        private IWardManager wardService;
+        private IDemandNoticeTaxpayerManager dnTaxpayerService;
+        public DemandNoticeController(IDemandNoticeManager _demandService, IStreetManager _streetService,
+            IWardManager _wardService, IDemandNoticeTaxpayerManager _dnTaxpayerService)
         {
             demandService = _demandService;
             streetService = _streetService;
@@ -431,6 +431,18 @@ namespace RemsNG.Controllers
                 code = MsgCode_Enum.SUCCESS,
                 data = taxpayers
             });
+        }
+
+        [HttpPost("runarrears")]
+        public async Task<IActionResult> RunArrears([FromBody] Guid[] dnId)
+        {
+            return Ok();
+        }
+
+        [HttpPost("runpenalty")]
+        public async Task<IActionResult> RunPenalty([FromBody] Guid[] dnId)
+        {
+            return Ok();
         }
     }
 }

@@ -12,9 +12,9 @@ namespace RemsNG.Controllers
     [Route("api/v1/address")]
     public class AddressController : Controller
     {
-        private IAddressManagers addressservice;
+        private IAddressManager addressservice;
 
-        public AddressController(IAddressManagers _addressservice)
+        public AddressController(IAddressManager _addressservice)
         {
             addressservice = _addressservice;
         }

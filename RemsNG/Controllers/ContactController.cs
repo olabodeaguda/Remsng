@@ -13,9 +13,9 @@ namespace RemsNG.Controllers
     [Route("api/v1/contact")]
     public class ContactController : Controller
     {
-        private IContactManagers contactService;
-        private IUserManagers userService;
-        public ContactController(IUserManagers _userService, IContactManagers _contactService)
+        private IContactManager contactService;
+        private IUserManager userService;
+        public ContactController(IUserManager _userService, IContactManager _contactService)
         {
             contactService = _contactService;
             userService = _userService;

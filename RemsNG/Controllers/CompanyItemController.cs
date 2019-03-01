@@ -12,8 +12,8 @@ namespace RemsNG.Controllers
     [Route("api/v1/companyitem")]
     public class CompanyItemController : Controller
     {
-        private ICompanyItemManagers companyItemService;
-        public CompanyItemController(ICompanyItemManagers _companyItemService)
+        private ICompanyItemManager companyItemService;
+        public CompanyItemController(ICompanyItemManager _companyItemService)
         {
             companyItemService = _companyItemService;
         }

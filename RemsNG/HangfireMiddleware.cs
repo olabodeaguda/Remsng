@@ -17,7 +17,7 @@ namespace RemsNG
         }
 
         public async Task Invoke(HttpContext context, ILoggerFactory loggerFactory,
-            IRunDemandNoticeManagers runDemandNoticeService)
+            IRunDemandNoticeManager runDemandNoticeService)
         {
             logger = loggerFactory.CreateLogger("Recurring job scheduler");
 

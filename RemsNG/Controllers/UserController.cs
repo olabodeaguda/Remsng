@@ -21,13 +21,13 @@ namespace RemsNG.Controllers
     public class UserController : Controller
     {
         private readonly ILogger logger;
-        private readonly IUserManagers userService;
-        private readonly IDomainManagers domainService;
-        private readonly ILcdaManagers lcdaService;
-        private readonly IRoleManagers roleService;
-        public UserController(IUserManagers _userService,
-            ILoggerFactory loggerFactory, IDomainManagers _domainService,
-            ILcdaManagers _lcdaService, IRoleManagers _roleservice)
+        private readonly IUserManager userService;
+        private readonly IDomainManager domainService;
+        private readonly ILcdaManager lcdaService;
+        private readonly IRoleManager roleService;
+        public UserController(IUserManager _userService,
+            ILoggerFactory loggerFactory, IDomainManager _domainService,
+            ILcdaManager _lcdaService, IRoleManager _roleservice)
         {
             userService = _userService;
             domainService = _domainService;

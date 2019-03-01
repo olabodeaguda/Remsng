@@ -20,12 +20,12 @@ namespace RemsNG.Controllers
     public class DomainController : Controller
     {
         private readonly ILogger logger;
-        private readonly IDomainManagers domainService;
-        private readonly IUserManagers userService;
-        private readonly ILcdaManagers lcdaService;
-        public DomainController(IUserManagers _userService,
-            IDomainManagers _domainService, ILoggerFactory loggerFactory,
-            ILcdaManagers _lcdaService)
+        private readonly IDomainManager domainService;
+        private readonly IUserManager userService;
+        private readonly ILcdaManager lcdaService;
+        public DomainController(IUserManager _userService,
+            IDomainManager _domainService, ILoggerFactory loggerFactory,
+            ILcdaManager _lcdaService)
         {
             userService = _userService;
             domainService = _domainService;

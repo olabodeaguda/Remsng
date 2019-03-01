@@ -19,9 +19,9 @@ namespace RemsNG.Controllers
     public class MediaController : Controller
     {
         private IHostingEnvironment hostingEnvironment;
-        private IImageManagers imageService;
+        private IImageManager imageService;
         public MediaController(IHostingEnvironment _hostingEnvironment,
-            IImageManagers _imageService)
+            IImageManager _imageService)
         {
             hostingEnvironment = _hostingEnvironment;
             imageService = _imageService;

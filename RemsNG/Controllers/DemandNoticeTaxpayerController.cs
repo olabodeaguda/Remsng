@@ -16,10 +16,10 @@ namespace RemsNG.Controllers
     [Route("api/v1/dnt")]
     public class DemandNoticeTaxpayerController : Controller
     {
-        private IDnTaxpayerManagers dnTaxpayer;
-        private IDemandNoticeTaxpayerManagers demandNoticeTaxpayerService;
-        public DemandNoticeTaxpayerController(IDnTaxpayerManagers _dnTaxpayer,
-            IDemandNoticeTaxpayerManagers _demandNoticeTaxpayerService)
+        private IDnTaxpayerManager dnTaxpayer;
+        private IDemandNoticeTaxpayerManager demandNoticeTaxpayerService;
+        public DemandNoticeTaxpayerController(IDnTaxpayerManager _dnTaxpayer,
+            IDemandNoticeTaxpayerManager _demandNoticeTaxpayerService)
         {
             dnTaxpayer = _dnTaxpayer;
             demandNoticeTaxpayerService = _demandNoticeTaxpayerService;

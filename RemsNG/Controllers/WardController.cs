@@ -14,9 +14,9 @@ namespace RemsNG.Controllers
     [Route("api/v1/ward")]
     public class WardController : Controller
     {
-        private readonly ILcdaManagers lcdaService;
-        private readonly IWardManagers wardService;
-        public WardController(IWardManagers _wardservice, ILcdaManagers _lcdaService)
+        private readonly ILcdaManager lcdaService;
+        private readonly IWardManager wardService;
+        public WardController(IWardManager _wardservice, ILcdaManager _lcdaService)
         {
             wardService = _wardservice;
             lcdaService = _lcdaService;
