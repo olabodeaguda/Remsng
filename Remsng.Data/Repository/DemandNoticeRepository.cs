@@ -35,7 +35,7 @@ namespace RemsNG.Data.Repository
                 StreetId = demandNotice.StreetId,
                 WardId = demandNotice.WardId,
                 IsUnbilled = demandNotice.IsUnbilled,
-                Query = demandNotice.Query
+                Query = demandNotice.Query,
             });
 
             await db.SaveChangesAsync();
@@ -183,7 +183,7 @@ namespace RemsNG.Data.Repository
                 Query = x.Query,
                 StreetId = x.StreetId.Value,
                 WardId = x.WardId.Value
-            }).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToArrayAsync();
+            }).OrderByDescending(d => d.DateCreated).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToArrayAsync();
 
             List<DemandNoticeModel> lst = new List<DemandNoticeModel>();
             foreach (var tm in results)
@@ -201,7 +201,8 @@ namespace RemsNG.Data.Repository
 
         private async Task<DemandNoticeRequestModel> TranslateDemandNoticeRequest(string jsonObject)
         {
-            DemandNoticeRequestModel s = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(EncryptDecryptUtils.FromHexString(jsonObject));
+            string r = EncryptDecryptUtils.FromHexString(jsonObject);
+            DemandNoticeRequestModel s = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(EncryptDecryptUtils.FromHexString(jsonObject), new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
             if (s.wardId != null)
             {
                 WardModel ward = await wardDao.GetWard(s.wardId);

@@ -120,8 +120,19 @@ namespace RemsNG.Infrastructure.Managers
 
         public async Task<TaxPayerModel[]> ValidTaxpayers(DemandNoticeRequestModel model)
         {
-            DemandNoticeTaxpayersModel[] dntModel = await _dnTaxpayerRepo.Search(model);
-            TaxPayerModel[] taxPayers = await _taxpayerRepository.SearchByDNRequest(model, dntModel.Select(x => x.TaxpayerId).ToArray());
+            DemandNoticeTaxpayersModel[] dntModel = await _dnTaxpayerRepo.SearchTaxpayers(model);
+
+            TaxPayerModel[] taxPayers =
+                (await _taxpayerRepository.SearchByDNRequest(model, dntModel.Select(x => x.TaxpayerId)
+                .ToArray())).Select(d =>
+                {
+                    var r = d;
+                    var t = dntModel.FirstOrDefault(x => x.TaxpayerId == r.Id);
+                    r.DemandNoticeStatus = t == null ? "New" : t.DemandNoticeStatus;
+                    return r;
+                }).ToArray();
+
+
             return taxPayers;
         }
 
@@ -137,6 +148,14 @@ namespace RemsNG.Infrastructure.Managers
                 throw new InvalidCredentialsException("Please select Taxpayer");
             }
 
+            TaxPayerModel[] dntModel = await ValidTaxpayers(model);
+            var unknownId = model.TaxpayerIds.Where(x => !dntModel.Any(p => p.Id == x)).ToArray();
+
+            if (unknownId.Length > 0)
+            {
+                throw new InvalidCredentialsException("Please refresh your page and try again");
+            }
+
             Dictionary<string, ImagesModel> images = (await _imagesRepository.ByOwnerId(model.lcdaId)).ToDictionary(x => x.ImgFilename);
             var lcdaAdd = (await _addressRepository.ByOwnersId(model.lcdaId)).FirstOrDefault();
             model.LcdaAddress = lcdaAdd == null ? string.Empty : $"{lcdaAdd.Addressnumber}, {lcdaAdd.StreetName}";
@@ -144,12 +163,13 @@ namespace RemsNG.Infrastructure.Managers
             model.LcdaState = lcdastate == null ? string.Empty : lcdastate.StateName;
             var treasurerMobile = (await _lcdaPropertyRepo.ByLcda(model.lcdaId)).Select(x => x.PropertyValue).ToArray();
             model.TreasurerMobile = treasurerMobile.Length > 0 ? string.Join(';', treasurerMobile) : string.Empty;
-            int batchNo = 0;
+            long batchNo = 0;
+            model.InitialBillingNumber = await _dnTaxpayerRepo.NewBillingNumber();
             var lastDN = await demandNoticeDao.GetLastEntry();
             if (lastDN != null)
             {
-                string serial = lastDN.BatchNo.Substring(0, lastDN.BatchNo.Length);
-                batchNo = int.Parse(serial);
+                string serial = lastDN.BatchNo.Substring(0, 7);
+                batchNo = long.Parse(serial);
             }
 
             DemandNoticeModel demandNotice = new DemandNoticeModel()
@@ -168,10 +188,15 @@ namespace RemsNG.Infrastructure.Managers
                 BatchNo = lastDN == null ? $"1{CommonList.GetBatchNo()}" : $"{batchNo + 1}{CommonList.GetBatchNo()}"
             };
 
+            model.DemandNoticeId = demandNotice.Id;
             DemandNoticeTaxpayersModel[] dnTaxpayer = await _dnTaxpayerRepo.ConstructByTaxpayerIds(model, images);
             demandNotice.TaxpayerModel = dnTaxpayer.ToList();
 
-            //add demandNotice
+            Response response = await demandNoticeDao.Add(demandNotice);
+            if (response.code == MsgCode_Enum.SUCCESS)
+            {
+                await _dnTaxpayerRepo.Add(dnTaxpayer);
+            }
 
             return true;
         }

@@ -8,7 +8,10 @@
             <a href="javascript:;">
                 <i class="fa fa-dashboard"></i> Home</a>
         </li>
-        <li class="active">Demand Notice</li>
+        <li>
+            <a [routerLink]="['/demandnotice']">Demand Notice</a>
+        </li>
+        <li class="active">Demand Notice View</li>
     </ol>
 </section>
 
@@ -81,40 +84,45 @@
                     </div>
 
                     <div class="row">
-                        <td class="col-md-12">
+                        <div class="col-md-12">
                             <table class="table table-bordered table-hover">
                                 <thead>
-                        <th>
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="masterCheck" [checked]="masterCheck"
-                                    (change)="CheckAll()">
-                                <label class="form-check-label" for="masterCheck">All</label>
-                            </div>
-                        </th>
-                        <th>S/N</th>
-                        <th>Taxpayer's Name</th>
-                        <th>Item Count</th>
-                        <th>Will be included</th>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let data of taxpayers; let i=index">
-                                <td>
-                                    <div class="form-check">
-                                        <input type="checkbox" class="form-check-input" [(ngModel)]="data.isChecked" id="{{data.id}}">
-                                        <label class="form-check-label" for="runAll"></label>
-                                    </div>
-                                </td>
-                                <td>{{i+1}}</td>
-                                <td>{{data.taxpayerName}}</td>
-                                <td>{{data.itemCount}}</td>
-                                <td>{{data.itemCount > 0?"Yes":"No"}}</td>
-                            </tr>
-                            <tr *ngIf="taxpayers.length < 1">
-                                <td style="width:100%" colspan="5">No record !!!</td>
-                            </tr>
-                        </tbody>
-                        </table>
-                        </td>
+                                    <th>
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="masterCheck" [checked]="masterCheck"
+                                                (change)="CheckAll()">
+                                            <label class="form-check-label" for="masterCheck">All</label>
+                                        </div>
+                                    </th>
+                                    <th>S/N</th>
+                                    <th>Taxpayer's Name</th>
+                                    <th>Item Count</th>
+                                    <th>Demand Notice Status</th>
+                                    <th>Taxpayer Status</th>
+                                    <th>Will be included</th>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let data of taxpayers; let i=index">
+                                        <td>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" [(ngModel)]="data.isChecked"
+                                                    id="{{data.id}}">
+                                                <label class="form-check-label" for="runAll"></label>
+                                            </div>
+                                        </td>
+                                        <td>{{i+1}}</td>
+                                        <td>{{data.taxpayerName}}</td>
+                                        <td>{{data.itemCount}}</td>
+                                        <td>{{data.demandNoticeStatus}}</td>
+                                        <td>{{data.taxpayerStatus}}</td>
+                                        <td>{{data.itemCount > 0?"Yes":"No"}}</td>
+                                    </tr>
+                                    <tr *ngIf="taxpayers.length < 1">
+                                        <td style="width:100%" colspan="5">No record !!!</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

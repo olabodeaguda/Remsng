@@ -221,11 +221,31 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<StreetModel>> SearchStreet(Guid wardId, string searchName)
         {
-            //var result = await db.Set<Street>()
-            //    .Where(x => x.WardId == wardId && x.StreetName.Contains(searchName)).ToListAsync();
+            string[] q = searchName.Split(new char[] { ' ' });
+            var result = new List<Street>();
 
-            var result = await db.Set<Street>()
-                .Where(x => x.WardId == wardId && EF.Functions.Like(x.StreetName, $"%{searchName}%")).ToListAsync();
+            switch (q.Length)
+            {
+                case 1:
+                    result = await db.Set<Street>().Where(x => x.WardId == wardId && EF.Functions.Like(x.StreetName, $"%{searchName}%")).ToListAsync();
+                    break;
+                case 2:
+                    result = await db.Set<Street>().Where(x => x.WardId == wardId
+                    && EF.Functions.Like(x.StreetName, $"%{q[0]}%") && EF.Functions.Like(x.StreetName, $"%{q[1]}%")).ToListAsync();
+                    break;
+                case 3:
+                    result = await db.Set<Street>().Where(x => x.WardId == wardId
+                    && EF.Functions.Like(x.StreetName, $"%{q[0]}%") && EF.Functions.Like(x.StreetName, $"%{q[1]}%")
+                    && EF.Functions.Like(x.StreetName, $"%{q[2]}%")).ToListAsync();
+                    break;
+                case 4:
+                    result = await db.Set<Street>().Where(x => x.WardId == wardId
+                    && EF.Functions.Like(x.StreetName, $"%{q[0]}%") && EF.Functions.Like(x.StreetName, $"%{q[1]}%")
+                    && EF.Functions.Like(x.StreetName, $"%{q[2]}%") && EF.Functions.Like(x.StreetName, $"%{q[3]}%")).ToListAsync();
+                    break;
+                default:
+                    break;
+            }
 
             return result.Select(t => new StreetModel()
             {

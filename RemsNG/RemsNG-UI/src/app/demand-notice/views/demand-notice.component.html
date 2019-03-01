@@ -1,131 +1,25 @@
 <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
-    #downRequestPrompt>
+    #promptRequest>
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Download Request</h4>
+                <h4 class="modal-title">Action</h4>
             </div>
             <div class="modal-body clearfix">
                 <div class="box-body">
-                    You are about to raise Download Request in zip file for batch number
-                    <b>{{batchNo}}</b>.
+                    You are about running taxpayer's {{actionSelected}}.
                     <br> Are you sure?
                 </div>
                 <div class="box-footer">
-                    <button [ladda]="isLoadingMini" type="submit" class="btn btn-success"
-                        (click)="addRaiseRequest()">Submit</button>
-                    <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
+                    <button [ladda]="isLoadingMini" type="submit" class="btn btn-success" (click)="submitAction()">Yes</button>
+                    <button type="submit" class="btn btn-danger " data-dismiss="modal">No</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
-    #PromptConstraint>
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 style="color:red;" class="modal-title">Please carefully check the constraints needed to run the
-                    demand notice.</h4>
-            </div>
-            <div class="modal-body clearfix">
-                <div class="box-body">
-                    <div class="form-group col-md-12">
-                        <label for="dateYear">Select Arrears Category</label>
-                        <select name="dateYear" class="form-control" [(ngModel)]="searchModel.runArrearsCategory">
-                            <option selected="selected" value="-1">Select Arrears Type</option>
-                            <option value="1">1st Quarter</option>
-                            <option value="2">2nd Quarter</option>
-                            <option value="3">3rd Quarter</option>
-                            <option value="4">4th Quarter</option>
-                        </select>
-                    </div>
-                    <div class="form-check col-sm-12">
-                        <input type="checkbox" class="form-check-input" id="isClosedData"
-                            [checked]="searchModel.isClosedData"
-                            (change)="searchModel.isClosedData = !searchModel.isClosedData">
-                        <label class="form-check-label" for="isClosedData">Closed Previous record(s)</label>
-                    </div>
-                    <!-- <div class="form-check col-sm-12">
-                        <label class="form-check-label" for="runArrears">Process Arrears</label>
-                        <input type="checkbox" class="form-check-input" id="runArrears" [checked]="searchModel.runArrears"
-                            (change)="searchModel.runArrears = !searchModel.runArrears">
-                    </div> -->
-                    <div class="form-check col-sm-12">
-                        <input type="checkbox" class="form-check-input" id="isUnbilled"
-                            [checked]="searchModel.isUnbilled"
-                            (change)="searchModel.isUnbilled = !searchModel.isUnbilled">
-                        <label class="form-check-label" for="isUnbilled">Is Unbilled</label>
-                    </div>
-                    <div class="form-check col-sm-12">
-                        <input type="checkbox" class="form-check-input" id="runPenalty"
-                            [checked]="searchModel.runPenalty"
-                            (change)="searchModel.runPenalty = !searchModel.runPenalty">
-                        <label class="form-check-label" for="runPenalty">Process Penalty</label>
-                    </div>
-                </div>
-                <div class="box-footer">
-                    <!--<button [ladda]="isLoadingMini" type="submit" class="btn btn-success" (click)="addRaiseRequest()">Submit</button>-->
-                    <button [ladda]="searchModel.isProcessingRequest" type="submit" class="btn btn-primary"
-                        (click)="submitDemandRequest()">Run</button>
-                    <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<div class="modal fade" role="dialog" id="addModal" #downloadRequestModal>
-    <div class=" modal-dialog ">
-        <div class="modal-content " style="width:500px;">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Download Raised Request</h4>
-            </div>
-            <form role="form">
-                <div class="modal-body clearfix ">
-                    <div class="box box-primary">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Download all raised request for batch {{batchNo}}</h3>
-                        </div>
-                        <div class="box-body">
-                            <table class="table table-bordered table-hover">
-                                <thead>
-                                    <th style="width:120px;"></th>
-                                    <th>Batch Number</th>
-                                    <th>Request Status</th>
-                                    <th>Date Created</th>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let data of dowloadRequestList; let i=index">
-                                        <td>
-                                            <a *ngIf="data.requestStatus === 'COMPLETED'" href="javascript:;"
-                                                (click)="downloadDN(data.batchNo)">
-                                                <i class="fa fa-download"></i> Download
-                                            </a>
-                                        </td>
-                                        <td>{{data.batchNo}}</td>
-                                        <td>{{data.requestStatus}}</td>
-                                        <td>{{data.dateCreated|date: 'dd-MM-yyyy hh:mm:ss'}}</td>
-                                    </tr>
-                                    <tr *ngIf="dowloadRequestList.length < 1">
-                                        <td style="width:100%" colspan="6">No record !!!</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <div class="loading" *ngIf="isLoadingMini"></div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 <section class="content-header">
     <h1>
@@ -183,15 +77,20 @@
                         <div class="col-xs-12">
                             <div class="col-sm-6">
                                 <label for="searchByName">Taxpayer Name</label>
-                                <input name="searchByName" type="text" class="form-control"
-                                    [(ngModel)]="searchModel.searchByName" />
+                                <input name="searchByName" type="text" class="form-control" [(ngModel)]="searchModel.searchByName" />
                             </div>
-                            <div class="col-sm-3">
+                            <div class="col-sm-6">
                                 <label for="searchByName"></label>
                                 <div class="btn-group form-control" style="border-color: white;">
                                     <button type="submit" class="btn btn-primary" (click)="navigateView()">View</button>
                                     <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary"
                                         (click)="searchDemandNotice()">Search</button>
+                                    <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary"
+                                        (click)="promptAction('ARREARS')">Run Arrears</button>
+                                    <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary"
+                                        (click)="promptAction('PENALTY')">Run Penalties</button>
+                                    <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary"
+                                        (click)="promptAction('DOWNLOAD')">Download (DN)</button>
                                 </div>
                             </div>
                         </div>
@@ -202,8 +101,14 @@
                         <div class="col-xs-12">
                             <table class="table table-bordered table-hover">
                                 <thead>
-                                    <th style="width:120px;"></th>
                                     <th>S/N</th>
+                                    <th>
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="masterCheck" [checked]="masterCheck"
+                                                (change)="CheckAll()">
+                                            <label class="form-check-label" for="masterCheck">All</label>
+                                        </div>
+                                    </th>
                                     <th>Billing Number</th>
                                     <th>Taxpayer</th>
                                     <th>Ward Name</th>
@@ -214,31 +119,14 @@
                                 </thead>
                                 <tbody>
                                     <tr *ngFor="let data of demandNoticeLst; let i=index">
-                                        <td>
-                                            <div class="btn-group">
-                                                <button type="button" class="btn btn-default dropdown-toggle"
-                                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    Action
-                                                    <span class="caret"></span>
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li>
-                                                        <a href="javascript:;" (click)="open('RAISE_REQUEST',data)">
-                                                            <i class="fa fa-send"></i>Raise download request
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a (click)="open('DOWNLOAD_REQUEST',data)">
-                                                            <i class="fa fa-download"></i> Download</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-
-                                        </td>
-                                        <!-- <td>
-                                            <a [routerLink]="['taxpayer',data.batchNo]">{{data.batchNo}}</a>
-                                        </td> -->
                                         <td>{{((pageModel.pageNum-1)*pageModel.pageSize)+(i+1)}}</td>
+                                        <td>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" [(ngModel)]="data.isChecked"
+                                                    id="{{data.id}}">
+                                                <label class="form-check-label" for="runAll"></label>
+                                            </div>
+                                        </td>
                                         <td>{{data.billingNumber}}</td>
                                         <td>{{data.taxpayersName}}</td>
                                         <td>{{data.wardName}}</td>

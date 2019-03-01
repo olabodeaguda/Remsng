@@ -1,74 +1,66 @@
-<div style="min-width:100%; background-color:#1f4d27;min-height: inherit" class="row">
-  <div class="content-wrapper" style="min-height:100%;margin-left:0px;background-color:#acce46">
-    <div style="width:100%;">
-      <div style="width: 62%;float:left;">
-          <img src="assets/dist/img/landing.jpeg" style="width:100%;height:100%;" />
-      </div>
-      <div style="width: 30%;float:right;">
-        <div class="hold-transition login-page" style="display:inline-block;vertical-align: middle;">
-          <div class="login-box">
-            <div class="login-logo">
-              <a href="javascript:;">
-               <i class="fa fa-users" 
-               style="width:60px;height:70px;color:antiquewhite;"></i>
-              </a>
+<div style="background-color:#1f4d27;overflow: hidden;" class="row">
+  <div class="col-md-8">
+    <img src="assets/dist/img/landing.jpeg" style="width:100%;height:100%;" />
+  </div>
+  <div class="col-md-4 h-100">
+    <div class="hold-transition login-page h-100">
+      <div class="login-box h-100">
+        <div class="login-logo">
+          <a href="javascript:;">
+            <i class="fa fa-users" style="width:60px;height:70px;color:#FFF;"></i>
+          </a>
+        </div>
+        <div class="login-box-body" style="background-color:transparent !important;
+        border: 0.5px black solid;position: relative;min-height: 100%;">
+          <p class="login-box-msg" style="color:#FFF;font-size: 34px;font-family: Brush Script MT;">Rems <i class="fa fa-sign-in"></i></p>
+
+          <form>
+            <div *ngIf="loginModel.isError" [ngClass]="loginModel.errorClass">
+              {{loginModel.errmsg}}
             </div>
-            <!-- /.login-logo -->
-            <div class="login-box-body">
-              <p class="login-box-msg" style="color:#1f4d27;font-size: 34px;font-family: Brush Script MT;">Rems <i class="fa fa-sign-in"></i></p>
-
-              <form>
-                <div *ngIf="loginModel.isError" [ngClass]="loginModel.errorClass">
-                  {{loginModel.errmsg}}
-                </div>
-                <div class="form-group">
-                  <div class="form-group has-feedback">
-                    <input autofocus name="username" type="text" class="form-control" placeholder="username" [(ngModel)]="loginModel.username">
-                    <span class="glyphicon glyphicon-user form-control-feedback"></span>
-                  </div>
-                  <div class="form-group has-feedback" *ngIf="!loginModel.isUsernameValid">
-                    <button  [disabled]="isvalid" [ladda]="loginModel.isLoading" type="submit" 
-                    class="btn btn-primary btn-block btn-flat" (click)="validateUsername()">Next</button>
-                  </div>
-                </div>
-
-                <div class="form-group" *ngIf="loginModel.isUsernameValid">
-                  <div class="form-group has-feedback">
-                    <input type="password" name='password' class="form-control" placeholder="Password" [(ngModel)]="loginModel.pwd">
-                    <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-                  </div>
-                  <div class="form-group has-feedback" *ngIf="loginModel.domainIds?.length > 0">
-                    <select name="domainSelect" class="form-control" [(ngModel)]="loginModel.domainId">
-                        <option>Select Domain</option>
-                      <option *ngFor="let data of loginModel.domainIds;" [ngValue]="data.id">{{data.lcdaName}}</option>
-                    </select>
-                  </div>
-                  <div class="row">
-                    <div class="col-xs-4">
-                      <button [disabled]="isvalid" [ladda]="loginModel.isLoading" type="submit" 
-                      (click)="signIn()" class="btn btn-primary btn-block btn-flat"
-                       style="background-color: #1f4d27 !important;">Sign In</button>
-                    </div>
-                  </div>
-                </div>
-              </form>
-              <br>
-              <h2 *ngIf="isNotifyValidy" style="color:black;text-align: center;">License expired on the 27th of Feb, 2019. Yearly subscription is required for usage to continue. </h2>
-              <br>
+            <div class="form-group">
+              <div class="form-group has-feedback">
+                <input autofocus name="username" type="text" class="form-control" placeholder="username" [(ngModel)]="loginModel.username">
+                <span class="glyphicon glyphicon-user form-control-feedback"></span>
+              </div>
+              <div class="form-group has-feedback" *ngIf="!loginModel.isUsernameValid">
+                <button [disabled]="isvalid" [ladda]="loginModel.isLoading" type="submit" class="btn btn-primary btn-block btn-flat"
+                  (click)="validateUsername()">Next</button>
+              </div>
             </div>
-          </div>
 
+            <div class="form-group" *ngIf="loginModel.isUsernameValid">
+              <div class="form-group has-feedback">
+                <input type="password" name='password' class="form-control" placeholder="Password" [(ngModel)]="loginModel.pwd">
+                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+              </div>
+              <div class="form-group has-feedback" *ngIf="loginModel.domainIds?.length > 0">
+                <select name="domainSelect" class="form-control" [(ngModel)]="loginModel.domainId">
+                  <option>Select Domain</option>
+                  <option *ngFor="let data of loginModel.domainIds;" [ngValue]="data.id">{{data.lcdaName}}</option>
+                </select>
+              </div>
+              <div class="row">
+                <div class="col-xs-4">
+                  <button [disabled]="isvalid" [ladda]="loginModel.isLoading" type="submit" (click)="signIn()" class="btn btn-primary btn-block btn-flat"
+                    style="background-color: #1f4d27 !important;">Sign
+                    In</button>
+                </div>
+              </div>
+            </div>
+          </form>
+          <br>
+          <h2 *ngIf="isNotifyValidy" style="color:black;text-align: center;">License expired on the 27th of Feb,
+            2019. Yearly subscription is required for usage to continue. </h2>
+          <br>
         </div>
       </div>
-
     </div>
   </div>
 </div>
-<footer style="width:100%;border-top: 1px solid white;
-padding: 10px;
-color: white;background-color: #222;height: 89px;">
-    <div class="pull-right hidden-xs">
-    </div>
-    <strong>Copyright &copy; 2017
-        <a href="javascript:;">BB MAB GLOBAL TECHNOLOGIES LTD</a>.</strong> All rights reserved.
+<footer style="position: fixed;left:0;bottom: 0;width: 100%;color: white;background-color: #222">
+  <div class="pull-right hidden-xs">
+  </div>
+  <strong>Copyright &copy; 2017
+    <a href="javascript:;">BB MAB GLOBAL TECHNOLOGIES LTD</a>.</strong> All rights reserved.
 </footer>

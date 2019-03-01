@@ -204,6 +204,7 @@ namespace RemsNG.Controllers
                     description = "Bad request"
                 });
             }
+            demandNoticeRequest.createdBy = User.Identity.Name;
             demandNoticeRequest.lcdaId = lcdaId;
             bool result = await demandService.AddDemanNotice(demandNoticeRequest);
             if (!result)

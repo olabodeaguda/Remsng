@@ -15,6 +15,7 @@ import { DemandNoticePaymentService } from './services/demand-notice-payment.ser
 import { DemandNoticeErrorComponent } from './components/demand-notice-error.component';
 import { MyDatePickerModule } from 'mydatepicker';
 import { DemandNoticeViewComponent } from './components/demand-notice-view.component';
+import { DemandNoticeBatchComponent } from './components/demand-notice-batch.component';
 
 const appRoutes: Routes = [
     {
@@ -26,7 +27,8 @@ const appRoutes: Routes = [
             {
                 path: 'dnerror/:id', component: DemandNoticeErrorComponent,
             },
-            { path: 'dnoticeview/:qry', component: DemandNoticeViewComponent, pathMatch: 'full' }
+            { path: 'dnoticeview/:qry', component: DemandNoticeViewComponent, pathMatch: 'full' },
+            { path: 'batch', component: DemandNoticeBatchComponent }
         ]
     },
 ];
@@ -44,7 +46,7 @@ const appRoutes: Routes = [
     declarations: [
         DemandNoticeComponent, DemandNoticeTaxpayersComponent,
         DemandNoticeIndexComponent, DemandNoticeSearchComponent,
-        DemandNoticeErrorComponent, DemandNoticeViewComponent
+        DemandNoticeErrorComponent, DemandNoticeViewComponent,DemandNoticeBatchComponent
     ],
     providers: [
         DemandNoticeService,
@@ -54,7 +56,8 @@ const appRoutes: Routes = [
     exports: [
         DemandNoticeComponent, DemandNoticeTaxpayersComponent,
         DemandNoticeIndexComponent, DemandNoticeSearchComponent,
-        DemandNoticeErrorComponent, DemandNoticeViewComponent
+        DemandNoticeErrorComponent, DemandNoticeViewComponent,
+        DemandNoticeBatchComponent
     ]
 })
 

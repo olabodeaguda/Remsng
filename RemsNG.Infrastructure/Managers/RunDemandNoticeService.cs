@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.NodeServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
@@ -81,7 +80,6 @@ namespace RemsNG.Infrastructure.Managers
             batchDwnRequestService = _batchDwnRequestService;
             demandNoticeTaxpayerService = _demandNoticeTaxpayerService;
             listPropertyService = _listPropertyService;
-            // httpContextAccessor = _httpContextAccessor;
             taxpayerService = _taxpayerService;
             _admService = dNAmountDueMgtService;
             _dnpHisotryDao = new DemandNoticePaymentHistoryRepository(_db);
@@ -91,133 +89,133 @@ namespace RemsNG.Infrastructure.Managers
 
         public async Task RegisterTaxpayer()
         {
-            DemandNoticeModel demandNotice = await demandNoticeDao.DequeueDemandNotice();
-            try
-            {
-                if (demandNotice != null)
-                {
-                    string query = EncryptDecryptUtils.FromHexString(demandNotice.Query);
-                    DemandNoticeRequestModel demandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(query);
-                    demandNoticeRequest.createdBy = demandNotice.CreatedBy;
-                    List<TaxPayerModel> taxpayers = await taxpayerDao.GetActiveTaxpayers(demandNoticeRequest);
-                    string domainName = string.Empty;
-                    if (taxpayers.Count > 0)
-                    {
-                        LcdaModel lcda = await lcdaService.Get(demandNoticeRequest);
-                        if (lcda != null)
-                        {
-                            DomainModel dd = await lcdaDao.GetDomain(lcda.Id);
-                            if (dd != null)
-                            {
-                                domainName = dd.DomainName;
-                            }
-                        }
+           // DemandNoticeModel demandNotice = await demandNoticeDao.DequeueDemandNotice();
+            //try
+            //{
+            //    if (demandNotice != null)
+            //    {
+            //        string query = EncryptDecryptUtils.FromHexString(demandNotice.Query);
+            //        DemandNoticeRequestModel demandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(query);
+            //        demandNoticeRequest.createdBy = demandNotice.CreatedBy;
+            //        List<TaxPayerModel> taxpayers = await taxpayerDao.GetActiveTaxpayers(demandNoticeRequest);
+            //        string domainName = string.Empty;
+            //        if (taxpayers.Count > 0)
+            //        {
+            //            LcdaModel lcda = await lcdaService.Get(demandNoticeRequest);
+            //            if (lcda != null)
+            //            {
+            //                DomainModel dd = await lcdaDao.GetDomain(lcda.Id);
+            //                if (dd != null)
+            //                {
+            //                    domainName = dd.DomainName;
+            //                }
+            //            }
 
-                        List<DemandNoticeTaxpayersModel> dt =
-                            await demandNoticeTaxpayersDao.getTaxpayerByIds(taxpayers
-                            .Select(x => string.Format("'{0}'", x.Id)).ToArray(), demandNotice.BillingYear);
+            //            List<DemandNoticeTaxpayersModel> dt =
+            //                await demandNoticeTaxpayersDao.getTaxpayerByIds(taxpayers
+            //                .Select(x => string.Format("'{0}'", x.Id)).ToArray(), demandNotice.BillingYear);
 
-                        foreach (var tm in taxpayers)
-                        {
-                            var itExist = dt.FirstOrDefault(x => x.TaxpayerId == tm.Id);
-                            if (itExist != null)
-                            {
-                                ErrorModel error = new ErrorModel()
-                                {
-                                    ErrorType = ErrorType.DEMAND_NOTICE.ToString(),
-                                    Errorvalue = $"Demand notice have already been raised for {tm.Surname} {tm.Firstname} {tm.Lastname} " +
-                                      $"for billing year {demandNotice.BillingYear}",
-                                    OwnerId = demandNotice.Id
-                                };
-                                bool result = await errorDao.Add(error);
-                                continue;
-                            }
-                            else
-                            {
-                                DemandNoticeTaxpayersModel dntd = new DemandNoticeTaxpayersModel();
-                                dntd.BillingYr = demandNotice.BillingYear;
-                                dntd.DnId = demandNotice.Id;
-                                dntd.CreatedBy = demandNoticeRequest.createdBy;
-                                dntd.TaxpayerId = tm.Id;
-                                dntd.DomainName = domainName;
-                                dntd.LcdaAddress = await address.AddressByOwnerId(lcda.Id);
-                                dntd.LcdaState = await stateService.StateNameByLcda(lcda.Id);
-                                dntd.LcdaLogoFileName = await imageService.ImageNameByOwnerIdAsync(lcda.Id,
-                                    ImgTypesEnum.LOGO.ToString());
-                                dntd.RevCoodinatorSigFilen = await imageService.ImageNameByOwnerIdAsync(lcda.Id,
-                                    ImgTypesEnum.REVENUE_COORDINATOR_SIGNATURE.ToString());
-                                dntd.CouncilTreasurerSigFilen = await imageService.ImageNameByOwnerIdAsync(lcda.Id,
-                                    ImgTypesEnum.COUNCIL_TREASURER_SIGNATURE.ToString());
-                                dntd.IsUnbilled = demandNotice.IsUnbilled;
+            //            foreach (var tm in taxpayers)
+            //            {
+            //                var itExist = dt.FirstOrDefault(x => x.TaxpayerId == tm.Id);
+            //                if (itExist != null)
+            //                {
+            //                    ErrorModel error = new ErrorModel()
+            //                    {
+            //                        ErrorType = ErrorType.DEMAND_NOTICE.ToString(),
+            //                        Errorvalue = $"Demand notice have already been raised for {tm.Surname} {tm.Firstname} {tm.Lastname} " +
+            //                          $"for billing year {demandNotice.BillingYear}",
+            //                        OwnerId = demandNotice.Id
+            //                    };
+            //                    bool result = await errorDao.Add(error);
+            //                    continue;
+            //                }
+            //                else
+            //                {
+            //                    DemandNoticeTaxpayersModel dntd = new DemandNoticeTaxpayersModel();
+            //                    dntd.BillingYr = demandNotice.BillingYear;
+            //                    dntd.DnId = demandNotice.Id;
+            //                    dntd.CreatedBy = demandNoticeRequest.createdBy;
+            //                    dntd.TaxpayerId = tm.Id;
+            //                    dntd.DomainName = domainName;
+            //                    dntd.LcdaAddress = await address.AddressByOwnerId(lcda.Id);
+            //                    dntd.LcdaState = await stateService.StateNameByLcda(lcda.Id);
+            //                    dntd.LcdaLogoFileName = await imageService.ImageNameByOwnerIdAsync(lcda.Id,
+            //                        ImgTypesEnum.LOGO.ToString());
+            //                    dntd.RevCoodinatorSigFilen = await imageService.ImageNameByOwnerIdAsync(lcda.Id,
+            //                        ImgTypesEnum.REVENUE_COORDINATOR_SIGNATURE.ToString());
+            //                    dntd.CouncilTreasurerSigFilen = await imageService.ImageNameByOwnerIdAsync(lcda.Id,
+            //                        ImgTypesEnum.COUNCIL_TREASURER_SIGNATURE.ToString());
+            //                    dntd.IsUnbilled = demandNotice.IsUnbilled;
 
-                                // get taxpayer company item
-                                var items = await _companyItemDao.ByTaxpayer(tm.Id);
-                                if (items.Count < 1)
-                                {
-                                    continue;
-                                }
+            //                    // get taxpayer company item
+            //                    var items = await _companyItemDao.ByTaxpayer(tm.Id);
+            //                    if (items.Count < 1)
+            //                    {
+            //                        continue;
+            //                    }
 
-                                Response response1 = await demandNoticeTaxpayersDao.Add(dntd);
+            //                    Response response1 = await demandNoticeTaxpayersDao.Add(dntd);
 
-                                if (response1.code == MsgCode_Enum.SUCCESS)
-                                {
-                                    dntd.BillingNumber = response1.data.ToString().Trim();
-                                    if (demandNoticeRequest.RunPenalty)
-                                    {
-                                        await RunTaxpayerPenalty(tm.Id, dntd.BillingNumber, dntd.BillingYr);
-                                    }
+            //                    if (response1.code == MsgCode_Enum.SUCCESS)
+            //                    {
+            //                        dntd.BillingNumber = response1.data.ToString().Trim();
+            //                        if (demandNoticeRequest.RunPenalty)
+            //                        {
+            //                            await RunTaxpayerPenalty(tm.Id, dntd.BillingNumber, dntd.BillingYr);
+            //                        }
 
-                                    if (demandNoticeRequest.RunArrears)
-                                    {
-                                        await RunArrears(dntd, dntd.BillingNumber, demandNoticeRequest.RunArrearsCategory);
-                                    }
+            //                        if (demandNoticeRequest.RunArrears)
+            //                        {
+            //                            await RunArrears(dntd, dntd.BillingNumber, demandNoticeRequest.RunArrearsCategory);
+            //                        }
 
-                                    await RunDemandNoticeItem(dntd); //run items
-                                }
-                                else
-                                {
-                                    // log error
-                                    ErrorModel error = new ErrorModel()
-                                    {
-                                        ErrorType = ErrorType.DEMAND_NOTICE.ToString(),
-                                        Errorvalue = response1.description,
-                                        OwnerId = dntd.DnId
-                                    };
-                                    bool result = await errorDao.Add(error);
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        ErrorModel error = new ErrorModel()
-                        {
-                            ErrorType = ErrorType.DEMAND_NOTICE.ToString(),
-                            Errorvalue = $"{taxpayers.Count} taxpayer was found from the query request ",
-                            OwnerId = demandNotice.Id
-                        };
-                        bool result = await errorDao.Add(error);
-                    }
-                    //update demand notice
-                    demandNotice.DemandNoticeStatus = DemandNoticeStatus.COMPLETED.ToString();
-                    Response response = await demandNoticeDao.UpdateStatus(demandNotice);
-                    if (response.code == MsgCode_Enum.SUCCESS)
-                    {
-                        logger.LogInformation($"{demandNotice.Id} has been completed");
-                    }
-                }
-            }
-            catch (Exception x)
-            {
-                // cancel no retry
-                demandNotice.DemandNoticeStatus = DemandNoticeStatus.ERROR.ToString();
-                Response response = await demandNoticeDao.UpdateStatus(demandNotice);
-                if (response.code == MsgCode_Enum.SUCCESS)
-                {
-                    logger.LogInformation($"{demandNotice.Id} has been completed");
-                }
-                logger.LogError(x.Message);
-            }
+            //                        await RunDemandNoticeItem(dntd); //run items
+            //                    }
+            //                    else
+            //                    {
+            //                        // log error
+            //                        ErrorModel error = new ErrorModel()
+            //                        {
+            //                            ErrorType = ErrorType.DEMAND_NOTICE.ToString(),
+            //                            Errorvalue = response1.description,
+            //                            OwnerId = dntd.DnId
+            //                        };
+            //                        bool result = await errorDao.Add(error);
+            //                    }
+            //                }
+            //            }
+            //        }
+            //        else
+            //        {
+            //            ErrorModel error = new ErrorModel()
+            //            {
+            //                ErrorType = ErrorType.DEMAND_NOTICE.ToString(),
+            //                Errorvalue = $"{taxpayers.Count} taxpayer was found from the query request ",
+            //                OwnerId = demandNotice.Id
+            //            };
+            //            bool result = await errorDao.Add(error);
+            //        }
+            //        //update demand notice
+            //        demandNotice.DemandNoticeStatus = DemandNoticeStatus.COMPLETED.ToString();
+            //        Response response = await demandNoticeDao.UpdateStatus(demandNotice);
+            //        if (response.code == MsgCode_Enum.SUCCESS)
+            //        {
+            //            logger.LogInformation($"{demandNotice.Id} has been completed");
+            //        }
+            //    }
+            //}
+            //catch (Exception x)
+            //{
+            //    // cancel no retry
+            //    demandNotice.DemandNoticeStatus = DemandNoticeStatus.ERROR.ToString();
+            //    Response response = await demandNoticeDao.UpdateStatus(demandNotice);
+            //    if (response.code == MsgCode_Enum.SUCCESS)
+            //    {
+            //        logger.LogInformation($"{demandNotice.Id} has been completed");
+            //    }
+            //    logger.LogError(x.Message);
+            //}
         }
 
         public async Task GenerateBulkDemandNotice()

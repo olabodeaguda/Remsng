@@ -14,6 +14,7 @@ declare var jQuery: any;
 import * as FileSaver from 'file-saver'
 import { Router } from '@angular/router';
 import { isNullOrUndefined, isNull } from 'util';
+import { DemandNoticeTaxpayer } from '../models/demand-taxpayer-model';
 
 @Component({
     selector: 'demand-notice',
@@ -22,6 +23,8 @@ import { isNullOrUndefined, isNull } from 'util';
 
 export class DemandNoticeComponent implements OnInit {
 
+    masterCheck: boolean = false;
+    taxpayerIds = []
     searchModel: DemandNoticeSearch;
     wardLst = [];
     streetLst = [];
@@ -30,10 +33,8 @@ export class DemandNoticeComponent implements OnInit {
     pageModel: PageModel;
     isLoading: boolean = false;
     downloadRequestmodel: DownloadRequestModel;
-    batchNo: string;
-    @ViewChild('downRequestPrompt') downRequestPromptModal: ElementRef;
-    @ViewChild('downloadRequestModal') downloadRequestModal: ElementRef;
-    @ViewChild('PromptConstraint') PromptConstraint: ElementRef;
+    actionSelected: string;
+    @ViewChild('promptRequest') promptRequest: ElementRef;
     isLoadingMini: boolean = false;
     dowloadRequestList = [];
 
@@ -53,10 +54,6 @@ export class DemandNoticeComponent implements OnInit {
         this.GetDemandNotice(new Date().getFullYear());
         this.getWards();
     }
-    openConstraint() {
-        jQuery(this.PromptConstraint.nativeElement).modal('show');
-    }
-
     downloadDN(url: string) {
         this.isLoadingMini = true;
         this.demandnoticeservice.downloadRpt(url).map(response => {
@@ -86,7 +83,7 @@ export class DemandNoticeComponent implements OnInit {
             response => {
                 const objschema = { data: [], totalPageCount: 0 };
                 const res = Object.assign(objschema, response);
-                this.demandNoticeLst = res.data;
+                this.demandNoticeLst = res.data.map(t => new DemandNoticeTaxpayer(t));
                 this.pageModel.totalPageCount = res.totalPageCount;
                 this.isLoading = false;
             },
@@ -96,34 +93,6 @@ export class DemandNoticeComponent implements OnInit {
             });
     }
 
-    submitDemandRequest() {
-        if (this.searchModel.dateYear <= 0) {
-            this.toasterService.pop('error', 'Error', 'Billing year is required')
-            return;
-        }
-        if (this.searchModel.runArrearsCategory > 0) {
-            this.searchModel.runArrears = true;
-        }
-
-        this.searchModel.isProcessingRequest = true;
-        this.demandnoticeservice.add(this.searchModel).subscribe(
-            response => {
-                jQuery(this.PromptConstraint.nativeElement).modal('hide');
-                this.searchModel.isProcessingRequest = false;
-                if (response.code === '00') {
-                    this.toasterService.pop('success', 'Success', response.description);
-                    this.GetDemandNotice(null);
-                    this.searchModel = new DemandNoticeSearch();
-                } else {
-                    this.toasterService.pop('error', 'Error', response.description);
-                }
-            },
-            error => {
-                jQuery(this.PromptConstraint.nativeElement).modal('hide');
-                this.searchModel.isProcessingRequest = false;
-                this.toasterService.pop('error', 'Error', error);
-            });
-    }
 
     loadStreets(event) {
         this.getStreet(this.searchModel.wardId);
@@ -140,27 +109,6 @@ export class DemandNoticeComponent implements OnInit {
         });
     }
 
-    open(target: string, data: any) {
-        if (target === 'RAISE_REQUEST') {
-            if (data.batchNo.length <= 0) {
-                return;
-            }
-            this.batchNo = data.batchNo;
-            jQuery(this.downRequestPromptModal.nativeElement).modal('show');
-        } else if (target === 'DOWNLOAD_REQUEST') {
-            if (data.batchNo.length <= 0) {
-                return;
-            }
-            this.batchNo = data.batchNo;
-            jQuery(this.downloadRequestModal.nativeElement).modal('show');
-
-            this.getRaisedRequest(this.batchNo);
-            setInterval(() => {
-                this.getRaisedRequest(this.batchNo);
-            }, 3000);
-        }
-    }
-
     getRaisedRequest(batchId: string) {
         // this.isLoading = true;
         this.demandnoticeservice.getRaisedRequest(batchId)
@@ -169,26 +117,6 @@ export class DemandNoticeComponent implements OnInit {
                 this.dowloadRequestList = response;
             }, error => {
                 // this.isLoading = false;
-            })
-    }
-
-    addRaiseRequest() {
-        if (this.batchNo.length <= 0) {
-            return;
-        }
-        this.isLoadingMini = true;
-        this.demandnoticeservice.adDownloadRequest(this.batchNo)
-            .subscribe(response => {
-                this.isLoadingMini = false;
-                if (response.code === '00') {
-                    this.toasterService.pop("success", "Sucess", response.description);
-                    jQuery(this.downRequestPromptModal.nativeElement).modal('hide');
-                } else {
-                    this.toasterService.pop("error", "Error", response.description);
-                }
-            }, error => {
-                this.isLoadingMini = false;
-                this.toasterService.pop("error", "Error", error);
             })
     }
 
@@ -203,20 +131,48 @@ export class DemandNoticeComponent implements OnInit {
         })
     }
 
-    // getDemandNotice() {
-    //     this.isLoading = true;
-    //     this.demandnoticeservice.get(this.pageModel).subscribe(response => {
-    //         const objschema = { data: [], totalPageCount: 0 };
-    //         const res = Object.assign(objschema, response);
-    //         this.demandNoticeLst = res.data;
-    //         this.pageModel.totalPageCount = res.totalPageCount;
-    //         this.isLoading = false;
-    //     }, error => {
-    //         this.isLoading = false;
-    //         this.toasterService.pop('error', 'Error', error);
-    //     })
-    // }
+    promptAction(params: string) {
+        this.actionSelected = params.toLowerCase();
+        let lt = this.demandNoticeLst.filter(b => b.isChecked == true).map(x => x.id);
+        if (lt.length <= 0) {
+            this.toasterService.pop('error', 'Error', 'Please select taxpayer!!!');
+            return;
+        }
+        this.actionSelected = params.toLowerCase();
+        jQuery(this.promptRequest.nativeElement).modal('show');
+    }
+    submitAction() {
+        let lt = this.demandNoticeLst.filter(b => b.isChecked == true).map(x => x.id);
+        if (this.actionSelected === "ARREARS".toLowerCase()) {
+            this.runArrears(lt);
+        } else if (this.actionSelected === "PENALTY".toLowerCase()) {
+            this.runPenalty(lt);
+        } else if (this.actionSelected === "DOWNLOAD".toLowerCase()) {
+            this.downloadDNByTaxpayer(lt);
+        } else {
+            this.toasterService.pop('warning', 'No Action confirmed', 'Please refresh the page and try again');
+        }
+    }
 
+    CheckAll() {
+        this.masterCheck = !this.masterCheck;
+        for (let i = 0; i < this.demandNoticeLst.length; i++) {
+            const model: DemandNoticeTaxpayer = this.demandNoticeLst[i];
+            this.demandNoticeLst[i].isChecked = this.masterCheck;
+        }
+    }
+
+    runArrears(lt) {
+
+    }
+
+    runPenalty(lt) {
+
+    }
+
+    downloadDNByTaxpayer(lt) {
+
+    }
     navigateView() {
         if (isNullOrUndefined(this.searchModel.wardId) &&
             isNullOrUndefined(this.searchModel.streetId)
@@ -226,7 +182,7 @@ export class DemandNoticeComponent implements OnInit {
         }
         this.router.navigateByUrl('demandnotice/dnoticeview/' + btoa(JSON.stringify(this.searchModel)));
 
-       // this.router.navigate(['demandnotice', 'dnoticeview'], { queryParams: { qry: btoa(JSON.stringify(this.searchModel)) } })
+        // this.router.navigate(['demandnotice', 'dnoticeview'], { queryParams: { qry: btoa(JSON.stringify(this.searchModel)) } })
     }
 
     next() {

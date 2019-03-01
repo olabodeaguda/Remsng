@@ -127,14 +127,18 @@ namespace RemsNG.Data.Repository
             DbResponse dbResponse = new DbResponse();
             try
             {
-                dbResponse = await db.Set<DbResponse>().FromSql("sp_currentMaxBilling").FirstOrDefaultAsync();
+                string result = await db.Set<DemandNoticeTaxpayers>().OrderByDescending(x => x.DateCreated).Select(x => x.BillingNumber).FirstOrDefaultAsync();
+                if (string.IsNullOrEmpty(result))
+                {
+                    return 0;
+                }
+                return long.Parse(result);
+                // dbResponse = await db.Set<DbResponse>().FromSql("sp_currentMaxBilling").FirstOrDefaultAsync();
             }
             catch (Exception)
             {
-                throw;
+                return 0;
             }
-
-            return dbResponse == null ? 0 : long.Parse(dbResponse.msg);
         }
 
         public async Task<Response> Add(DemandNoticeTaxpayersModel dnt)
@@ -155,7 +159,7 @@ namespace RemsNG.Data.Repository
                 RevCoodinatorSigFilen = dnt.RevCoodinatorSigFilen == null ? string.Empty : dnt.RevCoodinatorSigFilen,
                 CouncilTreasurerMobile = dnt.CouncilTreasurerMobile == null ? string.Empty : dnt.CouncilTreasurerMobile,
                 LcdaName = dnt.LcdaName,
-                BillingNumber = (billnumber + 1).ToString(),
+                BillingNumber = dnt.BillingNumber,
                 AddressName = dnt.AddressName,
                 DateCreated = dnt.DateCreated,
                 DemandNoticeStatus = dnt.DemandNoticeStatus,
@@ -175,6 +179,41 @@ namespace RemsNG.Data.Repository
                 description = $"Demand Notice has been creadted for {dnt.TaxpayersName} for the year {dnt.BillingYr}"
             };
 
+        }
+        public async Task<Response> Add(DemandNoticeTaxpayersModel[] demandnotice)
+        {
+            DemandNoticeTaxpayers[] d = demandnotice.Select(dnt => new DemandNoticeTaxpayers
+            {
+                DnId = dnt.DnId,
+                BillingYr = dnt.BillingYr,
+                CreatedBy = dnt.CreatedBy,
+                TaxpayerId = dnt.TaxpayerId,
+                DomainName = dnt.DomainName,
+                LcdaAddress = dnt.LcdaAddress,
+                LcdaState = dnt.LcdaState,
+                LcdaLogoFileName = dnt.LcdaLogoFileName,
+                CouncilTreasurerSigFilen = dnt.CouncilTreasurerSigFilen,
+                RevCoodinatorSigFilen = dnt.RevCoodinatorSigFilen,
+                CouncilTreasurerMobile = dnt.CouncilTreasurerMobile,
+                LcdaName = dnt.LcdaName,
+                BillingNumber = dnt.BillingNumber,
+                AddressName = dnt.AddressName,
+                DateCreated = dnt.DateCreated,
+                DemandNoticeStatus = dnt.DemandNoticeStatus,
+                Id = dnt.Id,
+                IsUnbilled = dnt.IsUnbilled,
+                Lastmodifiedby = dnt.Lastmodifiedby,
+                LastModifiedDate = dnt.LastModifiedDate,
+                TaxpayersName = dnt.TaxpayersName,
+                WardName = dnt.WardName
+            }).ToArray();
+            db.Set<DemandNoticeTaxpayers>().AddRange(d);
+            await db.SaveChangesAsync();
+            return new Response()
+            {
+                code = MsgCode_Enum.SUCCESS,
+                description = "Taxpayer has been added successfully"
+            };
         }
 
         public async Task<object> GetDNTaxpayerByBatchIdAsync(string batchId, PageModel pageModel)
@@ -657,7 +696,7 @@ namespace RemsNG.Data.Repository
                 TaxpayersName = x.TaxpayersName,
                 WardName = x.WardName,
                 StreetName = x.DemandNotice.Street.StreetName
-            }).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).OrderByDescending(x => x.DateCreated).ToArrayAsync();
+            }).OrderByDescending(x => x.DateCreated).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToArrayAsync();
 
             int totalCount = await query.CountAsync();
             return new PageModel<DemandNoticeTaxpayersModel[]>
@@ -728,12 +767,13 @@ namespace RemsNG.Data.Repository
             };
         }
 
-        public async Task<DemandNoticeTaxpayersModel[]> Search(DemandNoticeRequestModel rhModel)
+        public async Task<DemandNoticeTaxpayersModel[]> SearchTaxpayers(DemandNoticeRequestModel rhModel)
         {
+            string[] statuss = { "CANCEL", "CLOSED" };
             var query = db.Set<DemandNoticeTaxpayers>()
                 .Include(p => p.DemandNotice)
                 .ThenInclude(d => d.Street)
-                .Where(x => x.BillingYr == rhModel.dateYear);
+                .Where(x => x.BillingYr == rhModel.dateYear && !statuss.Any(p => p == x.DemandNoticeStatus));
 
             if (rhModel.streetId != default(Guid))
             {
@@ -785,7 +825,8 @@ namespace RemsNG.Data.Repository
             string RevCoodinatorSigFilen = images.ContainsKey(ImgTypesEnum.REVENUE_COORDINATOR_SIGNATURE.ToString()) ? images[ImgTypesEnum.REVENUE_COORDINATOR_SIGNATURE.ToString()].ImgFilename : string.Empty;
             string CouncilTreasurerSigFilen = images.ContainsKey(ImgTypesEnum.COUNCIL_TREASURER_SIGNATURE.ToString()) ? images[ImgTypesEnum.COUNCIL_TREASURER_SIGNATURE.ToString()].ImgFilename : string.Empty;
 
-            var query = db.Set<TaxPayer>()
+            long billNumber = model.InitialBillingNumber;
+            var query = await db.Set<TaxPayer>()
                 .Include(x => x.Street)
                 .ThenInclude(x => x.Ward)
                 .ThenInclude(x => x.Lcda)
@@ -798,7 +839,7 @@ namespace RemsNG.Data.Repository
                     BillingYr = model.dateYear,
                     CouncilTreasurerSigFilen = CouncilTreasurerSigFilen,
                     CreatedBy = x.CreatedBy,
-                    DateCreated = x.DateCreated,
+                    DateCreated = DateTime.Now,
                     DemandNoticeStatus = "PENDING",
                     DomainName = x.Street.Ward.Lcda.Domain.DomainName,
                     Id = Guid.NewGuid(),
@@ -814,10 +855,27 @@ namespace RemsNG.Data.Repository
                     TaxpayerId = x.Id,
                     TaxpayersName = $"{x.Surname} {x.Firstname} {x.Lastname}",
                     WardName = x.Street.Ward.WardName,
-                    StreetName = x.Street.StreetName
-                });
+                    StreetName = x.Street.StreetName,
+                    DnId = model.DemandNoticeId,
+                    BillingNumber = billNumber.ToString()
+                }).ToArrayAsync();
+            DemandNoticeTaxpayersModel[] lst = new DemandNoticeTaxpayersModel[query.Length];
 
-            return await query.ToArrayAsync();
+            if (!model.useSingleBill)
+            {
+                for (int i = 0; i < query.Length; i++)
+                {
+                    billNumber = billNumber + 1;
+                    query[i].BillingNumber = billNumber.ToString();
+                }
+                //foreach (var tm in query)
+                //{
+
+                //    lst.Add(tm);
+                //}
+            }
+
+            return query;
         }
     }
 }

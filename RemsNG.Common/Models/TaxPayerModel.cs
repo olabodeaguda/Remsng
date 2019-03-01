@@ -27,6 +27,8 @@ namespace RemsNG.Common.Models
 
         public Guid WardId { get; set; }
         public int ItemCount { get; set; }
+
+        public string DemandNoticeStatus { get; set; }
     }
 
     public enum TaxPayerEnum

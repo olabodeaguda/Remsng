@@ -1,9 +1,7 @@
 <header class="main-header">
-    <!-- Logo -->
     <a [routerLink]="['/dashboard']" class="logo">
         <span class="logo-mini">
             <b>R-</b>NG</span>
-        <!-- logo for regular state and mobile devices -->
         <span class="logo-lg">
             <b>REMS-</b>NG</span>
     </a>
@@ -29,9 +27,6 @@
                 </a>
             </li>
             <li class="active">
-                <!-- <a [routerLink]="['/demandnotice']">Demand Notice
-                    <span class="sr-only">(current)</span>
-                </a> -->
                 <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" 
                 aria-expanded="false">Demand Notice
                     <span class="caret"></span>
@@ -40,8 +35,8 @@
                     <li>
                         <a [routerLink]="['/demandnotice']">Demand Notice by Taxpayer </a>
                     </li>
-                    <li>
-                        <a [routerLink]="['/report']">Demand Notice by batch</a>
+                    <li> 
+                        <a [routerLink]="['/demandnotice/batch']">Demand Notice by batch</a>
                     </li>
                 </ul>
             </li>
@@ -108,9 +103,6 @@
                 <h4 class="modal-title">Change Password</h4>
             </div>
             <div class="modal-body clearfix">
-                <!--<div [ngClass]="profileModel.errClass" *ngIf="profileModel.isErrMsg">
-                    {{profileModel.errMsg}}
-                </div>-->
                 <div class="box-body">
                     <div class="form-group">
                         <label for="newPwd">New Password</label>

@@ -73,6 +73,7 @@ export class DemandNoticeViewComponent implements OnInit {
                 this.isLoading = false;
                 if (response.code == '00') {
                     this.toasterService.pop('success', 'Successful', response.description);
+                    this.getValidTaxpayers();
                 } else {                    
                     this.toasterService.pop('error', 'Error', response.description);
                 }

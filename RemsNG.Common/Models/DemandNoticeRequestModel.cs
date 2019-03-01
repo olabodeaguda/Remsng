@@ -30,6 +30,9 @@ namespace RemsNG.Common.Models
         public string LcdaAddress { get; set; }
         public string LcdaState { get; set; }
         public string TreasurerMobile { get; set; }
+        public Guid DemandNoticeId { get; set; }
+
+        public long InitialBillingNumber { get; set; }
     }
 }
 
