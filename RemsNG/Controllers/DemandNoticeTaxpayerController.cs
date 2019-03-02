@@ -50,7 +50,7 @@ namespace RemsNG.Controllers
             [FromHeader] string pageSize,
             [FromHeader] string pageNum)
         {
-            pageSize = string.IsNullOrEmpty(pageSize) ? "1" : pageSize;
+            pageSize = string.IsNullOrEmpty(pageSize) ? "20" : pageSize;
             pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
 
             if (string.IsNullOrEmpty(batchno))

@@ -65,6 +65,11 @@ export class DemandNoticeViewComponent implements OnInit {
     saveBatch() {
         this.searchModel.taxpayerIds = this.taxpayers.filter(b => b.isChecked == true).map(x => x.id);
         if (this.searchModel.taxpayerIds.length <= 0) {
+            this.toasterService.pop('warning','Error','Taxpayer is required');
+            return;
+        }
+        if(this.searchModel.period <= 0){
+            this.toasterService.pop('warning','Error','Please select period');
             return;
         }
         this.isLoading = true;

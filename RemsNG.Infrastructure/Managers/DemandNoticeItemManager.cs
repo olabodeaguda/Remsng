@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
-using RemsNG.Data.Entities;
 using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
@@ -29,7 +28,7 @@ namespace RemsNG.Infrastructure.Managers
             return await dnDao.ByBillingNumber(billingno);
         }
 
-        private async Task RunDemandNoticeItem(DemandNoticeTaxpayers dntd)
+        public async Task<Response> AddDemandNoticeItem(DemandNoticeTaxpayersModel dntd)
         {
             var companyItems = await _companyItemDao.ByTaxpayer(dntd.TaxpayerId);
             DemandNoticeItemModel[] dniModel = companyItems.Where(x => x.CompanyStatus == CompanyStatus.ACTIVE.ToString())
@@ -52,7 +51,39 @@ namespace RemsNG.Infrastructure.Managers
             {
                 logger.LogError(response.description, dntd);
             }
+            return response;
         }
-        
+
+        public async Task<Response> AddDemandNoticeItem(DemandNoticeTaxpayersModel[] Dntaxpayers)
+        {
+            var companyItems = await _companyItemDao.ByTaxpayer(Dntaxpayers.Select(x => x.TaxpayerId).ToArray());
+            if (companyItems.Count <= 0)
+            {
+                return null;
+            }
+
+            var items = Dntaxpayers
+                 .Join(companyItems, dn => dn.TaxpayerId, itm => itm.TaxpayerId, (dn, itm) => new DemandNoticeItemModel
+                 {
+                     TaxpayerId = dn.TaxpayerId,
+                     AmountPaid = 0,
+                     BillingNo = dn.BillingNumber,
+                     CreatedBy = dn.CreatedBy,
+                     DateCreated = DateTime.Now,
+                     DnTaxpayersDetailsId = dn.DnId,
+                     Id = Guid.NewGuid(),
+                     ItemAmount = itm.Amount,
+                     ItemId = itm.ItemId,
+                     ItemName = itm.ItemName,
+                     ItemStatus = "PENDING",
+                     wardName = dn.WardName
+                 }).ToArray();
+            Response response = await dnDao.Add(items);
+            if (response.code != MsgCode_Enum.SUCCESS)
+            {
+                logger.LogError($"An error occur while adding demand notice item {response.description}");
+            }
+            return response;
+        }
     }
 }

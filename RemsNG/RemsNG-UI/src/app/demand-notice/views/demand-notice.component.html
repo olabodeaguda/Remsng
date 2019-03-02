@@ -52,7 +52,7 @@
                                     [(ngModel)]="searchModel.wardId">
                                     <option>Select Ward</option>
                                     <option *ngFor="let data of wardLst;" [ngValue]="data.id">
-                                        {{data.wardName}}({{data.lcdaName}})</option>
+                                        {{data.wardName}}</option>
                                 </select>
                             </div>
                             <div class="form-group col-md-3">
@@ -70,7 +70,7 @@
                                     <option *ngFor="let data of yrLst;" [ngValue]="data">{{data}}</option>
                                 </select>
                             </div>
-                            <!-- <div class="col-md-3">
+                            <div class="form-group col-md-3">
                                 <div class="form-check col-sm-12">
                                     <label class="form-check-label" for="period">Select Period</label>
                                     <select name="period" class="form-control" [(ngModel)]="searchModel.period">
@@ -81,7 +81,7 @@
                                         <option value="4">Yearly</option>
                                     </select>
                                 </div>
-                            </div> -->
+                            </div>
                         </div>
                     </div>
                     <div class="row">
@@ -182,6 +182,4 @@
         </div>
     </div>
 </section>
-
-<section class="content"></section>
 <div class="loading" *ngIf="isLoading"></div>

@@ -71,7 +71,8 @@ namespace RemsNG.Extensions
 
                         ExceptionTranslator ex = new ExceptionTranslator(loggerFactory);
                         ex.Translate(context.HttpContext, context.Exception, response);
-                        var result = JsonConvert.SerializeObject(response);
+                        var result = JsonConvert.SerializeObject(response,
+                            new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
 
                         context.Fail(result);
 
@@ -105,7 +106,6 @@ namespace RemsNG.Extensions
                 });
 
             #region service DI
-
             services.AddTransient<IUserManager, UserManager>();
             services.AddTransient<IDomainManager, DomainManager>();
             services.AddTransient<ILcdaManager, LcdaManager>();
@@ -143,9 +143,10 @@ namespace RemsNG.Extensions
             services.AddTransient<IReportManager, ReportManager>();
             services.AddTransient<IExcelService, ExcelService>();
             services.AddTransient<ISyncManager, SyncManager>();
+            services.AddTransient<IArrearsManager, ArrearsManager>();
             services.AddSingleton<IConfigurationRoot>(provider => (IConfigurationRoot)Configuration);
             services.AddSingleton(config.GetSection("BankCategory").Get<BankCategory>());
-            
+
             #endregion
         }
 

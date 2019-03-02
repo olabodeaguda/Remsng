@@ -16,7 +16,7 @@ const appRoutes: Routes = [
     imports: [
       BrowserModule, ChartsModule,
       SharedModule, CarouselModule,
-      RouterModule.forChild(appRoutes)
+      RouterModule.forChild(appRoutes), SharedModule
     ],
     declarations: [
         DashboardComponent, DashboardIndexComponent

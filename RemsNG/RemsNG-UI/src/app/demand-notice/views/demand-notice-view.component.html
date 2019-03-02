@@ -30,15 +30,15 @@
                         <div class="col-xs-2"><b>Search Query</b>: {{searchModel.searchByName ?
                             searchModel?.searchByName: 'Nil'}}</div>
                         <div class="col-xs-2"><b>Billing Year</b>: {{searchModel?.dateYear}}</div>
-                        <div class="col-xs-3">
+                        <!-- <div class="col-xs-3">
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="useSingleBill" (change)="searchModel.useSingleBill = !searchModel.useSingleBill">
                                 <label class="form-check-label" for="useSingleBill">Allow single bill number</label>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="row">
-                        <div class="col-md-3">
+                        <!-- <div class="col-md-3">
                             <div class="form-group">
                                 <label for="dateYear">Select Arrears Category</label>
                                 <select name="dateYear" class="form-control" [(ngModel)]="searchModel.runArrearsCategory">
@@ -49,7 +49,7 @@
                                     <option value="4">Yearly</option>
                                 </select>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="col-md-3">
                             <div class="form-check col-sm-12">
                                 <label class="form-check-label" for="period">Select Period</label>
@@ -64,14 +64,15 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-check">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="useSingleBill" (change)="searchModel.useSingleBill = !searchModel.useSingleBill">
+                                    <label class="form-check-label" for="useSingleBill">Allow single bill number</label>
+                                </div>
+                            </div>
+                            <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="isUnbilled" [checked]="searchModel.isUnbilled"
                                     (change)="searchModel.isUnbilled = !searchModel.isUnbilled">
                                 <label class="form-check-label" for="isUnbilled">Is Unbilled</label>
-                            </div>
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="runPenalty" [checked]="searchModel.runPenalty"
-                                    (change)="searchModel.runPenalty = !searchModel.runPenalty">
-                                <label class="form-check-label" for="runPenalty">Process Penalty</label>
                             </div>
                         </div>
                         <div class="col-md-3">

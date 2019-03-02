@@ -9,7 +9,8 @@ namespace RemsNG.Data.Entities
     {
         public Guid Id { get; set; }
         public string BillingNo { get; set; }
-        public Guid DnTaxpayersDetailsId { get; set; }
+        [ForeignKey("DemandNotice")]
+        public Guid DemandNoticeId { get; set; }
         public Guid TaxpayerId { get; set; }
         public Guid ItemId { get; set; }
         public string ItemName { get; set; }

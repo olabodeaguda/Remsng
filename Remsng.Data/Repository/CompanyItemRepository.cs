@@ -94,6 +94,33 @@ namespace RemsNG.Data.Repository
             return result;
         }
 
+        public async Task<List<CompanyItemModel>> ByTaxpayer(Guid[] taxpayerIds)
+        {
+            var result = await db.Set<CompanyItem>()
+                .Include(x => x.TaxPayer)
+                .Include(x => x.Item)
+                .Where(x => taxpayerIds.Any(p => p == x.TaxpayerId))
+                .Select(p => new CompanyItemModel()
+                {
+                    Amount = p.Amount,
+                    BillingYear = p.BillingYear,
+                    CompanyStatus = p.CompanyStatus,
+                    CreatedBy = p.CreatedBy,
+                    DateCreated = p.DateCreated,
+                    Id = p.Id,
+                    ItemId = p.ItemId,
+                    ItemName = p.Item.ItemDescription,
+                    Lastmodifiedby = p.Lastmodifiedby,
+                    LastModifiedDate = p.LastModifiedDate,
+                    TaxpayerId = p.TaxpayerId,
+                    Firstname = p.TaxPayer.Firstname,
+                    Lastname = p.TaxPayer.Lastname,
+                    Surname = p.TaxPayer.Surname
+                }).ToListAsync();
+
+            return result;
+        }
+
         public async Task<CompanyItemModel> ById(Guid id)
         {
             var result = await db.Set<CompanyItem>()

@@ -24,7 +24,8 @@ namespace RemsNG.Infrastructure.Managers
         private DemandNoticeRepository demandNoticeDao;
         private DemandNoticeArrearRepository dnaDao;
         private DemandNoticeTaxpayersRepository _dnTaxpayerRepo;
-        public DemanNoticeManager(DbContext db)
+        private readonly IDemandNoticeItemManager _dnItemManger;
+        public DemanNoticeManager(DbContext db, IDemandNoticeItemManager demandNoticeItemManager)
         {
             demandNoticeDao = new DemandNoticeRepository(db);
             dnaDao = new DemandNoticeArrearRepository(db);
@@ -36,6 +37,7 @@ namespace RemsNG.Infrastructure.Managers
             _addressRepository = new AddressRepository(db);
             _stateRepository = new StateRepository(db);
             _lcdaPropertyRepo = new LcdaPropertyRepository(db);
+            _dnItemManger = demandNoticeItemManager;
         }
 
         public async Task<Response> Add(DemandNoticeModel demandNotice)
@@ -200,6 +202,7 @@ namespace RemsNG.Infrastructure.Managers
             if (response.code == MsgCode_Enum.SUCCESS)
             {
                 await _dnTaxpayerRepo.Add(dnTaxpayer);
+                await _dnItemManger.AddDemandNoticeItem(dnTaxpayer);
             }
 
             return true;

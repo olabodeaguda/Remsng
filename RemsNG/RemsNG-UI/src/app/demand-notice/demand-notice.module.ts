@@ -22,13 +22,15 @@ const appRoutes: Routes = [
         path: 'demandnotice', component: DemandNoticeIndexComponent,
         children: [
             { path: '', component: DemandNoticeComponent, pathMatch: 'full' },
-            { path: 'taxpayer/:batchId', component: DemandNoticeTaxpayersComponent, pathMatch: 'full' },
+            { path: 'batch/taxpayer/:batchId', component: DemandNoticeTaxpayersComponent, pathMatch: 'full' },
             { path: 'searchtaxpayer', component: DemandNoticeSearchComponent },
             {
                 path: 'dnerror/:id', component: DemandNoticeErrorComponent,
             },
             { path: 'dnoticeview/:qry', component: DemandNoticeViewComponent, pathMatch: 'full' },
-            { path: 'batch', component: DemandNoticeBatchComponent }
+            {
+                path: 'batch', component: DemandNoticeBatchComponent
+            }
         ]
     },
 ];
@@ -46,7 +48,7 @@ const appRoutes: Routes = [
     declarations: [
         DemandNoticeComponent, DemandNoticeTaxpayersComponent,
         DemandNoticeIndexComponent, DemandNoticeSearchComponent,
-        DemandNoticeErrorComponent, DemandNoticeViewComponent,DemandNoticeBatchComponent
+        DemandNoticeErrorComponent, DemandNoticeViewComponent, DemandNoticeBatchComponent
     ],
     providers: [
         DemandNoticeService,

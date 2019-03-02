@@ -1,26 +1,3 @@
-<!--<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" #changestatus>
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Approve LCDA</h4>
-            </div>
-            <div class="modal-body clearfix">
-                <div [ngClass]="wardModel.errClass" *ngIf="wardModel.isErrMsg">
-                    {{wardModel.msg}}
-                </div>
-                <div class="box-body">
-                    You are about to<b> {{wardModel.lcdaStatus === 'ACTIVE'?'deactivate':'approve'}}</b> {{wardModel.lcdaName}}. Are you sure?
-                </div>
-                <div class="box-footer">
-                        <button [ladda]="wardModel.isLoading" type="submit" class="btn btn-success" (click)="addLCDA()">Submit</button>
-                        <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>-->
-
 <div class="modal fade" role="dialog" id="addModal" #addModal>
     <div class=" modal-dialog ">
         <div class="modal-content " style="width:500px;">
@@ -170,6 +147,5 @@
         </div>
     </div>
 </section>
-<section class="content"></section>
 <ft></ft>
 <div class="loading" *ngIf="isLoading"></div>

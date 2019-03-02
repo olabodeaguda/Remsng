@@ -59,7 +59,7 @@ namespace RemsNG.Data.Repository
                 ItemStatus = x.ItemStatus,
                 Lastmodifiedby = x.Lastmodifiedby,
                 LastModifiedDate = x.LastModifiedDate,
-                DnTaxpayersDetailsId = x.DnTaxpayersDetailsId,
+                DemandNoticeId = x.DnTaxpayersDetailsId,
                 TaxpayerId = x.TaxpayerId
             }).ToArray();
 
@@ -74,28 +74,24 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<DemandNoticeItemModel>> ByBillingNumber(string billingno)
         {
-            //List<DemandNoticeItem> lstdbItem = await db.Set<DemandNoticeItem>().
-            //        FromSql($"select tbl_demandNoticeItem.*,0.0 as penaltyAmount,'nil' as duration,-1 " +
-            //        $" as billingYr from tbl_demandNoticeItem where billingNo = '{billingno}' " +
-            //        $"and itemStatus not in ('CANCEL')").ToListAsync();
-            // $"and itemStatus in ('PENDING','PART_PAYMENT','PAID','CANCEL')").ToListAsync();
-
-            var result = await db.Set<DemandNoticeItem>().Where(x => x.ItemStatus == "CANCEL").Select(x => new DemandNoticeItemModel()
-            {
-                AmountPaid = x.AmountPaid,
-                BillingNo = x.BillingNo,
-                CreatedBy = x.CreatedBy,
-                DateCreated = x.DateCreated,
-                DnTaxpayersDetailsId = x.DnTaxpayersDetailsId,
-                Id = x.Id,
-                ItemAmount = x.ItemAmount,
-                ItemStatus = x.ItemStatus,
-                ItemId = x.ItemId,
-                ItemName = x.ItemName,
-                Lastmodifiedby = x.Lastmodifiedby,
-                LastModifiedDate = x.LastModifiedDate,
-                TaxpayerId = x.TaxpayerId
-            }).ToListAsync();
+            var result = await db.Set<DemandNoticeItem>()
+                .Where(x => x.ItemStatus != "CANCEL" && x.BillingNo == billingno)
+                .Select(x => new DemandNoticeItemModel()
+                {
+                    AmountPaid = x.AmountPaid,
+                    BillingNo = x.BillingNo,
+                    CreatedBy = x.CreatedBy,
+                    DateCreated = x.DateCreated,
+                    DnTaxpayersDetailsId = x.DemandNoticeId,
+                    Id = x.Id,
+                    ItemAmount = x.ItemAmount,
+                    ItemStatus = x.ItemStatus,
+                    ItemId = x.ItemId,
+                    ItemName = x.ItemName,
+                    Lastmodifiedby = x.Lastmodifiedby,
+                    LastModifiedDate = x.LastModifiedDate,
+                    TaxpayerId = x.TaxpayerId
+                }).ToListAsync();
 
             return result;
         }
@@ -111,7 +107,7 @@ namespace RemsNG.Data.Repository
                      BillingNo = dni.BillingNo,
                      CreatedBy = dni.CreatedBy,
                      DateCreated = dni.DateCreated,
-                     DnTaxpayersDetailsId = dni.DnTaxpayersDetailsId,
+                     DnTaxpayersDetailsId = dni.DemandNoticeId,
                      Id = dni.Id,
                      ItemAmount = dni.ItemAmount,
                      ItemStatus = dni.ItemStatus,
@@ -144,7 +140,7 @@ namespace RemsNG.Data.Repository
                   BillingNo = p.BillingNo,
                   CreatedBy = p.CreatedBy,
                   DateCreated = p.DateCreated,
-                  DnTaxpayersDetailsId = p.DnTaxpayersDetailsId,
+                  DnTaxpayersDetailsId = p.DemandNoticeId,
                   Id = p.Id,
                   ItemAmount = p.ItemAmount,
                   ItemId = p.ItemId,
@@ -159,5 +155,6 @@ namespace RemsNG.Data.Repository
 
             return lst;
         }
+
     }
 }

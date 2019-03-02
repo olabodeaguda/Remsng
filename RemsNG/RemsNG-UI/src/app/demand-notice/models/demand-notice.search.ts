@@ -12,7 +12,7 @@ export class DemandNoticeSearch {
     runArrearsCategory: number = -1;
     isUnbilled: boolean = false;
     runPenalty: boolean = false;
-    period: string;
+    period: number = -1;
     useSingleBill: boolean = false;
     taxpayerIds = [];
 }

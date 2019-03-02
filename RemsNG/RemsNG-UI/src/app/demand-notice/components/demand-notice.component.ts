@@ -163,10 +163,17 @@ export class DemandNoticeComponent implements OnInit {
     }
 
     runArrears(lt) {
-        
+        if (this.searchModel.period <= 0) {
+            this.toasterService.pop('error', 'Error', 'Arrears period is required');
+            return;
+        }
     }
 
     runPenalty(lt) {
+        if (this.searchModel.period <= 0) {
+            this.toasterService.pop('error', 'Error', 'Arrears period is required');
+            return;
+        }
 
     }
 

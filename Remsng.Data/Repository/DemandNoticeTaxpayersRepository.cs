@@ -258,7 +258,7 @@ namespace RemsNG.Data.Repository
                 TaxpayersName = x.TaxpayersName,
                 WardName = x.WardName
             }).OrderByDescending(x => x.TaxpayersName)
-                .Skip(pageModel.PageNum * pageModel.PageSize).Take(pageModel.PageSize).ToArrayAsync();
+                .Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToArrayAsync();
 
             int totalCount = await query.CountAsync();
 
@@ -839,7 +839,7 @@ namespace RemsNG.Data.Repository
                     AddressName = $"{x.Address.Addressnumber}, {x.Street.StreetName}",
                     BillingYr = model.dateYear,
                     CouncilTreasurerSigFilen = CouncilTreasurerSigFilen,
-                    CreatedBy = x.CreatedBy,
+                    CreatedBy = model.createdBy,
                     DateCreated = DateTime.Now,
                     DemandNoticeStatus = "PENDING",
                     DomainName = x.Street.Ward.Lcda.Domain.DomainName,
@@ -870,11 +870,6 @@ namespace RemsNG.Data.Repository
                     billNumber = billNumber + 1;
                     query[i].BillingNumber = billNumber.ToString();
                 }
-                //foreach (var tm in query)
-                //{
-
-                //    lst.Add(tm);
-                //}
             }
 
             return query;

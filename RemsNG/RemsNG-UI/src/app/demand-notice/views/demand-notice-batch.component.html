@@ -151,7 +151,7 @@
                                 <select (change)="loadStreets($event.target.value)" name="wardId" class="form-control"
                                     [(ngModel)]="searchModel.wardId">
                                     <option>Select Ward</option>
-                                    <option *ngFor="let data of wardLst;" [ngValue]="data.id">{{data.wardName}}({{data.lcdaName}})</option>
+                                    <option *ngFor="let data of wardLst;" [ngValue]="data.id">{{data.wardName}}</option>
                                 </select>
                             </div>
                             <div class="form-group col-md-3">
@@ -265,5 +265,4 @@
     </div>
 </section>
 
-<section class="content"></section>
 <div class="loading" *ngIf="isLoading"></div>
