@@ -9,7 +9,7 @@ namespace RemsNG.Data.Entities
     {
         public Guid Id { get; set; }
         public string BillingNo { get; set; }
-        [ForeignKey("DemandNotice")]
+        public Guid dn_taxpayersDetailsId { get; set; }
         public Guid DemandNoticeId { get; set; }
         public Guid TaxpayerId { get; set; }
         public Guid ItemId { get; set; }
@@ -22,7 +22,8 @@ namespace RemsNG.Data.Entities
         public string Lastmodifiedby { get; set; }
         public DateTime? LastModifiedDate { get; set; }
 
-        public virtual DemandNotice DemandNotice { get; set; }
+        [ForeignKey("dn_taxpayersDetailsId")]
+        public DemandNoticeTaxpayer DemandNoticeTaxpayer { get; set; }
         public virtual Item Item { get; set; }
 
         [ForeignKey("TaxpayerId")]

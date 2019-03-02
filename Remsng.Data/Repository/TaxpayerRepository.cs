@@ -408,7 +408,7 @@ namespace RemsNG.Data.Repository
 
             var res = await db.Set<DemandNoticePaymentHistory>()
             .Include(p => p.Bank)
-            .Join(db.Set<DemandNoticeTaxpayers>(), dnph => dnph.BillingNumber, dnt => dnt.BillingNumber, (p, dnt) =>
+            .Join(db.Set<DemandNoticeTaxpayer>(), dnph => dnph.BillingNumber, dnt => dnt.BillingNumber, (p, dnt) =>
                   new DemandNoticePaymentHistoryModel()
                   {
                       Amount = p.Amount,
@@ -504,7 +504,7 @@ namespace RemsNG.Data.Repository
             //    $"billingYr= {billingYear} and tbl_demandNoticeTaxpayers.demandNoticeStatus <> 'CANCEL') " +
             //    $"and tbl_taxPayer.taxpayerStatus = 'ACTIVE' ";
 
-            var alreadyBilledTaxpayerIds = await db.Set<DemandNoticeTaxpayers>()
+            var alreadyBilledTaxpayerIds = await db.Set<DemandNoticeTaxpayer>()
                 .Where(x => x.BillingYr == billingYear && x.DemandNoticeStatus != "CANCEL")
                 .Select(x => x.TaxpayerId).ToArrayAsync();
 

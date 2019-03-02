@@ -7,6 +7,6 @@ namespace RemsNG.Common.Interfaces.Managers
     {
         Task RunTaxpayerArrears(Guid taxpayerId);
 
-        Task RunTaxpayerArrears(Guid[] taxpayerId);
+        Task RunTaxpayerArrears(Guid[] dnTaxpayerIds);
     }
 }

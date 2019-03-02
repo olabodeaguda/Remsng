@@ -29,5 +29,7 @@ namespace RemsNG.Common.Models
         public string StreetName { get; set; }
         public int Period { get; set; }
 
+        public decimal Amount { get; set; }
+
     }
 }

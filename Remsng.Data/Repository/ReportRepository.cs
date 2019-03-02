@@ -24,7 +24,7 @@ namespace RemsNG.Data.Repository
                  .Include(p => p.TaxPayer)
                  .ThenInclude(s => s.Street)
                  .ThenInclude(s => s.Ward)
-                 .Join(db.Set<DemandNoticeTaxpayers>(),
+                 .Join(db.Set<DemandNoticeTaxpayer>(),
                  itm => itm.BillingNo, dnt => dnt.BillingNumber, (itm, dnt) => new { itm, dnt })
                  .Where(q => q.itm.TaxPayer.Street.Ward.WardName == "ACTIVE"
                  && (q.itm.DateCreated >= startDate && q.itm.DateCreated <= endDate)
@@ -51,7 +51,7 @@ namespace RemsNG.Data.Repository
                  .Include(p => p.TaxPayer)
                  .ThenInclude(s => s.Street)
                  .ThenInclude(s => s.Ward)
-                 .Join(db.Set<DemandNoticeTaxpayers>(),
+                 .Join(db.Set<DemandNoticeTaxpayer>(),
                  itm => itm.BillingNo, dnt => dnt.BillingNumber, (itm, dnt) => new { itm, dnt })
                  .Where(q => q.itm.TaxPayer.Street.Ward.WardName == "ACTIVE"
                  && (q.itm.DateCreated >= startDate && q.itm.DateCreated <= endDate)
@@ -78,7 +78,7 @@ namespace RemsNG.Data.Repository
                  .Include(p => p.TaxPayer)
                  .ThenInclude(s => s.Street)
                  .ThenInclude(s => s.Ward)
-                 .Join(db.Set<DemandNoticeTaxpayers>(),
+                 .Join(db.Set<DemandNoticeTaxpayer>(),
                  itm => itm.BillingNo, dnt => dnt.BillingNumber, (itm, dnt) => new { itm, dnt })
                  .Where(q => q.itm.TaxPayer.Street.Ward.WardName == "ACTIVE"
                  && (q.itm.DateCreated >= startDate && q.itm.DateCreated <= endDate)
@@ -134,7 +134,7 @@ namespace RemsNG.Data.Repository
                  .Include(p => p.TaxPayer)
                  .ThenInclude(s => s.Street)
                  .ThenInclude(s => s.Ward)
-                 .Join(db.Set<DemandNoticeTaxpayers>(),
+                 .Join(db.Set<DemandNoticeTaxpayer>(),
                  itm => itm.BillingNo, dnt => dnt.BillingNumber, (itm, dnt) => new { itm, dnt })
                  .Where(q => q.itm.TaxPayer.Street.Ward.WardName == "ACTIVE"
                  && (q.itm.DateCreated >= startDate && q.itm.DateCreated <= endDate)
@@ -162,7 +162,7 @@ namespace RemsNG.Data.Repository
                  .Include(p => p.TaxPayer)
                  .ThenInclude(s => s.Street)
                  .ThenInclude(s => s.Ward)
-                 .Join(db.Set<DemandNoticeTaxpayers>(),
+                 .Join(db.Set<DemandNoticeTaxpayer>(),
                  itm => itm.BillingNo, dnt => dnt.BillingNumber, (itm, dnt) => new { itm, dnt })
                  .Where(q => q.itm.TaxPayer.Street.Ward.WardName == "ACTIVE"
                  && (q.itm.DateCreated >= startDate && q.itm.DateCreated <= endDate)
@@ -190,7 +190,7 @@ namespace RemsNG.Data.Repository
                  .Include(p => p.TaxPayer)
                  .ThenInclude(s => s.Street)
                  .ThenInclude(s => s.Ward)
-                 .Join(db.Set<DemandNoticeTaxpayers>(),
+                 .Join(db.Set<DemandNoticeTaxpayer>(),
                  itm => itm.BillingNo, dnt => dnt.BillingNumber, (itm, dnt) => new { itm, dnt })
                  .Where(q => q.itm.TaxPayer.Street.Ward.WardName == "ACTIVE"
                  && (q.itm.DateCreated >= startDate && q.itm.DateCreated <= endDate)
@@ -236,7 +236,7 @@ namespace RemsNG.Data.Repository
         {
             int billingYr = DateTime.Now.Year;
             var items = await db.Set<DemandNoticeItem>()
-                .Join(db.Set<DemandNoticeTaxpayers>(), dni => dni.BillingNo,
+                .Join(db.Set<DemandNoticeTaxpayer>(), dni => dni.BillingNo,
                 dnt => dnt.BillingNumber, (dni, dnt) => new ChartReportModel
                 {
                     amountPaid = dni.AmountPaid,
@@ -247,7 +247,7 @@ namespace RemsNG.Data.Repository
                 }).Where(x => x.BillingYear == billingYr).ToListAsync();
 
             var arrears = await db.Set<DemandNoticeArrears>()
-               .Join(db.Set<DemandNoticeTaxpayers>(), dni => dni.BillingNo,
+               .Join(db.Set<DemandNoticeTaxpayer>(), dni => dni.BillingNo,
                dnt => dnt.BillingNumber, (dni, dnt) => new ChartReportModel
                {
                    amountPaid = dni.AmountPaid,
@@ -258,7 +258,7 @@ namespace RemsNG.Data.Repository
                }).Where(x => x.BillingYear == billingYr).ToListAsync();
 
             var penalty = await db.Set<DemandNoticePenalty>()
-               .Join(db.Set<DemandNoticeTaxpayers>(), dni => dni.BillingNo,
+               .Join(db.Set<DemandNoticeTaxpayer>(), dni => dni.BillingNo,
                dnt => dnt.BillingNumber, (dni, dnt) => new ChartReportModel
                {
                    amountPaid = dni.AmountPaid,

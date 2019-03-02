@@ -10,7 +10,6 @@ namespace RemsNG.Data.Entities
     {
         public DemandNotice()
         {
-            DemandNoticeItem = new HashSet<DemandNoticeItem>();
         }
 
         public Guid Id { get; set; }
@@ -31,7 +30,7 @@ namespace RemsNG.Data.Entities
         [ForeignKey("StreetId")]
         public Street Street { get; set; }
 
-        public virtual ICollection<DemandNoticeItem> DemandNoticeItem { get; set; }
+        public virtual ICollection<DemandNoticeTaxpayer> DemandNoticeTaxpayers { get; set; }
 
         [ForeignKey("WardId")]
         public Ward Ward { get; set; }

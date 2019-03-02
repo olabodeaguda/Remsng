@@ -70,13 +70,14 @@ namespace RemsNG.Infrastructure.Managers
                      BillingNo = dn.BillingNumber,
                      CreatedBy = dn.CreatedBy,
                      DateCreated = DateTime.Now,
-                     DnTaxpayersDetailsId = dn.DnId,
+                     DnTaxpayersDetailsId = dn.Id,
                      Id = Guid.NewGuid(),
                      ItemAmount = itm.Amount,
                      ItemId = itm.ItemId,
                      ItemName = itm.ItemName,
                      ItemStatus = "PENDING",
-                     wardName = dn.WardName
+                     wardName = dn.WardName,
+                      
                  }).ToArray();
             Response response = await dnDao.Add(items);
             if (response.code != MsgCode_Enum.SUCCESS)

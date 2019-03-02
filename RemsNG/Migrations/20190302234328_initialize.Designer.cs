@@ -10,8 +10,8 @@ using RemsNG.Data;
 namespace RemsNG.Migrations
 {
     [DbContext(typeof(RemsDbContext))]
-    [Migration("20190228083703_stateDomainrela")]
-    partial class stateDomainrela
+    [Migration("20190302234328_initialize")]
+    partial class initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -383,9 +383,7 @@ namespace RemsNG.Migrations
 
                     b.Property<DateTime?>("DateCreated");
 
-                    b.Property<Guid?>("DemandNoticeId");
-
-                    b.Property<Guid>("DnTaxpayersDetailsId");
+                    b.Property<Guid>("DemandNoticeId");
 
                     b.Property<decimal>("ItemAmount");
 
@@ -401,13 +399,15 @@ namespace RemsNG.Migrations
 
                     b.Property<Guid>("TaxpayerId");
 
-                    b.HasKey("Id");
+                    b.Property<Guid>("dn_taxpayersDetailsId");
 
-                    b.HasIndex("DemandNoticeId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ItemId");
 
                     b.HasIndex("TaxpayerId");
+
+                    b.HasIndex("dn_taxpayersDetailsId");
 
                     b.ToTable("tbl_demandNoticeItem");
                 });
@@ -490,7 +490,7 @@ namespace RemsNG.Migrations
                     b.ToTable("tbl_demandNoticePenalty");
                 });
 
-            modelBuilder.Entity("RemsNG.Data.Entities.DemandNoticeTaxpayers", b =>
+            modelBuilder.Entity("RemsNG.Data.Entities.DemandNoticeTaxpayer", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -1098,10 +1098,6 @@ namespace RemsNG.Migrations
 
             modelBuilder.Entity("RemsNG.Data.Entities.DemandNoticeItem", b =>
                 {
-                    b.HasOne("RemsNG.Data.Entities.DemandNotice", "DemandNotice")
-                        .WithMany("DemandNoticeItem")
-                        .HasForeignKey("DemandNoticeId");
-
                     b.HasOne("RemsNG.Data.Entities.Item", "Item")
                         .WithMany("DemandNoticeItem")
                         .HasForeignKey("ItemId")
@@ -1110,6 +1106,11 @@ namespace RemsNG.Migrations
                     b.HasOne("RemsNG.Data.Entities.TaxPayer", "TaxPayer")
                         .WithMany()
                         .HasForeignKey("TaxpayerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("RemsNG.Data.Entities.DemandNoticeTaxpayer", "DemandNoticeTaxpayer")
+                        .WithMany("DemandNoticeItem")
+                        .HasForeignKey("dn_taxpayersDetailsId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -1134,10 +1135,10 @@ namespace RemsNG.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("RemsNG.Data.Entities.DemandNoticeTaxpayers", b =>
+            modelBuilder.Entity("RemsNG.Data.Entities.DemandNoticeTaxpayer", b =>
                 {
                     b.HasOne("RemsNG.Data.Entities.DemandNotice", "DemandNotice")
-                        .WithMany()
+                        .WithMany("DemandNoticeTaxpayers")
                         .HasForeignKey("DnId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

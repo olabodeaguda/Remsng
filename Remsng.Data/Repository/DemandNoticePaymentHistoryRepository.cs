@@ -105,7 +105,7 @@ namespace RemsNG.Data.Repository
             //    $"inner join tbl_demandNoticeTaxpayers as dnp on dnp.billingNumber = dnph.billingNumber where dnph.billingNumber = '{billingnumber}'";
 
             var model = await db.Set<DemandNoticePaymentHistory>().Include(x => x.Bank)
-                .Join(db.Set<DemandNoticeTaxpayers>(), dnph => dnph.BillingNumber,
+                .Join(db.Set<DemandNoticeTaxpayer>(), dnph => dnph.BillingNumber,
                 dnt => dnt.BillingNumber, (dnph, dnt) => new DemandNoticePaymentHistoryModel()
                 {
                     Amount = dnph.Amount,
@@ -157,7 +157,7 @@ namespace RemsNG.Data.Repository
             //}).ToList();
 
             var model = await db.Set<DemandNoticePaymentHistory>().Include(x => x.Bank)
-               .Join(db.Set<DemandNoticeTaxpayers>(), dnph => dnph.BillingNumber,
+               .Join(db.Set<DemandNoticeTaxpayer>(), dnph => dnph.BillingNumber,
                dnt => dnt.BillingNumber, (dnph, dnt) => new DemandNoticePaymentHistoryModel()
                {
                    Amount = dnph.Amount,
@@ -212,7 +212,7 @@ namespace RemsNG.Data.Repository
             //    SyncStatus = x.SyncStatus
             //};
             var model = await db.Set<DemandNoticePaymentHistory>().Include(x => x.Bank)
-                .Join(db.Set<DemandNoticeTaxpayers>(), dnph => dnph.BillingNumber,
+                .Join(db.Set<DemandNoticeTaxpayer>(), dnph => dnph.BillingNumber,
                 dnt => dnt.BillingNumber, (dnph, dnt) => new DemandNoticePaymentHistoryModel()
                 {
                     Amount = dnph.Amount,
@@ -314,7 +314,7 @@ namespace RemsNG.Data.Repository
             //    $"where tbl_demandNoticePaymentHistory.ownerId = '{ownerId}' and tbl_demandNoticeTaxpayers.billingYr = {currentYr} " +
             //    $"and paymentStatus = 'APPROVED'";
             var result = await db.Set<DemandNoticePaymentHistory>().Include(x => x.Bank)
-                .Join(db.Set<DemandNoticeTaxpayers>(), dnph => dnph.BillingNumber, dnt => dnt.BillingNumber, (dnph, dnt) => new
+                .Join(db.Set<DemandNoticeTaxpayer>(), dnph => dnph.BillingNumber, dnt => dnt.BillingNumber, (dnph, dnt) => new
                 { dnph, dnt }).Where(p => p.dnph.OwnerId == ownerId && p.dnt.BillingYr == currentYr && p.dnph.PaymentStatus == "APPROVED")
                 .Select(x => new DemandNoticePaymentHistoryModel()
                 {

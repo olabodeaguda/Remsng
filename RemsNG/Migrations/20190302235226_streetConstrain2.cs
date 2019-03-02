@@ -2,7 +2,7 @@
 
 namespace RemsNG.Migrations
 {
-    public partial class newinit : Migration
+    public partial class streetConstrain2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

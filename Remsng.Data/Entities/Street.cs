@@ -25,5 +25,6 @@ namespace RemsNG.Data.Entities
 
         public virtual Ward Ward { get; set; }
         public virtual ICollection<TaxPayer> TaxPayer { get; set; }
+        public virtual ICollection<Address> Addresses { get; set; }
     }
 }

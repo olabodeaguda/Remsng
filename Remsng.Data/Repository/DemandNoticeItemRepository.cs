@@ -15,7 +15,7 @@ namespace RemsNG.Data.Repository
         {
         }
 
-        public async Task<Response> Add(DemandNoticeTaxpayers dntd)
+        public async Task<Response> Add(DemandNoticeTaxpayer dntd)
         {
             // get companyItems
             // add demandnoticetaxpayers
@@ -59,7 +59,8 @@ namespace RemsNG.Data.Repository
                 ItemStatus = x.ItemStatus,
                 Lastmodifiedby = x.Lastmodifiedby,
                 LastModifiedDate = x.LastModifiedDate,
-                DemandNoticeId = x.DnTaxpayersDetailsId,
+                DemandNoticeId = x.DemandNoticeId,
+                dn_taxpayersDetailsId = x.DnTaxpayersDetailsId,
                 TaxpayerId = x.TaxpayerId
             }).ToArray();
 
@@ -82,7 +83,8 @@ namespace RemsNG.Data.Repository
                     BillingNo = x.BillingNo,
                     CreatedBy = x.CreatedBy,
                     DateCreated = x.DateCreated,
-                    DnTaxpayersDetailsId = x.DemandNoticeId,
+                    DemandNoticeId = x.DemandNoticeId,
+                    DnTaxpayersDetailsId = x.dn_taxpayersDetailsId,
                     Id = x.Id,
                     ItemAmount = x.ItemAmount,
                     ItemStatus = x.ItemStatus,
@@ -99,7 +101,7 @@ namespace RemsNG.Data.Repository
         public async Task<List<DemandNoticeItemModel>> UnpaidBillsByTaxpayerId(Guid taxpayerId, string billNumber, int billingYr)
         {
             var r = await db.Set<DemandNoticeItem>()
-                 .Join(db.Set<DemandNoticeTaxpayers>(),
+                 .Join(db.Set<DemandNoticeTaxpayer>(),
                  dnt => dnt.TaxpayerId, dni => dni.TaxpayerId,
                  (dni, dnt) => new DemandNoticeItemModel()
                  {
@@ -107,7 +109,8 @@ namespace RemsNG.Data.Repository
                      BillingNo = dni.BillingNo,
                      CreatedBy = dni.CreatedBy,
                      DateCreated = dni.DateCreated,
-                     DnTaxpayersDetailsId = dni.DemandNoticeId,
+                     DemandNoticeId = dni.DemandNoticeId,
+                     DnTaxpayersDetailsId = dni.dn_taxpayersDetailsId,
                      Id = dni.Id,
                      ItemAmount = dni.ItemAmount,
                      ItemStatus = dni.ItemStatus,
@@ -131,8 +134,7 @@ namespace RemsNG.Data.Repository
               .Include(x => x.TaxPayer)
               .ThenInclude(x => x.Company)
               .ThenInclude(x => x.TaxPayerCatgeory)
-              .Include(x => x.DemandNotice)
-              .ThenInclude(x => x.Ward)
+              .Include(x => x.DemandNoticeTaxpayer)
               .Where(x => x.DateCreated >= startDate && x.DateCreated <= endDate && status.Any(t => t == x.ItemStatus))
               .Select(p => new DemandNoticeItemModel()
               {
@@ -140,7 +142,8 @@ namespace RemsNG.Data.Repository
                   BillingNo = p.BillingNo,
                   CreatedBy = p.CreatedBy,
                   DateCreated = p.DateCreated,
-                  DnTaxpayersDetailsId = p.DemandNoticeId,
+                  DemandNoticeId = p.DemandNoticeId,
+                  DnTaxpayersDetailsId = p.dn_taxpayersDetailsId,
                   Id = p.Id,
                   ItemAmount = p.ItemAmount,
                   ItemId = p.ItemId,
@@ -149,7 +152,7 @@ namespace RemsNG.Data.Repository
                   Lastmodifiedby = p.Lastmodifiedby,
                   LastModifiedDate = p.LastModifiedDate,
                   TaxpayerId = p.TaxpayerId,
-                  wardName = p.DemandNotice.Ward.WardName,
+                  wardName = p.DemandNoticeTaxpayer.WardName,
                   category = p.TaxPayer.Company.TaxPayerCatgeory.TaxpayerCategoryName
               }).ToListAsync();
 

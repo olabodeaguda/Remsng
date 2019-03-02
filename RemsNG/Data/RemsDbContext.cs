@@ -32,7 +32,7 @@ namespace RemsNG.Data
         public DbSet<CompanyItem> companyItems { get; set; }
         public DbSet<DemandNotice> DemandNotices { get; set; }
         public DbSet<Error> Errors { get; set; }
-        public DbSet<DemandNoticeTaxpayers> DemandNoticeTaxpayersDetails { get; set; }
+        public DbSet<DemandNoticeTaxpayer> DemandNoticeTaxpayersDetails { get; set; }
         public DbSet<DemandNoticeItem> DemandNoticeItems { get; set; }
         public DbSet<State> States { get; set; }
         public DbSet<Images> Imagess { get; set; }
@@ -106,6 +106,11 @@ namespace RemsNG.Data
                 .WithMany(x => x.UserRoles)
                 .HasForeignKey(x => x.RoleId);
             #endregion
+
+            modelBuilder.Entity<Address>()
+                .HasOne(x => x.Street)
+                .WithMany(r => r.Addresses)
+                .HasForeignKey(d => d.StreetId);
         }
     }
 }

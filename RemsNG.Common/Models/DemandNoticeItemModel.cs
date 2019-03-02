@@ -19,8 +19,10 @@ namespace RemsNG.Common.Models
         public DateTime? LastModifiedDate { get; set; }
         public string category { get; set; }
         public string wardName { get; set; }
+        public Guid DemandNoticeId { get; set; }
 
-        public virtual DemandNoticeModel DnTaxpayersDetails { get; set; }
+
+        public virtual DemandNoticeTaxpayersModel DnTaxpayersDetails { get; set; }
         public virtual ItemModel Item { get; set; }
     }
 

@@ -148,7 +148,7 @@ namespace RemsNG.Data.Repository
                 throw new NotFoundException("Demand Notice can not be found");
             }
 
-            entity.Query = demandNotice.Query;
+            entity.DemandNoticeStatus = demandNotice.DemandNoticeStatus;
             await db.SaveChangesAsync();
 
             return new Response()

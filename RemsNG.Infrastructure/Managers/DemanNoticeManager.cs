@@ -205,6 +205,8 @@ namespace RemsNG.Infrastructure.Managers
                 await _dnItemManger.AddDemandNoticeItem(dnTaxpayer);
             }
 
+            demandNotice.DemandNoticeStatus = DemandNoticeStatus.COMPLETED.ToString();
+            await demandNoticeDao.UpdateStatus(demandNotice);
             return true;
         }
     }

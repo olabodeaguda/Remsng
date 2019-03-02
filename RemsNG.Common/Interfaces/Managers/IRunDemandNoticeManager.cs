@@ -4,7 +4,8 @@ namespace RemsNG.Common.Interfaces.Managers
 {
     public interface IRunDemandNoticeManager
     {
-        Task RegisterTaxpayer();
+        // Task RegisterTaxpayer();
         Task GenerateBulkDemandNotice();
+        Task ReconcileDemandNotice();
     }
 }

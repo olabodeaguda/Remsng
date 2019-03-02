@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RemsNG.Data.Entities
 {
     [Table("tbl_demandNoticeTaxpayers")]
-    public class DemandNoticeTaxpayers
+    public class DemandNoticeTaxpayer
     {
         public Guid Id { get; set; }
         public Guid DnId { get; set; }
@@ -32,5 +33,7 @@ namespace RemsNG.Data.Entities
 
         [ForeignKey("DnId")]
         public DemandNotice DemandNotice { get; set; }
+
+        public virtual ICollection<DemandNoticeItem> DemandNoticeItem { get; set; }
     }
 }
