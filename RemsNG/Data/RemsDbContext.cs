@@ -36,7 +36,7 @@ namespace RemsNG.Data
         public DbSet<DemandNoticeItem> DemandNoticeItems { get; set; }
         public DbSet<State> States { get; set; }
         public DbSet<Images> Imagess { get; set; }
-        public DbSet<DemandNoticeArrears> DemandNoticeArrearss { get; set; }
+        public DbSet<DemandNoticeArrear> DemandNoticeArrearss { get; set; }
         public DbSet<DemandNoticeDownloadHistory> DemandNoticeDownloadHistories { get; set; }
         public DbSet<BankLcda> LcdaBanks { get; set; }
         public DbSet<LcdaProperty> LcdaProperties { get; set; }

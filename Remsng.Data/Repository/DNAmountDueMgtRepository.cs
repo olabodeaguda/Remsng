@@ -21,7 +21,7 @@ namespace RemsNG.Data.Repository
             //    .FromSql("sp_getBillingNumberTotalDue @p0", new object[] { billingno }).ToListAsync();
 
             List<DNAmountDueModel> results = new List<DNAmountDueModel>();
-            var arrears = await db.Set<DemandNoticeArrears>()
+            var arrears = await db.Set<DemandNoticeArrear>()
                 .Where(r => r.BillingNo == billingno)
                 .Select(x => new DNAmountDueModel()
                 {
@@ -31,7 +31,7 @@ namespace RemsNG.Data.Repository
                     billingNo = x.BillingNo,
                     category = "ARREARS",
                     itemDescription = "description",
-                    itemId = x.ItemId,
+                    //itemId = x.ItemId,
                     itemStatus = x.ArrearsStatus
                 }).ToListAsync();
             results.AddRange(arrears);
@@ -96,7 +96,7 @@ namespace RemsNG.Data.Repository
             string[] status = { "PART_PAYMENT", "PENDING" };
 
             List<DNAmountDueModel> results = new List<DNAmountDueModel>();
-            var arrears = await db.Set<DemandNoticeArrears>()
+            var arrears = await db.Set<DemandNoticeArrear>()
                 .Where(p => bills.Any(x => x == p.BillingNo) && status.Any(x => x == p.ArrearsStatus))
                 .Select(x => new DNAmountDueModel()
                 {
@@ -106,7 +106,7 @@ namespace RemsNG.Data.Repository
                     billingNo = x.BillingNo,
                     category = "ARREARS",
                     itemDescription = "description",
-                    itemId = x.ItemId,
+                    //itemId = x.ItemId,
                     itemStatus = x.ArrearsStatus
                 }).ToListAsync();
             results.AddRange(arrears);

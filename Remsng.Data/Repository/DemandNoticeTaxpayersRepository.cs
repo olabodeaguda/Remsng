@@ -206,7 +206,9 @@ namespace RemsNG.Data.Repository
                 LastModifiedDate = dnt.LastModifiedDate,
                 TaxpayersName = dnt.TaxpayersName,
                 WardName = dnt.WardName,
-                Period = dnt.Period
+                Period = dnt.Period,
+                IsRunArrears = dnt.IsRunArrears,
+                IsRunPenalty = dnt.IsRunPenalty
             }).ToArray();
             db.Set<DemandNoticeTaxpayer>().AddRange(d);
             await db.SaveChangesAsync();
@@ -649,7 +651,27 @@ namespace RemsNG.Data.Repository
 
             if (!string.IsNullOrEmpty(rhModel.searchByName))
             {
-                query = query.Where(x => EF.Functions.Like(x.TaxpayersName, $"%{rhModel.searchByName}%"));
+                string[] prams = rhModel.searchByName.Split(new char[] { ' ' });
+
+                switch (prams.Length)
+                {
+                    case 1:
+                        query = query.Where(x => EF.Functions.Like(x.TaxpayersName, $"%{rhModel.searchByName}%"));
+                        break;
+                    case 2:
+                        query = query.Where(x => EF.Functions.Like(x.TaxpayersName, $"%{prams[0]}%") && EF.Functions.Like(x.TaxpayersName, $"%{prams[1]}%"));
+                        break;
+                    case 3:
+                        query = query.Where(x => EF.Functions.Like(x.TaxpayersName, $"%{prams[0]}%") && EF.Functions.Like(x.TaxpayersName, $"%{prams[1]}%") &&
+                        EF.Functions.Like(x.TaxpayersName, $"%{prams[2]}%"));
+                        break;
+                    case 4:
+                        query = query.Where(x => EF.Functions.Like(x.TaxpayersName, $"%{prams[0]}%") && EF.Functions.Like(x.TaxpayersName, $"%{prams[1]}%") 
+                        && EF.Functions.Like(x.TaxpayersName, $"%{prams[2]}%") && EF.Functions.Like(x.TaxpayersName, $"%{prams[3]}%"));
+                         break;
+                    default:
+                        break;
+                }
             }
 
             var result = await query.Select(x => new DemandNoticeTaxpayersModel()
@@ -676,7 +698,10 @@ namespace RemsNG.Data.Repository
                 TaxpayerId = x.TaxpayerId,
                 TaxpayersName = x.TaxpayersName,
                 WardName = x.WardName,
-                StreetName = x.DemandNotice.Street.StreetName
+                StreetName = x.DemandNotice.Street.StreetName,
+                IsRunArrears = x.IsRunArrears,
+                IsRunPenalty = x.IsRunPenalty,
+                Period = x.Period
             }).OrderByDescending(x => x.DateCreated).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToArrayAsync();
 
             int totalCount = await query.CountAsync();
@@ -735,7 +760,10 @@ namespace RemsNG.Data.Repository
                 TaxpayerId = x.TaxpayerId,
                 TaxpayersName = x.TaxpayersName,
                 WardName = x.WardName,
-                StreetName = x.DemandNotice.Street.StreetName
+                StreetName = x.DemandNotice.Street.StreetName,
+                IsRunArrears = x.IsRunArrears,
+                IsRunPenalty = x.IsRunPenalty,
+                Period = x.Period
             }).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).OrderByDescending(x => x.DateCreated).ToArrayAsync();
 
             int totalCount = await query.CountAsync();
@@ -857,7 +885,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<DemandNoticeTaxpayersModel[]> ById(Guid[] ids)
         {
-            var result = await db.Set<DemandNoticeTaxpayer>().Include(x=>x.DemandNoticeItem)
+            var result = await db.Set<DemandNoticeTaxpayer>().Include(x => x.DemandNoticeItem)
                 .Where(r => ids.Any(p => p == r.Id))
             .Select(x => new DemandNoticeTaxpayersModel()
             {
@@ -882,10 +910,66 @@ namespace RemsNG.Data.Repository
                 RevCoodinatorSigFilen = x.RevCoodinatorSigFilen,
                 TaxpayerId = x.TaxpayerId,
                 TaxpayersName = x.TaxpayersName,
-                WardName = x.WardName
+                WardName = x.WardName,
+                IsRunArrears = x.IsRunArrears,
+                IsRunPenalty = x.IsRunPenalty,
+                DemandNoticeItem = x.DemandNoticeItem.Select(d => new DemandNoticeItemModel
+                {
+                    AmountPaid = d.AmountPaid,
+                    BillingNo = d.BillingNo,
+                    CreatedBy = d.CreatedBy,
+                    DateCreated = d.DateCreated,
+                    DemandNoticeId = d.DemandNoticeId,
+                    DnTaxpayersDetailsId = d.dn_taxpayersDetailsId,
+                    Id = d.Id,
+                    ItemAmount = d.ItemAmount,
+                    ItemId = d.ItemId,
+                    ItemName = d.ItemName,
+                    ItemStatus = d.ItemStatus,
+                    Lastmodifiedby = d.Lastmodifiedby,
+                    LastModifiedDate = d.LastModifiedDate,
+                    TaxpayerId = d.TaxpayerId
+                }).ToList()
             }).ToArrayAsync();
 
             return result;
+        }
+
+        public async Task<bool> UpdateArrearsStatus(DemandNoticeTaxpayersModel[] dntaxpayers, bool isRunArrears)
+        {
+            foreach (var dnt in dntaxpayers)
+            {
+                DemandNoticeTaxpayer s = new DemandNoticeTaxpayer
+                {
+                    DnId = dnt.DnId,
+                    BillingYr = dnt.BillingYr,
+                    CreatedBy = dnt.CreatedBy,
+                    TaxpayerId = dnt.TaxpayerId,
+                    DomainName = dnt.DomainName,
+                    LcdaAddress = dnt.LcdaAddress,
+                    LcdaState = dnt.LcdaState,
+                    LcdaLogoFileName = dnt.LcdaLogoFileName,
+                    CouncilTreasurerSigFilen = dnt.CouncilTreasurerSigFilen,
+                    RevCoodinatorSigFilen = dnt.RevCoodinatorSigFilen,
+                    CouncilTreasurerMobile = dnt.CouncilTreasurerMobile,
+                    LcdaName = dnt.LcdaName,
+                    BillingNumber = dnt.BillingNumber,
+                    AddressName = dnt.AddressName,
+                    DateCreated = dnt.DateCreated,
+                    DemandNoticeStatus = dnt.DemandNoticeStatus,
+                    Id = dnt.Id,
+                    IsUnbilled = dnt.IsUnbilled,
+                    Lastmodifiedby = dnt.Lastmodifiedby,
+                    LastModifiedDate = dnt.LastModifiedDate,
+                    TaxpayersName = dnt.TaxpayersName,
+                    WardName = dnt.WardName,
+                    IsRunArrears = isRunArrears
+                };
+                db.Entry<DemandNoticeTaxpayer>(s).State = EntityState.Modified;
+            }
+
+            await db.SaveChangesAsync();
+            return true;
         }
     }
 }

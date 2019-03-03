@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RemsNG.Data;
 
 namespace RemsNG.Migrations
 {
     [DbContext(typeof(RemsDbContext))]
-    partial class RemsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190303120353_update2")]
+    partial class update2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -325,6 +327,8 @@ namespace RemsNG.Migrations
 
                     b.Property<DateTime?>("DateCreated");
 
+                    b.Property<Guid>("ItemId");
+
                     b.Property<DateTime?>("LastModifiedDate");
 
                     b.Property<string>("Lastmodifiedby");
@@ -336,6 +340,8 @@ namespace RemsNG.Migrations
                     b.Property<decimal>("TotalAmount");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
 
                     b.HasIndex("TaxpayerId");
 
@@ -510,10 +516,6 @@ namespace RemsNG.Migrations
                     b.Property<Guid>("DnId");
 
                     b.Property<string>("DomainName");
-
-                    b.Property<bool>("IsRunArrears");
-
-                    b.Property<bool>("IsRunPenalty");
 
                     b.Property<bool>("IsUnbilled");
 
@@ -1085,6 +1087,11 @@ namespace RemsNG.Migrations
 
             modelBuilder.Entity("RemsNG.Data.Entities.DemandNoticeArrear", b =>
                 {
+                    b.HasOne("RemsNG.Data.Entities.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("RemsNG.Data.Entities.TaxPayer", "TaxPayer")
                         .WithMany()
                         .HasForeignKey("TaxpayerId")

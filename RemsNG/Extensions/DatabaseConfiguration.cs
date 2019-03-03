@@ -10,7 +10,8 @@ namespace RemsNG.Extensions
     {
         public static void AddDatabaseService(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContextPool<RemsDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContextPool<RemsDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
+                 sqlServerOptions => sqlServerOptions.CommandTimeout(15000)));
             services.AddHangfire(x => x.UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<DbContext, RemsDbContext>();
         }

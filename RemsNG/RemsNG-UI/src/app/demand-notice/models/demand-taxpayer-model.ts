@@ -22,6 +22,8 @@ export class DemandNoticeTaxpayer {
     taxpayersName: string;
     wardName: string;
     isChecked : false;
+    isRunArrears: false;
+    isRunPenalty: false;
 
     constructor(data: any) {
         this.addressName = data.addressName;
@@ -46,5 +48,7 @@ export class DemandNoticeTaxpayer {
         this.taxpayerId = data.taxpayerId;
         this.taxpayersName = data.taxpayersName;
         this.wardName = data.wardName;
+        this.isRunArrears = data.isRunArrears;
+        this.isRunPenalty = data.isRunPenalty;
     }
 }

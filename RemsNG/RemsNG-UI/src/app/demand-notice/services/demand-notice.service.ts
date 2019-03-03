@@ -150,4 +150,18 @@ export class DemandNoticeService {
         .post('demandnotice/validtaxpayers/', s)
         .catch(x => this.datataservice.handleError(x));
     }
+
+    runArrears(taxpayerIds){
+        let r = JSON.stringify(taxpayerIds);
+        return this.datataservice
+        .post('demandnotice/arrears/add', taxpayerIds)
+        .catch(x => this.datataservice.handleError(x));
+    }
+    
+    removeArrears(taxpayerIds){
+        let r = JSON.stringify(taxpayerIds);
+        return this.datataservice
+        .post('demandnotice/arrears/remove', taxpayerIds)
+        .catch(x => this.datataservice.handleError(x));
+    }
 }

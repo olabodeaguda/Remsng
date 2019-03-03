@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace RemsNG.Common.Models
 {
@@ -28,8 +29,12 @@ namespace RemsNG.Common.Models
         public bool IsUnbilled { get; set; }
         public string StreetName { get; set; }
         public int Period { get; set; }
-
         public decimal Amount { get; set; }
+        public bool IsRunArrears { get; set; }
+        public bool IsRunPenalty { get; set; }
+
+
+        public virtual List<DemandNoticeItemModel> DemandNoticeItem { get; set; } = new List<DemandNoticeItemModel>();
 
     }
 }

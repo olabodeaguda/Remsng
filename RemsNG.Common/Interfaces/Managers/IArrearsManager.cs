@@ -5,8 +5,7 @@ namespace RemsNG.Common.Interfaces.Managers
 {
     public interface IArrearsManager
     {
-        Task RunTaxpayerArrears(Guid taxpayerId);
-
-        Task RunTaxpayerArrears(Guid[] dnTaxpayerIds);
+        Task<bool> RunTaxpayerArrears(Guid[] dnTaxpayerIds);
+        Task<bool> RemoveTaxpayerArrears(Guid[] dnTaxpayerIds);
     }
 }

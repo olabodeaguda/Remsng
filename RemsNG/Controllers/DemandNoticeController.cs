@@ -16,17 +16,20 @@ namespace RemsNG.Controllers
     [Route("api/v1/demandnotice")]
     public class DemandNoticeController : Controller
     {
-        private IDemandNoticeManager demandService;
-        private IStreetManager streetService;
-        private IWardManager wardService;
-        private IDemandNoticeTaxpayerManager dnTaxpayerService;
+        private readonly IArrearsManager _arrearsManager;
+        private readonly IDemandNoticeManager demandService;
+        private readonly IStreetManager streetService;
+        private readonly IWardManager wardService;
+        private readonly IDemandNoticeTaxpayerManager dnTaxpayerService;
         public DemandNoticeController(IDemandNoticeManager _demandService, IStreetManager _streetService,
-            IWardManager _wardService, IDemandNoticeTaxpayerManager _dnTaxpayerService)
+            IWardManager _wardService, IDemandNoticeTaxpayerManager _dnTaxpayerService,
+            IArrearsManager arrearsManager)
         {
             demandService = _demandService;
             streetService = _streetService;
             wardService = _wardService;
             dnTaxpayerService = _dnTaxpayerService;
+            _arrearsManager = arrearsManager;
         }
 
         [HttpGet("bylcda")]
@@ -351,70 +354,6 @@ namespace RemsNG.Controllers
             }
         }
 
-        [HttpPost("addarrears")]
-        public async Task<object> AddArrears([FromBody]DemandNoticeArrearsModel dna)
-        {
-            if (dna.ItemId == default(Guid))
-            {
-                return BadRequest(new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = "Item is required"
-                });
-            }
-            else if (dna.TotalAmount < 1)
-            {
-                return BadRequest(new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = "Item is required"
-                });
-            }
-            else if (dna.TaxpayerId == Guid.Empty || string.IsNullOrEmpty(dna.BillingNo))
-            {
-                return BadRequest(new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = "Bad request. Please refresh the page and try again"
-                });
-            }
-
-            DemandNoticeTaxpayersModel dnTxPayer = await dnTaxpayerService.ByBillingNo(dna.BillingNo);
-
-            if (dnTxPayer == null)
-            {
-                return BadRequest(new Response()
-                {
-                    code = MsgCode_Enum.NOTFOUND,
-                    description = $"{dna.BillingNo} not found"
-                });
-            }
-
-            dna.ArrearsStatus = DemandNoticeStatus.PENDING.ToString();
-            dna.BillingYear = dnTxPayer.BillingYr;
-            dna.CreatedBy = User.Identity.Name;
-
-            bool result = await demandService.AddArrears(dna);
-
-            if (result)
-            {
-                return Created("/", new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = "Arrears has been created successfully"
-                });
-            }
-            else
-            {
-                return BadRequest(new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = "Arrears has been created successfully"
-                });
-            }
-        }
-
-
         [HttpPost("validtaxpayers")]
         public async Task<IActionResult> ValidTaxpayer([FromBody] SearchDNModel model)
         {
@@ -433,14 +372,34 @@ namespace RemsNG.Controllers
             });
         }
 
-        [HttpPost("runarrears")]
-        public async Task<IActionResult> RunArrears([FromBody] Guid[] dnId)
+        [HttpPost("arrears/add")]
+        public async Task<IActionResult> AddArrears([FromBody] Guid[] dnId)
         {
-            return Ok();
+            bool result = await _arrearsManager.RunTaxpayerArrears(dnId);
+
+            return Ok(new Response
+            {
+                code = result ? MsgCode_Enum.SUCCESS : MsgCode_Enum.FAIL,
+                status = result,
+                description = result ? "Arrears has been run successfully" : "Please try again or contact your administrator"
+            });
+        }
+
+        [HttpPost("arrears/remove")]
+        public async Task<IActionResult> removeArrears([FromBody] Guid[] dnId)
+        {
+            bool result = await _arrearsManager.RemoveTaxpayerArrears(dnId);
+
+            return Ok(new Response
+            {
+                code = result ? MsgCode_Enum.SUCCESS : MsgCode_Enum.FAIL,
+                status = result,
+                description = result ? "Arrears has been remove successfully" : "Please try again or contact your administrator"
+            });
         }
 
         [HttpPost("runpenalty")]
-        public async Task<IActionResult> RunPenalty([FromBody] Guid[] dnId)
+        public async Task<IActionResult> AddPenalty([FromBody] Guid[] dnId)
         {
             return Ok();
         }

@@ -31,6 +31,9 @@ namespace RemsNG.Data.Entities
         public bool IsUnbilled { get; set; } = false;
         public int Period { get; set; } = 1;
 
+        public bool IsRunArrears { get; set; }
+        public bool IsRunPenalty { get; set; }
+
         [ForeignKey("DnId")]
         public DemandNotice DemandNotice { get; set; }
 

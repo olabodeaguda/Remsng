@@ -46,8 +46,8 @@ namespace RemsNG.Data.Repository
                  }).ToListAsync();
             results.AddRange(items);
 
-            var arrears = await db.Set<DemandNoticeArrears>()
-                 .Include(x => x.Item)
+            var arrears = await db.Set<DemandNoticeArrear>()
+                 //.Include(x => x.Item)
                  .Include(p => p.TaxPayer)
                  .ThenInclude(s => s.Street)
                  .ThenInclude(s => s.Ward)
@@ -66,8 +66,8 @@ namespace RemsNG.Data.Repository
                      wardId = s.itm.TaxPayer.Street.WardId,
                      wardName = s.itm.TaxPayer.Street.Ward.WardName,
                      taxpayersName = $"{s.itm.TaxPayer.Firstname} {s.itm.TaxPayer.Lastname} {s.itm.TaxPayer.Surname}",
-                     itemCode = s.itm.Item.ItemCode,
-                     itemDescription = s.itm.Item.ItemDescription,
+                     //itemCode = s.itm.Item.ItemCode,
+                     //itemDescription = s.itm.Item.ItemDescription,
                      lastModifiedDate = s.itm.LastModifiedDate,
                      addressName = s.dnt.AddressName
                  }).ToListAsync();
@@ -99,21 +99,6 @@ namespace RemsNG.Data.Repository
                      addressName = s.dnt.AddressName
                  }).ToListAsync();
             results.AddRange(penalty);
-
-
-            //return await db.Set<ItemReportSummaryModel>().
-            //    FromSql("sp_paymentSummaryByItems @p0,@p1",
-            //       new object[]
-            //       {
-            //    startDate,endDate
-            //       }).ToListAsync();
-
-            //}
-            //catch (Exception)
-            //{
-
-            //    throw;
-            //}
 
             return results;
         }
@@ -157,8 +142,7 @@ namespace RemsNG.Data.Repository
                  }).ToListAsync();
             results.AddRange(items);
 
-            var arrears = await db.Set<DemandNoticeArrears>()
-                 .Include(x => x.Item)
+            var arrears = await db.Set<DemandNoticeArrear>()
                  .Include(p => p.TaxPayer)
                  .ThenInclude(s => s.Street)
                  .ThenInclude(s => s.Ward)
@@ -178,8 +162,8 @@ namespace RemsNG.Data.Repository
                      wardId = s.itm.TaxPayer.Street.WardId,
                      wardName = s.itm.TaxPayer.Street.Ward.WardName,
                      taxpayersName = $"{s.itm.TaxPayer.Firstname} {s.itm.TaxPayer.Lastname} {s.itm.TaxPayer.Surname}",
-                     itemCode = s.itm.Item.ItemCode,
-                     itemDescription = s.itm.Item.ItemDescription,
+                     //itemCode = s.itm.Item.ItemCode,
+                     //itemDescription = s.itm.Item.ItemDescription,
                      lastModifiedDate = s.itm.LastModifiedDate,
                      addressName = s.dnt.AddressName
                  }).ToListAsync();
@@ -246,7 +230,7 @@ namespace RemsNG.Data.Repository
                     BillingYear = dnt.BillingYr
                 }).Where(x => x.BillingYear == billingYr).ToListAsync();
 
-            var arrears = await db.Set<DemandNoticeArrears>()
+            var arrears = await db.Set<DemandNoticeArrear>()
                .Join(db.Set<DemandNoticeTaxpayer>(), dni => dni.BillingNo,
                dnt => dnt.BillingNumber, (dni, dnt) => new ChartReportModel
                {

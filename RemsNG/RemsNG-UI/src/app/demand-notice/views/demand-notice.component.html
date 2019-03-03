@@ -50,7 +50,7 @@
                                 <label for="wardId">Select Ward</label>
                                 <select (change)="loadStreets($event.target.value)" name="wardId" class="form-control"
                                     [(ngModel)]="searchModel.wardId">
-                                    <option>Select Ward</option>
+                                    <option selected="selected" value="">Select Ward</option>
                                     <option *ngFor="let data of wardLst;" [ngValue]="data.id">
                                         {{data.wardName}}</option>
                                 </select>
@@ -58,7 +58,7 @@
                             <div class="form-group col-md-3">
                                 <label for="streetId">Select Street</label>
                                 <select name="streetId" class="form-control" [(ngModel)]="searchModel.streetId">
-                                    <option>Select Street</option>
+                                    <option selected="selected" value="">Select Street</option>
                                     <option *ngFor="let data of streetLst;" [ngValue]="data.id">{{data.streetName}}
                                     </option>
                                 </select>
@@ -96,10 +96,42 @@
                                     <button type="submit" class="btn btn-primary" (click)="navigateView()">View</button>
                                     <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary"
                                         (click)="searchDemandNotice()">Search</button>
-                                    <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary"
-                                        (click)="promptAction('ARREARS')">Run Arrears</button>
-                                    <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary"
-                                        (click)="promptAction('PENALTY')">Run Penalties</button>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                                            aria-haspopup="true" aria-expanded="false">
+                                            Arrears
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a href="javascript:;" (click)="promptAction('ARREARS')">
+                                                    <i class="fa fa-plus"></i>Add
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a (click)="promptAction('REMOVE ARREARS')">
+                                                    <i class="fa fa-remove"></i> Waive</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                                            aria-haspopup="true" aria-expanded="false">
+                                            Penalty
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a href="javascript:;" (click)="promptAction('PENALTY')">
+                                                    <i class="fa fa-plus"></i>Add
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a (click)="open('DOWNLOAD_REQUEST',data)">
+                                                    <i class="fa fa-remove"></i> Waive</a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                     <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary"
                                         (click)="promptAction('DOWNLOAD')">Download (DN)</button>
                                 </div>
@@ -127,6 +159,8 @@
                                     <th>Billing Year</th>
                                     <th>Status</th>
                                     <th>Is Unbilled</th>
+                                    <th>Is Arrears Run</th>
+                                    <th>Is Penalty Run</th>
                                 </thead>
                                 <tbody>
                                     <tr *ngFor="let data of demandNoticeLst; let i=index">
@@ -145,9 +179,11 @@
                                         <td>{{data.billingYr}}</td>
                                         <td>{{data.demandNoticeStatus}}</td>
                                         <td>{{data.isUnbilled? "Yes":"No"}}</td>
+                                        <td>{{data.isRunArrears? "Yes":"No"}}</td>
+                                        <td>{{data.isRunPenalty? "Yes":"No"}}</td>
                                     </tr>
                                     <tr *ngIf="demandNoticeLst.length < 1">
-                                        <td style="width:100%" colspan="8">No record !!!</td>
+                                        <td style="width:100%" colspan="10">No record !!!</td>
                                     </tr>
                                 </tbody>
                                 <tfoot>

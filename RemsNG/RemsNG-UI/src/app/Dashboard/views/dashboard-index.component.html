@@ -1,4 +1,3 @@
-
 <nav style="background-color:#acce46; height: 111px;" class="navbar navbar-expand-lg mb-4 top-bar navbar-static-top sps sps--abv">
     <span class="logo-lg">
         <img src="assets/dist/img/homeLogo.jpg" style="height:88px;" />
@@ -7,17 +6,12 @@
         <a [routerLink]="['login']"><i class="fa fa-sign-in" style="font-size:48px;color:#222;bottom:0px;"></i></a>
     </span>
 </nav>
-
-<div class="swiper-container main-slider" id="myCarousel">
-    <carousel [sources]="imageSources" [config]="config"></carousel>
+<div class="row">
+    <div class="col-md-12">
+        <div class="swiper-container main-slider" id="myCarousel">
+            <carousel [sources]="imageSources" [config]="config"></carousel>
+        </div>
+    </div>
 </div>
 
-<!-- <footer style="width:100%;border-top: 1px solid white;
-padding: 10px;
-color: white;background-color: #222;">
-    <div class="pull-right hidden-xs">
-    </div>
-    <strong>Copyright &copy; 2017
-        <a href="javascript:;">BB MAB GLOBAL TECHNOLOGIES LTD</a>.</strong> All rights reserved.
-</footer> -->
 <ft></ft>

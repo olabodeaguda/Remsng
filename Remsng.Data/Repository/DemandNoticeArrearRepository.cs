@@ -18,7 +18,7 @@ namespace RemsNG.Data.Repository
         {
             string[] statuss = { "PENDING", "PART_PAYMENT" };
 
-            List<DemandNoticeArrears> lst = await db.Set<DemandNoticeArrears>()
+            List<DemandNoticeArrear> lst = await db.Set<DemandNoticeArrear>()
                 .Where(x => x.BillingNo == billingno && statuss.Any(p => p == x.ArrearsStatus)).ToListAsync();
 
             return lst.Select(x => new DemandNoticeArrearsModel()
@@ -30,7 +30,7 @@ namespace RemsNG.Data.Repository
                 CreatedBy = x.CreatedBy,
                 DateCreated = x.DateCreated,
                 Id = x.Id,
-                ItemId = x.ItemId,
+                //ItemId = x.ItemId,
                 Lastmodifiedby = x.Lastmodifiedby,
                 LastModifiedDate = x.LastModifiedDate,
                 OriginatedYear = x.OriginatedYear,
@@ -42,7 +42,7 @@ namespace RemsNG.Data.Repository
         public async Task<List<DemandNoticeArrearsModel>> ByTaxpayer(Guid taxpayerId)
         {
             string[] statuss = { "PENDING", "PART_PAYMENT" };
-            List<DemandNoticeArrears> lst = await db.Set<DemandNoticeArrears>()
+            List<DemandNoticeArrear> lst = await db.Set<DemandNoticeArrear>()
                 .Where(x => x.TaxpayerId == taxpayerId && statuss.Any(p => p == x.ArrearsStatus)).ToListAsync();
 
             return lst.Select(x => new DemandNoticeArrearsModel()
@@ -54,7 +54,7 @@ namespace RemsNG.Data.Repository
                 CreatedBy = x.CreatedBy,
                 DateCreated = x.DateCreated,
                 Id = x.Id,
-                ItemId = x.ItemId,
+                //ItemId = x.ItemId,
                 Lastmodifiedby = x.Lastmodifiedby,
                 LastModifiedDate = x.LastModifiedDate,
                 OriginatedYear = x.OriginatedYear,
@@ -66,7 +66,7 @@ namespace RemsNG.Data.Repository
         public async Task<DemandNoticeArrearsModel[]> ByTaxpayer(Guid[] taxpayerIds)
         {
             string[] statuss = { "PENDING", "PART_PAYMENT" };
-            DemandNoticeArrearsModel[] lst = await db.Set<DemandNoticeArrears>()
+            DemandNoticeArrearsModel[] lst = await db.Set<DemandNoticeArrear>()
                 .Where(x => taxpayerIds.Any(p => p == x.TaxpayerId) && statuss.Any(p => p == x.ArrearsStatus))
                 .Select(x => new DemandNoticeArrearsModel()
                 {
@@ -77,7 +77,7 @@ namespace RemsNG.Data.Repository
                     CreatedBy = x.CreatedBy,
                     DateCreated = x.DateCreated,
                     Id = x.Id,
-                    ItemId = x.ItemId,
+                    //ItemId = x.ItemId,
                     Lastmodifiedby = x.Lastmodifiedby,
                     LastModifiedDate = x.LastModifiedDate,
                     OriginatedYear = x.OriginatedYear,
@@ -85,30 +85,6 @@ namespace RemsNG.Data.Repository
                     TotalAmount = x.TotalAmount
                 }).ToArrayAsync();
             return lst;
-        }
-
-
-        public string AddQuery(DemandNoticeArrearsModel dna)
-        {
-            return $"insert into tbl_demandNoticeArrears(id,billingNo,taxpayerId,totalAmount," +
-                $" amountPaid,itemId,originatedYear," +
-                $"billingYear,arrearsStatus,createdBy,dateCreated) values(" +
-                $"'{Guid.NewGuid()}','{dna.BillingNo}','{dna.TaxpayerId}','{dna.TotalAmount}',0," +
-                $"'{dna.ItemId}','{dna.OriginatedYear}','{dna.BillingYear}','{dna.ArrearsStatus}'," +
-                $"'{dna.CreatedBy}',getdate());";
-        }
-
-        public async Task<bool> AddArrears(DemandNoticeArrearsModel dna)
-        {
-            string query = AddQuery(dna);
-
-            int count = await db.Database.ExecuteSqlCommandAsync(query);
-            if (count > 0)
-            {
-                return true;
-            }
-
-            return false;
         }
 
         public async Task<bool> AddArrears(string query)
@@ -127,7 +103,7 @@ namespace RemsNG.Data.Repository
             DateTime startDate = new DateTime(fromDate.Year, fromDate.Month, fromDate.Day, 0, 0, 0);
             DateTime endDate = new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59);
 
-            var result = await db.Set<DemandNoticeArrears>()
+            var result = await db.Set<DemandNoticeArrear>()
                 .Include(x => x.TaxPayer)
                 .Include(x => x.TaxPayer.Company)
                 .ThenInclude(x => x.TaxPayerCatgeory)
@@ -143,7 +119,7 @@ namespace RemsNG.Data.Repository
                     Category = e.TaxPayer.Company.TaxPayerCatgeory.TaxpayerCategoryName,
                     DateCreated = e.DateCreated,
                     Id = e.Id,
-                    ItemId = e.ItemId,
+                    //ItemId = e.ItemId,
                     Lastmodifiedby = e.Lastmodifiedby,
                     LastModifiedDate = e.LastModifiedDate,
                     OriginatedYear = e.OriginatedYear,
@@ -156,7 +132,61 @@ namespace RemsNG.Data.Repository
             return result;
         }
 
+        public async Task<bool> AddArrears(DemandNoticeArrearsModel[] models)
+        {
+            if (models.Length <= 0)
+            {
+                return false;
+            }
+            DemandNoticeArrear[] entities = models.Select(x => new DemandNoticeArrear
+            {
+                AmountPaid = x.AmountPaid,
+                ArrearsStatus = x.ArrearsStatus,
+                BillingNo = x.BillingNo,
+                BillingYear = x.BillingYear,
+                CreatedBy = x.CreatedBy,
+                CurrentAmount = x.CurrentAmount,
+                DateCreated = x.DateCreated,
+                Id = x.Id,
+                OriginatedYear = x.OriginatedYear,
+                TaxpayerId = x.TaxpayerId,
+                TotalAmount = x.TotalAmount
+            }).ToArray();
+            db.Set<DemandNoticeArrear>().AddRange(entities);
+            await db.SaveChangesAsync();
 
+            return true;
+        }
+
+        public async Task<bool> UpdateArrearsStatus(DemandNoticeArrearsModel[] models, string status)
+        {
+            if (models.Length <= 0)
+            {
+                return false;
+            }
+            foreach (var x in models)
+            {
+                DemandNoticeArrear dd = new DemandNoticeArrear
+                {
+                    AmountPaid = x.AmountPaid,
+                    ArrearsStatus = status,
+                    BillingNo = x.BillingNo,
+                    BillingYear = x.BillingYear,
+                    CreatedBy = x.CreatedBy,
+                    CurrentAmount = x.CurrentAmount,
+                    DateCreated = x.DateCreated,
+                    Id = x.Id,
+                    OriginatedYear = x.OriginatedYear,
+                    TaxpayerId = x.TaxpayerId,
+                    TotalAmount = x.TotalAmount
+                };
+                db.Entry<DemandNoticeArrear>(dd).State = EntityState.Modified;
+            }
+
+            await db.SaveChangesAsync();
+
+            return true;
+        }
 
     }
 }

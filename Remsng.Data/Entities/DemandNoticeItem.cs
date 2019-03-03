@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RemsNG.Data.Entities
@@ -24,6 +23,8 @@ namespace RemsNG.Data.Entities
 
         [ForeignKey("dn_taxpayersDetailsId")]
         public DemandNoticeTaxpayer DemandNoticeTaxpayer { get; set; }
+
+        [ForeignKey("ItemId")]
         public virtual Item Item { get; set; }
 
         [ForeignKey("TaxpayerId")]

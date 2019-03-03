@@ -8,6 +8,7 @@ namespace RemsNG.Common.Models
         public string BillingNo { get; set; }
         public Guid TaxpayerId { get; set; }
         public decimal TotalAmount { get; set; }
+        public decimal CurrentAmount { get; set; }
         public decimal AmountPaid { get; set; }
         public Guid ItemId { get; set; }
         public int OriginatedYear { get; set; }

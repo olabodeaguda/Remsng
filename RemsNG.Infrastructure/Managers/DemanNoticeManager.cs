@@ -86,11 +86,6 @@ namespace RemsNG.Infrastructure.Managers
             return await demandNoticeDao.GetByBatchId(batchId);
         }
 
-        public async Task<bool> AddArrears(DemandNoticeArrearsModel dna)
-        {
-            return await dnaDao.AddArrears(dna);
-        }
-
         public async Task<PageModel<DemandNoticeTaxpayersModel[]>> SearchDemandNotice(DemandNoticeRequestModel rhModel, PageModel pageModel)
         {
             var result = await _dnTaxpayerRepo.Search(rhModel, pageModel);
@@ -209,5 +204,6 @@ namespace RemsNG.Infrastructure.Managers
             await demandNoticeDao.UpdateStatus(demandNotice);
             return true;
         }
+
     }
 }

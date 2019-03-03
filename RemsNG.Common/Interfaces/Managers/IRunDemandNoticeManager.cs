@@ -6,6 +6,5 @@ namespace RemsNG.Common.Interfaces.Managers
     {
         // Task RegisterTaxpayer();
         Task GenerateBulkDemandNotice();
-        Task ReconcileDemandNotice();
     }
 }

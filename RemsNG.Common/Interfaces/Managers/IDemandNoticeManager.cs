@@ -14,7 +14,6 @@ namespace RemsNG.Common.Interfaces.Managers
         Task<DemandNoticeModel> GetById(Guid id);
         Task<object> All(PageModel pageModel);
         Task<DemandNoticeModel> GetByBatchId(string batchId);
-        Task<bool> AddArrears(DemandNoticeArrearsModel dna);
         Task<PageModel<DemandNoticeTaxpayersModel[]>> SearchDemandNotice(DemandNoticeRequestModel rhModel, PageModel pageModel);
         Task<DemandNoticeRequestModel> SearchInfo(DemandNoticeRequestModel model);
         Task<TaxPayerModel[]> ValidTaxpayers(DemandNoticeRequestModel model);

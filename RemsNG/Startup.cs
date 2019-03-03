@@ -86,7 +86,8 @@ namespace RemsNG
                         Response response = new Response();
                         ExceptionTranslator ex = new ExceptionTranslator(loggerFactory);
                         ex.Translate(context, error.Error, response);
-                        var result = JsonConvert.SerializeObject(response);
+                        var result = JsonConvert.SerializeObject(response,
+                            new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
                         await context.Response.WriteAsync(result);
                     });
             });
