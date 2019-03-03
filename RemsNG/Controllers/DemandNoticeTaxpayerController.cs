@@ -219,5 +219,25 @@ namespace RemsNG.Controllers
             }, lcdaId));
         }
 
+        [HttpPost("delete")]
+        public async Task<object> DeleteDemandNotice([FromBody]Guid[] ids)
+        {
+            bool response = await demandNoticeTaxpayerService.Delete(ids);
+
+            if (response)
+            {
+                return Ok(new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = "Bill has been deleted",
+                });
+            }
+
+            return BadRequest(new Response()
+            {
+                code = MsgCode_Enum.FAIL,
+                description = "Please an error occur processing your request. Please try again!!!",
+            });
+        }
     }
 }

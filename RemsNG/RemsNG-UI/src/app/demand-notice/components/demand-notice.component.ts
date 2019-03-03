@@ -146,9 +146,13 @@ export class DemandNoticeComponent implements OnInit {
         } else if (this.actionSelected === "REMOVE ARREARS".toLowerCase()) {
             this.removeArrears();
         }  else if (this.actionSelected === "PENALTY".toLowerCase()) {
-            this.runPenalty(lt);
+            this.addPenalty(lt);
+        } else if (this.actionSelected === "REMOVE PENALTY".toLowerCase()) {
+            this.removePenalty();
         } else if (this.actionSelected === "DOWNLOAD".toLowerCase()) {
             this.downloadDNByTaxpayer(lt);
+        } else if (this.actionSelected === "DELETE".toLowerCase()) {
+            this.deleteTaxpayer();
         } else {
             this.toasterService.pop('warning', 'No Action confirmed', 'Please refresh the page and try again');
         }
@@ -181,6 +185,7 @@ export class DemandNoticeComponent implements OnInit {
                     this.toasterService.pop('error', 'Error', response.description);
                 }
             }, error => {
+                jQuery(this.promptRequest.nativeElement).modal('hide'); 
                 this.isLoadingMini = false;
                 this.toasterService.pop('error', 'Error', error);
             });
@@ -207,17 +212,88 @@ export class DemandNoticeComponent implements OnInit {
                     this.toasterService.pop('error', 'Error', response.description);
                 }
             }, error => {
+                jQuery(this.promptRequest.nativeElement).modal('hide'); 
                 this.isLoadingMini = false;
                 this.toasterService.pop('error', 'Error', error);
             });
     }
 
-    runPenalty(lt) {
-        if (this.searchModel.period <= 0) {
-            this.toasterService.pop('error', 'Error', 'Arrears period is required');
+    
+    addPenalty(lt) {
+        let payload = this.demandNoticeLst
+        .filter(b => b.isChecked == true && b.isRunPenalty == false).map(x => x.id);
+        if (payload.length <= 0) {
+            this.toasterService.pop('warning','Warning','No record found');
             return;
         }
+        this.isLoadingMini = true;
+        this.demandnoticeservice.runPenalty(lt)
+            .subscribe(response => {
+                this.isLoadingMini = false;
+                jQuery(this.promptRequest.nativeElement).modal('hide');                
+                if (response.code === '00') {
+                    this.toasterService.pop('success', 'Successful', response.description);
+                    this.searchDemandNotice();
+                } else {
+                    this.toasterService.pop('error', 'Error', response.description);
+                }
+            }, error => {
+                this.isLoadingMini = false;
+                jQuery(this.promptRequest.nativeElement).modal('hide'); 
+                this.toasterService.pop('error', 'Error', error);
+            });
+    }
 
+    removePenalty() {
+        let payload = this.demandNoticeLst
+        .filter(b => b.isChecked == true && b.isRunPenalty == true).map(x => x.id);
+
+        if (payload.length <= 0) {
+            this.toasterService.pop('warning','Warning','No record found');
+            return;
+        }
+        
+        this.isLoadingMini = true;
+        this.demandnoticeservice.removePenalty(payload)
+            .subscribe(response => {
+                this.isLoadingMini = false;
+                jQuery(this.promptRequest.nativeElement).modal('hide');
+                if (response.code === '00') {
+                    this.toasterService.pop('success', 'Successful', response.description);
+                    this.searchDemandNotice();
+                } else {
+                    this.toasterService.pop('error', 'Error', response.description);
+                }
+            }, error => {
+                this.isLoadingMini = false;
+                jQuery(this.promptRequest.nativeElement).modal('hide'); 
+                this.toasterService.pop('error', 'Error', error);
+            });
+    }
+
+    deleteTaxpayer(){
+        let payload = this.demandNoticeLst
+        .filter(b => b.isChecked == true).map(x => x.id);
+        if (payload.length <= 0) {
+            this.toasterService.pop('warning','Warning','No record found');
+            return;
+        }
+        this.isLoadingMini = true;
+        this.demandnoticeservice.Delete(payload)
+            .subscribe(response => {
+                this.isLoadingMini = false;
+                jQuery(this.promptRequest.nativeElement).modal('hide');                
+                if (response.code === '00') {
+                    this.toasterService.pop('success', 'Successful', response.description);
+                    this.searchDemandNotice();
+                } else {
+                    this.toasterService.pop('error', 'Error', response.description);
+                }
+            }, error => {
+                this.isLoadingMini = false;
+                jQuery(this.promptRequest.nativeElement).modal('hide'); 
+                this.toasterService.pop('error', 'Error', error);
+            });
     }
 
     downloadDNByTaxpayer(lt) {

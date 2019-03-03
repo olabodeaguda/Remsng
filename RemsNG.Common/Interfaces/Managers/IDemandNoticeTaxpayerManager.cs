@@ -20,5 +20,6 @@ namespace RemsNG.Common.Interfaces.Managers
         Task<List<DemandNoticeArrearsModel>> GetArrearsByTaxpayerId(Guid taxpayerId);
         Task<PageModel<DemandNoticeTaxpayersModel[]>> SearchByLcdaId(DemandNoticeRequestModel rhModel,
             PageModel pageModel, Guid lcdaId);
+        Task<bool> Delete(Guid[] ids);
     }
 }

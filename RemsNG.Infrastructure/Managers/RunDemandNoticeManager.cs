@@ -202,7 +202,6 @@ namespace RemsNG.Infrastructure.Managers
                         BillingNo = billingNumber,
                         AmountPaid = 0,
                         BillingYear = billingYr,
-                        ItemId = Guid.Empty,
                         ItemPenaltyStatus = DemandNoticeStatus.PENDING.ToString(),
                         OriginatedYear = recievable.BillingYr,
                         TaxpayerId = taxpayerId,

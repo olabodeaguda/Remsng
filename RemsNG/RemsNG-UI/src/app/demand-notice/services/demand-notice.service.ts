@@ -164,4 +164,25 @@ export class DemandNoticeService {
         .post('demandnotice/arrears/remove', taxpayerIds)
         .catch(x => this.datataservice.handleError(x));
     }
+
+    runPenalty(taxpayerIds){
+        let r = JSON.stringify(taxpayerIds);
+        return this.datataservice
+        .post('demandnotice/penalty/add', taxpayerIds)
+        .catch(x => this.datataservice.handleError(x));
+    }
+    
+    removePenalty(taxpayerIds){
+        let r = JSON.stringify(taxpayerIds);
+        return this.datataservice
+        .post('demandnotice/penalty/remove', taxpayerIds)
+        .catch(x => this.datataservice.handleError(x));
+    }
+
+    Delete(taxpayerIds){
+        let r = JSON.stringify(taxpayerIds);
+        return this.datataservice
+        .post('dnt/delete', taxpayerIds)
+        .catch(x => this.datataservice.handleError(x));
+    }
 }

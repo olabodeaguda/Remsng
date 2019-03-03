@@ -76,9 +76,17 @@ namespace RemsNG.Infrastructure.Managers
             return await demandNoticeDao.UpdateQuery(demandNotice);
         }
 
-        public async Task<Response> UpdateStatus(DemandNoticeModel demandNotice)
+        public async Task<Response> Delete(Guid id)
         {
-            return await demandNoticeDao.UpdateStatus(demandNotice);
+            if (id == default(Guid))
+            {
+                throw new InvalidCredentialsException("Invalid parameters");
+            }
+            return await demandNoticeDao.UpdateStatus(new DemandNoticeModel
+            {
+                Id = id,
+                 DemandNoticeStatus = "DELETED"
+            });
         }
 
         public async Task<DemandNoticeModel> GetByBatchId(string batchId)

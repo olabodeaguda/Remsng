@@ -16,6 +16,7 @@ namespace RemsNG.Controllers
     [Route("api/v1/demandnotice")]
     public class DemandNoticeController : Controller
     {
+        private readonly IPenaltyManager _penaltyManager;
         private readonly IArrearsManager _arrearsManager;
         private readonly IDemandNoticeManager demandService;
         private readonly IStreetManager streetService;
@@ -23,13 +24,14 @@ namespace RemsNG.Controllers
         private readonly IDemandNoticeTaxpayerManager dnTaxpayerService;
         public DemandNoticeController(IDemandNoticeManager _demandService, IStreetManager _streetService,
             IWardManager _wardService, IDemandNoticeTaxpayerManager _dnTaxpayerService,
-            IArrearsManager arrearsManager)
+            IArrearsManager arrearsManager, IPenaltyManager penaltyManager)
         {
             demandService = _demandService;
             streetService = _streetService;
             wardService = _wardService;
             dnTaxpayerService = _dnTaxpayerService;
             _arrearsManager = arrearsManager;
+            _penaltyManager = penaltyManager;
         }
 
         [HttpGet("bylcda")]
@@ -386,7 +388,7 @@ namespace RemsNG.Controllers
         }
 
         [HttpPost("arrears/remove")]
-        public async Task<IActionResult> removeArrears([FromBody] Guid[] dnId)
+        public async Task<IActionResult> RemoveArrears([FromBody] Guid[] dnId)
         {
             bool result = await _arrearsManager.RemoveTaxpayerArrears(dnId);
 
@@ -398,10 +400,30 @@ namespace RemsNG.Controllers
             });
         }
 
-        [HttpPost("runpenalty")]
+        [HttpPost("penalty/add")]
         public async Task<IActionResult> AddPenalty([FromBody] Guid[] dnId)
         {
-            return Ok();
+            bool result = await _penaltyManager.AddPenalty(dnId);
+
+            return Ok(new Response
+            {
+                code = result ? MsgCode_Enum.SUCCESS : MsgCode_Enum.FAIL,
+                status = result,
+                description = result ? "Arrears has been run successfully" : "Please try again or contact your administrator"
+            });
+        }
+
+        [HttpPost("penalty/remove")]
+        public async Task<IActionResult> RemovePenalty([FromBody] Guid[] dnId)
+        {
+            bool result = await _penaltyManager.RemovePenalty(dnId);
+
+            return Ok(new Response
+            {
+                code = result ? MsgCode_Enum.SUCCESS : MsgCode_Enum.FAIL,
+                status = result,
+                description = result ? "Arrears has been remove successfully" : "Please try again or contact your administrator"
+            });
         }
     }
 }

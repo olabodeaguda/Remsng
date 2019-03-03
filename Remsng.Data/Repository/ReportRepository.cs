@@ -74,7 +74,6 @@ namespace RemsNG.Data.Repository
             results.AddRange(arrears);
 
             var penalty = await db.Set<DemandNoticePenalty>()
-                 .Include(x => x.Item)
                  .Include(p => p.TaxPayer)
                  .ThenInclude(s => s.Street)
                  .ThenInclude(s => s.Ward)
@@ -93,8 +92,6 @@ namespace RemsNG.Data.Repository
                      wardId = s.itm.TaxPayer.Street.WardId,
                      wardName = s.itm.TaxPayer.Street.Ward.WardName,
                      taxpayersName = $"{s.itm.TaxPayer.Firstname} {s.itm.TaxPayer.Lastname} {s.itm.TaxPayer.Surname}",
-                     itemCode = s.itm.Item.ItemCode,
-                     itemDescription = s.itm.Item.ItemDescription,
                      lastModifiedDate = s.itm.LastModifiedDate,
                      addressName = s.dnt.AddressName
                  }).ToListAsync();
@@ -115,7 +112,6 @@ namespace RemsNG.Data.Repository
 
             List<ItemReportSummaryModel> results = new List<ItemReportSummaryModel>();
             var items = await db.Set<DemandNoticeItem>()
-                 .Include(x => x.Item)
                  .Include(p => p.TaxPayer)
                  .ThenInclude(s => s.Street)
                  .ThenInclude(s => s.Ward)
@@ -170,7 +166,6 @@ namespace RemsNG.Data.Repository
             results.AddRange(arrears);
 
             var penalty = await db.Set<DemandNoticePenalty>()
-                 .Include(x => x.Item)
                  .Include(p => p.TaxPayer)
                  .ThenInclude(s => s.Street)
                  .ThenInclude(s => s.Ward)
@@ -190,8 +185,6 @@ namespace RemsNG.Data.Repository
                      wardId = s.itm.TaxPayer.Street.WardId,
                      wardName = s.itm.TaxPayer.Street.Ward.WardName,
                      taxpayersName = $"{s.itm.TaxPayer.Firstname} {s.itm.TaxPayer.Lastname} {s.itm.TaxPayer.Surname}",
-                     itemCode = s.itm.Item.ItemCode,
-                     itemDescription = s.itm.Item.ItemDescription,
                      lastModifiedDate = s.itm.LastModifiedDate,
                      addressName = s.dnt.AddressName
                  }).ToListAsync();

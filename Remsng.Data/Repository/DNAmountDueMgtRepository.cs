@@ -49,7 +49,6 @@ namespace RemsNG.Data.Repository
                 billingNo = x.BillingNo,
                 category = "PENALTY",
                 itemDescription = "Penalty",
-                itemId = x.ItemId,
                 itemStatus = x.ItemPenaltyStatus
             }).ToListAsync();
             results.AddRange(penalty);
@@ -62,7 +61,6 @@ namespace RemsNG.Data.Repository
                      billingNo = x.BillingNo,
                      category = "PENALTY",
                      itemDescription = "Penalty",
-                     itemId = x.ItemId,
                      itemStatus = x.ItemStatus
                  }).ToListAsync();
             results.AddRange(items);
@@ -126,7 +124,6 @@ namespace RemsNG.Data.Repository
                     billingNo = x.BillingNo,
                     category = "PENALTY",
                     itemDescription = "Penalty",
-                    itemId = x.ItemId,
                     itemStatus = x.ItemPenaltyStatus
                 }).ToListAsync();
             results.AddRange(penalty);

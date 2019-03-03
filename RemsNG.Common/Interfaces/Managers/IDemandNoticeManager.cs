@@ -7,7 +7,7 @@ namespace RemsNG.Common.Interfaces.Managers
     public interface IDemandNoticeManager
     {
         Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel);
-        Task<Response> UpdateStatus(DemandNoticeModel demandNotice);
+        Task<Response> Delete(Guid Id);
         Task<Response> UpdateBillingYr(DemandNoticeModel demandNotice);
         Task<Response> UpdateQuery(DemandNoticeModel demandNotice);
         Task<Response> Add(DemandNoticeModel demandNotice);

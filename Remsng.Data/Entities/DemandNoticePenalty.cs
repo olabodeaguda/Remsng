@@ -11,7 +11,6 @@ namespace RemsNG.Data.Entities
         public Guid TaxpayerId { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal AmountPaid { get; set; }
-        public Guid ItemId { get; set; }
         public int OriginatedYear { get; set; }
         public int BillingYear { get; set; }
         public string ItemPenaltyStatus { get; set; }
@@ -19,9 +18,7 @@ namespace RemsNG.Data.Entities
         public DateTime? DateCreated { get; set; }
         public string Lastmodifiedby { get; set; }
         public DateTime? LastModifiedDate { get; set; }
-
-        [ForeignKey("ItemId")]
-        public Item Item { get; set; }
+        public decimal CurrentAmount { get; set; }
 
         [ForeignKey("TaxpayerId")]
         public TaxPayer TaxPayer { get; set; }

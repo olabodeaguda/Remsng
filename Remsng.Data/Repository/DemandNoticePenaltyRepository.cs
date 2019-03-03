@@ -25,7 +25,6 @@ namespace RemsNG.Data.Repository
                 CreatedBy = dnp.CreatedBy,
                 DateCreated = dnp.DateCreated,
                 Id = Guid.NewGuid(),
-                ItemId = dnp.ItemId,
                 ItemPenaltyStatus = dnp.ItemPenaltyStatus,
                 Lastmodifiedby = dnp.Lastmodifiedby,
                 OriginatedYear = dnp.OriginatedYear,
@@ -38,12 +37,36 @@ namespace RemsNG.Data.Repository
             return dnp;
         }
 
+
+        public async Task<bool> CreatePenalty(DemandNoticePenaltyModel[] models)
+        {
+            DemandNoticePenalty[] demandNoticePenalty = models.Select(dnp => new DemandNoticePenalty()
+            {
+                AmountPaid = dnp.AmountPaid,
+                BillingNo = dnp.BillingNo,
+                BillingYear = dnp.BillingYear,
+                CreatedBy = dnp.CreatedBy,
+                DateCreated = dnp.DateCreated,
+                Id = Guid.NewGuid(),
+                ItemPenaltyStatus = dnp.ItemPenaltyStatus,
+                Lastmodifiedby = dnp.Lastmodifiedby,
+                OriginatedYear = dnp.OriginatedYear,
+                TaxpayerId = dnp.TaxpayerId,
+                TotalAmount = dnp.TotalAmount,
+                CurrentAmount = dnp.CurrentAmount
+            }).ToArray();
+            db.Set<DemandNoticePenalty>().AddRange(demandNoticePenalty);
+            await db.SaveChangesAsync();
+
+            return true;
+        }
+
         public string AddQuery(DemandNoticePenaltyModel dnp)
         {
             return $"INSERT INTO tbl_demandNoticePenalty" +
-                $" (id ,billingNo,taxpayerId ,totalAmount,amountPaid,itemId" +
+                $" (id ,billingNo,taxpayerId ,totalAmount,amountPaid" +
                 $" ,originatedYear,billingYear,itemPenaltyStatus,createdBy,dateCreated)" +
-                $" VALUES ('{Guid.NewGuid()}','{dnp.BillingNo}','{dnp.TaxpayerId}','{dnp.TotalAmount}','{dnp.AmountPaid}','{dnp.ItemId}'" +
+                $" VALUES ('{Guid.NewGuid()}','{dnp.BillingNo}','{dnp.TaxpayerId}','{dnp.TotalAmount}','{dnp.AmountPaid}'" +
                 $",'{dnp.OriginatedYear}','{dnp.BillingYear}','{dnp.ItemPenaltyStatus}','APPLICATION','{DateTime.Now}');";
         }
 
@@ -87,7 +110,6 @@ namespace RemsNG.Data.Repository
                     CreatedBy = res.dnp.CreatedBy,
                     DateCreated = res.dnp.DateCreated,
                     Id = res.dnp.Id,
-                    ItemId = res.dnp.ItemId,
                     ItemPenaltyStatus = res.dnp.ItemPenaltyStatus,
                     Lastmodifiedby = res.dnp.Lastmodifiedby,
                     LastModifiedDate = res.dnp.LastModifiedDate,
@@ -104,12 +126,6 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<DemandNoticePenaltyModel>> ByTaxpayerId(Guid taxpayerId, int billingYr)
         {
-            //string query = $"select tbl_demandNoticePenalty.*,0 as billingYr from tbl_demandNoticePenalty " +
-            //    $"where taxpayerId = '{taxpayerId}' and billingYear = {billingYr}";
-            //List<DemandNoticeItemPenaltyModelExt> lstdbItem = await db.Set<DemandNoticeItemPenaltyModelExt>()
-            //    .FromSql(query).ToListAsync();
-            //return lstdbItem;
-
             var result = await db.Set<DemandNoticePenalty>()
                .Join(db.Set<TaxPayer>()
                .Include(x => x.Company)
@@ -123,7 +139,6 @@ namespace RemsNG.Data.Repository
                    CreatedBy = res.dnp.CreatedBy,
                    DateCreated = res.dnp.DateCreated,
                    Id = res.dnp.Id,
-                   ItemId = res.dnp.ItemId,
                    ItemPenaltyStatus = res.dnp.ItemPenaltyStatus,
                    Lastmodifiedby = res.dnp.Lastmodifiedby,
                    LastModifiedDate = res.dnp.LastModifiedDate,
@@ -157,7 +172,6 @@ namespace RemsNG.Data.Repository
                     CreatedBy = res.dnp.CreatedBy,
                     DateCreated = res.dnp.DateCreated,
                     Id = res.dnp.Id,
-                    ItemId = res.dnp.ItemId,
                     ItemPenaltyStatus = res.dnp.ItemPenaltyStatus,
                     Lastmodifiedby = res.dnp.Lastmodifiedby,
                     LastModifiedDate = res.dnp.LastModifiedDate,
@@ -177,6 +191,53 @@ namespace RemsNG.Data.Repository
             return result;
         }
 
+        public async Task<DemandNoticePenaltyModel[]> ByTaxpayerId(Guid[] taxpayerIds)
+        {
+            string[] statuss = { "PENDING", "PART_PAYMENT" };
+            var result = await db.Set<DemandNoticePenalty>()
+               .Join(db.Set<TaxPayer>()
+               .Include(x => x.Company)
+               .ThenInclude(x => x.TaxPayerCatgeory), dnp => dnp.TaxpayerId, tp => tp.Id, (dnp, tp) => new { dnp, tp })
+               .Join(db.Set<Street>().Include(x => x.Ward), res => res.tp.StreetId, str => str.Id,
+               (res, str) => new DemandNoticePenaltyModel
+               {
+                   AmountPaid = res.dnp.AmountPaid,
+                   BillingNo = res.dnp.BillingNo,
+                   BillingYear = res.dnp.BillingYear,
+                   CreatedBy = res.dnp.CreatedBy,
+                   DateCreated = res.dnp.DateCreated,
+                   Id = res.dnp.Id,
+                   ItemPenaltyStatus = res.dnp.ItemPenaltyStatus,
+                   Lastmodifiedby = res.dnp.Lastmodifiedby,
+                   LastModifiedDate = res.dnp.LastModifiedDate,
+                   OriginatedYear = res.dnp.OriginatedYear,
+                   TaxpayerId = res.dnp.TaxpayerId,
+                   TotalAmount = res.dnp.TotalAmount,
+                   wardName = str.Ward.WardName,
+                   category = res.tp.Company.TaxPayerCatgeory.TaxpayerCategoryName
+               })
+               .Where(x => taxpayerIds.Any(t => t == x.TaxpayerId) && statuss.Any(r => r == x.ItemPenaltyStatus)).ToArrayAsync();
+            return result;
+        }
+        public async Task<bool> UpdatePenaltyStatus(DemandNoticePenaltyModel[] models, string status)
+        {
+            if (models.Length <= 0)
+            {
+                return false;
+            }
+            foreach (var dnp in models)
+            {
+                DemandNoticePenalty dd = await db.Set<DemandNoticePenalty>().FindAsync(dnp.Id);
+                if (dd != null)
+                {
+                    dd.ItemPenaltyStatus = status;
+                }
+            }
+
+            await db.SaveChangesAsync();
+
+            return true;
+        }
     }
 }
 

@@ -229,5 +229,15 @@ namespace RemsNG.Infrastructure.Managers
 
             return await dntDao.SearchByLcdaId(rhModel, pageModel, lcdaId);
         }
+
+        public async Task<bool> Delete(Guid[] id)
+        {
+            if (id.Length <= 0)
+            {
+                throw new InvalidCredentialsException("Invalid parameters");
+            }
+
+            return await dntDao.UpdateSatus(id, "DELETED");
+        }
     }
 }

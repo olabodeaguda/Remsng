@@ -166,21 +166,11 @@ namespace RemsNG.Data.Repository
             }
             foreach (var x in models)
             {
-                DemandNoticeArrear dd = new DemandNoticeArrear
+                DemandNoticeArrear dd = await db.Set<DemandNoticeArrear>().FindAsync(x.Id);
+                if (dd != null)
                 {
-                    AmountPaid = x.AmountPaid,
-                    ArrearsStatus = status,
-                    BillingNo = x.BillingNo,
-                    BillingYear = x.BillingYear,
-                    CreatedBy = x.CreatedBy,
-                    CurrentAmount = x.CurrentAmount,
-                    DateCreated = x.DateCreated,
-                    Id = x.Id,
-                    OriginatedYear = x.OriginatedYear,
-                    TaxpayerId = x.TaxpayerId,
-                    TotalAmount = x.TotalAmount
-                };
-                db.Entry<DemandNoticeArrear>(dd).State = EntityState.Modified;
+                    dd.ArrearsStatus = status;
+                }
             }
 
             await db.SaveChangesAsync();

@@ -11,7 +11,6 @@ namespace RemsNG.Common.Models
         public Guid TaxpayerId { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal AmountPaid { get; set; }
-        public Guid ItemId { get; set; }
         public int OriginatedYear { get; set; }
         public int BillingYear { get; set; }
         public string ItemPenaltyStatus { get; set; }
@@ -21,5 +20,6 @@ namespace RemsNG.Common.Models
         public DateTime? LastModifiedDate { get; set; }
         public string category { get; set; }
         public string wardName { get; set; }
+        public decimal CurrentAmount { get; set; }
     }
 }
