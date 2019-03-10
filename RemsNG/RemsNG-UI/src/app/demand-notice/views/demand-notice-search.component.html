@@ -59,6 +59,11 @@
                         </div>
                         <div class="box-body">
                             <div class="row" style="padding:5px;">
+                                <div class="form-group">
+                                    <label for="referenceNumber">Enter name on reciept (Optional)</label>
+                                    <input name="otherNames" class="form-control"
+                                        [(ngModel)]="dnpModel.otherNames" />
+                                </div>
 
                                 <div class="form-group">
                                     <label for="startDate">Payment Date</label>
@@ -85,7 +90,7 @@
                                     <label for="amount">Amount</label>
                                     <input name="amount" class="form-control" [(ngModel)]="dnpModel.amount" />
                                 </div>
-                                <div class="form-group">
+                                <!-- <div class="form-group">
                                     <div class="form-check col-sm-12">
                                         <input type="checkbox" class="form-check-input" id="IsWaiver"
                                             [checked]="dnpModel.IsWaiver"
@@ -93,7 +98,7 @@
                                         <label class="form-check-label" for="IsWaiver">Should be a waver? check if
                                             yes?</label>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                         <div class="box-footer">

@@ -15,7 +15,8 @@ export class DemandNoticePaymentService {
             bankId:dnpModel.bankId,
             referenceNumber:dnpModel.referenceNumber,
             amount:dnpModel.amount,
-            isWaiver: dnpModel.IsWaiver
+            isWaiver: dnpModel.IsWaiver,
+            otherNames: dnpModel.otherNames
         }).catch(error => this.dataservice.handleError(error));
     }
 

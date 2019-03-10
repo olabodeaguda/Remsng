@@ -10,8 +10,8 @@ using RemsNG.Data;
 namespace RemsNG.Migrations
 {
     [DbContext(typeof(RemsDbContext))]
-    [Migration("20190310131557_initialize")]
-    partial class initialize
+    [Migration("20190310183806_othernames")]
+    partial class othernames
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -430,6 +430,8 @@ namespace RemsNG.Migrations
                     b.Property<DateTime?>("LastModifiedDate");
 
                     b.Property<string>("Lastmodifiedby");
+
+                    b.Property<string>("OtherNames");
 
                     b.Property<Guid>("OwnerId");
 

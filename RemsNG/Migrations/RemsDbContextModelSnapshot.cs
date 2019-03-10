@@ -429,6 +429,8 @@ namespace RemsNG.Migrations
 
                     b.Property<string>("Lastmodifiedby");
 
+                    b.Property<string>("OtherNames");
+
                     b.Property<Guid>("OwnerId");
 
                     b.Property<string>("PaymentMode");

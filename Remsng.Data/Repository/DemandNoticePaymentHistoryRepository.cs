@@ -18,20 +18,6 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> AddAsync(DemandNoticePaymentHistoryModel dnph)
         {
-            //DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addPayment @p0,@p1,@p2,@p3,@p4,@p5" +
-            //    ",@p6,@p7,@p8,@p9", new object[] {
-            //    dnph.OwnerId,
-            //    dnph.BillingNumber,
-            //    dnph.Amount,
-            //    dnph.Charges,
-            //    dnph.PaymentMode,
-            //    dnph.ReferenceNumber,
-            //    dnph.BankId,
-            //    dnph.CreatedBy,
-            //    dnph.DateCreated,
-            //    dnph.IsWaiver
-            //}).FirstOrDefaultAsync();
-
             DemandNoticePaymentHistory demandNoticePaymentHistory = new DemandNoticePaymentHistory
             {
                 Amount = dnph.Amount,
@@ -48,7 +34,8 @@ namespace RemsNG.Data.Repository
                 PaymentMode = dnph.PaymentMode,
                 PaymentStatus = "PENDING",
                 ReferenceNumber = dnph.ReferenceNumber,
-                SyncStatus = false
+                SyncStatus = false,
+                OtherNames = dnph.OtherNames
             };
 
             db.Set<DemandNoticePaymentHistory>().Add(demandNoticePaymentHistory);
@@ -100,10 +87,6 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<DemandNoticePaymentHistoryModel>> ByBillingNumber(string billingnumber)
         {
-            //string query = $"select dnph.*,-1 as totalSize,dnp.billingYr as billingYear, " +
-            //    $"dnp.taxpayersName from tbl_demandNoticePaymentHistory as dnph " +
-            //    $"inner join tbl_demandNoticeTaxpayers as dnp on dnp.billingNumber = dnph.billingNumber where dnph.billingNumber = '{billingnumber}'";
-
             var model = await db.Set<DemandNoticePaymentHistory>().Include(x => x.Bank)
                 .Join(db.Set<DemandNoticeTaxpayer>(), dnph => dnph.BillingNumber,
                 dnt => dnt.BillingNumber, (dnph, dnt) => new DemandNoticePaymentHistoryModel()
@@ -125,7 +108,8 @@ namespace RemsNG.Data.Repository
                     ReferenceNumber = dnph.ReferenceNumber,
                     SyncStatus = dnph.SyncStatus,
                     TotalBillAmount = dnph.Amount + dnph.Charges,
-                    BillingYear = dnt.BillingYr
+                    BillingYear = dnt.BillingYr,
+                    TaxPayerName = string.IsNullOrEmpty(dnph.OtherNames) ? dnt.TaxpayersName : dnph.OtherNames
                 }).Where(x => x.BillingNumber == billingnumber).ToListAsync();
 
             return model;// await db.Set<DemandNoticePaymentHistoryModelExt>().FromSql(query).ToListAsync();
@@ -133,31 +117,6 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<DemandNoticePaymentHistoryModel>> ByBillingNumbers(string billingnumber)
         {
-            //string query = "select dnph.*,bank.bankName from tbl_demandNoticePaymentHistory as dnph " +
-            //    $"inner join tbl_bank bank on bank.id = dnph.bankId where paymentStatus = 'APPROVED' and billingNumber in ({billingnumber})";
-            //var result = await db.Set<DemandNoticePaymentHistoryModel>().FromSql(query).ToListAsync();
-
-            //return result.Select(x => new DemandNoticePaymentHistoryModel()
-            //{
-            //    Amount = x.Amount,
-            //    BankId = x.BankId,
-            //    BillingNumber = x.BillingNumber,
-            //    Charges = x.Charges,
-            //    CreatedBy = x.CreatedBy,
-            //    DateCreated = x.DateCreated,
-            //    Id = x.Id,
-            //    IsWaiver = x.IsWaiver,
-            //    Lastmodifiedby = x.Lastmodifiedby,
-            //    LastModifiedDate = x.LastModifiedDate,
-            //    OwnerId = x.OwnerId,
-            //    PaymentMode = x.PaymentMode,
-            //    PaymentStatus = x.PaymentStatus,
-            //    ReferenceNumber = x.ReferenceNumber,
-            //    SyncStatus = x.SyncStatus
-            //}).ToList();
-
-
-
             var model = await db.Set<DemandNoticePaymentHistory>().Include(x => x.Bank)
                .Join(db.Set<DemandNoticeTaxpayer>(), dnph => dnph.BillingNumber,
                dnt => dnt.BillingNumber, (dnph, dnt) => new DemandNoticePaymentHistoryModel()
@@ -179,7 +138,8 @@ namespace RemsNG.Data.Repository
                    ReferenceNumber = dnph.ReferenceNumber,
                    SyncStatus = dnph.SyncStatus,
                    TotalBillAmount = dnph.Amount + dnph.Charges,
-                   BillingYear = dnt.BillingYr
+                   BillingYear = dnt.BillingYr,
+                   TaxPayerName = string.IsNullOrEmpty(dnph.OtherNames) ? dnt.TaxpayersName : dnph.OtherNames
                }).Where(x => x.BillingNumber == billingnumber && x.PaymentStatus == "APPROVED").ToListAsync();
 
             return model;
@@ -187,32 +147,6 @@ namespace RemsNG.Data.Repository
 
         public async Task<DemandNoticePaymentHistoryModel> ById(Guid id)
         {
-            //string query = "select dnph.*,bank.bankName from tbl_demandNoticePaymentHistory as dnph " +
-            //     $"inner join tbl_bank bank on bank.id = dnph.bankId where dnph.id = '{id}'";
-            //var x = await db.Set<DemandNoticePaymentHistoryModel>().FromSql(query).FirstOrDefaultAsync();
-            //if (x == null)
-            //{
-            //    return null;
-            //}
-
-            //return new DemandNoticePaymentHistoryModel()
-            //{
-            //    Amount = x.Amount,
-            //    BankId = x.BankId,
-            //    BillingNumber = x.BillingNumber,
-            //    Charges = x.Charges,
-            //    CreatedBy = x.CreatedBy,
-            //    DateCreated = x.DateCreated,
-            //    Id = x.Id,
-            //    IsWaiver = x.IsWaiver,
-            //    Lastmodifiedby = x.Lastmodifiedby,
-            //    LastModifiedDate = x.LastModifiedDate,
-            //    OwnerId = x.OwnerId,
-            //    PaymentMode = x.PaymentMode,
-            //    PaymentStatus = x.PaymentStatus,
-            //    ReferenceNumber = x.ReferenceNumber,
-            //    SyncStatus = x.SyncStatus
-            //};
             var model = await db.Set<DemandNoticePaymentHistory>().Include(x => x.Bank)
                 .Join(db.Set<DemandNoticeTaxpayer>(), dnph => dnph.BillingNumber,
                 dnt => dnt.BillingNumber, (dnph, dnt) => new DemandNoticePaymentHistoryModel()
@@ -234,7 +168,8 @@ namespace RemsNG.Data.Repository
                     ReferenceNumber = dnph.ReferenceNumber,
                     SyncStatus = dnph.SyncStatus,
                     TotalBillAmount = dnph.Amount + dnph.Charges,
-                    BillingYear = dnt.BillingYr
+                    BillingYear = dnt.BillingYr,
+                    TaxPayerName = string.IsNullOrEmpty(dnph.OtherNames) ? dnt.TaxpayersName : dnph.OtherNames
                 }).Where(x => x.Id == id).FirstOrDefaultAsync();
 
             return model;
@@ -296,7 +231,7 @@ namespace RemsNG.Data.Repository
                     PaymentStatus = x.dnph.PaymentStatus,
                     ReferenceNumber = x.dnph.ReferenceNumber,
                     SyncStatus = x.dnph.SyncStatus,
-                    TaxPayerName = $"{x.tp.Surname} {x.tp.Firstname} {x.tp.Lastname}"
+                    TaxPayerName = string.IsNullOrEmpty(x.dnph.OtherNames) ? $"{x.tp.Surname} {x.tp.Firstname} {x.tp.Lastname}" : x.dnph.OtherNames
                 });
 
             var result = await query.OrderByDescending(d => d.DateCreated).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToListAsync();
@@ -336,7 +271,8 @@ namespace RemsNG.Data.Repository
                     PaymentStatus = x.dnph.PaymentStatus,
                     ReferenceNumber = x.dnph.ReferenceNumber,
                     SyncStatus = x.dnph.SyncStatus,
-                    BankName = x.dnph.Bank.BankName
+                    BankName = x.dnph.Bank.BankName,
+                    TaxPayerName = string.IsNullOrEmpty(x.dnph.OtherNames) ? x.dnt.TaxpayersName : x.dnph.OtherNames
                 }).ToListAsync();
 
             return result;

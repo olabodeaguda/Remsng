@@ -21,6 +21,8 @@ namespace RemsNG.Data.Entities
         public string PaymentStatus { get; set; }
         public bool SyncStatus { get; set; }
         public bool IsWaiver { get; set; }
+        public string OtherNames { get; set; }
+
         [ForeignKey("BankId")]
         public Bank Bank { get; set; }
     }
