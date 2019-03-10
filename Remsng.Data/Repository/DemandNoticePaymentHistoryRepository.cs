@@ -295,10 +295,11 @@ namespace RemsNG.Data.Repository
                     PaymentMode = x.dnph.PaymentMode,
                     PaymentStatus = x.dnph.PaymentStatus,
                     ReferenceNumber = x.dnph.ReferenceNumber,
-                    SyncStatus = x.dnph.SyncStatus
+                    SyncStatus = x.dnph.SyncStatus,
+                    TaxPayerName = $"{x.tp.Surname} {x.tp.Firstname} {x.tp.Lastname}"
                 });
 
-            var result = query.ToListAsync();
+            var result = await query.OrderByDescending(d => d.DateCreated).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToListAsync();
             int totalCount = await query.CountAsync();
 
             return new

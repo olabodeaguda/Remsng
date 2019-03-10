@@ -22,5 +22,6 @@ namespace RemsNG.Common.Models
         public decimal TotalBillAmount { get; set; }
         public string BankName { get; set; }
         public int BillingYear { get; set; }
+        public string TaxPayerName { get; set; }
     }
 }
