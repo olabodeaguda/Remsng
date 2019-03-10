@@ -35,8 +35,8 @@ namespace RemsNG.Data.Repository
                     itemStatus = x.ArrearsStatus
                 }).ToListAsync();
             results.AddRange(arrears);
-            DemandNoticeTaxpayer dnTaxpayer = await db.Set<DemandNoticeTaxpayer>().FirstOrDefaultAsync(x => x.BillingNumber == billingno);
-            if (dnTaxpayer != null)
+            DemandNoticeTaxpayer dnTaxpayer = await db.Set<DemandNoticeTaxpayer>().FirstOrDefaultAsync(x => x.BillingNumber.Trim() == billingno.Trim());
+            if (dnTaxpayer == null)
             {
                 throw new NotFoundException("Demand notice does not exist");
             }
@@ -59,8 +59,8 @@ namespace RemsNG.Data.Repository
                      itemAmount = x.ItemAmount,
                      amountPaid = x.AmountPaid,
                      billingNo = x.BillingNo,
-                     category = "PENALTY",
-                     itemDescription = "Penalty",
+                     category = "Items",
+                     itemDescription =x.Item.ItemDescription,
                      itemStatus = x.ItemStatus
                  }).ToListAsync();
             results.AddRange(items);

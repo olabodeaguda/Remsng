@@ -12,8 +12,6 @@ namespace RemsNG.Infrastructure.Services
         {
             byte[] pdfbyte = null;
             MemoryStream memoryStream = new MemoryStream();
-
-            // create a StyleSheet
             var styles = new StyleSheet();
             styles.LoadTagStyle("tr", "height", "30");
 
@@ -21,23 +19,10 @@ namespace RemsNG.Infrastructure.Services
             //{
             //    { "img_provider", new MyImageFactory()}
             //};
-
-            // step 1
-            var document = new Document();
-            // step 2
+            var document = new Document(PageSize.A4);
             PdfWriter.GetInstance(document, memoryStream);
-            // step 3
-            // document.AddAuthor(TestUtils.Author);
             document.Open();
-            // step 4
-            //var objects = HtmlWorker.ParseToList(
-            //    new StringReader(htmlstring),
-            //    styles,
-            //    props
-            //);
-
             var objects = HtmlWorker.ParseToList(new StringReader(htmlstring), styles);
-
             foreach (IElement element in objects)
             {
                 document.Add(element);

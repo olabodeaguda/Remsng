@@ -65,7 +65,7 @@ namespace RemsNG.Controllers
             htmlContent = htmlContent.Replace("PATCH1", "<br /><br /><br /><br /><br /><br /><br /><br />");
             var result = await nodeServices.InvokeAsync<byte[]>("./pdf", htmlContent);
 
-            // var result = _pdfService.GetPdf(htmlContent); 
+            //var result = _pdfService.GetPdf(htmlContent);
 
 
             HttpContext.Response.ContentType = "application/pdf";

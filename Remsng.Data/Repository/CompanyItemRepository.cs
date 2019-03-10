@@ -45,7 +45,8 @@ namespace RemsNG.Data.Repository
             result.ItemId = model.ItemId;
             result.Amount = model.Amount;
             result.BillingYear = model.BillingYear;
-            result.CreatedBy = model.CreatedBy;
+            result.Lastmodifiedby = model.Lastmodifiedby;
+            result.LastModifiedDate = DateTime.Now;
             await db.SaveChangesAsync();
             return new Response()
             {

@@ -107,7 +107,7 @@
                                         <td>{{data.batchNo}}</td>
                                         <td>{{data.requestStatus}}</td>
                                         <td>{{data.dateCreated|date: 'dd-MM-yyyy hh:mm:ss'}}</td>
-                                        <td><a href="javascripe:;" (click)="getRaisedRequest(data.batchNo)">Refresh</a></td>
+                                        <td><a href="javascript:;" (click)="getRaisedRequest(data.batchNo)">Refresh</a></td>
                                     </tr>
                                     <tr *ngIf="dowloadRequestList.length < 1">
                                         <td style="width:100%" colspan="6">No record !!!</td>
