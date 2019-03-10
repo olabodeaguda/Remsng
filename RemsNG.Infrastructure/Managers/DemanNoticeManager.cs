@@ -85,7 +85,7 @@ namespace RemsNG.Infrastructure.Managers
             return await demandNoticeDao.UpdateStatus(new DemandNoticeModel
             {
                 Id = id,
-                 DemandNoticeStatus = "DELETED"
+                DemandNoticeStatus = "DELETED"
             });
         }
 
@@ -213,5 +213,10 @@ namespace RemsNG.Infrastructure.Managers
             return true;
         }
 
+        public async Task<DemandNoticeTaxpayersModel[]> SearchDemandNotice(DemandNoticeRequestModel rhModel)
+        {
+            DemandNoticeTaxpayersModel[] model = await _dnTaxpayerRepo.Search(rhModel);
+            return model;
+        }
     }
 }

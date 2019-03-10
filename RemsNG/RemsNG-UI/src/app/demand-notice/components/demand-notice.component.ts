@@ -130,11 +130,11 @@ export class DemandNoticeComponent implements OnInit {
 
     promptAction(params: string) {
         this.actionSelected = params.toLowerCase();
-        let lt = this.demandNoticeLst.filter(b => b.isChecked == true).map(x => x.id);
-        if (lt.length <= 0) {
-            this.toasterService.pop('error', 'Error', 'Please select taxpayer!!!');
-            return;
-        }
+        // let lt = this.demandNoticeLst.filter(b => b.isChecked == true).map(x => x.id);
+        // if (lt.length <= 0) {
+        //     this.toasterService.pop('error', 'Error', 'Please select taxpayer!!!');
+        //     return;
+        // }
         this.actionSelected = params.toLowerCase();
         jQuery(this.promptRequest.nativeElement).modal('show');
     }
@@ -143,10 +143,14 @@ export class DemandNoticeComponent implements OnInit {
         let lt = this.demandNoticeLst.filter(b => b.isChecked == true).map(x => x.id);
         if (this.actionSelected === "ARREARS".toLowerCase()) {
             this.addArrears(lt);
+        } else if (this.actionSelected === "ARREARS All".toLowerCase()) {
+            this.allArrears();
         } else if (this.actionSelected === "REMOVE ARREARS".toLowerCase()) {
             this.removeArrears();
-        }  else if (this.actionSelected === "PENALTY".toLowerCase()) {
+        } else if (this.actionSelected === "PENALTY".toLowerCase()) {
             this.addPenalty(lt);
+        } else if (this.actionSelected === "PENALTY All".toLowerCase()) {
+            this.allPenalty();
         } else if (this.actionSelected === "REMOVE PENALTY".toLowerCase()) {
             this.removePenalty();
         } else if (this.actionSelected === "DOWNLOAD".toLowerCase()) {
@@ -156,6 +160,58 @@ export class DemandNoticeComponent implements OnInit {
         } else {
             this.toasterService.pop('warning', 'No Action confirmed', 'Please refresh the page and try again');
         }
+    }
+
+    allArrears() {
+        if (this.searchModel.wardId.length <= 0) {
+            this.toasterService.pop('error', 'Error', 'Ward is required');
+            return;
+        } else if (this.searchModel.streetId.length <= 0) {
+            this.toasterService.pop('error', 'Error', 'Street is required');
+            return;
+        }
+        this.isLoadingMini = true;
+        this.demandnoticeservice.allArrears(this.searchModel)
+            .subscribe(response => {
+                this.isLoadingMini = false;
+                jQuery(this.promptRequest.nativeElement).modal('hide');
+                if (response.code === '00') {
+                    this.toasterService.pop('success', 'Successful', response.description);
+                    this.searchDemandNotice();
+                } else {
+                    this.toasterService.pop('error', 'Error', response.description);
+                }
+            }, error => {
+                jQuery(this.promptRequest.nativeElement).modal('hide');
+                this.isLoadingMini = false;
+                this.toasterService.pop('error', 'Error', error);
+            });
+    }
+
+    allPenalty() {
+        if (this.searchModel.wardId.length <= 0) {
+            this.toasterService.pop('error', 'Error', 'Ward is required');
+            return;
+        } else if (this.searchModel.streetId.length <= 0) {
+            this.toasterService.pop('error', 'Error', 'Street is required');
+            return;
+        }
+        this.isLoadingMini = true;
+        this.demandnoticeservice.allPenalty(this.searchModel)
+            .subscribe(response => {
+                this.isLoadingMini = false;
+                jQuery(this.promptRequest.nativeElement).modal('hide');
+                if (response.code === '00') {
+                    this.toasterService.pop('success', 'Successful', response.description);
+                    this.searchDemandNotice();
+                } else {
+                    this.toasterService.pop('error', 'Error', response.description);
+                }
+            }, error => {
+                this.isLoadingMini = false;
+                jQuery(this.promptRequest.nativeElement).modal('hide');
+                this.toasterService.pop('error', 'Error', error);
+            });
     }
 
     CheckAll() {
@@ -168,16 +224,16 @@ export class DemandNoticeComponent implements OnInit {
 
     addArrears(lt) {
         let payload = this.demandNoticeLst
-        .filter(b => b.isChecked == true && b.isRunArrears == false).map(x => x.id);
+            .filter(b => b.isChecked == true && b.isRunArrears == false).map(x => x.id);
         if (payload.length <= 0) {
-            this.toasterService.pop('warning','Warning','No record found');
+            this.toasterService.pop('warning', 'Warning', 'No record found');
             return;
         }
         this.isLoadingMini = true;
         this.demandnoticeservice.runArrears(lt)
             .subscribe(response => {
                 this.isLoadingMini = false;
-                jQuery(this.promptRequest.nativeElement).modal('hide');                
+                jQuery(this.promptRequest.nativeElement).modal('hide');
                 if (response.code === '00') {
                     this.toasterService.pop('success', 'Successful', response.description);
                     this.searchDemandNotice();
@@ -185,7 +241,7 @@ export class DemandNoticeComponent implements OnInit {
                     this.toasterService.pop('error', 'Error', response.description);
                 }
             }, error => {
-                jQuery(this.promptRequest.nativeElement).modal('hide'); 
+                jQuery(this.promptRequest.nativeElement).modal('hide');
                 this.isLoadingMini = false;
                 this.toasterService.pop('error', 'Error', error);
             });
@@ -193,13 +249,13 @@ export class DemandNoticeComponent implements OnInit {
 
     removeArrears() {
         let payload = this.demandNoticeLst
-        .filter(b => b.isChecked == true && b.isRunArrears == true).map(x => x.id);
+            .filter(b => b.isChecked == true && b.isRunArrears == true).map(x => x.id);
 
         if (payload.length <= 0) {
-            this.toasterService.pop('warning','Warning','No record found');
+            this.toasterService.pop('warning', 'Warning', 'No record found');
             return;
         }
-        
+
         this.isLoadingMini = true;
         this.demandnoticeservice.removeArrears(payload)
             .subscribe(response => {
@@ -212,25 +268,25 @@ export class DemandNoticeComponent implements OnInit {
                     this.toasterService.pop('error', 'Error', response.description);
                 }
             }, error => {
-                jQuery(this.promptRequest.nativeElement).modal('hide'); 
+                jQuery(this.promptRequest.nativeElement).modal('hide');
                 this.isLoadingMini = false;
                 this.toasterService.pop('error', 'Error', error);
             });
     }
 
-    
+
     addPenalty(lt) {
         let payload = this.demandNoticeLst
-        .filter(b => b.isChecked == true && b.isRunPenalty == false).map(x => x.id);
+            .filter(b => b.isChecked == true && b.isRunPenalty == false).map(x => x.id);
         if (payload.length <= 0) {
-            this.toasterService.pop('warning','Warning','No record found');
+            this.toasterService.pop('warning', 'Warning', 'No record found');
             return;
         }
         this.isLoadingMini = true;
         this.demandnoticeservice.runPenalty(lt)
             .subscribe(response => {
                 this.isLoadingMini = false;
-                jQuery(this.promptRequest.nativeElement).modal('hide');                
+                jQuery(this.promptRequest.nativeElement).modal('hide');
                 if (response.code === '00') {
                     this.toasterService.pop('success', 'Successful', response.description);
                     this.searchDemandNotice();
@@ -239,20 +295,20 @@ export class DemandNoticeComponent implements OnInit {
                 }
             }, error => {
                 this.isLoadingMini = false;
-                jQuery(this.promptRequest.nativeElement).modal('hide'); 
+                jQuery(this.promptRequest.nativeElement).modal('hide');
                 this.toasterService.pop('error', 'Error', error);
             });
     }
 
     removePenalty() {
         let payload = this.demandNoticeLst
-        .filter(b => b.isChecked == true && b.isRunPenalty == true).map(x => x.id);
+            .filter(b => b.isChecked == true && b.isRunPenalty == true).map(x => x.id);
 
         if (payload.length <= 0) {
-            this.toasterService.pop('warning','Warning','No record found');
+            this.toasterService.pop('warning', 'Warning', 'No record found');
             return;
         }
-        
+
         this.isLoadingMini = true;
         this.demandnoticeservice.removePenalty(payload)
             .subscribe(response => {
@@ -266,23 +322,23 @@ export class DemandNoticeComponent implements OnInit {
                 }
             }, error => {
                 this.isLoadingMini = false;
-                jQuery(this.promptRequest.nativeElement).modal('hide'); 
+                jQuery(this.promptRequest.nativeElement).modal('hide');
                 this.toasterService.pop('error', 'Error', error);
             });
     }
 
-    deleteTaxpayer(){
+    deleteTaxpayer() {
         let payload = this.demandNoticeLst
-        .filter(b => b.isChecked == true).map(x => x.id);
+            .filter(b => b.isChecked == true).map(x => x.id);
         if (payload.length <= 0) {
-            this.toasterService.pop('warning','Warning','No record found');
+            this.toasterService.pop('warning', 'Warning', 'No record found');
             return;
         }
         this.isLoadingMini = true;
         this.demandnoticeservice.Delete(payload)
             .subscribe(response => {
                 this.isLoadingMini = false;
-                jQuery(this.promptRequest.nativeElement).modal('hide');                
+                jQuery(this.promptRequest.nativeElement).modal('hide');
                 if (response.code === '00') {
                     this.toasterService.pop('success', 'Successful', response.description);
                     this.searchDemandNotice();
@@ -291,7 +347,7 @@ export class DemandNoticeComponent implements OnInit {
                 }
             }, error => {
                 this.isLoadingMini = false;
-                jQuery(this.promptRequest.nativeElement).modal('hide'); 
+                jQuery(this.promptRequest.nativeElement).modal('hide');
                 this.toasterService.pop('error', 'Error', error);
             });
     }
@@ -326,5 +382,4 @@ export class DemandNoticeComponent implements OnInit {
         }
         this.GetDemandNotice(null);
     }
-
 }

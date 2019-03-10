@@ -11,6 +11,7 @@ using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Interfaces.Services;
 using RemsNG.Common.Models;
 using RemsNG.Infrastructure.Managers;
+using RemsNG.Infrastructure.Services;
 using RemsNG.Models;
 using RemsNG.Security;
 using RemsNG.Services;
@@ -146,7 +147,10 @@ namespace RemsNG.Extensions
             services.AddTransient<IPenaltyManager, PenaltyManager>();
             services.AddTransient<IArrearsManager, ArrearsManager>(); services.AddSingleton<IConfigurationRoot>(provider => (IConfigurationRoot)Configuration);
             services.AddSingleton(config.GetSection("BankCategory").Get<BankCategory>());
+            #endregion
 
+            #region Services
+            services.AddTransient<IPdfService, PdfService>();
             #endregion
         }
 

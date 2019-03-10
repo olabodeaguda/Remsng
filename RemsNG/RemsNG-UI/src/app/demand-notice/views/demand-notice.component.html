@@ -112,6 +112,10 @@
                                                 <a (click)="promptAction('REMOVE ARREARS')">
                                                     <i class="fa fa-remove"></i> Waive</a>
                                             </li>
+                                            <li>
+                                                <a (click)="promptAction('ARREARS All')">
+                                                    <i class="fa fa-plus"></i> All</a>
+                                            </li>
                                         </ul>
                                     </div>
                                     <div class="btn-group">
@@ -130,10 +134,14 @@
                                                 <a (click)="promptAction('REMOVE PENALTY')">
                                                     <i class="fa fa-remove"></i> Waive</a>
                                             </li>
+                                            <li>
+                                                <a (click)="promptAction('REMOVE PENALTY All')">
+                                                    <i class="fa fa-plus"></i> All</a>
+                                            </li>
                                         </ul>
                                     </div>
-                                    <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary"
-                                        (click)="promptAction('DOWNLOAD')">Download (DN)</button>
+                                    <!-- <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary"
+                                        (click)="promptAction('DOWNLOAD')">Download (DN)</button> -->
                                         <button [ladda]="searchModel.isLoading" type="submit" class="btn btn-primary"
                                             (click)="promptAction('DELETE')">Delete</button>
                                 </div>

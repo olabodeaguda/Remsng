@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.NodeServices;
 using Microsoft.Extensions.Logging;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Services;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Security;
@@ -18,6 +19,7 @@ namespace RemsNG.Controllers
     [Route("api/v1/dndownload")]
     public class DemandNoticeDownloadController : Controller
     {
+        private readonly IPdfService _pdfService;
         private IHostingEnvironment hostingEnvironment;
         private INodeServices nodeServices;
         private IDnDownloadManager dnd;
@@ -28,7 +30,7 @@ namespace RemsNG.Controllers
             INodeServices _nodeServices, IDnDownloadManager _dnd,
             IBatchDwnRequestManager _batchRequestService,
             IDNPaymentHistoryManager _paymentHistoryService,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory, IPdfService pdfService)
         {
             hostingEnvironment = _hostingEnvironment;
             nodeServices = _nodeServices;
@@ -36,6 +38,7 @@ namespace RemsNG.Controllers
             batchRequestService = _batchRequestService;
             paymentHistoryService = _paymentHistoryService;
             logger = loggerFactory.CreateLogger("Demand Notice download");
+            _pdfService = pdfService;
         }
 
 
@@ -60,9 +63,10 @@ namespace RemsNG.Controllers
 
             htmlContent = await dnd.PopulateReportHtml(htmlContent, billingno, rootUrl, User.Identity.Name);
             htmlContent = htmlContent.Replace("PATCH1", "<br /><br /><br /><br /><br /><br /><br /><br />");
-            //htmlContent = htmlContent.Replace("PATCH2", "");
-            //htmlContent = htmlContent.Replace("dated", DateTime.Now.ToString("dd-MM-yyyy HH:mm"));
             var result = await nodeServices.InvokeAsync<byte[]>("./pdf", htmlContent);
+
+            // var result = _pdfService.GetPdf(htmlContent); 
+
 
             HttpContext.Response.ContentType = "application/pdf";
             HttpContext.Response.Body.Write(result, 0, result.Length);

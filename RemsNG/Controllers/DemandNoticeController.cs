@@ -409,7 +409,7 @@ namespace RemsNG.Controllers
             {
                 code = result ? MsgCode_Enum.SUCCESS : MsgCode_Enum.FAIL,
                 status = result,
-                description = result ? "Arrears has been run successfully" : "Please try again or contact your administrator"
+                description = result ? "Penalty has been run successfully" : "Please try again or contact your administrator"
             });
         }
 
@@ -425,5 +425,51 @@ namespace RemsNG.Controllers
                 description = result ? "Arrears has been remove successfully" : "Please try again or contact your administrator"
             });
         }
+
+
+        [HttpPost("arrears/add/all")]
+        public async Task<IActionResult> AddArrears([FromBody] DemandNoticeRequestModel model)
+        {
+            var sResult = await demandService.SearchDemandNotice(model);
+            if (sResult.Length <= 0)
+            {
+                return BadRequest(new Response
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "No Record found"
+                });
+            }
+            bool result = await _arrearsManager.RunTaxpayerArrears(sResult.Where(X => !X.IsRunArrears).Select(d => d.Id).ToArray());
+            return Ok(new Response
+            {
+                code = result ? MsgCode_Enum.SUCCESS : MsgCode_Enum.FAIL,
+                status = result,
+                description = result ? "Arrears has been run successfully" : "Please try again or contact your administrator"
+            });
+        }
+
+
+        [HttpPost("penalty/add/all")]
+        public async Task<IActionResult> AddPenalty([FromBody]  DemandNoticeRequestModel model)
+        {
+            var sResult = await demandService.SearchDemandNotice(model);
+            if (sResult.Length <= 0)
+            {
+                return BadRequest(new Response
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "No Record found"
+                });
+            }
+            bool result = await _penaltyManager.AddPenalty(sResult.Where(X => !X.IsRunArrears).Select(d => d.Id).ToArray());
+
+            return Ok(new Response
+            {
+                code = result ? MsgCode_Enum.SUCCESS : MsgCode_Enum.FAIL,
+                status = result,
+                description = result ? "Penalty has been run successfully" : "Please try again or contact your administrator"
+            });
+        }
+
     }
 }

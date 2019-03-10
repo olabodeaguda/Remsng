@@ -130,6 +130,15 @@ namespace RemsNG.Data.Repository
             DateTime endDate = new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59);
 
             string[] status = { "PENDING", "PART_PAYMENT", "PAID" };
+
+            var lst1 = await db.Set<DemandNoticeItem>()
+             .Include(x => x.TaxPayer)
+             .ThenInclude(x => x.Company)
+             .ThenInclude(x => x.TaxPayerCatgeory)
+             .Include(x => x.DemandNoticeTaxpayer)
+             .Where(x => x.DateCreated >= startDate && x.DateCreated <= endDate && status.Any(t => t == x.ItemStatus))
+             .ToListAsync();
+
             List<DemandNoticeItemModel> lst = await db.Set<DemandNoticeItem>()
               .Include(x => x.TaxPayer)
               .ThenInclude(x => x.Company)

@@ -25,17 +25,17 @@ export class LoginComponent {
     isvalid: boolean = false;
     isNotifyValidy = false;
     setLicence() {
-        const currentDate = new Date();
-        currentDate.setHours(0, 0, 0, 0);
-        const d2 = new Date(2019, 2, 27, 0, 0, 0);
-        if (currentDate.getTime() > d2.getTime()) {
-            this.isvalid = true;
-        }
-        const timeDiff = Math.abs(currentDate.getTime() - d2.getTime());
-        const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-        if (diffDays <= 21) {
-            this.isNotifyValidy = true;
-        }
+        // const currentDate = new Date();
+        // currentDate.setHours(0, 0, 0, 0);
+        // const d2 = new Date(2019, 2, 27, 0, 0, 0);
+        // if (currentDate.getTime() > d2.getTime()) {
+        //     this.isvalid = true;
+        // }
+        // const timeDiff = Math.abs(currentDate.getTime() - d2.getTime());
+        // const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+        // if (diffDays <= 21) {
+        //     this.isNotifyValidy = true;
+        // }
         //this.isNotifyValidy = true;
     }
 

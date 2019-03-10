@@ -185,4 +185,30 @@ export class DemandNoticeService {
         .post('dnt/delete', taxpayerIds)
         .catch(x => this.datataservice.handleError(x));
     }
+
+    allArrears(searchModel: DemandNoticeSearch){
+        let s: any = {
+            wardId: searchModel.wardId,
+            streetId: searchModel.streetId,
+            searchByName: searchModel.searchByName,
+            dateYear: searchModel.dateYear,
+            lcdaId: null
+        };
+        return this.datataservice
+        .post('demandnotice/arrears/add/all', s)
+        .catch(x => this.datataservice.handleError(x));
+    }
+
+    allPenalty(searchModel: DemandNoticeSearch){
+        let s: any = {
+            wardId: searchModel.wardId,
+            streetId: searchModel.streetId,
+            searchByName: searchModel.searchByName,
+            dateYear: searchModel.dateYear,
+            lcdaId: null
+        };
+        return this.datataservice
+        .post('demandnotice/penalty/add/all', s)
+        .catch(x => this.datataservice.handleError(x));
+    }
 }

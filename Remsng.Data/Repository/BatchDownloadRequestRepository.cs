@@ -17,20 +17,28 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> AddBatchRequest(BatchDemandNoticeModel bdnModel)
         {
-            db.Set<BatchDownloadRequest>().Add(new BatchDownloadRequest
+            try
             {
-                BatchFileName = bdnModel.batchFileName,
-                BatchNo = bdnModel.batchNo,
-                Createdby = bdnModel.createdBy,
-                DateCreated = bdnModel.dateCreated.Value,
-                Id = bdnModel.id,
-                Lastmodifiedby = bdnModel.lastmodifiedby,
-                LastModifiedDate = bdnModel.lastModifiedDate.Value,
-                LcdaId = bdnModel.lcdaId,
-                RequestStatus = bdnModel.requestStatus
-            });
+                BatchDownloadRequest dnModel = new BatchDownloadRequest
+                {
+                    BatchFileName = bdnModel.batchFileName,
+                    BatchNo = bdnModel.batchNo,
+                    Createdby = bdnModel.createdBy,
+                    DateCreated = DateTime.Now,
+                    Id = bdnModel.id,
+                    LcdaId = bdnModel.lcdaId,
+                    RequestStatus = bdnModel.requestStatus
+                };
 
-            await db.SaveChangesAsync();
+                db.Set<BatchDownloadRequest>().Add(dnModel);
+
+                await db.SaveChangesAsync();
+            }
+            catch (Exception x)
+            {
+
+                throw;
+            }
 
             return new Response()
             {
@@ -56,15 +64,37 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<BatchDemandNoticeModel>> ListByBatchNo(string batchno)
         {
-            return await db.Set<BatchDemandNoticeModel>()
-                .Where(x => x.batchNo == batchno).OrderByDescending(x => x.dateCreated).ToListAsync(); // db.BatchDemanNoticeModels.FromSql($"select * from tbl_batchDownloadRequest where batchNo = '{batchno}'").ToListAsync();
+            return await db.Set<BatchDownloadRequest>()
+                .Where(x => x.BatchNo == batchno).Select(x => new BatchDemandNoticeModel
+                {
+                    batchFileName = x.BatchFileName,
+                    batchNo = x.BatchNo,
+                    createdBy = x.Createdby,
+                    dateCreated = x.DateCreated,
+                    id = x.Id,
+                    lastmodifiedby = x.Lastmodifiedby,
+                    lastModifiedDate = x.LastModifiedDate,
+                    lcdaId = x.LcdaId,
+                    requestStatus = x.RequestStatus
+                }).OrderByDescending(x => x.dateCreated).ToListAsync(); // db.BatchDemanNoticeModels.FromSql($"select * from tbl_batchDownloadRequest where batchNo = '{batchno}'").ToListAsync();
         }
 
         public async Task<BatchDemandNoticeModel> Dequeue()
         {
             try
             {
-                return await db.Set<BatchDemandNoticeModel>().FromSql("sp_dequeueBatchDownload").FirstOrDefaultAsync();
+                return await db.Set<BatchDownloadRequest>().FromSql("sp_dequeueBatchDownload").Select(x => new BatchDemandNoticeModel
+                {
+                    batchFileName = x.BatchFileName,
+                    batchNo = x.BatchNo,
+                    createdBy = x.Createdby,
+                    dateCreated = x.DateCreated,
+                    id = x.Id,
+                    lastmodifiedby = x.Lastmodifiedby,
+                    lastModifiedDate = x.LastModifiedDate,
+                    lcdaId = x.LcdaId,
+                    requestStatus = x.RequestStatus
+                }).FirstOrDefaultAsync();
             }
             catch (Exception)
             {

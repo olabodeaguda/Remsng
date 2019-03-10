@@ -2,7 +2,7 @@
 
 namespace RemsNG.Common.Models
 {
-    public partial class DemandNoticeItemModel
+    public class DemandNoticeItemModel
     {
         public Guid Id { get; set; }
         public string BillingNo { get; set; }

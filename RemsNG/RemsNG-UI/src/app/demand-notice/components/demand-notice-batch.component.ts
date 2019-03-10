@@ -120,7 +120,6 @@ export class DemandNoticeBatchComponent implements OnInit {
     }
 
     loadStreets(event) {
-        console.log(this.searchModel);
         this.getStreet(this.searchModel.wardId);
     }
 
@@ -150,20 +149,20 @@ export class DemandNoticeBatchComponent implements OnInit {
             jQuery(this.downloadRequestModal.nativeElement).modal('show');
 
             this.getRaisedRequest(this.batchNo);
-            setInterval(() => {
-                this.getRaisedRequest(this.batchNo);
-            }, 3000);
+            // setInterval(() => {
+            //     this.getRaisedRequest(this.batchNo);
+            // }, 30000);
         }
     }
 
     getRaisedRequest(batchId: string) {
-        // this.isLoading = true;
+        this.isLoading = true;
         this.demandnoticeservice.getRaisedRequest(batchId)
             .subscribe(response => {
-                //  this.isLoading = false;
+                this.isLoading = false;
                 this.dowloadRequestList = response;
             }, error => {
-                // this.isLoading = false;
+                this.isLoading = false;
             })
     }
 

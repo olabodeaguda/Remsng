@@ -156,6 +156,8 @@ namespace RemsNG.Data.Repository
             //    SyncStatus = x.SyncStatus
             //}).ToList();
 
+
+
             var model = await db.Set<DemandNoticePaymentHistory>().Include(x => x.Bank)
                .Join(db.Set<DemandNoticeTaxpayer>(), dnph => dnph.BillingNumber,
                dnt => dnt.BillingNumber, (dnph, dnt) => new DemandNoticePaymentHistoryModel()

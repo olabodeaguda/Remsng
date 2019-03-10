@@ -7,6 +7,7 @@ namespace RemsNG.Common.Interfaces.Managers
     public interface IDnDownloadManager
     {
         Task<string> PopulateReportHtml(string htmlContent, string billingno, string rootUrl, string createdBy);
+        Task<string> PopulateReportHtmlBase64(string htmlContent, string billingno, string rootUrl, string createdBy);
         Task<string> LcdaTemlate(string billingno);
         Task<string> LcdaTemlateByLcda(Guid lcdaId);
         Task<string> ReceiptTemlate(string billingno);
