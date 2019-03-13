@@ -23,11 +23,9 @@ namespace RemsNG.Data.Repository
                 BillingYear = model.BillingYear,
                 CompanyStatus = model.CompanyStatus,
                 CreatedBy = model.CreatedBy,
-                DateCreated = model.DateCreated,
+                DateCreated = DateTime.Now,
                 Id = model.Id,
                 ItemId = model.ItemId,
-                Lastmodifiedby = model.Lastmodifiedby,
-                LastModifiedDate = model.LastModifiedDate,
                 TaxpayerId = model.TaxpayerId
             });
             await db.SaveChangesAsync();
@@ -100,7 +98,7 @@ namespace RemsNG.Data.Repository
             var result = await db.Set<CompanyItem>()
                 .Include(x => x.TaxPayer)
                 .Include(x => x.Item)
-                .Where(x => taxpayerIds.Any(p => p == x.TaxpayerId))
+                .Where(x => taxpayerIds.Any(p => p == x.TaxpayerId) && x.Item.ItemStatus == "ACTIVE" && x.CompanyStatus == "ACTIVE")
                 .Select(p => new CompanyItemModel()
                 {
                     Amount = p.Amount,

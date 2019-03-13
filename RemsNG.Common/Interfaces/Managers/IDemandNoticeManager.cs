@@ -19,5 +19,6 @@ namespace RemsNG.Common.Interfaces.Managers
         Task<TaxPayerModel[]> ValidTaxpayers(DemandNoticeRequestModel model);
         Task<bool> AddDemanNotice(DemandNoticeRequestModel model);
         Task<DemandNoticeTaxpayersModel[]> SearchDemandNotice(DemandNoticeRequestModel rhModel);
+        Task<object> SearchDemandNotice(DemandNoticeModel rhModel, PageModel pageModel);
     }
 }

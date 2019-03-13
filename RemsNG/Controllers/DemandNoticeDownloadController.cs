@@ -45,9 +45,9 @@ namespace RemsNG.Controllers
         [RemsRequirementAttribute("SINGLE_DOWNLOAD")]
         [Route("single/{billingno}")]
         [HttpGet]
-        public async Task<object> Get(string billingno)
+        public async Task<object> Get(long billingno)
         {
-            if (string.IsNullOrEmpty(billingno))
+            if (billingno == default(long))
             {
                 return BadRequest(new Response()
                 {
@@ -61,12 +61,38 @@ namespace RemsNG.Controllers
             string rootUrl = hostingEnvironment.WebRootPath;
             var htmlContent = await System.IO.File.ReadAllTextAsync($"{rootUrl}/templates/{template}");
 
-            htmlContent = await dnd.PopulateReportHtml(htmlContent, billingno, rootUrl, User.Identity.Name);
-            htmlContent = htmlContent.Replace("PATCH1", "<br /><br /><br /><br /><br /><br /><br /><br />");
-            var result = await nodeServices.InvokeAsync<byte[]>("./pdf", htmlContent);
+            htmlContent = await dnd.PopulateReportHtml1(htmlContent, billingno, rootUrl, User.Identity.Name);
+            //htmlContent = htmlContent.Replace("PATCH1", "<br /><br /><br /><br /><br /><br /><br /><br />");
+            //var result = await nodeServices.InvokeAsync<byte[]>("./pdf", htmlContent);
 
-            //var result = _pdfService.GetPdf(htmlContent);
+            var result = _pdfService.GetPdf(htmlContent);
 
+
+            HttpContext.Response.ContentType = "application/pdf";
+            HttpContext.Response.Body.Write(result, 0, result.Length);
+            return new ContentResult();
+        }
+
+        [RemsRequirementAttribute("BULK_DOWNLOAD")]
+        [Route("bulk")]
+        [HttpPost]
+        public async Task<IActionResult> BulkDownloadPdf([FromBody] long[] billingNo)
+        {
+            if (billingNo.Length <= 0)
+            {
+                return BadRequest(new Response
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Please select demand notice to download"
+                });
+            }
+
+            string template = await dnd.LcdaTemlate(billingNo[0]);
+
+            string rootUrl = hostingEnvironment.WebRootPath;
+            var htmlContent = await System.IO.File.ReadAllTextAsync($"{rootUrl}/templates/{template}");
+
+            var result = await dnd.PopulateReportHtml(htmlContent, billingNo, rootUrl, User.Identity.Name);
 
             HttpContext.Response.ContentType = "application/pdf";
             HttpContext.Response.Body.Write(result, 0, result.Length);

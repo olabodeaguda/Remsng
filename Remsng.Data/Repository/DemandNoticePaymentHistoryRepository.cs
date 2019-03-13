@@ -85,7 +85,7 @@ namespace RemsNG.Data.Repository
             };
         }
 
-        public async Task<List<DemandNoticePaymentHistoryModel>> ByBillingNumber(string billingnumber)
+        public async Task<List<DemandNoticePaymentHistoryModel>> ByBillingNumber(long billingnumber)
         {
             var model = await db.Set<DemandNoticePaymentHistory>().Include(x => x.Bank)
                 .Join(db.Set<DemandNoticeTaxpayer>(), dnph => dnph.BillingNumber,
@@ -115,7 +115,7 @@ namespace RemsNG.Data.Repository
             return model;// await db.Set<DemandNoticePaymentHistoryModelExt>().FromSql(query).ToListAsync();
         }
 
-        public async Task<List<DemandNoticePaymentHistoryModel>> ByBillingNumbers(string billingnumber)
+        public async Task<List<DemandNoticePaymentHistoryModel>> ByBillingNumbers(long[] billingnumber)
         {
             var model = await db.Set<DemandNoticePaymentHistory>().Include(x => x.Bank)
                .Join(db.Set<DemandNoticeTaxpayer>(), dnph => dnph.BillingNumber,
@@ -140,7 +140,7 @@ namespace RemsNG.Data.Repository
                    TotalBillAmount = dnph.Amount + dnph.Charges,
                    BillingYear = dnt.BillingYr,
                    TaxPayerName = string.IsNullOrEmpty(dnph.OtherNames) ? dnt.TaxpayersName : dnph.OtherNames
-               }).Where(x => x.BillingNumber == billingnumber && x.PaymentStatus == "APPROVED").ToListAsync();
+               }).Where(x => billingnumber.Any(r => r == x.BillingNumber) && x.PaymentStatus == "APPROVED").ToListAsync();
 
             return model;
         }
@@ -177,10 +177,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<DemandNoticePaymentHistoryModel> ByIdExtended(Guid id)
         {
-            string query = "select dnph.*,bank.bankName from tbl_demandNoticePaymentHistory as dnph " +
-                $"inner join tbl_bank bank on bank.id = dnph.bankId where dnph.id = '{id}'";
-
-            var x = await db.Set<DemandNoticePaymentHistoryModel>().FromSql(query).FirstOrDefaultAsync();
+            var x = await db.Set<DemandNoticePaymentHistory>().Include(d => d.Bank).FirstOrDefaultAsync(t => t.Id == id);
 
             if (x == null)
             {
@@ -202,7 +199,8 @@ namespace RemsNG.Data.Repository
                 PaymentMode = x.PaymentMode,
                 PaymentStatus = x.PaymentStatus,
                 ReferenceNumber = x.ReferenceNumber,
-                SyncStatus = x.SyncStatus
+                SyncStatus = x.SyncStatus,
+                BankName = x.Bank.BankName
             };
 
 

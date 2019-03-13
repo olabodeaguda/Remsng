@@ -126,7 +126,6 @@ this.mediaModel.isLoading = true;
             return;
         }
 
-
         let inputValue = $event.target;
         if (inputValue.files.length < 1) {
             return;
@@ -153,6 +152,4 @@ this.mediaModel.isLoading = true;
         };
         reader.readAsDataURL(file);
     }
-
-
 }

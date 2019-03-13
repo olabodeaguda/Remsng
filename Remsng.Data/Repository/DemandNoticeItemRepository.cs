@@ -73,7 +73,7 @@ namespace RemsNG.Data.Repository
             };
         }
 
-        public async Task<List<DemandNoticeItemModel>> ByBillingNumber(string billingno)
+        public async Task<List<DemandNoticeItemModel>> ByBillingNumber(long billingno)
         {
             var result = await db.Set<DemandNoticeItem>()
                 .Where(x => x.ItemStatus != "CANCEL" && x.BillingNo == billingno)
@@ -98,7 +98,7 @@ namespace RemsNG.Data.Repository
             return result;
         }
 
-        public async Task<List<DemandNoticeItemModel>> UnpaidBillsByTaxpayerId(Guid taxpayerId, string billNumber, int billingYr)
+        public async Task<List<DemandNoticeItemModel>> UnpaidBillsByTaxpayerId(Guid taxpayerId, long billNumber, int billingYr)
         {
             var r = await db.Set<DemandNoticeItem>()
                  .Join(db.Set<DemandNoticeTaxpayer>(),

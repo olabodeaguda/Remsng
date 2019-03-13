@@ -33,34 +33,28 @@ namespace RemsNG.Data.Repository
                     throw new DuplicateCompanyException("Taxpayer already exist");
                 }
             }
-
-            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addTaxpayer @p0,@p1,@p2,@p3,@p4,@p5,@p6,@p7", new object[] {
-                    taxpayer.Id,
-                    taxpayer.CompanyId,
-                    taxpayer.StreetId,
-                    taxpayer.AddressId == null?Guid.Empty:taxpayer.AddressId,
-                    taxpayer.CreatedBy,
-                    taxpayer.Surname,
-                    taxpayer.Firstname,
-                    taxpayer.Lastname
-            }).FirstOrDefaultAsync();
-
-            if (dbResponse.success)
+            TaxPayer t = new TaxPayer()
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = "Tax Payer has been added successfully"
-                };
-            }
-            else
+                Id = taxpayer.Id,
+                CompanyId = taxpayer.CompanyId,
+                StreetId = taxpayer.StreetId,
+                AddressId = taxpayer.AddressId == null ? Guid.Empty : taxpayer.AddressId,
+                CreatedBy = taxpayer.CreatedBy,
+                Surname = taxpayer.Surname,
+                Firstname = taxpayer.Firstname,
+                Lastname = taxpayer.Lastname,
+                TaxpayerStatus = "ACTIVE"
+            };
+            db.Set<TaxPayer>().Add(t);
+            await db.SaveChangesAsync();
+
+
+            return new Response()
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = "An error occur when creating the taxpayer. Please try again or inform your admnistrator for assitance"
-                };
-            }
+                code = MsgCode_Enum.SUCCESS,
+                description = "Tax Payer has been added successfully"
+            };
+
         }
 
         public async Task<TaxPayerModel> Get(Guid streetId, Guid companyId)
@@ -70,6 +64,11 @@ namespace RemsNG.Data.Repository
             var result = await db.Set<TaxPayer>()
                 .FirstOrDefaultAsync(x => x.StreetId == streetId && x.CompanyId == companyId);
             //.FromSql(query).FirstOrDefaultAsync();
+
+            if (result == null)
+            {
+                return null;
+            }
 
             return new TaxPayerModel()
             {
@@ -260,6 +259,9 @@ namespace RemsNG.Data.Repository
             entity.Surname = taxpayer.Surname;
             entity.Firstname = taxpayer.Firstname;
             entity.Lastname = taxpayer.Lastname;
+            entity.LastModifiedDate = DateTime.Now;
+
+            await db.SaveChangesAsync();
 
             Response response = new Response();
             response.description = "Update was successful";
@@ -453,16 +455,32 @@ namespace RemsNG.Data.Repository
                .Include(p => p.Street)
                .Include(q => q.Street.Ward);
 
-            for (int i = 0; i < str.Length; i++)
+            switch (str.Length)
             {
-                var ru = await qry.Where(x => (EF.Functions.Like(x.Firstname, $"%{str[i]}%") ||
-                  EF.Functions.Like(x.Lastmodifiedby, $"%{str[i]}%") ||
-                  EF.Functions.Like(x.Surname, $"%{str[i]}%")) && x.StreetId == streetid).ToArrayAsync();
-                if (ru.Length > 0)
-                {
-                    lst.AddRange(ru);
-                }
-
+                case 1:
+                    lst = await qry.Where(x => (EF.Functions.Like(x.Firstname, $"%{str[0]}%") ||
+                 EF.Functions.Like(x.Surname, $"%{str[0]}%")) && x.StreetId == streetid).ToListAsync();
+                    break;
+                case 2:
+                    lst = await qry.Where(x => (EF.Functions.Like(x.Firstname, $"%{str[0]}%") ||
+                 EF.Functions.Like(x.Surname, $"%{str[0]}%")) && (EF.Functions.Like(x.Firstname, $"%{str[1]}%") ||
+                 EF.Functions.Like(x.Surname, $"%{str[1]}%")) && x.StreetId == streetid).ToListAsync();
+                    break;
+                case 3:
+                    lst = await qry.Where(x => (EF.Functions.Like(x.Firstname, $"%{str[0]}%") ||
+                 EF.Functions.Like(x.Surname, $"%{str[0]}%")) && (EF.Functions.Like(x.Firstname, $"%{str[1]}%") ||
+                 EF.Functions.Like(x.Surname, $"%{str[1]}%")) && (EF.Functions.Like(x.Firstname, $"%{str[2]}%") ||
+                 EF.Functions.Like(x.Surname, $"%{str[2]}%")) && x.StreetId == streetid).ToListAsync();
+                    break;
+                case 4:
+                    lst = await qry.Where(x => (EF.Functions.Like(x.Firstname, $"%{str[0]}%") ||
+                 EF.Functions.Like(x.Surname, $"%{str[0]}%")) && (EF.Functions.Like(x.Firstname, $"%{str[1]}%") ||
+                 EF.Functions.Like(x.Surname, $"%{str[1]}%")) && (EF.Functions.Like(x.Firstname, $"%{str[2]}%") ||
+                 EF.Functions.Like(x.Surname, $"%{str[2]}%")) && (EF.Functions.Like(x.Firstname, $"%{str[3]}%") ||
+                 EF.Functions.Like(x.Surname, $"%{str[3]}%")) && x.StreetId == streetid).ToListAsync();
+                    break;
+                default:
+                    break;
             }
 
             var results = lst.Select(x => new TaxPayerModel()

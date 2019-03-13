@@ -16,6 +16,6 @@ namespace RemsNG.Common.Models
         [NotMapped]
         public decimal amountInitialPaid { get; set; }
 
-        public string billingNo { get; set; }
+        public long billingNo { get; set; }
     }
 }

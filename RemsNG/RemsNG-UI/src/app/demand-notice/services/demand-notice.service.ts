@@ -78,6 +78,23 @@ export class DemandNoticeService {
             .catch(x => this.datataservice.handleError(x));
     }
 
+    
+    searchDemandNotice1(searchModel: DemandNoticeSearch, pageModel: PageModel) {
+        this.datataservice.addToHeader('pageNum', pageModel.pageNum.toString());
+        this.datataservice.addToHeader('pageSize', pageModel.pageSize.toString());
+        let s: any = {
+            wardId: searchModel.wardId,
+            streetId: searchModel.streetId,
+            searchByName: searchModel.searchByName,
+            dateYear: searchModel.dateYear,
+            lcdaId: null
+        };
+
+        return this.datataservice
+            .post('demandnotice/search', s)
+            .catch(x => this.datataservice.handleError(x));
+    }
+
 
     adDownloadRequest(batchno: string) {
         return this.datataservice.post('dndownload/' + batchno, {})
@@ -95,14 +112,19 @@ export class DemandNoticeService {
     }
 
     addArrears(data: any) {
+        // const outD: any = {
+        //     billingNo: data.billingNumber,
+        //     taxpayerId: data.id,
+        //     totalAmount: data.itemAmount,
+        //     itemId: data.itemId
+        // };
         const outD: any = {
-            billingNo: data.billingNumber,
-            taxpayerId: data.id,
-            totalAmount: data.itemAmount,
+            id: data.dnId,
+            amount: data.itemAmount,
             itemId: data.itemId
         };
 
-        return this.datataservice.post('demandnotice/addarrears', outD).catch(x => this.datataservice.handleError(x));
+        return this.datataservice.post('demandnotice/arrears/single/add', outD).catch(x => this.datataservice.handleError(x));
     }
 
     cancelDemandNotice(billingNo: string) {
@@ -210,5 +232,10 @@ export class DemandNoticeService {
         return this.datataservice
         .post('demandnotice/penalty/add/all', s)
         .catch(x => this.datataservice.handleError(x));
+    }
+
+    downloadBulk(payload) {
+        return this.datataservice.postBlob('dndownload/bulk/',payload)
+            .catch(error => this.datataservice.handleError(error));
     }
 }

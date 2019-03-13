@@ -5,7 +5,7 @@ namespace RemsNG.Common.Models
     public class DemandNoticeItemModel
     {
         public Guid Id { get; set; }
-        public string BillingNo { get; set; }
+        public long BillingNo { get; set; }
         public Guid DnTaxpayersDetailsId { get; set; }
         public Guid TaxpayerId { get; set; }
         public Guid ItemId { get; set; }

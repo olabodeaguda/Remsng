@@ -49,7 +49,7 @@ export class DataService {
             'Access-Control-Expose-Headers': '\"*\"',
             'Content-Type': 'application/json'
         };
-    
+
         return this.http.get(this.appConfig.BASE_URL + url, {
             headers: new HttpHeaders(headerObj)
         });
@@ -74,6 +74,19 @@ export class DataService {
         return this.http.get((this.appConfig.BASE_URL + url), options);
     }
 
+
+    postBlob(url, payload): Observable<any> {
+        const tk: UserModel = this.storageService.get();
+
+        const options = {
+            headers: new HttpHeaders({
+                'Authorization': 'Bearer ' + tk.tk
+            })
+            , responseType: 'blob' as 'blob'
+        };
+        return this.http.post((this.appConfig.BASE_URL + url), payload, options);
+    }
+
     post(url, body): Observable<object> {
         this.addBearer();
         return this.http.post(this.appConfig.BASE_URL + url, body, {
@@ -87,7 +100,7 @@ export class DataService {
         });
     }
 
-    postWithoutHeader1(url, body,hd): Observable<object> {
+    postWithoutHeader1(url, body, hd): Observable<object> {
         return this.http.post(this.appConfig.BASE_URL + url, body, {
             headers: new HttpHeaders(hd)
         });
@@ -119,7 +132,7 @@ export class DataService {
             const d = err.error;
             if (res.code === '09' || res.code === '10' || res.code === '11') {
                 this.toasterService.pop('error', res.description || 'Connection to the service failed');
-                if(res.code === '11'){
+                if (res.code === '11') {
                     this.router.navigate(['/login'])
                 }
                 this.storageService.remove();
@@ -128,7 +141,7 @@ export class DataService {
         } else if (err.status === 403) {
             if (res.code === '09' || res.code === '10' || res.code === '11') {
                 this.toasterService.pop('error', res.description || 'Connection to the service failed');
-                if(res.code === '11'){
+                if (res.code === '11') {
                     this.router.navigate(['/login'])
                 }
                 this.storageService.remove();

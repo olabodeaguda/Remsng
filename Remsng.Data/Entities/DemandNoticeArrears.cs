@@ -7,12 +7,12 @@ namespace RemsNG.Data.Entities
     public partial class DemandNoticeArrear
     {
         public Guid Id { get; set; }
-        public string BillingNo { get; set; }
+        public long BillingNo { get; set; }
         public Guid TaxpayerId { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal CurrentAmount { get; set; }
         public decimal AmountPaid { get; set; }
-        //public Guid ItemId { get; set; }
+        public Guid ItemId { get; set; }
         public int OriginatedYear { get; set; }
         public int BillingYear { get; set; }
         public string ArrearsStatus { get; set; }

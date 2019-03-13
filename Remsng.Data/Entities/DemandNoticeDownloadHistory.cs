@@ -8,7 +8,7 @@ namespace RemsNG.Data.Entities
     public partial class DemandNoticeDownloadHistory
     {
         public Guid Id { get; set; }
-        public string BillingNumber { get; set; }
+        public long BillingNumber { get; set; }
         public decimal GrandTotal { get; set; }
         public decimal Charges { get; set; }
         public string CreatedBy { get; set; }

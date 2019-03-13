@@ -47,7 +47,6 @@ namespace RemsNG.Infrastructure.Managers
 
         public async Task<object> SearchDemandNotice(DemandNoticeModel query, PageModel pageModel)
         {
-
             return await demandNoticeDao.SearchDemandNotice(query, pageModel);
         }
 

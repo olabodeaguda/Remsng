@@ -5,7 +5,7 @@ namespace RemsNG.Common.Models
     public class DemandNoticeItemModelExtension : AbstractModel
     {
         public Guid id { get; set; }
-        public string billingNo { get; set; }
+        public long billingNo { get; set; }
         public Guid dn_taxpayersDetailsId { get; set; }
         public Guid taxpayerId { get; set; }
         public Guid itemId { get; set; }

@@ -42,7 +42,7 @@ namespace RemsNG.Controllers
         }
 
         [HttpGet("{billingNumber}")]
-        public async Task<List<DemandNoticePaymentHistoryModel>> Get(string billingNumber)
+        public async Task<List<DemandNoticePaymentHistoryModel>> Get(long billingNumber)
         {
             return await dNPaymentHistoryService.ByBillingNumber(billingNumber);
         }
@@ -59,9 +59,9 @@ namespace RemsNG.Controllers
             {
                 throw new InvalidCredentialsException("Bank is required");
             }
-            else if (string.IsNullOrEmpty(value.BillingNumber))
+            else if (value.BillingNumber == default(long))
             {
-                throw new InvalidCredentialsException("Bank is required");
+                throw new InvalidCredentialsException("billing number is required");
             }
             else if (string.IsNullOrEmpty(value.ReferenceNumber))
             {

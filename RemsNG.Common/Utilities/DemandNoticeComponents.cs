@@ -6,7 +6,7 @@ namespace RemsNG.Common.Utilities
 {
     public class DemandNoticeComponents
     {
-        public static string HtmlBuildItems(DemandNoticeReportModel dnrm)
+        public static string HtmlBuildItems1(DemandNoticeReportModel dnrm)
         {
             string htmlmarkup = string.Empty;
             int count = 1;
@@ -16,6 +16,21 @@ namespace RemsNG.Common.Utilities
                 htmlmarkup = htmlmarkup + $"<td style = 'border-width:0px 1px 0px 1px'> {count++} </td>";
                 htmlmarkup = htmlmarkup + $"<td style = 'text -align:left;'> {tm.itemTitle} </td>";
                 htmlmarkup = htmlmarkup + $"<td>{ String.Format("{0:n}", decimal.Round(tm.itemAmount, 2))}</ td ></tr>";
+            }
+
+            return htmlmarkup;
+        }
+
+        public static string HtmlBuildItems(DemandNoticeReportModel dnrm)
+        {
+            string htmlmarkup = string.Empty;
+            int count = 1;
+            foreach (var tm in dnrm.items)
+            {
+                htmlmarkup = htmlmarkup + $"<tr>";
+                htmlmarkup = htmlmarkup + $"<td width=\"90\" colspan=\"1\"> {count++} </td>";
+                htmlmarkup = htmlmarkup + $"<td width=\"45%\" colspan=\"8\"> {tm.itemTitle} </td>";
+                htmlmarkup = htmlmarkup + $"<td width=\"20%\" colspan=\"2\"></td><td width=\"30%\" colspan=\"2\"  text-align:'center'>{ String.Format("{0:n}", decimal.Round(tm.itemAmount, 2))}</ td ></tr>";
             }
 
             return htmlmarkup;
@@ -39,7 +54,7 @@ namespace RemsNG.Common.Utilities
                 var t = dnrm.banks.FirstOrDefault(x => x.bankId == bankCategory.BankId);
                 if (t != null)
                 {
-                    htmlmarkup = htmlmarkup + $"<li>{t.bankName}:{t.bankAccount}</li>";
+                    htmlmarkup = htmlmarkup + $"<li><b>{t.bankName}:  {t.bankAccount}</b></li>";
                 }
             }
             else
@@ -47,7 +62,7 @@ namespace RemsNG.Common.Utilities
                 var r = dnrm.banks.Where(x => x.bankId != bankCategory.BankId);
                 foreach (var tm in r)
                 {
-                    htmlmarkup = htmlmarkup + $"<li>{tm.bankName}:{tm.bankAccount}</li>";
+                    htmlmarkup = htmlmarkup + $"<li><b>{tm.bankName}:{tm.bankAccount}</b></li>";
                 }
             }
 

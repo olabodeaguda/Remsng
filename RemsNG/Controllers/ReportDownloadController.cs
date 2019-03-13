@@ -205,7 +205,7 @@ namespace RemsNG.Controllers
             List<ItemReportSummaryModel> current = await reportService.ByDate2(sd, ed);
 
             // getPayment history 
-            string billnums = current.Select(x => x.billingNo).ToArray().FormatString();
+            long[] billnums = current.Select(x => x.billingNo).ToArray();//.FormatString();
 
             List<DemandNoticePaymentHistoryModel> dnph = await dNPaymentHistoryService.ByBillingNumbers(billnums);
 
@@ -268,7 +268,7 @@ namespace RemsNG.Controllers
             List<ItemReportSummaryModel> valid = await reportService.ByDate2(sd, ed);
 
             // getPayment history 
-            string billnums = all.Select(x => x.billingNo).ToArray().FormatString();
+            long[] billnums = all.Select(x => x.billingNo).ToArray();//.FormatString();
             List<DemandNoticePaymentHistoryModel> dnph = await dNPaymentHistoryService.ByBillingNumbers(billnums);
 
             if (all.Count < 1)

@@ -17,12 +17,12 @@ namespace RemsNG.Infrastructure.Managers
             dNAmountDueMgtDao = new DNAmountDueMgtRepository(_db);
         }
 
-        public async Task<List<DNAmountDueModel>> ByBillingNo(string billingno)
+        public async Task<List<DNAmountDueModel>> ByBillingNo(long billingno)
         {
             return await dNAmountDueMgtDao.ByBillingNo(billingno);
         }
 
-        public async Task<List<DNAmountDueModel>> ByBillingNo(string[] bills)
+        public async Task<List<DNAmountDueModel>> ByBillingNo(long[] bills)
         {
             return await dNAmountDueMgtDao.ByBillingNo(bills);
         }

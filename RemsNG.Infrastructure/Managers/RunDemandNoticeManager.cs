@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.NodeServices;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
-using RemsNG.Common.Utilities;
-using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,78 +14,33 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class RunDemandNoticeManager : IRunDemandNoticeManager
     {
-        private readonly CompanyItemRepository _companyItemDao;
-        private readonly DNPaymentHistoryRepository _dnPaymentHistoryDao;
-        private readonly DemandNoticePaymentHistoryRepository _dnpHisotryDao;
-        private readonly IDNAmountDueMgtManager _admService;
-        private readonly TaxpayerRepository taxpayerDao;
-        private readonly DemandNoticeRepository demandNoticeDao;
-        private readonly DemandNoticeTaxpayersRepository demandNoticeTaxpayersDao;
-        private readonly ErrorRepository errorDao;
+
         private readonly ILogger logger;
-        private readonly DemandNoticeItemRepository demandNoticeItemDao;
-        private readonly DemandNoticeArrearRepository demandNoticeArrearDao;
-        private readonly DemandNoticePenaltyRepository demandNoticePenaltyDao;
-        private readonly LcdaRepository lcdaDao;
-        private readonly WardRepository wardDao;
-        private readonly StreetRepository streetDao;
-        private readonly IAddressManager address;
-        private readonly ILcdaManager lcdaService;
-        private readonly IStateManagers stateService;
-        private readonly IImageManager imageService;
         private readonly IDnDownloadManager dnDownloadService;
         private readonly IBatchDwnRequestManager batchDwnRequestService;
         private readonly IDemandNoticeTaxpayerManager demandNoticeTaxpayerService;
         private readonly ITaxpayerManager taxpayerService;
-        private readonly IListPropertyManager listPropertyService;
         private IHostingEnvironment _hostEnvironment;
         private INodeServices nodeServices;
-        private IServiceProvider serviceProvider;
-        private DbContext db;
-        public RunDemandNoticeManager(DbContext _db,
-            ILoggerFactory loggerFactory, IAddressManager _address,
-            ILcdaManager _lcdaService, IStateManagers _stateService,
-            IImageManager _imageService,
+
+        public RunDemandNoticeManager(
+            ILoggerFactory loggerFactory,
             IDnDownloadManager _dnDownloadService, IBatchDwnRequestManager _batchDwnRequestService,
             IDemandNoticeTaxpayerManager _demandNoticeTaxpayerService
             , ITaxpayerManager _taxpayerService,
-            IListPropertyManager _listPropertyService,
             INodeServices _nodeServices,
-            IHostingEnvironment hostingEnvironment,
-            IServiceProvider _serviceProvider,
-            IDNAmountDueMgtManager dNAmountDueMgtService)
+            IHostingEnvironment hostingEnvironment
+           )
         {
-            db = _db;
             logger = loggerFactory.CreateLogger("Demand Notice Jobs");
             nodeServices = _nodeServices;
             _hostEnvironment = hostingEnvironment;
-            serviceProvider = _serviceProvider;
-            taxpayerDao = new TaxpayerRepository(_db);
-            demandNoticeDao = new DemandNoticeRepository(_db);
-            demandNoticeTaxpayersDao = new DemandNoticeTaxpayersRepository(_db);
-            errorDao = new ErrorRepository(_db, loggerFactory);
-            demandNoticeItemDao = new DemandNoticeItemRepository(_db);
-            demandNoticeArrearDao = new DemandNoticeArrearRepository(_db);
-            demandNoticePenaltyDao = new DemandNoticePenaltyRepository(_db);
-            lcdaDao = new LcdaRepository(_db, loggerFactory);
-            wardDao = new WardRepository(_db);
-            streetDao = new StreetRepository(_db, loggerFactory);
-            address = _address;
-            lcdaService = _lcdaService;
-            imageService = _imageService;
-            stateService = _stateService;
             dnDownloadService = _dnDownloadService;
             batchDwnRequestService = _batchDwnRequestService;
             demandNoticeTaxpayerService = _demandNoticeTaxpayerService;
-            listPropertyService = _listPropertyService;
-            taxpayerService = _taxpayerService;
-            _admService = dNAmountDueMgtService;
-            _dnpHisotryDao = new DemandNoticePaymentHistoryRepository(_db);
-            _dnPaymentHistoryDao = new DNPaymentHistoryRepository(_db);
-            _companyItemDao = new CompanyItemRepository(_db);
         }
 
-        public async Task GenerateBulkDemandNotice()
+        public async Task GenerateBulkDemandNotice1()
         {
             BatchDemandNoticeModel bdnm = null;// await batchDwnRequestService.Dequeue();
             try
@@ -179,57 +131,89 @@ namespace RemsNG.Infrastructure.Managers
             }
         }
 
-        public async Task RunTaxpayerPenalty(Guid taxpayerId, string billingNumber, int billingYr)
+        public async Task GenerateBulkDemandNotice()
         {
-            Guid[] taxpayerIds = new Guid[] { taxpayerId };
-            var recievables = await demandNoticeTaxpayersDao.GetAllReceivables(taxpayerIds);// unpaid taxpayer
-
-            var recievable = recievables.FirstOrDefault();
-            List<DemandNoticeItemModel> items =
-                    await demandNoticeItemDao.UnpaidBillsByTaxpayerId(taxpayerId, billingNumber, billingYr - 1);
-            if (recievable != null && items.Count > 0)
+            BatchDemandNoticeModel bdnm = null;// await batchDwnRequestService.Dequeue();
+            try
             {
-                List<DemandNoticePaymentHistoryModel> payments = await _dnpHisotryDao.ApprovedPaymentHistory(taxpayerId, billingYr);
-                var arrears = await demandNoticeArrearDao.ByTaxpayer(taxpayerId);
-                decimal amountDue = items.Sum(x => x.ItemAmount) + arrears.Sum(x => x.TotalAmount)
-                     - payments.Sum(x => x.Amount);
-
-                string query = string.Empty;
-                if (amountDue > 0)
+                bdnm = await batchDwnRequestService.Dequeue();
+                if (bdnm != null)
                 {
-                    DemandNoticePenaltyModel dnp = new DemandNoticePenaltyModel()
+                    List<DemandNoticeTaxpayersModel> lstOfDN = await demandNoticeTaxpayerService.GetDNTaxpayerByBatchNoAsync(bdnm.batchNo);
+                    if (lstOfDN.Count > 0)
                     {
-                        BillingNo = billingNumber,
-                        AmountPaid = 0,
-                        BillingYear = billingYr,
-                        ItemPenaltyStatus = DemandNoticeStatus.PENDING.ToString(),
-                        OriginatedYear = recievable.BillingYr,
-                        TaxpayerId = taxpayerId,
-                        TotalAmount = amountDue * (decimal)(0.1)
-                    };
+                        var firstTaxpayer = lstOfDN[0];
+                        //LcdaModel lgda = await taxpayerService.getLcda(firstTaxpayer.TaxpayerId);
+                        //string template = await dnDownloadService.LcdaTemlateByLcda(lgda.Id);
 
-                    query = query + demandNoticePenaltyDao.AddQuery(dnp);
-                }
-
-                if (!string.IsNullOrEmpty(query))
-                {
-                    try
-                    {
-                        Response response = demandNoticePenaltyDao.RunQuery(query);
-                        if (response.code == MsgCode_Enum.SUCCESS)
+                        string template = await dnDownloadService.LcdaTemlate(firstTaxpayer.BillingNumber);
+                        string rootUrl = _hostEnvironment.WebRootPath == null ? @"C:\" : _hostEnvironment.WebRootPath;
+                        var htmlContent = await File.ReadAllTextAsync($"{rootUrl}/templates/{template}");
+                        string rootPath = Path.Combine(rootUrl, "zipReports", bdnm.batchNo);
+                        if (!Directory.Exists(rootPath))
                         {
-                            logger.LogInformation("Error running penalty " + response.description);
+                            Directory.CreateDirectory(rootPath);
                         }
-                        else
+                        List<byte[]> lstContent = new List<byte[]>();
+
+                        int count = (lstOfDN.Count % 20 > 1 ? 1 : 0) + lstOfDN.Count / 20;
+
+                        for (int i = 0; i < count; i++)
                         {
-                            logger.LogInformation("Error running penalty " + response.description);
+                            var billNos = lstOfDN.Select(x => x.BillingNumber).Skip(i * 20).Take(20).ToArray();
+                            if (billNos.Length > 0)
+                            {
+                                var result = await dnDownloadService.PopulateReportHtml(htmlContent, billNos, rootUrl, bdnm.createdBy);
+                                if (result.Length > 0)
+                                {
+                                    lstContent.Add(result);
+                                }
+                            }
+                        }
+                        count = 0;
+                        using (FileStream zipToOpen = new FileStream($"{rootPath}/{bdnm.batchNo}.zip", FileMode.Create))
+                        {
+                            using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
+                            {
+                                foreach (var result in lstContent)
+                                {
+                                    string filePath = Path.Combine(rootPath, $"Batch {count + 1}.pdf");
+                                    using (FileStream fs = System.IO.File.Create(filePath))
+                                    {
+                                        await fs.WriteAsync(result, 0, result.Length);
+                                        fs.Flush();
+                                    }
+                                    archive.CreateEntryFromFile(filePath, $"batch {count + 1}.pdf");
+                                    count++;
+                                }
+                            }
                         }
                     }
-                    catch (Exception x)
+
+                    //update request
+                    Response response = await batchDwnRequestService.UpdateBatchRequest(new BatchDemandNoticeModel
                     {
-                        logger.LogError(x.Message);
-                    }
+                        id = bdnm.id,
+                        batchFileName = $"{bdnm.batchNo}.zip",
+                        requestStatus = "COMPLETED",
+                        createdBy = "APPLICATION"
+
+                    });
                 }
+            }
+            catch (Exception x)
+            {
+                if (bdnm != null)
+                {
+                    Response response = await batchDwnRequestService.UpdateBatchRequest(new BatchDemandNoticeModel
+                    {
+                        id = bdnm.id,
+                        batchFileName = $"{bdnm.batchNo}.zip",
+                        requestStatus = "ERROR",
+                        createdBy = "APPLICATION"
+                    });
+                }
+                logger.LogError(x.Message);
             }
         }
     }

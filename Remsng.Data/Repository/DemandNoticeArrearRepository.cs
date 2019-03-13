@@ -14,7 +14,7 @@ namespace RemsNG.Data.Repository
         {
         }
 
-        public async Task<List<DemandNoticeArrearsModel>> ByBillingNumber(string billingno)
+        public async Task<List<DemandNoticeArrearsModel>> ByBillingNumber(long billingno)
         {
             string[] statuss = { "PENDING", "PART_PAYMENT" };
 
@@ -38,6 +38,33 @@ namespace RemsNG.Data.Repository
                 TotalAmount = x.TotalAmount
             }).ToList();
         }
+
+
+        public async Task<List<DemandNoticeArrearsModel>> ByBillingNumber(Guid taxpayerId)
+        {
+            string[] statuss = { "PENDING", "PART_PAYMENT" };
+
+            List<DemandNoticeArrear> lst = await db.Set<DemandNoticeArrear>()
+                .Where(x => x.TaxpayerId == taxpayerId && statuss.Any(p => p == x.ArrearsStatus)).ToListAsync();
+
+            return lst.Select(x => new DemandNoticeArrearsModel()
+            {
+                AmountPaid = x.AmountPaid,
+                ArrearsStatus = x.ArrearsStatus,
+                BillingNo = x.BillingNo,
+                BillingYear = x.BillingYear,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                Id = x.Id,
+                //ItemId = x.ItemId,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                OriginatedYear = x.OriginatedYear,
+                TaxpayerId = x.TaxpayerId,
+                TotalAmount = x.TotalAmount
+            }).ToList();
+        }
+
 
         public async Task<List<DemandNoticeArrearsModel>> ByTaxpayer(Guid taxpayerId)
         {
@@ -87,15 +114,32 @@ namespace RemsNG.Data.Repository
             return lst;
         }
 
-        public async Task<bool> AddArrears(string query)
+        public async Task<bool> AddArrears(DemandNoticeArrearsModel x)
         {
-            int count = await db.Database.ExecuteSqlCommandAsync(query);
-            if (count > 0)
+            if (x == null)
             {
-                return true;
+                return false;
             }
 
-            return false;
+            DemandNoticeArrear entities = new DemandNoticeArrear
+            {
+                AmountPaid = x.AmountPaid,
+                ArrearsStatus = x.ArrearsStatus,
+                BillingNo = x.BillingNo,
+                BillingYear = x.BillingYear,
+                CreatedBy = x.CreatedBy,
+                CurrentAmount = x.CurrentAmount,
+                DateCreated = x.DateCreated,
+                Id = x.Id,
+                OriginatedYear = x.OriginatedYear,
+                TaxpayerId = x.TaxpayerId,
+                TotalAmount = x.TotalAmount,
+                ItemId = x.ItemId
+            };
+            db.Set<DemandNoticeArrear>().Add(entities);
+            await db.SaveChangesAsync();
+
+            return true;
         }
 
         public async Task<List<DemandNoticeArrearsModel>> ReportByCategory(DateTime fromDate, DateTime toDate)
@@ -150,7 +194,8 @@ namespace RemsNG.Data.Repository
                 Id = x.Id,
                 OriginatedYear = x.OriginatedYear,
                 TaxpayerId = x.TaxpayerId,
-                TotalAmount = x.TotalAmount
+                TotalAmount = x.TotalAmount,
+                ItemId = x.ItemId
             }).ToArray();
             db.Set<DemandNoticeArrear>().AddRange(entities);
             await db.SaveChangesAsync();

@@ -7,4 +7,5 @@ export class AmountDueModel {
     isLoading:boolean = false;
     billingNumber:string = '';
     itemId:string = '';
+    dnId: string = '';
 }

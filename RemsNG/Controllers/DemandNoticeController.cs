@@ -4,6 +4,7 @@ using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Infrastructure.Extensions;
+using RemsNG.Infrastructure.Models;
 using RemsNG.Security;
 using System;
 using System.Linq;
@@ -228,7 +229,6 @@ namespace RemsNG.Controllers
             });
         }
 
-
         [HttpPost("search/{pageNum}/{pageSize}")]
         public async Task<IActionResult> SearchDemandNotice([FromBody] SearchDNModel model, int pageNum = 1, int pageSize = 20)
         {
@@ -244,6 +244,70 @@ namespace RemsNG.Controllers
                 PageNum = pageNum,
                 PageSize = pageSize
             }));
+        }
+
+        [HttpPost("search")]
+        public async Task<object> SearchDemandNotice([FromBody]DemandNoticeRequestModel demandNoticeRequest, [FromHeader] string pageNum, [FromHeader] string pageSize)
+        {
+            if (demandNoticeRequest.streetId != null && demandNoticeRequest.streetId != default(Guid))
+            {
+                StreetModel street = await streetService.ById(demandNoticeRequest.streetId);
+                if (street == null)
+                {
+                    return BadRequest(new Response()
+                    {
+                        code = MsgCode_Enum.NOTFOUND,
+                        description = "Street not found"
+                    });
+                }
+
+            }
+            else if (demandNoticeRequest.wardId != null && demandNoticeRequest.wardId != default(Guid))
+            {
+                Guid s = demandNoticeRequest.wardId;
+                WardModel ward = await wardService.GetWard(demandNoticeRequest.wardId);
+                if (ward == null)
+                {
+                    return BadRequest(new Response()
+                    {
+                        code = MsgCode_Enum.NOTFOUND,
+                        description = "Ward not found"
+                    });
+                }
+            }
+            else if (demandNoticeRequest.dateYear == 0)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Billing year is required"
+                });
+            }
+
+            pageSize = string.IsNullOrEmpty(pageSize) ? "1" : pageSize;
+            pageNum = string.IsNullOrEmpty(pageNum) ? "1" : pageNum;
+
+            // demandNoticeRequest.createdBy = User.Identity.Name;
+            DemandNoticeModel demandNotice = new DemandNoticeModel();
+            demandNotice.LcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
+            string encr = JsonConvert.SerializeObject(demandNoticeRequest);
+            string dx = EncryptDecryptUtils.ToHexString(encr); ;
+
+            string ddx = EncryptDecryptUtils.FromHexString(dx);
+            demandNotice.Query = EncryptDecryptUtils.ToHexString(encr);
+            demandNotice.BillingYear = demandNoticeRequest.dateYear;
+            demandNotice.CreatedBy = User.Identity.Name;
+            demandNotice.Id = Guid.NewGuid();
+            demandNotice.BatchNo = CommonList.GetBatchNo();
+            demandNotice.DemandNoticeStatus = DemandNoticeStatus.SUBMITTED.ToString();
+            demandNotice.WardId = demandNoticeRequest.wardId;
+            demandNotice.StreetId = demandNoticeRequest.streetId;
+
+            return await demandService.SearchDemandNotice(demandNotice, new PageModel()
+            {
+                PageNum = int.Parse(pageNum),
+                PageSize = int.Parse(pageSize)
+            });
         }
 
         [HttpPost("searchinfo")]
@@ -371,6 +435,19 @@ namespace RemsNG.Controllers
             {
                 code = MsgCode_Enum.SUCCESS,
                 data = taxpayers
+            });
+        }
+
+        [HttpPost("arrears/single/add")]
+        public async Task<IActionResult> AddSingleArrears([FromBody]RequestAmount model)
+        {
+            bool result = await _arrearsManager.AddArrears(model.Id, model.Amount, model.ItemId);
+
+            return Ok(new Response
+            {
+                code = result ? MsgCode_Enum.SUCCESS : MsgCode_Enum.FAIL,
+                status = result,
+                description = result ? "Arrears has been run successfully" : "Please try again or contact your administrator"
             });
         }
 

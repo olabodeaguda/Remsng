@@ -259,19 +259,22 @@ export class DemandNoticeSearchComponent implements OnInit {
     openArrears(data: any) {
         this.amountDueModel.billingNumber = data.billingNumber;
         this.amountDueModel.id = data.taxpayerId;
+        this.amountDueModel.dnId = data.id;
+        
         this.getItemsByTaxpayerId(data.taxpayerId);
         jQuery(this.addArrears.nativeElement).modal('show');
     }
 
     submitArrears() {
-        if (this.amountDueModel.itemId.length < 1) {
+        if (this.amountDueModel.dnId.length < 1) {
             this.toasterService.pop('error', 'Error', 'Item is required');
             return;
         } else if (this.amountDueModel.itemAmount < 1) {
             this.toasterService.pop('error', 'Error', 'Amount is required');
             return;
-        } else if (this.amountDueModel.billingNumber.length < 1 || this.amountDueModel.id.length < 1) {
-            this.toasterService.pop('error', 'Error', 'Bad request: Please referesh the page and try again');
+        } 
+        else if (this.amountDueModel.itemId.length < 1 ) {
+            this.toasterService.pop('error', 'Error', 'Item is required');
             return;
         }
 

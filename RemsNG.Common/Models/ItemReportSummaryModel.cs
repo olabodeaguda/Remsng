@@ -10,7 +10,7 @@ namespace RemsNG.Common.Models
         public Guid id { get; set; }
         public decimal itemAmount { get; set; }
         public decimal amountPaid { get; set; }
-        public string billingNo { get; set; }
+        public long billingNo { get; set; }
         public string category { get; set; }
         public Guid wardId { get; set; }
         public string wardName { get; set; }

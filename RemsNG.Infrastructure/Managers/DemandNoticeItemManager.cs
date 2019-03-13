@@ -23,7 +23,7 @@ namespace RemsNG.Infrastructure.Managers
             logger = logger = loggerFactory.CreateLogger("Demand Notice Item manager");
         }
 
-        public async Task<List<DemandNoticeItemModel>> ByBillingNumber(string billingno)
+        public async Task<List<DemandNoticeItemModel>> ByBillingNumber(long billingno)
         {
             return await dnDao.ByBillingNumber(billingno);
         }

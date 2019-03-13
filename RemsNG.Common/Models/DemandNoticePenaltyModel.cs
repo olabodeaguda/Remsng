@@ -7,7 +7,7 @@ namespace RemsNG.Common.Models
     public class DemandNoticePenaltyModel
     {
         public Guid Id { get; set; }
-        public string BillingNo { get; set; }
+        public long BillingNo { get; set; }
         public Guid TaxpayerId { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal AmountPaid { get; set; }

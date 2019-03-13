@@ -186,7 +186,7 @@ namespace RemsNG.Data.Repository
             //        pageModel.PageSize
             //}).ToListAsync();
             var totalCount = await query.CountAsync();
-           
+
             return new
             {
                 data = results,
@@ -214,7 +214,7 @@ namespace RemsNG.Data.Repository
                     SectorId = x.sec.Id,
                     sectorName = x.sec.SectorName,
                     StreetId = x.cyp.StreetId
-                }).Where(x => x.StreetId == streetId).ToListAsync();
+                }).OrderBy(x => x.CompanyName).ToListAsync();
 
             return r;
         }

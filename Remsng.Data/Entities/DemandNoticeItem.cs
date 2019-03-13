@@ -7,7 +7,7 @@ namespace RemsNG.Data.Entities
     public partial class DemandNoticeItem
     {
         public Guid Id { get; set; }
-        public string BillingNo { get; set; }
+        public long BillingNo { get; set; }
         public Guid dn_taxpayersDetailsId { get; set; }
         public Guid DemandNoticeId { get; set; }
         public Guid TaxpayerId { get; set; }

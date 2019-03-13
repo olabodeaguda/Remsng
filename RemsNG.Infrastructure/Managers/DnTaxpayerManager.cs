@@ -16,7 +16,7 @@ namespace RemsNG.Infrastructure.Managers
             dnTaxpayerDao = new DemandNoticeTaxpayersRepository(_db);
         }
 
-        public async Task<DemandNoticeTaxpayersModel> ByBillingNo(string billingNo)
+        public async Task<DemandNoticeTaxpayersModel> ByBillingNo(long billingNo)
         {
             return await dnTaxpayerDao.ByBillingNo(billingNo);
         }

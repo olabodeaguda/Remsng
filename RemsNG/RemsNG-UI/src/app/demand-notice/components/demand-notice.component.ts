@@ -154,7 +154,7 @@ export class DemandNoticeComponent implements OnInit {
         } else if (this.actionSelected === "REMOVE PENALTY".toLowerCase()) {
             this.removePenalty();
         } else if (this.actionSelected === "DOWNLOAD".toLowerCase()) {
-            this.downloadDNByTaxpayer(lt);
+            this.downloadDNByTaxpayer();
         } else if (this.actionSelected === "DELETE".toLowerCase()) {
             this.deleteTaxpayer();
         } else {
@@ -352,8 +352,24 @@ export class DemandNoticeComponent implements OnInit {
             });
     }
 
-    downloadDNByTaxpayer(lt) {
-
+    downloadDNByTaxpayer() {
+        let lt = this.demandNoticeLst.filter(b => b.isChecked == true).map(x => x.billingNumber);
+        if (lt.length <= 0) {
+            this.toasterService.pop('error', 'Error', 'Please select demenad notice');
+            return;
+        }
+        this.isLoadingMini = true;
+        this.demandnoticeservice.downloadBulk(lt)
+            .subscribe(response => {
+                this.isLoadingMini = false;
+                jQuery(this.promptRequest.nativeElement).modal('hide');
+                let blob = response;
+                FileSaver.saveAs(blob, 'rpt.pdf');
+            }, error => {
+                this.isLoadingMini = false;
+                jQuery(this.promptRequest.nativeElement).modal('hide');
+                this.toasterService.pop('error', 'Error', error);
+            });
     }
     navigateView() {
         if (isNullOrUndefined(this.searchModel.wardId) &&

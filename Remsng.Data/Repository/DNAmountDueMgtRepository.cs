@@ -15,7 +15,7 @@ namespace RemsNG.Data.Repository
         {
         }
 
-        public async Task<List<DNAmountDueModel>> ByBillingNo(string billingno)
+        public async Task<List<DNAmountDueModel>> ByBillingNo(long billingno)
         {
             //var result = await db.Set<DNAmountDueModel>()
             //    .FromSql("sp_getBillingNumberTotalDue @p0", new object[] { billingno }).ToListAsync();
@@ -35,7 +35,7 @@ namespace RemsNG.Data.Repository
                     itemStatus = x.ArrearsStatus
                 }).ToListAsync();
             results.AddRange(arrears);
-            DemandNoticeTaxpayer dnTaxpayer = await db.Set<DemandNoticeTaxpayer>().FirstOrDefaultAsync(x => x.BillingNumber.Trim() == billingno.Trim());
+            DemandNoticeTaxpayer dnTaxpayer = await db.Set<DemandNoticeTaxpayer>().FirstOrDefaultAsync(x => x.BillingNumber == billingno);
             if (dnTaxpayer == null)
             {
                 throw new NotFoundException("Demand notice does not exist");
@@ -53,44 +53,22 @@ namespace RemsNG.Data.Repository
             }).ToListAsync();
             results.AddRange(penalty);
             var items = await db.Set<DemandNoticeItem>().Include(s => s.Item)
-                 .Where(p => p.BillingNo == billingno).Select(x => new DNAmountDueModel
+                 .Where(p => p.BillingNo == billingno && p.TaxpayerId == dnTaxpayer.TaxpayerId).Select(x => new DNAmountDueModel
                  {
                      id = x.Id,
                      itemAmount = x.ItemAmount,
                      amountPaid = x.AmountPaid,
                      billingNo = x.BillingNo,
                      category = "Items",
-                     itemDescription =x.Item.ItemDescription,
+                     itemDescription = x.Item.ItemDescription,
                      itemStatus = x.ItemStatus
                  }).ToListAsync();
             results.AddRange(items);
             return results;
         }
 
-        public async Task<List<DNAmountDueModel>> ByBillingNo(string[] bills)
+        public async Task<List<DNAmountDueModel>> ByBillingNo(long[] bills)
         {
-            //string bnos = bills.FormatString();
-
-            //string query = $"select dn.id,dn.totalAmount as itemAmount,dn.amountPaid,dn.arrearsStatus as itemStatus, " +
-            //    $"'description' as itemDescription,'ARREARS' as category,dn.itemId, dn.billingNo " +
-            //    $"from tbl_demandNoticeArrears as dn " +
-            //    //$"inner join tbl_item as tm on tm.id = dn.itemId " +
-            //    $"where dn.billingNo in ({bnos})  and dn.arrearsStatus in ('PART_PAYMENT','PENDING')" +
-            //    $"union " +
-            //    $"select dn.id,dn.totalAmount,dn.amountPaid,dn.itemPenaltyStatus as itemStatus, " +
-            //    $"tm.itemDescription,'PENALTY' as category,dn.itemId, dn.billingNo " +
-            //    $"from tbl_demandNoticePenalty as dn " +
-            //    $"inner join tbl_item as tm on tm.id = dn.itemId " +
-            //    $"where billingNo in ({bnos})  and dn.itemPenaltyStatus in ('PART_PAYMENT','PENDING')" +
-            //    $"union " +
-            //    $"select dn.id,dn.itemAmount,dn.amountPaid,dn.itemStatus, " +
-            //    $"tm.itemDescription,'ITEMS' as category,dn.itemId, dn.billingNo " +
-            //    $"from tbl_demandNoticeItem as dn " +
-            //    $"inner join tbl_item as tm on tm.id = dn.itemId " +
-            //    $"where billingNo in ({bnos})  and dn.itemStatus in ('PART_PAYMENT','PENDING')";
-            //return await db.Set<DNAmountDueModel>()
-            //    .FromSql(query).ToListAsync();
-
             string[] status = { "PART_PAYMENT", "PENDING" };
 
             List<DNAmountDueModel> results = new List<DNAmountDueModel>();
@@ -108,11 +86,11 @@ namespace RemsNG.Data.Repository
                     itemStatus = x.ArrearsStatus
                 }).ToListAsync();
             results.AddRange(arrears);
-            //DemandNoticeTaxpayers dnTaxpayer = await db.Set<DemandNoticeTaxpayers>().FirstOrDefaultAsync(x => x.BillingNumber == billingno);
-            //if (dnTaxpayer != null)
-            //{
-            //    throw new NotFoundException("Demand notice does not exist");
-            //}
+            DemandNoticeTaxpayer[] dnTaxpayer = await db.Set<DemandNoticeTaxpayer>().Where(x => bills.Any(p => p == x.BillingNumber)).ToArrayAsync();
+            if (dnTaxpayer.Length <= 0)
+            {
+                throw new NotFoundException("Demand notice does not exist");
+            }
 
             var penalty = await db.Set<DemandNoticePenalty>()
                  .Where(p => bills.Any(x => x == p.BillingNo) && status.Any(x => x == p.ItemPenaltyStatus))
@@ -129,7 +107,7 @@ namespace RemsNG.Data.Repository
             results.AddRange(penalty);
 
             var items = await db.Set<DemandNoticeItem>().Include(s => s.Item)
-                  .Where(p => bills.Any(x => x == p.BillingNo) && status.Any(x => x == p.ItemStatus))
+                  .Where(p => dnTaxpayer.Any(x => x.BillingNumber == p.BillingNo && x.TaxpayerId == p.TaxpayerId) && status.Any(x => x == p.ItemStatus))
                  .Select(x => new DNAmountDueModel
                  {
                      id = x.Id,
@@ -149,18 +127,18 @@ namespace RemsNG.Data.Repository
         public async Task<Response> UpdateAmount(DNAmountDueModel dnamount)
         {
             int count = 0;
-            if (dnamount.category == "ARREARS")
+            if (dnamount.category.ToUpper() == "ARREARS".ToUpper())
             {
                 string query = $"Update tbl_demandNoticeArrears set totalAmount={dnamount.itemAmount} where id='{dnamount.id}'";
 
                 count = await db.Database.ExecuteSqlCommandAsync(query);
             }
-            else if (dnamount.category == "PENALTY")
+            else if (dnamount.category.ToUpper() == "PENALTY".ToUpper())
             {
                 string query = $"Update tbl_demandNoticePenalty set totalAmount={dnamount.itemAmount} where id='{dnamount.id}'";
                 count = await db.Database.ExecuteSqlCommandAsync(query);
             }
-            else if (dnamount.category == "ITEMS")
+            else if (dnamount.category.ToUpper() == "ITEMS".ToUpper())
             {
                 string query = $"Update tbl_demandNoticeItem set itemAmount={dnamount.itemAmount} where id='{dnamount.id}'";
                 count = await db.Database.ExecuteSqlCommandAsync(query);

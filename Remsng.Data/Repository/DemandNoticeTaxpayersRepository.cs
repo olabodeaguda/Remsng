@@ -88,12 +88,12 @@ namespace RemsNG.Data.Repository
             DbResponse dbResponse = new DbResponse();
             try
             {
-                string result = await db.Set<DemandNoticeTaxpayer>().OrderByDescending(x => x.DateCreated).Select(x => x.BillingNumber).FirstOrDefaultAsync();
-                if (string.IsNullOrEmpty(result))
-                {
-                    return 0;
-                }
-                return long.Parse(result);
+                long result = await db.Set<DemandNoticeTaxpayer>().MaxAsync(x => x.BillingNumber);//.OrderByDescending(x => x.DateCreated).Select(x => x.BillingNumber).FirstOrDefaultAsync();
+                //if (string.IsNullOrEmpty(result))
+                //{
+                //    return 0;
+                //}
+                return result; //long.Parse(result);
                 // dbResponse = await db.Set<DbResponse>().FromSql("sp_currentMaxBilling").FirstOrDefaultAsync();
             }
             catch (Exception)
@@ -218,7 +218,7 @@ namespace RemsNG.Data.Repository
             return result;
         }
 
-        public async Task<DemandNoticeTaxpayersModel> ByBillingNo(string billingNo)
+        public async Task<DemandNoticeTaxpayersModel> ByBillingNo(long billingNo)
         {
             var result = await db.Set<DemandNoticeTaxpayer>().Select(x => new DemandNoticeTaxpayersModel()
             {
@@ -323,7 +323,7 @@ namespace RemsNG.Data.Repository
             return tu;
         }
 
-        public async Task<Response> CancelTaxpayerDemandNoticeByBillingNo(string billingNo, string createdBy)
+        public async Task<Response> CancelTaxpayerDemandNoticeByBillingNo(long billingNo, string createdBy)
         {
             string query = $"update tbl_demandNoticeArrears set arrearsStatus='CANCEL', lastmodifiedby='{createdBy}', lastModifiedDate=GETDATE() where billingNo = '{billingNo}'; ";
             query = query + $"update tbl_demandNoticeItem SET itemStatus='CANCEL', lastmodifiedby='{createdBy}', lastModifiedDate=GETDATE()  where billingNo ='{billingNo}';";
@@ -539,14 +539,14 @@ namespace RemsNG.Data.Repository
             }).ToList();
         }
 
-        public async Task<bool> MoveToBills(string billno)
+        public async Task<bool> MoveToBills(long billno)
         {
             string query = $"Update tbl_demandNoticeTaxpayers set isUnbilled = 0 where billingNumber ='{billno}'";
             int count = await db.Database.ExecuteSqlCommandAsync(query);
             return count > 0;
         }
 
-        public async Task<bool> MoveToUnBills(string billno)
+        public async Task<bool> MoveToUnBills(long billno)
         {
             string query = $"Update tbl_demandNoticeTaxpayers set isUnbilled = 1 where billingNumber ='{billno}'";
             int count = await db.Database.ExecuteSqlCommandAsync(query);
@@ -861,7 +861,7 @@ namespace RemsNG.Data.Repository
                     WardName = x.Street.Ward.WardName,
                     StreetName = x.Street.StreetName,
                     DnId = model.DemandNoticeId,
-                    BillingNumber = billNumber.ToString(),
+                    BillingNumber = billNumber,
                     Period = model.Period
                 }).ToArrayAsync();
             DemandNoticeTaxpayersModel[] lst = new DemandNoticeTaxpayersModel[query.Length];
@@ -871,7 +871,7 @@ namespace RemsNG.Data.Repository
                 for (int i = 0; i < query.Length; i++)
                 {
                     billNumber = billNumber + 1;
-                    query[i].BillingNumber = billNumber.ToString();
+                    query[i].BillingNumber = billNumber;
                 }
             }
 
@@ -926,6 +926,58 @@ namespace RemsNG.Data.Repository
                     TaxpayerId = d.TaxpayerId
                 }).ToList()
             }).ToArrayAsync();
+
+            return result;
+        }
+
+        public async Task<DemandNoticeTaxpayersModel> ById(Guid id)
+        {
+            var result = await db.Set<DemandNoticeTaxpayer>().Include(x => x.DemandNoticeItem)
+                .Where(r => r.Id == id)
+            .Select(x => new DemandNoticeTaxpayersModel()
+            {
+                AddressName = x.AddressName,
+                BillingNumber = x.BillingNumber,
+                BillingYr = x.BillingYr,
+                CouncilTreasurerMobile = x.CouncilTreasurerMobile,
+                CouncilTreasurerSigFilen = x.CouncilTreasurerSigFilen,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                DemandNoticeStatus = x.DemandNoticeStatus,
+                DnId = x.DnId,
+                DomainName = x.DomainName,
+                Id = x.Id,
+                IsUnbilled = x.IsUnbilled,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                LcdaAddress = x.LcdaAddress,
+                LcdaLogoFileName = x.LcdaLogoFileName,
+                LcdaName = x.LcdaName,
+                LcdaState = x.LcdaState,
+                RevCoodinatorSigFilen = x.RevCoodinatorSigFilen,
+                TaxpayerId = x.TaxpayerId,
+                TaxpayersName = x.TaxpayersName,
+                WardName = x.WardName,
+                IsRunArrears = x.IsRunArrears,
+                IsRunPenalty = x.IsRunPenalty,
+                DemandNoticeItem = x.DemandNoticeItem.Select(d => new DemandNoticeItemModel
+                {
+                    AmountPaid = d.AmountPaid,
+                    BillingNo = d.BillingNo,
+                    CreatedBy = d.CreatedBy,
+                    DateCreated = d.DateCreated,
+                    DemandNoticeId = d.DemandNoticeId,
+                    DnTaxpayersDetailsId = d.dn_taxpayersDetailsId,
+                    Id = d.Id,
+                    ItemAmount = d.ItemAmount,
+                    ItemId = d.ItemId,
+                    ItemName = d.ItemName,
+                    ItemStatus = d.ItemStatus,
+                    Lastmodifiedby = d.Lastmodifiedby,
+                    LastModifiedDate = d.LastModifiedDate,
+                    TaxpayerId = d.TaxpayerId
+                }).ToList()
+            }).FirstOrDefaultAsync();
 
             return result;
         }

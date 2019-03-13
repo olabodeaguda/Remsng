@@ -30,9 +30,9 @@ namespace RemsNG.Controllers
 
         // GET api/values/5
         [HttpGet("{billingno}")]
-        public async Task<List<DNAmountDueModel>> Get(string billingno)
+        public async Task<List<DNAmountDueModel>> Get(long billingno)
         {
-            if (string.IsNullOrEmpty(billingno))
+            if (billingno == default(long))
             {
                 throw new InvalidCredentialsException("Billing number is required");
             }

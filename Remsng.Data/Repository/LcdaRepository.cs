@@ -389,12 +389,12 @@ namespace RemsNG.Data.Repository
             };
         }
 
-        public async Task<LcdaModel> ByBillingNumber(String billingno)
+        public async Task<LcdaModel> ByBillingNumber(long billingno)
         {
             string query = $"select top 1 lc.* from tbl_demandNoticeTaxpayers as dnt ";
             query = query + $"inner join tbl_demandnotice as dn on dn.id = dnt.dnId ";
             query = query + $"inner join tbl_lcda as lc on lc.id = dn.lcdaId ";
-            query = query + $"where dnt.billingNumber = '{billingno}'";
+            query = query + $"where dnt.billingNumber = '{billingno.ToString()}'";
 
             var result = await db.Set<Lcda>()
                 .FromSql(query).FirstOrDefaultAsync();

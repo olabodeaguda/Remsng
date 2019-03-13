@@ -11,7 +11,7 @@ namespace RemsNG.Data.Entities
         public Guid DnId { get; set; }
         public Guid TaxpayerId { get; set; }
         public string TaxpayersName { get; set; }
-        public string BillingNumber { get; set; }
+        public long BillingNumber { get; set; }
         public string AddressName { get; set; }
         public string WardName { get; set; }
         public string LcdaName { get; set; }

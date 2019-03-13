@@ -23,6 +23,51 @@ namespace RemsNG.Infrastructure.Managers
             _httpAccessor = httpContextAccessor;
         }
 
+        public async Task<bool> AddArrears(Guid dntId, decimal amount, Guid itemId)
+        {
+            if (dntId == default(Guid))
+            {
+                throw new UserValidationException("Demand Notice is required");
+            }
+            if (amount <= 0)
+            {
+                throw new UserValidationException("Amount is required");
+            }
+
+            var dnt = await _dNTaxpayersRep.ById(dntId);
+            if (dnt == null)
+            {
+                throw new NotFoundException("No record found");
+            }
+
+            DemandNoticeArrearsModel[] previousArrears = (await _arrearsRepo.ByTaxpayer(dnt.TaxpayerId)).ToArray();
+            var pArrears = previousArrears.Sum(t => (t.TotalAmount - t.AmountPaid));
+            DemandNoticeArrearsModel dnArrears = new DemandNoticeArrearsModel()
+            {
+                AmountPaid = 0,
+                ArrearsStatus = "PENDING",
+                BillingNo = dnt.BillingNumber,
+                BillingYear = DateTime.Now.Year,
+                CreatedBy = _httpAccessor.HttpContext.User.Identity.Name,
+                DateCreated = DateTime.Now,
+                Id = Guid.NewGuid(),
+                ItemId = itemId,
+                OriginatedYear = dnt.BillingYr,
+                TaxpayerId = dnt.TaxpayerId,
+                WardName = dnt.WardName,
+                TotalAmount = pArrears + amount,
+                CurrentAmount = amount
+            };
+
+            bool result = await _arrearsRepo.AddArrears(dnArrears);
+            if (result)
+            {
+                await _arrearsRepo.UpdateArrearsStatus(previousArrears, "CLOSED");
+            }
+
+            return result;
+        }
+
         public async Task<bool> RunTaxpayerArrears(Guid[] dnTaxpayerIds)
         {
             if (dnTaxpayerIds.Length <= 0)
@@ -124,7 +169,7 @@ namespace RemsNG.Infrastructure.Managers
 
             if (newArrears.Count > 0)
             {
-                bool result = await _arrearsRepo.AddArrears(newArrears.ToArray()); 
+                bool result = await _arrearsRepo.AddArrears(newArrears.ToArray());
             }
             await _arrearsRepo.UpdateArrearsStatus(previousArrears, "CLOSED");
             await _dNTaxpayersRep.UpdateArrearsStatus(dnTaxpayer, false);

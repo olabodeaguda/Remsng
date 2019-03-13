@@ -26,9 +26,9 @@ namespace RemsNG.Controllers
         }
 
         [HttpGet("billingno/{billingno}")]
-        public async Task<object> GetByBillingNumber([FromRoute]string billingno)
+        public async Task<object> GetByBillingNumber([FromRoute]long billingno)
         {
-            if (string.IsNullOrEmpty(billingno))
+            if (billingno == default(long))
             {
                 return BadRequest(new Response()
                 {
@@ -65,9 +65,9 @@ namespace RemsNG.Controllers
         }
 
         [HttpGet("cancel/{billingno}")]
-        public async Task<object> CancelDemandNotice([FromRoute] string billingno)
+        public async Task<object> CancelDemandNotice([FromRoute] long billingno)
         {
-            if (string.IsNullOrEmpty(billingno))
+            if (billingno  == default(long))
             {
                 return BadRequest(new Response()
                 {
@@ -110,9 +110,9 @@ namespace RemsNG.Controllers
         }
 
         [HttpGet("movetobill/{billno}")]
-        public async Task<IActionResult> MovetoBill(string billno)
+        public async Task<IActionResult> MovetoBill(long billno)
         {
-            if (string.IsNullOrEmpty(billno))
+            if (billno == default(long))
             {
                 return BadRequest(new Response()
                 {
@@ -156,9 +156,9 @@ namespace RemsNG.Controllers
         }
 
         [HttpGet("movetoUnbill/{billno}")]
-        public async Task<IActionResult> MovetoUnBill(string billno)
+        public async Task<IActionResult> MovetoUnBill(long billno)
         {
-            if (string.IsNullOrEmpty(billno))
+            if (billno == default(long))
             {
                 return BadRequest(new Response()
                 {

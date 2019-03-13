@@ -7,5 +7,6 @@ namespace RemsNG.Common.Interfaces.Managers
     {
         Task<bool> RunTaxpayerArrears(Guid[] dnTaxpayerIds);
         Task<bool> RemoveTaxpayerArrears(Guid[] dnTaxpayerIds);
+        Task<bool> AddArrears(Guid dntId, decimal amount, Guid itemId);
     }
 }

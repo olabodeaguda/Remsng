@@ -8,7 +8,7 @@ namespace RemsNG.Data.Entities
     {
         public Guid Id { get; set; }
         public Guid OwnerId { get; set; }
-        public string BillingNumber { get; set; }
+        public long BillingNumber { get; set; }
         public decimal Amount { get; set; }
         public decimal Charges { get; set; }
         public string PaymentMode { get; set; }

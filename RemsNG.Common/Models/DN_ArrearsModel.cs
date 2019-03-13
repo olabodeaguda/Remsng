@@ -7,7 +7,7 @@ namespace RemsNG.Common.Models
 {
     public class DN_ArrearsModel
     {
-        public string billingNo { get; set; }
+        public long billingNo { get; set; }
         public Guid taxpayerId { get; set; }
         public int billingYr { get; set; }
         public int previousBillingYr { get; set; }

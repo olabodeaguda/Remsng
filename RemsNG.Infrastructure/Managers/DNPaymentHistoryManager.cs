@@ -30,11 +30,11 @@ namespace RemsNG.Infrastructure.Managers
         {
             return await dnph.UpdateStatusAsync(dnphModel);
         }
-        public async Task<List<DemandNoticePaymentHistoryModel>> ByBillingNumber(string billingnumber)
+        public async Task<List<DemandNoticePaymentHistoryModel>> ByBillingNumber(long billingnumber)
         {
             return await dnph.ByBillingNumber(billingnumber);
         }
-        public async Task<List<DemandNoticePaymentHistoryModel>> ByBillingNumbers(string billingnumber)
+        public async Task<List<DemandNoticePaymentHistoryModel>> ByBillingNumbers(long[] billingnumber)
         {
             return await dnph.ByBillingNumbers(billingnumber);
         }

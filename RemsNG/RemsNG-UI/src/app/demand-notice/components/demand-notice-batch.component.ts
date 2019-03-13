@@ -75,7 +75,7 @@ export class DemandNoticeBatchComponent implements OnInit {
         }
 
         this.isLoading = true;
-        this.demandnoticeservice.searchDemandNotice(this.searchModel, this.pageModel).subscribe(
+        this.demandnoticeservice.searchDemandNotice1(this.searchModel, this.pageModel).subscribe(
             response => {
                 const objschema = { data: [], totalPageCount: 0 };
                 const res = Object.assign(objschema, response);

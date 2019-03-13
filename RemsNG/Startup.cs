@@ -65,7 +65,7 @@ namespace RemsNG
             app.UseHangfireServer(ops);
 
             app.Use(async (context, next) =>
-            {
+           {
                 if ((context.Response.StatusCode == 404 || !Path.HasExtension(context.Request.Path.Value))
            && !context.Request.Path.Value.StartsWith("/api/"))
                 {

@@ -140,7 +140,7 @@ namespace RemsNG.Infrastructure.Managers
             return await lcdaDao.GetLcdaExtension(lcdaId);
         }
 
-        public async Task<LcdaModel> ByBillingNumber(string billingno)
+        public async Task<LcdaModel> ByBillingNumber(long billingno)
         {
             return await lcdaDao.ByBillingNumber(billingno);
         }

@@ -327,31 +327,6 @@ namespace RemsNG.Data.Repository
 
         public async Task<DemandNoticeModel> GetByBatchId(string batchId)
         {
-            //try
-            //{
-            //    var result = await db.Set<DemandNotice>()
-            //        .FromSql("sp_getDemandNoticeByBatchId @p0", new object[] { batchId }).FirstOrDefaultAsync();
-            //    return new DemandNoticeModel()
-            //    {
-            //        BatchNo = result.BatchNo,
-            //        BillingYear = result.BillingYear,
-            //        CreatedBy = result.CreatedBy,
-            //        DateCreated = result.DateCreated,
-            //        DemandNoticeStatus = result.DemandNoticeStatus,
-            //        Id = result.Id,
-            //        IsUnbilled = result.IsUnbilled,
-            //        Lastmodifiedby = result.Lastmodifiedby,
-            //        LastModifiedDate = result.LastModifiedDate,
-            //        LcdaId = result.LcdaId,
-            //        Query = result.Query,
-            //        StreetId = result.StreetId,
-            //        WardId = result.WardId
-            //    };
-            //}
-            //catch (Exception)
-            //{
-            //    throw;
-            //}
             var x = await db.Set<DemandNotice>().FirstOrDefaultAsync(p => p.BatchNo == batchId);
 
             return new DemandNoticeModel
@@ -369,7 +344,8 @@ namespace RemsNG.Data.Repository
                 Query = x.Query,
                 StreetId = x.StreetId.Value,
                 WardId = x.WardId.Value,
-                DemandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(EncryptDecryptUtils.FromHexString(x.Query))
+                DemandNoticeRequest = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(EncryptDecryptUtils.FromHexString(x.Query),
+                new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore })
             };
         }
 
