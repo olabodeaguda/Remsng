@@ -24,7 +24,8 @@ namespace RemsNG.Data.Repository
                 StreetId = address.StreetId,
                 OwnerId = address.OwnerId,
                 Lcdaid = address.Lcdaid,
-                CreatedBy = address.CreatedBy
+                CreatedBy = address.CreatedBy,
+                Id = address.Id
             });
             await db.SaveChangesAsync();
 

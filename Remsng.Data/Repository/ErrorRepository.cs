@@ -23,13 +23,13 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> Add(ErrorModel error)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>()
-                .FromSql("sp_addError @p0,@p1,@p2", new object[]
-            {
-                error.OwnerId,
-                error.ErrorType,
-                error.Errorvalue
-            }).FirstOrDefaultAsync();
+            //DbResponse dbResponse = await db.Set<DbResponse>()
+            //    .FromSql("sp_addError @p0,@p1,@p2", new object[]
+            //{
+            //    error.OwnerId,
+            //    error.ErrorType,
+            //    error.Errorvalue
+            //}).FirstOrDefaultAsync();
 
             db.Set<Error>().Add(new Error
             {

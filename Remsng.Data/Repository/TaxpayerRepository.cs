@@ -174,28 +174,29 @@ namespace RemsNG.Data.Repository
         {
             var query = db.Set<TaxPayer>()
                .Include(x => x.Company)
-               .Include(x => x.Address)
+               //.Include(x => x.Address)
                .Include(p => p.Street)
                .Include(q => q.Street.Ward)
-               .Where(p => p.StreetId == streetId && p.TaxpayerStatus == TaxPayerEnum.ACTIVE.ToString())
+               .Join(db.Set<Address>(), tp => tp.Id, add => add.OwnerId, (tp, add) => new { tp, add })
+               .Where(p => p.tp.StreetId == streetId && p.tp.TaxpayerStatus == TaxPayerEnum.ACTIVE.ToString())
                .Select(x => new TaxPayerModel()
                {
-                   AddressId = x.AddressId,
-                   CompanyId = x.CompanyId,
-                   StreetId = x.StreetId,
-                   companyName = x.Company.CompanyName,
-                   CreatedBy = x.CreatedBy,
-                   DateCreated = x.DateCreated.Value,
-                   Firstname = x.Firstname,
-                   Id = x.Id,
-                   Lastmodifiedby = x.Lastmodifiedby,
-                   LastModifiedDate = x.LastModifiedDate,
-                   Lastname = x.Lastname,
-                   StreetNumber = x.Address.Addressnumber,
-                   Surname = x.Surname,
-                   TaxpayerStatus = x.TaxpayerStatus,
-                   WardName = x.Street.Ward.WardName,
-                   StreetName = x.Street.StreetName
+                   AddressId = x.tp.AddressId,
+                   CompanyId = x.tp.CompanyId,
+                   StreetId = x.tp.StreetId,
+                   companyName = x.tp.Company.CompanyName,
+                   CreatedBy = x.tp.CreatedBy,
+                   DateCreated = x.tp.DateCreated.Value,
+                   Firstname = x.tp.Firstname,
+                   Id = x.tp.Id,
+                   Lastmodifiedby = x.tp.Lastmodifiedby,
+                   LastModifiedDate = x.tp.LastModifiedDate,
+                   Lastname = x.tp.Lastname,
+                   StreetNumber = x.add.Addressnumber,
+                   Surname = x.tp.Surname,
+                   TaxpayerStatus = x.tp.TaxpayerStatus,
+                   WardName = x.tp.Street.Ward.WardName,
+                   StreetName = x.tp.Street.StreetName
                });
 
             var results = await query.Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToListAsync();
@@ -294,19 +295,6 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<TaxPayerModel>> Search(Guid lcdaId, string qu)
         {
-            //string[] q = qu.Split(new char[] { ' ' });
-
-            //string query = $"select tbl_taxPayer.*,tbl_company.companyName as companyName, tbl_Address.addressnumber as streetNumber,-1 as totalSize  from tbl_taxPayer " +
-            //   $"inner join tbl_company on tbl_company.id = tbl_taxPayer.companyId " +
-            //   $"inner join tbl_street on tbl_street.id = tbl_taxPayer.streetId " +
-            //   $"inner join tbl_ward on tbl_ward.id = tbl_street.wardId " +
-            //   $"inner join tbl_address on tbl_address.ownerId = tbl_taxPayer.id " +
-            //   $"where tbl_ward.lcdaId = '{lcdaId}' " +
-            //   $"and (tbl_taxPayer.surname like '%{qu}%' or tbl_taxPayer.firstname like '%{qu}%' " +
-            //   $"or tbl_taxPayer.lastname like '%{qu}%' " +
-            //   $" or tbl_company.companyName like '%{qu}%')";
-
-
             var query = db.Set<TaxPayer>()
                 .Include(x => x.Company)
                 .Include(x => x.Street)
@@ -445,69 +433,36 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<TaxPayerModel>> SearchInStreet(Guid streetid, string queryParams)
         {
-            string[] str = queryParams.Split(new char[] { ' ' });
-            string query = string.Empty;
-
             List<TaxPayer> lst = new List<TaxPayer>();
-            var qry = db.Set<TaxPayer>()
-               .Include(x => x.Company)
-               .Include(x => x.Address)
-               .Include(p => p.Street)
-               .Include(q => q.Street.Ward);
 
-            switch (str.Length)
-            {
-                case 1:
-                    lst = await qry.Where(x => (EF.Functions.Like(x.Firstname, $"%{str[0]}%") ||
-                 EF.Functions.Like(x.Surname, $"%{str[0]}%")) && x.StreetId == streetid).ToListAsync();
-                    break;
-                case 2:
-                    lst = await qry.Where(x => (EF.Functions.Like(x.Firstname, $"%{str[0]}%") ||
-                 EF.Functions.Like(x.Surname, $"%{str[0]}%")) && (EF.Functions.Like(x.Firstname, $"%{str[1]}%") ||
-                 EF.Functions.Like(x.Surname, $"%{str[1]}%")) && x.StreetId == streetid).ToListAsync();
-                    break;
-                case 3:
-                    lst = await qry.Where(x => (EF.Functions.Like(x.Firstname, $"%{str[0]}%") ||
-                 EF.Functions.Like(x.Surname, $"%{str[0]}%")) && (EF.Functions.Like(x.Firstname, $"%{str[1]}%") ||
-                 EF.Functions.Like(x.Surname, $"%{str[1]}%")) && (EF.Functions.Like(x.Firstname, $"%{str[2]}%") ||
-                 EF.Functions.Like(x.Surname, $"%{str[2]}%")) && x.StreetId == streetid).ToListAsync();
-                    break;
-                case 4:
-                    lst = await qry.Where(x => (EF.Functions.Like(x.Firstname, $"%{str[0]}%") ||
-                 EF.Functions.Like(x.Surname, $"%{str[0]}%")) && (EF.Functions.Like(x.Firstname, $"%{str[1]}%") ||
-                 EF.Functions.Like(x.Surname, $"%{str[1]}%")) && (EF.Functions.Like(x.Firstname, $"%{str[2]}%") ||
-                 EF.Functions.Like(x.Surname, $"%{str[2]}%")) && (EF.Functions.Like(x.Firstname, $"%{str[3]}%") ||
-                 EF.Functions.Like(x.Surname, $"%{str[3]}%")) && x.StreetId == streetid).ToListAsync();
-                    break;
-                default:
-                    break;
-            }
+            var query = db.Set<TaxPayer>()
+              .Include(x => x.Company)
+              .Include(x => x.Street)
+              .ThenInclude(x => x.Ward)
+              .Where(x => x.StreetId == streetid
+              && EF.Functions.Like($"{x.Surname} {x.Firstname} {x.Lastname}".Trim(), $"%{queryParams.Trim()}%"));
 
-            var results = lst.Select(x => new TaxPayerModel()
+            var results = await query.Select(x => new TaxPayerModel
             {
-                AddressId = x.AddressId,
+                AddressId = x.AddressId.Value,
                 CompanyId = x.CompanyId,
-                StreetId = x.StreetId,
                 companyName = x.Company.CompanyName,
                 CreatedBy = x.CreatedBy,
-                DateCreated = x.DateCreated.Value,
+                DateCreated = x.DateCreated,
                 Firstname = x.Firstname,
                 Id = x.Id,
                 Lastmodifiedby = x.Lastmodifiedby,
                 LastModifiedDate = x.LastModifiedDate,
                 Lastname = x.Lastname,
+                StreetId = x.StreetId.Value,
                 StreetNumber = x.Address.Addressnumber,
-                Surname = x.Surname,
                 TaxpayerStatus = x.TaxpayerStatus,
+                Surname = x.Surname,
+                StreetName = x.Street.StreetName,
                 WardName = x.Street.Ward.WardName
-            });
+            }).ToListAsync();
 
-            var re = results
-                .GroupBy(x => x.Id)
-                .Select(p => p.FirstOrDefault())
-                .ToList();
-
-            return re;
+            return results.Distinct().OrderBy(x => x.Firstname).ToList();
         }
 
         public async Task<TaxPayerModel[]> GetUnbilledTaxpayer(int billingYear)

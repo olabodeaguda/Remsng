@@ -303,12 +303,18 @@ namespace RemsNG.Controllers
             AddressModel address = await addressservice.ById(taxpayerExtension.AddressId.Value);
             if (address == null)
             {
-                logger.LogError($"Not Found" + JsonConvert.SerializeObject(address));
-                return BadRequest(new Response()
+                LcdaModel lgda = await lcdaService.ByStreet(taxpayerExtension.StreetId.Value);
+
+                address = new AddressModel()
                 {
-                    code = MsgCode_Enum.FAIL,
-                    description = "Address can be found"
-                });
+                    Id = taxpayerExtension.AddressId.Value,
+                    Addressnumber = taxpayerExtension.StreetNumber,
+                    Lcdaid = lgda.Id,
+                    StreetId = taxpayerExtension.StreetId.Value,
+                    CreatedBy = User.Identity.Name,
+                    OwnerId = taxpayerExtension.Id
+                };
+                Response addressResp = await addressservice.Add(address);
             }
 
             TaxPayerModel te = await taxpayerService.ById(taxpayerExtension.Id);
