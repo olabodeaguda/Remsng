@@ -18,30 +18,25 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> Add(CompanyModel company)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addCompany @p0, @p1, @p2, @p3, @p4", new object[] {
-                company.CompanyName,
-                company.SectorId,
-                company.CategoryId,
-                company.CreatedBy,
-                company.LcdaId
-            }).FirstOrDefaultAsync();
+            db.Set<Company>().Add(new Company
+            {
+                Id = Guid.NewGuid(),
+                CategoryId = company.CategoryId,
+                CompanyName = company.CompanyName,
+                SectorId = company.SectorId,
+                CreatedBy = company.CreatedBy,
+                LcdaId = company.LcdaId,
+                CompanyStatus = "ACTIVE"
+            });
 
-            if (dbResponse.success)
+            await db.SaveChangesAsync();
+
+            return new Response()
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = $"{company.CompanyName} has been added successfully"
-                };
-            }
-            else
-            {
-                return new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = $"An error occur while processing your request. Please try again or contact your administrator for help"
-                };
-            }
+                code = MsgCode_Enum.SUCCESS,
+                description = $"{company.CompanyName} has been added successfully"
+            };
+
         }
 
         public async Task<Response> Update(CompanyModel company)

@@ -21,28 +21,30 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> Add(SectorModel sector)
         {
-            DbResponse dbResponse = await db.Set<DbResponse>()
-                .FromSql("sp_createSector @p0, @p1, @p2, @p3", new object[] {
-                sector.SectorName,
-                sector.LcdaId,
-                sector.CreatedBy,
-                sector.Prefix
-            }).FirstOrDefaultAsync();
+            //DbResponse dbResponse = await db.Set<DbResponse>()
+            //    .FromSql("sp_createSector @p0, @p1, @p2, @p3", new object[] {
+            //    sector.SectorName,
+            //    sector.LcdaId,
+            //    sector.CreatedBy,
+            //    sector.Prefix
+            //}).FirstOrDefaultAsync();
 
-            if (dbResponse.success)
+            db.Set<Sector>().Add(new Sector
             {
-                return new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = dbResponse.msg
-                };
-            }
+                CreatedBy = sector.CreatedBy,
+                DateCreated = DateTime.Now,
+                Id = Guid.NewGuid(),
+                LcdaId = sector.LcdaId,
+                SectorName = sector.SectorName,
+                Prefix = sector.Prefix
+            });
 
-            logger.LogError(dbResponse.msg, dbResponse); //new object[] { userLcda.userId, userLcda.lgdaId });
+            await db.SaveChangesAsync();
+
             return new Response()
             {
-                code = MsgCode_Enum.FAIL,
-                description = dbResponse.msg
+                code = MsgCode_Enum.SUCCESS,
+                description = "Sector has been added successfully"
             };
         }
 
@@ -68,7 +70,7 @@ namespace RemsNG.Data.Repository
         public async Task<List<SectorModel>> ByLcdaId(Guid lcdaId)
         {
             var result = await db.Set<Sector>()
-                .Where(x => x.LcdaId == lcdaId).ToListAsync();
+                .Where(x => x.LcdaId == lcdaId).OrderBy(x=>x.SectorName).ToListAsync();
 
             return result.Select(x => new SectorModel()
             {

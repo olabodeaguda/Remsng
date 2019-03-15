@@ -773,7 +773,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<DemandNoticeTaxpayersModel[]> SearchTaxpayers(DemandNoticeRequestModel rhModel)
         {
-            string[] statuss = { "CANCEL", "CLOSED" };
+            string[] statuss = { "CANCEL", "CLOSED", "DELETED" };
             var query = db.Set<DemandNoticeTaxpayer>()
                 .Include(p => p.DemandNotice)
                 .ThenInclude(d => d.Street)

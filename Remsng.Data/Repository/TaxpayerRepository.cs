@@ -533,7 +533,7 @@ namespace RemsNG.Data.Repository
                     StreetName = tp.Street.StreetName,
                     WardId = tp.Street.WardId,
                     ItemCount = tp.Items.Count
-                });
+                }).Where(x => x.TaxpayerStatus == "ACTIVE");
 
             if (rhModel.streetId != default(Guid))
             {
