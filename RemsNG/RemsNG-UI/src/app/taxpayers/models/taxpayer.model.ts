@@ -17,4 +17,5 @@ export class TaxpayerModel{
     firstname: string ='';
     lastname: string ='';
     wardId: string = '';
+    isOneTime: boolean = false;
 }

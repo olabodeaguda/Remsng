@@ -47,7 +47,8 @@ export class TaxpayerService {
             streetNumber: taxpayer.streetNumber,
             surname: taxpayer.surname,
             firstname: taxpayer.firstname,
-            lastname: taxpayer.lastname
+            lastname: taxpayer.lastname,
+            IsOneTime: taxpayer.isOneTime
         }).catch(x => this.dataservice.handleError(x));
     }
 

@@ -329,7 +329,7 @@ namespace RemsNG.Controllers
             int sucessCount = 0;
             if (address.Addressnumber != taxpayerExtension.StreetNumber || taxpayerExtension.CompanyId != te.CompanyId
                 || taxpayerExtension.Firstname != te.Firstname ||
-                    taxpayerExtension.Lastname != te.Lastname || taxpayerExtension.Surname != te.Surname)
+                    taxpayerExtension.Lastname != te.Lastname || taxpayerExtension.Surname != te.Surname || taxpayerExtension.IsOneTime != te.IsOneTime)
             {
                 if (address.Addressnumber != taxpayerExtension.StreetNumber)
                 {
@@ -352,35 +352,23 @@ namespace RemsNG.Controllers
                     }
                 }
 
-                if (taxpayerExtension.CompanyId != te.CompanyId || taxpayerExtension.Firstname != te.Firstname ||
-                    taxpayerExtension.Lastname != te.Lastname || taxpayerExtension.Surname != te.Surname)
-                {
-                    Response tsResponse = await taxpayerService.Update(new TaxPayerModel()
-                    {
-                        AddressId = te.AddressId,
-                        CompanyId = taxpayerExtension.CompanyId,
-                        Id = taxpayerExtension.Id,
-                        Lastmodifiedby = User.Identity.Name,
-                        LastModifiedDate = DateTime.Now,
-                        StreetId = taxpayerExtension.StreetId,
-                        Firstname = taxpayerExtension.Firstname,
-                        Lastname = taxpayerExtension.Lastname,
-                        Surname = taxpayerExtension.Surname
-                    });
+                taxpayerExtension.Lastmodifiedby = User.Identity.Name;
+                taxpayerExtension.LastModifiedDate = DateTime.Now;
+                taxpayerExtension.AddressId = te.AddressId;
+                Response tsResponse = await taxpayerService.Update(taxpayerExtension);
 
-                    if (tsResponse.code != MsgCode_Enum.SUCCESS)
+                if (tsResponse.code != MsgCode_Enum.SUCCESS)
+                {
+                    logger.LogError("Taxpayer update failed  :" + JsonConvert.SerializeObject(taxpayerExtension));
+                    return BadRequest(new Response()
                     {
-                        logger.LogError("Taxpayer update failed  :" + JsonConvert.SerializeObject(taxpayerExtension));
-                        return BadRequest(new Response()
-                        {
-                            code = MsgCode_Enum.FAIL,
-                            description = "Update failed. Please try again or contact administrator"
-                        });
-                    }
-                    else
-                    {
-                        sucessCount++;
-                    }
+                        code = MsgCode_Enum.FAIL,
+                        description = "Update failed. Please try again or contact administrator"
+                    });
+                }
+                else
+                {
+                    sucessCount++;
                 }
 
             }

@@ -18,6 +18,7 @@ namespace RemsNG.Common.Models
         public string Lastname { get; set; }
         public string companyName { get; set; }
         public string WardName { get; set; }
+        public bool IsOneTime { get; set; }
 
         public virtual CompanyModel Company { get; set; }
         public virtual StreetModel Street { get; set; }

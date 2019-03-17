@@ -43,7 +43,8 @@ namespace RemsNG.Data.Repository
                 Surname = taxpayer.Surname,
                 Firstname = taxpayer.Firstname,
                 Lastname = taxpayer.Lastname,
-                TaxpayerStatus = "ACTIVE"
+                TaxpayerStatus = "ACTIVE",
+                IsOneTime = taxpayer.IsOneTime
             };
             db.Set<TaxPayer>().Add(t);
             await db.SaveChangesAsync();
@@ -83,7 +84,8 @@ namespace RemsNG.Data.Repository
                 Lastname = result.Lastname,
                 StreetId = result.StreetId,
                 Surname = result.Surname,
-                TaxpayerStatus = result.TaxpayerStatus
+                TaxpayerStatus = result.TaxpayerStatus,
+                IsOneTime = result.IsOneTime
             };
         }
 
@@ -117,7 +119,8 @@ namespace RemsNG.Data.Repository
                 Lastname = result.Lastname,
                 StreetId = result.StreetId,
                 Surname = result.Surname,
-                TaxpayerStatus = result.TaxpayerStatus
+                TaxpayerStatus = result.TaxpayerStatus,
+                IsOneTime = result.IsOneTime
             }).ToList();
         }
 
@@ -142,7 +145,8 @@ namespace RemsNG.Data.Repository
                 Lastname = result.Lastname,
                 StreetId = result.StreetId,
                 Surname = result.Surname,
-                TaxpayerStatus = result.TaxpayerStatus
+                TaxpayerStatus = result.TaxpayerStatus,
+                IsOneTime = result.IsOneTime
             };
         }
 
@@ -164,7 +168,8 @@ namespace RemsNG.Data.Repository
                     Lastname = p.Lastname,
                     StreetId = p.StreetId,
                     Surname = p.Surname,
-                    TaxpayerStatus = p.TaxpayerStatus
+                    TaxpayerStatus = p.TaxpayerStatus,
+                    IsOneTime = p.IsOneTime
                 }).ToListAsync();//.FromSql("sp_TaxpayerByStreetId @p0", new object[] { streetId }).ToListAsync();
             //result = result.Where(x => x.taxpayerStatus == TaxPayerEnum.ACTIVE.ToString()).ToList();
             return result;
@@ -196,7 +201,8 @@ namespace RemsNG.Data.Repository
                    Surname = x.tp.Surname,
                    TaxpayerStatus = x.tp.TaxpayerStatus,
                    WardName = x.tp.Street.Ward.WardName,
-                   StreetName = x.tp.Street.StreetName
+                   StreetName = x.tp.Street.StreetName,
+                   IsOneTime = x.tp.IsOneTime
                });
 
             var results = await query.Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToListAsync();
@@ -226,7 +232,8 @@ namespace RemsNG.Data.Repository
                     Lastname = p.Lastname,
                     StreetId = p.StreetId,
                     Surname = p.Surname,
-                    TaxpayerStatus = p.TaxpayerStatus
+                    TaxpayerStatus = p.TaxpayerStatus,
+                    IsOneTime = p.IsOneTime
                 }).ToListAsync();
 
             //var results = await db.Set<TaxpayerExtensionModel>().FromSql("sp_TaxpayerByCompanyId @p0", new object[] { companyId }).ToListAsync();
@@ -261,7 +268,7 @@ namespace RemsNG.Data.Repository
             entity.Firstname = taxpayer.Firstname;
             entity.Lastname = taxpayer.Lastname;
             entity.LastModifiedDate = DateTime.Now;
-
+            entity.IsOneTime = taxpayer.IsOneTime;
             await db.SaveChangesAsync();
 
             Response response = new Response();
@@ -289,7 +296,8 @@ namespace RemsNG.Data.Repository
                     LastModifiedDate = x.LastModifiedDate,
                     Lastname = x.Lastname,
                     StreetId = x.StreetId.Value,
-                    StreetNumber = x.Address.Addressnumber
+                    StreetNumber = x.Address.Addressnumber,
+                    IsOneTime = x.IsOneTime
                 }).ToListAsync();
         }
 
@@ -319,7 +327,8 @@ namespace RemsNG.Data.Repository
                 TaxpayerStatus = x.TaxpayerStatus,
                 Surname = x.Surname,
                 StreetName = x.Street.StreetName,
-                WardName = x.Street.Ward.WardName
+                WardName = x.Street.Ward.WardName,
+                IsOneTime = x.IsOneTime
             }).ToListAsync();
 
             return results.Distinct().OrderBy(x => x.Firstname).ToList();
@@ -345,7 +354,8 @@ namespace RemsNG.Data.Repository
                     StreetId = x.StreetId.Value,
                     StreetNumber = x.Address.Addressnumber,
                     Surname = x.Surname,
-                    TaxpayerStatus = x.TaxpayerStatus
+                    TaxpayerStatus = x.TaxpayerStatus,
+                    IsOneTime = x.IsOneTime
                 });
 
             var results = query.OrderBy(x => x.Surname).Skip((pageModel.PageNum - 1) * pageModel.PageSize)
@@ -459,7 +469,8 @@ namespace RemsNG.Data.Repository
                 TaxpayerStatus = x.TaxpayerStatus,
                 Surname = x.Surname,
                 StreetName = x.Street.StreetName,
-                WardName = x.Street.Ward.WardName
+                WardName = x.Street.Ward.WardName,
+                IsOneTime = x.IsOneTime
             }).ToListAsync();
 
             return results.Distinct().OrderBy(x => x.Firstname).ToList();
@@ -504,7 +515,8 @@ namespace RemsNG.Data.Repository
                    Surname = x.Surname,
                    TaxpayerStatus = x.TaxpayerStatus,
                    WardName = x.Street.Ward.WardName,
-                   StreetName = x.Street.StreetName
+                   StreetName = x.Street.StreetName,
+                   IsOneTime = x.IsOneTime
                }).ToArrayAsync();
 
             return result;
@@ -532,7 +544,8 @@ namespace RemsNG.Data.Repository
                     WardName = tp.Street.Ward.WardName,
                     StreetName = tp.Street.StreetName,
                     WardId = tp.Street.WardId,
-                    ItemCount = tp.Items.Count
+                    ItemCount = tp.Items.Count,
+                    IsOneTime = tp.IsOneTime
                 }).Where(x => x.TaxpayerStatus == "ACTIVE");
 
             if (rhModel.streetId != default(Guid))

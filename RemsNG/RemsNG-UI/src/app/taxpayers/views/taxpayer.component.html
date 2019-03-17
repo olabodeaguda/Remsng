@@ -35,6 +35,14 @@
                                 <option *ngFor="let data of companies;" [ngValue]="data.id">{{data.companyName}}</option>
                             </select>
                         </div>
+                        <div class="form-group">
+                            <div class="form-check col-sm-12">
+                                <input type="checkbox" class="form-check-input" id="isOneTime"
+                                    [checked]="taxpayerModel.isOneTime"
+                                    (change)="taxpayerModel.isOneTime = !taxpayerModel.isOneTime">
+                                <label class="form-check-label" for="isOneTime">Check if, one time Taxpayer</label>
+                            </div>
+                        </div>
                         <div class="box-footer">
                             <button [ladda]="taxpayerModel.isLoading" type="submit" class="btn btn-primary" (click)="actions()">Submit</button>
                         </div>
@@ -96,6 +104,9 @@
                                                 <th>Taxpayers name</th>
                                                 <th>company Name</th>
                                                 <th>Status</th>
+                                                <th>
+                                                    Is Recursive
+                                                </th>
                                                 <th>Last Modified by</th>
                                                 <th>Last Modified Date</th>
                                             </tr>
@@ -132,6 +143,7 @@
                                                 <td>{{data.surname}} {{data.firstname}} {{data.lastname}}</td>
                                                 <td>{{data.companyName}}</td>
                                                 <td>{{data.taxpayerStatus}}</td>
+                                                <td>{{data.isOneTime? 'No':'Yes'}}</td>
                                                 <td>{{data.lastmodifiedby?.length > 1? data.lastmodifiedby:
                                                     data.createdBy}}</td>
                                                 <td>{{(data.lastModifiedDate?.length > 1 ?data.lastModifiedDate

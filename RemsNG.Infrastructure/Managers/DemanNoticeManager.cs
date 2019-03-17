@@ -127,7 +127,7 @@ namespace RemsNG.Infrastructure.Managers
             DemandNoticeTaxpayersModel[] dntModel = await _dnTaxpayerRepo.SearchTaxpayers(model);
 
             TaxPayerModel[] taxPayers =
-                (await _taxpayerRepository.SearchByDNRequest(model, dntModel.Select(x => x.TaxpayerId)
+                (await _taxpayerRepository.SearchByDNRequest(model, dntModel.Where(s => !s.IsRunArrears).Select(x => x.TaxpayerId)
                 .ToArray())).Select(d =>
                 {
                     var r = d;
@@ -137,7 +137,7 @@ namespace RemsNG.Infrastructure.Managers
                 }).ToArray();
 
 
-            return taxPayers;
+            return taxPayers.Where(x => !x.IsOneTime).ToArray();
         }
 
         public async Task<bool> AddDemanNotice(DemandNoticeRequestModel model)

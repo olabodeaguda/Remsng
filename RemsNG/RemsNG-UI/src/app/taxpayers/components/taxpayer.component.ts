@@ -124,15 +124,17 @@ export class TaxPayerComponent implements OnInit {
     }
 
     actions() {
-        if (this.taxpayerModel.companyId.length < 1) {
-            this.toasterService.pop('error', 'Error', 'Company is required');
-            return;
-        } else if (this.taxpayerModel.streetId.length < 1) {
-            this.toasterService.pop('error', 'Error', 'Street is required');
-            return;
-        } else if (this.taxpayerModel.streetNumber.length < 1) {
-            this.toasterService.pop('error', 'Error', 'Street number is required');
-            return;
+        if (this.taxpayerModel.eventType !== 'DELETE') {
+            if (this.taxpayerModel.companyId.length < 1) {
+                this.toasterService.pop('error', 'Error', 'Company is required');
+                return;
+            } else if (this.taxpayerModel.streetId.length < 1) {
+                this.toasterService.pop('error', 'Error', 'Street is required');
+                return;
+            } else if (this.taxpayerModel.streetNumber.length < 1) {
+                this.toasterService.pop('error', 'Error', 'Street number is required');
+                return;
+            }
         }
 
         this.taxpayerModel.isLoading = true;

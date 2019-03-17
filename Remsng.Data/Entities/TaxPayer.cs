@@ -20,8 +20,12 @@ namespace RemsNG.Data.Entities
         public string Firstname { get; set; }
         public string Lastname { get; set; }
 
+        public bool IsOneTime { get; set; }
+
         public virtual Company Company { get; set; }
         public virtual Street Street { get; set; }
+
+
         [ForeignKey("AddressId")]
         public virtual Address Address { get; set; }
 
