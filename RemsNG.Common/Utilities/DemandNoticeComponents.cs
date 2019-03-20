@@ -49,12 +49,15 @@ namespace RemsNG.Common.Utilities
         public static string HtmlBuildBanks(DemandNoticeReportModel dnrm, BankCategory bankCategory, TaxpayerCategoryModel taxpayerCategory)
         {
             string htmlmarkup = string.Empty;
-            if (bankCategory.CatgoryName.ToLower() == taxpayerCategory.TaxpayerCategoryName.ToLower())
+            if (bankCategory != null && taxpayerCategory != null)
             {
-                var t = dnrm.banks.FirstOrDefault(x => x.bankId == bankCategory.BankId);
-                if (t != null)
+                if (bankCategory.CatgoryName.ToLower() == taxpayerCategory.TaxpayerCategoryName.ToLower())
                 {
-                    htmlmarkup = htmlmarkup + $"<li><b>{t.bankName}:  {t.bankAccount}</b></li>";
+                    var t = dnrm.banks.FirstOrDefault(x => x.bankId == bankCategory.BankId);
+                    if (t != null)
+                    {
+                        htmlmarkup = htmlmarkup + $"<li><b>{t.bankName}:  {t.bankAccount}</b></li>";
+                    }
                 }
             }
             else

@@ -181,7 +181,7 @@ namespace RemsNG.Data.Repository
                 LastModifiedDate = x.LastModifiedDate,
                 LcdaId = x.LcdaId,
                 Query = x.Query,
-                StreetId = x.StreetId.Value,
+                StreetId = x.Street != null ? x.StreetId.Value : default(Guid),
                 WardId = x.WardId.Value
             }).OrderByDescending(d => d.DateCreated).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToArrayAsync();
 

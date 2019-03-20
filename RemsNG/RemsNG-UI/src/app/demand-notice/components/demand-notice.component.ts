@@ -69,6 +69,7 @@ export class DemandNoticeComponent implements OnInit {
             this.toasterService.pop('error', 'Error', 'Billing year is required')
             return;
         }
+        this.pageModel = new PageModel();
         this.GetDemandNotice(null);
     }
 

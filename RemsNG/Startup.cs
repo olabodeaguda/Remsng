@@ -32,7 +32,7 @@ namespace RemsNG
         private ILoggerFactory loggerFactory;
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
+        { 
             if (loggerFactory == null)
             {
                 loggerFactory = new LoggerFactory();
@@ -56,7 +56,7 @@ namespace RemsNG
             loggerFactory.AddDebug();
             loggerFactory.AddConsole();
             loggerFactory.AddFile("Logs/remsng-logs-{Date}.txt");
-            // DbInitializer.Initialize(dbContext);
+             //DbInitializer.Initialize(dbContext);
             app.UseCors("CorsPolicy");
             app.UseHangfireDashboard();
 

@@ -200,7 +200,8 @@ namespace RemsNG.Data.Repository
                 PaymentStatus = x.PaymentStatus,
                 ReferenceNumber = x.ReferenceNumber,
                 SyncStatus = x.SyncStatus,
-                BankName = x.Bank.BankName
+                BankName = x.Bank.BankName,
+                OtherNames = x.OtherNames
             };
 
 

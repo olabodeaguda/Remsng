@@ -115,8 +115,12 @@ namespace RemsNG.Data.Repository
 
         public async Task<WardModel> GetWard(Guid id)
         {
-            var x = await db.Set<Ward>()
-                .FromSql("sp_wardById @p0", new object[] { id }).FirstOrDefaultAsync();
+            var x = await db.Set<Ward>().FirstOrDefaultAsync(p => p.Id == id);
+            //.FromSql("sp_wardById @p0", new object[] { id }).FirstOrDefaultAsync();
+            if (x == null)
+            {
+                return null;
+            }
             return new WardModel()
             {
                 CreatedBy = x.CreatedBy,

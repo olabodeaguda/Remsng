@@ -65,7 +65,7 @@ namespace RemsNG.Infrastructure.Managers
             htmlContent = htmlContent.Replace("BKIMAGE", $"{rootUrl}/templates/lagoslogo.jpeg");
 
             htmlContent = htmlContent.Replace("BILL_NO", $"{(sector != null ? sector.Prefix : "")}{dnrp.BillingNumber}");
-            htmlContent = htmlContent.Replace("PAYER_NAME", dnrp.TaxpayersName);
+            htmlContent = htmlContent.Replace("PAYER_NAME", string.IsNullOrEmpty(dnph.OtherNames) ? dnrp.TaxpayersName : dnph.OtherNames);
             htmlContent = htmlContent.Replace("PAYER_ADDRESS", dnrp.AddressName);
             htmlContent = htmlContent.Replace("CURRENT_DATE", DateTime.Now.ToString("dd-MM-yyyy"));
             htmlContent = htmlContent.Replace("BILLING_YEAR", dnrp.BillingYr.ToString());//
@@ -129,7 +129,7 @@ namespace RemsNG.Infrastructure.Managers
             {
                 htmlContent = htmlContent.Replace("PAYMENT_STATUS", DemandNoticeStatus.PAID.ToString());//PAYMENT_STATUS
                 htmlContent = htmlContent.Replace("AMOUNT_REMAINING",
-                    $"Amount Overpaid : {String.Format("{0:n}", decimal.Round(0, 2))} naira");//PAYMENT_STATUS
+                    $"Outstanding Balance : {String.Format("{0:n}", decimal.Round(0, 2))} naira");//PAYMENT_STATUS
             }
 
             if (dnph.Amount == 0)
@@ -290,17 +290,17 @@ namespace RemsNG.Infrastructure.Managers
             //htmlContent = htmlContent.Replace("LCDA_LOGO", Convert.ToBase64String(await File.ReadAllBytesAsync($"{rootUrl}/images/{dnrp.LcdaLogoFileName}")));
 
             htmlContent = htmlContent.Replace("dated", DateTime.Now.ToString("dd-MM-yyyy HH:mm"));//./templates/lcdaLogo.jpeg
-          //  htmlContent = htmlContent.Replace("BKIMAGE", $"{rootUrl}/templates/lcdaLogo.jpeg");
+                                                                                                  //  htmlContent = htmlContent.Replace("BKIMAGE", $"{rootUrl}/templates/lcdaLogo.jpeg");
 
             //if (dnrp.BillingNumber.Length < 5)
             //{
-                //string v = "";
-                //for (int i = 0; i < 5 - dnrp.BillingNumber.Length; i++)
-                //{
-                //    v = v + "0";
-                //}
+            //string v = "";
+            //for (int i = 0; i < 5 - dnrp.BillingNumber.Length; i++)
+            //{
+            //    v = v + "0";
+            //}
 
-                //dnrp.BillingNumber = v + dnrp.BillingNumber;
+            //dnrp.BillingNumber = v + dnrp.BillingNumber;
             //}
 
             if (sector != null)
@@ -325,13 +325,15 @@ namespace RemsNG.Infrastructure.Managers
             var taxCategory = await _taxService.GetTaxpayerCategory(dnrp.TaxpayerId);
             htmlContent = htmlContent.Replace("TAXPAYERCATEGORY", taxCategory.TaxpayerCategoryName);
 
-            htmlContent = htmlContent.Replace("BANKLIST", DemandNoticeComponents.HtmlBuildBanks(dnrp, _bankCategory, taxCategory));
+            htmlContent = htmlContent.Replace("BANKLIST", DemandNoticeComponents.HtmlBuildBanks(dnrp));//, _bankCategory, taxCategory));
             htmlContent = htmlContent.Replace("ARREARS_AMMOUNT", String.Format("{0:n}", decimal.Round(dnrp.arrears, 2)));
             htmlContent = htmlContent.Replace("PENALTY_AMOUNT", String.Format("{0:n}", decimal.Round(dnrp.penalty, 2)));
 
             if (!string.IsNullOrEmpty(dnrp.CouncilTreasurerSigFilen))
             {
-                htmlContent = htmlContent.Replace("COUNCIL_TRESURER_SIG", $"{rootUrl}/images/{dnrp.CouncilTreasurerSigFilen}");
+                string sig = $"{rootUrl}/images/{dnrp.CouncilTreasurerSigFilen}";
+                string tu = "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync(sig));
+                htmlContent = htmlContent.Replace("COUNCIL_TRESURER_SIG", tu);
             }
             if (!string.IsNullOrEmpty(dnrp.RevCoodinatorSigFilen))
             {
@@ -581,6 +583,6 @@ namespace RemsNG.Infrastructure.Managers
             return CommonList.ReceiptTemplate((allowHeader == null ? "0" : allowHeader.PropertyValue));
         }
 
-        
+
     }
 }
