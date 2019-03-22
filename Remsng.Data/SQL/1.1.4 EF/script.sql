@@ -9,3 +9,5 @@ go
   update r  set r.dn_taxpayersDetailsId = dnt.Id
   from tbl_demandNoticeItem as r
   inner join tbl_demandNoticeTaxpayers as dnt on r.billingNo = dnt.BillingNumber
+
+  alter table tbl_taxPayer add IsOneTime bit not null DEFAULT 0;

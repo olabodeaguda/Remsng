@@ -6,6 +6,8 @@ namespace RemsNG.Common.Models
     {
         public string CatgoryName { get; set; }
         public Guid BankId { get; set; }
+        public string BankIds { get; set; }
+        public string ExceludeBanks { get; set; }
     }
     public class BankCategories
     {

@@ -174,7 +174,7 @@ namespace RemsNG.Data.Repository
                 pageModel.PageNum = 1;
             }
 
-            var results = await query.OrderBy(x => x.CompanyName).Skip(pageModel.PageNum).Take(pageModel.PageSize).ToListAsync();
+            var results = await query.OrderBy(x => x.CompanyName).Skip((pageModel.PageNum - 1) * pageModel.PageSize).Take(pageModel.PageSize).ToListAsync();
             //var results = await db.Set<CompanyExtModel>().FromSql("sp_CompanyBylcdaIdpaginate @p0, @p1, @p2", new object[] {
             //        lcdaId,
             //        pageModel.PageNum,

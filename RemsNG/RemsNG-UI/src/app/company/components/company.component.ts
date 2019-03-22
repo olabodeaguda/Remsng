@@ -143,11 +143,13 @@ export class CompanyComponent implements OnInit {
                 this.companyModel.isLoading = false;
                 const result = Object.assign(new ResponseModel(), response);
                 if (result.code === '00') {
+                    this.toasterService.pop('success','Successful',result.desciption)
                     jQuery(this.addModal.nativeElement).modal('hide');
                     this.getCompanyByLcda();
                 }
             }, error => {
                 this.companyModel.isLoading = false;
+                this.toasterService.pop('error','Error',error);
             });
         } else if (this.companyModel.eventType === 'EDIT') {
             this.companyservice.update(this.companyModel).subscribe(response => {

@@ -572,7 +572,6 @@ namespace RemsNG.Data.Repository
 
             if (!string.IsNullOrEmpty(rhModel.searchByName))
             {
-                //query = query.Where(x => EF.Functions.Like(x.TaxpayersName, $"%{rhModel.searchByName}%"));
                 string[] prams = rhModel.searchByName.Split(new char[] { ' ' });
 
                 switch (prams.Length)

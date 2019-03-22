@@ -1,5 +1,6 @@
 ﻿using RemsNG.Common.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace RemsNG.Common.Utilities
@@ -48,25 +49,45 @@ namespace RemsNG.Common.Utilities
         }
         public static string HtmlBuildBanks(DemandNoticeReportModel dnrm, BankCategory bankCategory, TaxpayerCategoryModel taxpayerCategory)
         {
+            List<BankLcdaModel> lst = new List<BankLcdaModel>();
+
             string htmlmarkup = string.Empty;
             if (bankCategory != null && taxpayerCategory != null)
             {
+                Guid[] guids = bankCategory.BankIds.Split(new char[] { ';' })
+                    .Select(x => Guid.Parse(x))
+                    .ToArray();
+                var re = dnrm.banks.Where(x => guids.Any(s => s == x.bankId)).ToList();// x.bankId == bankCategory.BankId).ToList();
                 if (bankCategory.CatgoryName.ToLower() == taxpayerCategory.TaxpayerCategoryName.ToLower())
                 {
-                    var t = dnrm.banks.FirstOrDefault(x => x.bankId == bankCategory.BankId);
-                    if (t != null)
+                    if (re.Count > 0)
                     {
-                        htmlmarkup = htmlmarkup + $"<li><b>{t.bankName}:  {t.bankAccount}</b></li>";
+                        lst = re;
                     }
                 }
-            }
-            else
-            {
-                var r = dnrm.banks.Where(x => x.bankId != bankCategory.BankId);
-                foreach (var tm in r)
+                else
                 {
-                    htmlmarkup = htmlmarkup + $"<li><b>{tm.bankName}:{tm.bankAccount}</b></li>";
+                    lst = dnrm.banks.Where(s => !guids.Any(x => x == s.bankId)).ToList();
                 }
+            }
+
+            if (lst.Count <= 0)
+            {
+                lst = dnrm.banks;
+            }
+
+            if (!string.IsNullOrEmpty(bankCategory.ExceludeBanks))
+            {
+                var exemptBanks = bankCategory.ExceludeBanks.Split(new char[] { ';' })
+                            .Select(x => Guid.Parse(x))
+                            .ToList();
+
+                lst = lst.Where(x => !exemptBanks.Any(s => s == x.bankId)).ToList();
+            }
+
+            foreach (var tm in lst)
+            {
+                htmlmarkup = htmlmarkup + $"<li><b>{tm.bankName}:{tm.bankAccount}</b></li>";
             }
 
             return htmlmarkup;
