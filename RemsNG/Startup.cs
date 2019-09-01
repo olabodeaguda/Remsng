@@ -32,7 +32,7 @@ namespace RemsNG
         private ILoggerFactory loggerFactory;
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        { 
+        {
             if (loggerFactory == null)
             {
                 loggerFactory = new LoggerFactory();
@@ -56,7 +56,7 @@ namespace RemsNG
             loggerFactory.AddDebug();
             loggerFactory.AddConsole();
             loggerFactory.AddFile("Logs/remsng-logs-{Date}.txt");
-             //DbInitializer.Initialize(dbContext);
+            //DbInitializer.Initialize(dbContext);
             app.UseCors("CorsPolicy");
             app.UseHangfireDashboard();
 
@@ -66,14 +66,14 @@ namespace RemsNG
 
             app.Use(async (context, next) =>
            {
-                if ((context.Response.StatusCode == 404 || !Path.HasExtension(context.Request.Path.Value))
-           && !context.Request.Path.Value.StartsWith("/api/"))
-                {
-                    context.Request.Path = "/";
-                }
+               if ((context.Response.StatusCode == 404 || !Path.HasExtension(context.Request.Path.Value))
+          && !context.Request.Path.Value.StartsWith("/api/"))
+               {
+                   context.Request.Path = "/";
+               }
 
-                await next.Invoke();
-            });
+               await next.Invoke();
+           });
 
             app.UseMiddleware(typeof(TokenValidationMiddleware));
 
@@ -99,8 +99,7 @@ namespace RemsNG
 
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "QuaterlyReport")),
-                RequestPath = "/quarterlyreport"
+                FileProvider = new PhysicalFileProvider(Configuration.GetValue<string>("QuarterlyReportPath"))
             });
             app.UseStaticFiles();
 
