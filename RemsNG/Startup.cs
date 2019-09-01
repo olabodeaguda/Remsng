@@ -93,6 +93,7 @@ namespace RemsNG
             });
 
             app.UseMiddleware(typeof(HangfireMiddleware));
+
             app.UseMiddleware(typeof(ErrorHandlingMiddleware));
 
             app.UseDefaultFiles();

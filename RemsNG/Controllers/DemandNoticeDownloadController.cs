@@ -62,11 +62,8 @@ namespace RemsNG.Controllers
             var htmlContent = await System.IO.File.ReadAllTextAsync($"{rootUrl}/templates/{template}");
 
             htmlContent = await dnd.PopulateReportHtml1(htmlContent, billingno, rootUrl, User.Identity.Name);
-            //htmlContent = htmlContent.Replace("PATCH1", "<br /><br /><br /><br /><br /><br /><br /><br />");
-            //var result = await nodeServices.InvokeAsync<byte[]>("./pdf", htmlContent);
 
             var result = _pdfService.GetPdf(htmlContent);
-
 
             HttpContext.Response.ContentType = "application/pdf";
             HttpContext.Response.Body.Write(result, 0, result.Length);
@@ -100,7 +97,6 @@ namespace RemsNG.Controllers
         }
 
         [RemsRequirementAttribute("BULK_DOWNLOAD")]
-        // GET: api/values
         [Route("bulk/{batchno}")]
         [HttpGet]
         public async Task<object> BulkZip(string batchno)
@@ -126,7 +122,6 @@ namespace RemsNG.Controllers
             return new ContentResult();
         }
 
-        // GET api/values/5
         [HttpGet("{batchno}")]
         public async Task<object> ByBatchNo(string batchno)
         {
@@ -186,6 +181,7 @@ namespace RemsNG.Controllers
             {
                 throw new NotFoundException("Request not found");
             }
+
             HttpClient hc = new HttpClient();
             string template = await dnd.ReceiptTemlate(dnph.BillingNumber);
 
