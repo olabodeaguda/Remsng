@@ -12,10 +12,12 @@ namespace RemsNG.Infrastructure.Managers
     public class AddressManager : IAddressManager
     {
         private readonly AddressRepository addressDao;
+        private readonly DemandNoticeTaxpayersRepository _dnTaxpayerRepository;
 
         public AddressManager(DbContext _db)
         {
             addressDao = new AddressRepository(_db);
+            _dnTaxpayerRepository = new DemandNoticeTaxpayersRepository(_db);
         }
 
         public async Task<Response> Add(AddressModel address)
@@ -61,6 +63,7 @@ namespace RemsNG.Infrastructure.Managers
 
         public async Task<Response> Update(AddressModel address)
         {
+            await _dnTaxpayerRepository.UpdateAddress(address.OwnerId, $"{address.Addressnumber} {address.StreetName}");
             return await addressDao.Update(address);
         }
     }

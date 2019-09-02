@@ -147,6 +147,7 @@ namespace RemsNG.Extensions
             services.AddTransient<IPenaltyManager, PenaltyManager>();
             services.AddTransient<IArrearsManager, ArrearsManager>(); services.AddSingleton<IConfigurationRoot>(provider => (IConfigurationRoot)Configuration);
             services.AddSingleton(config.GetSection("BankCategory").Get<BankCategory>());
+            services.AddSingleton(config.GetSection("TemplateDetail").Get<TemplateDetail>());
             #endregion
 
             #region Services
