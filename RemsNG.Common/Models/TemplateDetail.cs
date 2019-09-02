@@ -14,10 +14,16 @@ namespace RemsNG.Common.Models
         public string LcdaLogo { get; set; }
         public string BackgroundLogo { get; set; }
         public string CouncilTrasurerSignature { get; set; }
+        public string RevenueCoodinatorSignature { get; set; }
         public string ZipRepository { get; set; }
         public string ReminderUrl { get; set; }
         public string ReminderLagosLogo { get; set; }
         public string ReminderLcdaLogo { get; set; }
         public string ReminderBackgroundLogo { get; set; }
+    }
+
+    public enum TemplateType
+    {
+        DemandNotice, Reminder
     }
 }

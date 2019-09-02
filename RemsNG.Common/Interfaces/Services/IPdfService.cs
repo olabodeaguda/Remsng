@@ -2,7 +2,8 @@
 {
     public interface IPdfService
     {
-        byte[] GetPdf(string htmlstring);
-        byte[] GetPdf(string[] htmlstrings);
+        byte[] DemandNotice(string[] htmlstrings);
+        byte[] DemandNotice(string htmlString);
+        byte[] Reminder(string htmlString);
     }
 }

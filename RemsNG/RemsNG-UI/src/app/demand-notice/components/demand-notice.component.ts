@@ -156,7 +156,9 @@ export class DemandNoticeComponent implements OnInit {
             this.removePenalty();
         } else if (this.actionSelected === "DOWNLOAD".toLowerCase()) {
             this.downloadDNByTaxpayer();
-        } else if (this.actionSelected === "DELETE".toLowerCase()) {
+        } else if (this.actionSelected === "REMINDER".toLowerCase()) {
+            this.downloadReminderByTaxpayer();
+        }else if (this.actionSelected === "DELETE".toLowerCase()) {
             this.deleteTaxpayer();
         } else {
             this.toasterService.pop('warning', 'No Action confirmed', 'Please refresh the page and try again');
@@ -372,6 +374,28 @@ export class DemandNoticeComponent implements OnInit {
                 this.toasterService.pop('error', 'Error', error);
             });
     }
+
+
+    downloadReminderByTaxpayer() {
+        let lt = this.demandNoticeLst.filter(b => b.isChecked == true).map(x => x.billingNumber);
+        if (lt.length <= 0) {
+            this.toasterService.pop('error', 'Error', 'Please select demenad notice');
+            return;
+        }
+        this.isLoadingMini = true;
+        this.demandnoticeservice.downloadReminderBulk(lt)
+            .subscribe(response => {
+                this.isLoadingMini = false;
+                jQuery(this.promptRequest.nativeElement).modal('hide');
+                let blob = response;
+                FileSaver.saveAs(blob, 'reminders.pdf');
+            }, error => {
+                this.isLoadingMini = false;
+                jQuery(this.promptRequest.nativeElement).modal('hide');
+                this.toasterService.pop('error', 'Error', error);
+            });
+    }
+
     navigateView() {
         if (isNullOrUndefined(this.searchModel.wardId) &&
             isNullOrUndefined(this.searchModel.streetId)

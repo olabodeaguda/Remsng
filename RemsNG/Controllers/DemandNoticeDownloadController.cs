@@ -26,12 +26,14 @@ namespace RemsNG.Controllers
         private readonly ILogger logger;
         private readonly IBatchDwnRequestManager batchRequestService;
         private IDNPaymentHistoryManager paymentHistoryService;
+        private readonly TemplateDetail _templateDetails;
         public DemandNoticeDownloadController(IHostingEnvironment _hostingEnvironment,
             INodeServices _nodeServices, IDnDownloadManager _dnd,
             IBatchDwnRequestManager _batchRequestService,
             IDNPaymentHistoryManager _paymentHistoryService,
-            ILoggerFactory loggerFactory, IPdfService pdfService)
+            ILoggerFactory loggerFactory, IPdfService pdfService, TemplateDetail templateDetail)
         {
+            _templateDetails = templateDetail;
             hostingEnvironment = _hostingEnvironment;
             nodeServices = _nodeServices;
             dnd = _dnd;
@@ -56,14 +58,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            string template = await dnd.LcdaTemlate(billingno);
-
-            string rootUrl = hostingEnvironment.WebRootPath;
-            var htmlContent = await System.IO.File.ReadAllTextAsync($"{rootUrl}/templates/{template}");
-
-            htmlContent = await dnd.PopulateReportHtml1(htmlContent, billingno, rootUrl, User.Identity.Name);
-
-            var result = _pdfService.GetPdf(htmlContent);
+            var result = await dnd.GenerateDemandNotice(new long[] { billingno }, User.Identity.Name);
 
             HttpContext.Response.ContentType = "application/pdf";
             HttpContext.Response.Body.Write(result, 0, result.Length);
@@ -84,12 +79,7 @@ namespace RemsNG.Controllers
                 });
             }
 
-            string template = await dnd.LcdaTemlate(billingNo[0]);
-
-            string rootUrl = hostingEnvironment.WebRootPath;
-            var htmlContent = await System.IO.File.ReadAllTextAsync($"{rootUrl}/templates/{template}");
-
-            var result = await dnd.PopulateReportHtml(htmlContent, billingNo, rootUrl, User.Identity.Name);
+            var result = await dnd.GenerateDemandNotice(billingNo, User.Identity.Name);
 
             HttpContext.Response.ContentType = "application/pdf";
             HttpContext.Response.Body.Write(result, 0, result.Length);
@@ -106,7 +96,7 @@ namespace RemsNG.Controllers
             // HttpClient hc = new HttpClient();
             string rootUrl = hostingEnvironment.WebRootPath; //$"http://{Request.Host}";
 
-            var result = await System.IO.File.ReadAllBytesAsync($"{rootUrl}/zipReports/{batchno}/{batchno}.zip");
+            var result = await System.IO.File.ReadAllBytesAsync($"{_templateDetails.ZipRepository}/{batchno}/{batchno}.zip");
             //var result = await hc.GetByteArrayAsync($"{rootUrl}/zipReports/{batchno}/{batchno}.zip");
             if (result.Length < 1)
             {
@@ -182,13 +172,7 @@ namespace RemsNG.Controllers
                 throw new NotFoundException("Request not found");
             }
 
-            HttpClient hc = new HttpClient();
-            string template = await dnd.ReceiptTemlate(dnph.BillingNumber);
-
-            string rootUrl = hostingEnvironment.WebRootPath;
-            var htmlContent = await System.IO.File.ReadAllTextAsync($"{rootUrl}/templates/{template}");
-
-            htmlContent = await dnd.PopulateReceiptHtml(htmlContent, rootUrl, User.Identity.Name, dnph);
+            string htmlContent = await dnd.GenerateReceipt(User.Identity.Name, dnph);
             htmlContent = htmlContent.Replace("BANK_NAME", dnph.BankName);
             var result = await nodeServices.InvokeAsync<byte[]>("./pdf", htmlContent);
 
@@ -201,6 +185,27 @@ namespace RemsNG.Controllers
         public async Task<IActionResult> DownloadDNbyTaxpayer([FromBody] Guid[] dnId)
         {
             return Ok();
+        }
+
+        [RemsRequirementAttribute("BULK_DOWNLOAD")]
+        [Route("reminder")]
+        [HttpPost]
+        public async Task<IActionResult> Reminder([FromBody] long[] billingNo)
+        {
+            if (billingNo.Length <= 0)
+            {
+                return BadRequest(new Response
+                {
+                    code = MsgCode_Enum.FAIL,
+                    description = "Please select demand notice to download"
+                });
+            }
+
+            var result = await dnd.GenerateReminder(billingNo, User.Identity.Name);
+
+            HttpContext.Response.ContentType = "application/pdf";
+            HttpContext.Response.Body.Write(result, 0, result.Length);
+            return new ContentResult();
         }
     }
 }

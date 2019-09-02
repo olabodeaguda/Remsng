@@ -3,6 +3,7 @@ using iTextSharp.text.html.simpleparser;
 using iTextSharp.text.pdf;
 //using iTextSharp.text.pdf;
 using RemsNG.Common.Interfaces.Services;
+using RemsNG.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,20 +12,23 @@ namespace RemsNG.Infrastructure.Services
 {
     public class PdfService : IPdfService
     {
-        public byte[] GetPdf(string htmlstring)
+        private readonly TemplateDetail _template;
+
+        public PdfService(TemplateDetail templateDetail)
+        {
+            _template = templateDetail;
+        }
+
+        public byte[] DemandNotice(string htmlString)
         {
             byte[] pdfbyte = null;
             MemoryStream memoryStream = new MemoryStream();
             var styles = new StyleSheet();
 
-            //var props = new Hashtable
-            //{
-            //    { "img_provider", new MyImageFactory()}
-            //};
             var document = new Document(PageSize.A4);
             PdfWriter.GetInstance(document, memoryStream);
             document.Open();
-            var objects = HtmlWorker.ParseToList(new StringReader(htmlstring), styles).ToArray();
+            var objects = HtmlWorker.ParseToList(new StringReader(htmlString), styles).ToArray();
 
             for (int i = 0; i < objects.Length; i++)
             {
@@ -37,18 +41,23 @@ namespace RemsNG.Infrastructure.Services
             return pdfbyte;
         }
 
-        public byte[] GetPdf(string[] htmlstrings)
+        public byte[] DemandNotice(string[] htmlStrings)
         {
             byte[] pdfbyte = null;
 
             List<byte[]> lt = new List<byte[]>();
-            foreach (var tm in htmlstrings)
+            foreach (var tm in htmlStrings)
             {
-                lt.Add(GetPdf(tm));
+                lt.Add(DemandNotice(tm));
             }
             pdfbyte = MergeFiles(lt);
 
             return pdfbyte;
+        }
+
+        public byte[] Reminder(string htmlString)
+        {
+            throw new NotImplementedException();
         }
 
         private byte[] MergeFiles(List<byte[]> sourceFiles)

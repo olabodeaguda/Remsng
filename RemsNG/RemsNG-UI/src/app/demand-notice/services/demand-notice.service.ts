@@ -238,4 +238,8 @@ export class DemandNoticeService {
         return this.datataservice.postBlob('dndownload/bulk/',payload)
             .catch(error => this.datataservice.handleError(error));
     }
+    downloadReminderBulk(payload) {
+        return this.datataservice.postBlob('dndownload/reminder/', payload)
+            .catch(error => this.datataservice.handleError(error));
+    }
 }

@@ -1,4 +1,5 @@
-﻿using RemsNG.Common.Exceptions;
+﻿using Microsoft.Extensions.Options;
+using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Interfaces.Services;
 using RemsNG.Common.Models;
@@ -24,6 +25,7 @@ namespace RemsNG.Infrastructure.Managers
         private ITaxpayerCategoryManager _taxService;
         private readonly BankCategory _bankCategory;
         private readonly IPdfService _pdfService;
+        private TemplateDetail _templateDetails;
         public DnDownloadManager(IDemandNoticeTaxpayerManager _dnts,
             IDemandNoticeChargesManager _chargesService,
             IDemandNoticeDownloadHistoryManager _demandNoticeDownloadHistory,
@@ -32,8 +34,9 @@ namespace RemsNG.Infrastructure.Managers
             ISectorManager _sectorService, IDNAmountDueMgtManager _amountDueMgtService,
             IDNPaymentHistoryManager _dNPaymentHistoryService,
             BankCategory bankCategory, ITaxpayerCategoryManager taxService,
-            IPdfService pdfService)
+            IPdfService pdfService, TemplateDetail templateOptions)
         {
+            _templateDetails = templateOptions;
             dnts = _dnts;
             chargesService = _chargesService;
             demandNoticeDownloadHistory = _demandNoticeDownloadHistory;
@@ -47,12 +50,10 @@ namespace RemsNG.Infrastructure.Managers
             _pdfService = pdfService;
         }
 
-        public async Task<string> PopulateReceiptHtml(string htmlContent, string rootUrl,
-            string createdBy, DemandNoticePaymentHistoryModel dnph)
+        public async Task<string> GenerateReceipt(string createdBy, DemandNoticePaymentHistoryModel dnph)
         {
-            //var amountDue = await amountDueMgtService.ByBillingNo(dnph.billingNumber);
-            //decimal amtDue = amountDue.Sum(x => x.amountPaid);
-            // get history amount
+            string htmlContent = await File.ReadAllTextAsync(_templateDetails.RecieptUrl);
+
             DemandNoticeReportModel dnrp = await dnts.ByBillingNo(dnph.BillingNumber);
             SectorModel sector = await sectorService.ByTaxpayerId(dnrp.TaxpayerId);
 
@@ -60,9 +61,21 @@ namespace RemsNG.Infrastructure.Managers
             htmlContent = htmlContent.Replace("LCDA_NAME", dnrp.LcdaName);
             htmlContent = htmlContent.Replace("LCDA_ADDRESS", dnrp.LcdaAddress);
             htmlContent = htmlContent.Replace("LCDA_STATE", dnrp.LcdaState);
-            htmlContent = htmlContent.Replace("LAGOSLOGO", $"{rootUrl}/images/lagoslogo.jpg");
-            htmlContent = htmlContent.Replace("LCDA_LOGO", $"{rootUrl}/images/{dnrp.LcdaLogoFileName}");
-            htmlContent = htmlContent.Replace("BKIMAGE", $"{rootUrl}/templates/lagoslogo.jpeg");
+
+            if (!string.IsNullOrEmpty(_templateDetails.LagosLogo))
+            {
+                htmlContent = htmlContent.Replace("LAGOSLOGO", _templateDetails.LagosLogo);
+            }
+
+            if (!string.IsNullOrEmpty(_templateDetails.LcdaLogo))
+            {
+                htmlContent = htmlContent.Replace("LCDA_LOGO", _templateDetails.LcdaLogo);
+            }
+
+            if (!string.IsNullOrEmpty(_templateDetails.BackgroundLogo))
+            {
+                htmlContent = htmlContent.Replace("BKIMAGE", _templateDetails.BackgroundLogo);
+            }
 
             htmlContent = htmlContent.Replace("BILL_NO", $"{(sector != null ? sector.Prefix : "")}{dnrp.BillingNumber}");
             htmlContent = htmlContent.Replace("PAYER_NAME", string.IsNullOrEmpty(dnph.OtherNames) ? dnrp.TaxpayersName : dnph.OtherNames);
@@ -89,27 +102,6 @@ namespace RemsNG.Infrastructure.Managers
                 htmlContent = htmlContent.Replace("PAYMENT_DATE", tt.DateCreated.Value.ToString("dd-MM-yyyy"));
             }
             htmlContent = htmlContent.Replace("TOTAL_AMOUNT", $"{String.Format("{0:n}", decimal.Round(dnph.Amount, 2))} naira");
-            // htmlContent = htmlContent.Replace("TOTAL_AMOUNT", $"{String.Format("{0:n}", decimal.Round(dnrp.amountPaid, 2))} naira");
-            #region old
-            //dnph.amount > dnrp.amountPaid
-            //if (dnph.amount > dnrp.amountPaid)
-            //{
-            //    htmlContent = htmlContent.Replace("PAYMENT_STATUS", DemandNoticeStatus.OVERPAYMENT.ToString());//PAYMENT_STATUS
-            //    htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Overpaid : {String.Format("{0:n}", decimal.Round(dnph.amount - dnrp.amountPaid, 2))} naira");//PAYMENT_STATUS
-            //}
-            //else if (dnrp.amountDue > dnrp.amountPaid)
-            //{
-            //    htmlContent = htmlContent.Replace("PAYMENT_STATUS", dnrp.demandNoticeStatus);//PAYMENT_STATUS
-            //    decimal s = 0;
-            //    htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount balance Due : {String.Format("{0:n}", decimal.Round(dnrp.amountDue - dnrp.amountPaid, 2), 2)} naira");//PAYMENT_STATUS
-            //}
-            //else
-            //{
-            //    htmlContent = htmlContent.Replace("PAYMENT_STATUS", dnrp.demandNoticeStatus);//PAYMENT_STATUS
-            //    decimal s = 0;
-            //    htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Overpaid/balance Due : {String.Format("{0:n}", decimal.Round(s, 2), 2)} naira");//PAYMENT_STATUS
-            //} 
-            #endregion
 
             if (dnrp.amountPaid > amtDue)
             {
@@ -149,127 +141,9 @@ namespace RemsNG.Infrastructure.Managers
             return htmlContent;
         }
 
-        public async Task<string> PopulateReportHtml(string htmlContent, long billingno,
-            string rootUrl, string createdBy)
+        public async Task<string> LoadTemplate(string htmlContent, long billingno, string createdBy, TemplateType templateType)
         {
-            DemandNoticeReportModel dnrp = await dnts.ByBillingNo(billingno);
-            if (dnrp.items.Count == 0)
-            {
-                return string.Empty;
-            }
-            SectorModel sector = await sectorService.ByTaxpayerId(dnrp.TaxpayerId);
-
-            htmlContent = htmlContent.Replace("LOCAL_GOVERNMENT_NAME", dnrp.DomainName);
-            htmlContent = htmlContent.Replace("LCDA_NAME", dnrp.LcdaName);
-            htmlContent = htmlContent.Replace("LCDA_ADDRESS", dnrp.LcdaAddress);
-            htmlContent = htmlContent.Replace("LCDA_STATE", dnrp.LcdaState);
-            htmlContent = htmlContent.Replace("LAGOSLOGO", $"{rootUrl}/images/lagoslogo.jpg");
-            htmlContent = htmlContent.Replace("LCDA_LOGO", $"{rootUrl}/images/{dnrp.LcdaLogoFileName}");
-            htmlContent = htmlContent.Replace("dated", DateTime.Now.ToString("dd-MM-yyyy HH:mm"));//./templates/lcdaLogo.jpeg
-            htmlContent = htmlContent.Replace("BKIMAGE", $"{rootUrl}/templates/lcdaLogo.jpeg");
-
-            //if (dnrp.BillingNumber.Length < 5)
-            //{
-            //    string v = "";
-            //    for (int i = 0; i < 5 - dnrp.BillingNumber.Length; i++)
-            //    {
-            //        v = v + "0";
-            //    }
-
-            //    dnrp.BillingNumber = v + dnrp.BillingNumber;
-            //}
-
-            if (sector != null)
-            {
-                htmlContent = htmlContent.Replace("BILL_NO", $"{sector.Prefix}{dnrp.BillingNumber}");
-            }
-            else
-            {
-                htmlContent = htmlContent.Replace("BILL_NO", dnrp.BillingNumber.ToString());
-            }
-
-            htmlContent = htmlContent.Replace("PAYER_NAME", dnrp.TaxpayersName);
-            htmlContent = htmlContent.Replace("PAYER_ADDRESS", dnrp.AddressName);
-            htmlContent = htmlContent.Replace("CURRENT_DATE", DateTime.Now.ToString("dd-MM-yyyy"));
-            htmlContent = htmlContent.Replace("BILLING_YEAR", dnrp.BillingYr.ToString());
-            htmlContent = htmlContent.Replace("WARD_NAME", dnrp.WardName);
-
-            htmlContent = htmlContent.Replace("ITEMLIST", DemandNoticeComponents.HtmlBuildItems1(dnrp));
-
-            htmlContent = htmlContent.Replace("PATCH2", "");
-
-            var taxCategory = await _taxService.GetTaxpayerCategory(dnrp.TaxpayerId);
-            htmlContent = htmlContent.Replace("TAXPAYERCATEGORY", taxCategory.TaxpayerCategoryName);
-
-            htmlContent = htmlContent.Replace("BANKLIST", DemandNoticeComponents.HtmlBuildBanks(dnrp, _bankCategory, taxCategory));
-            htmlContent = htmlContent.Replace("ARREARS_AMMOUNT", String.Format("{0:n}", decimal.Round(dnrp.arrears, 2)));
-            htmlContent = htmlContent.Replace("PENALTY_AMOUNT", String.Format("{0:n}", decimal.Round(dnrp.penalty, 2)));
-
-            if (!string.IsNullOrEmpty(dnrp.CouncilTreasurerSigFilen))
-            {
-                htmlContent = htmlContent.Replace("COUNCIL_TRESURER_SIG", $"{rootUrl}/images/{dnrp.CouncilTreasurerSigFilen}");
-            }
-            if (!string.IsNullOrEmpty(dnrp.RevCoodinatorSigFilen))
-            {
-                htmlContent = htmlContent.Replace("REV_COORINATOR_SIG", $"{rootUrl}/images/{dnrp.RevCoodinatorSigFilen}");
-            }
-            htmlContent = htmlContent.Replace("TREASURER_MOBILE", string.IsNullOrEmpty(dnrp.CouncilTreasurerMobile) ? "nil" : dnrp.CouncilTreasurerMobile);
-
-            decimal gtotal = dnrp.items.Sum(x => x.itemAmount) + dnrp.arrears + dnrp.penalty;
-
-            htmlContent = htmlContent.Replace("GRAND_TOTAL", String.Format("{0:n}", decimal.Round(gtotal, 2)));
-
-            htmlContent = htmlContent.Replace("CHARGES", String.Format("{0:n}", decimal.Round(dnrp.charges, 2)));
-            decimal amountPaid = 0;
-            List<DemandNoticePaymentHistoryModel> dnpHistory = await dNPaymentHistoryService.ByBillingNumber(billingno);
-            dnpHistory = dnpHistory.Where(x => x.PaymentStatus == "APPROVED").ToList();
-            if (dnpHistory.Count > 0)
-            {
-                amountPaid = decimal.Round(dnpHistory.Sum(x => x.Amount), 2);
-            }
-
-            decimal finalTotal = gtotal + dnrp.charges - amountPaid;
-            var prepayment = await dNPaymentHistoryService.GetPrepaymentByTaxpayerId(dnrp.TaxpayerId);
-
-            if (prepayment != null && finalTotal > 0)
-            {
-                finalTotal = finalTotal - prepayment.amount;
-            }
-            else if (finalTotal < 0)
-            {
-                finalTotal = 0;
-            }
-
-            htmlContent = htmlContent.Replace("AMOUNT_PAID", String.Format("{0:n}", decimal.Round(amountPaid, 2)));
-            htmlContent = htmlContent.Replace("FINAL_TOTAL", String.Format("{0:n}", decimal.Round(finalTotal, 2)));
-
-            if (finalTotal == 0)
-            {
-                htmlContent = htmlContent.Replace("AMOUNT_IN_WORD", "Zero");
-            }
-            else
-            {
-                htmlContent = htmlContent.Replace("AMOUNT_IN_WORD", CurrencyWords.ConvertToWords(finalTotal.ToString()));
-            }
-
-            htmlContent = htmlContent.Replace("PREPAYMENT", $"{String.Format("{0:n}", decimal.Round((prepayment == null ? 0 : prepayment.amount), 2))} naira");
-
-            DemandNoticeDownloadHistoryModel dndh = new DemandNoticeDownloadHistoryModel();
-            dndh.Id = Guid.NewGuid();
-            dndh.BillingNumber = billingno;
-            dndh.Charges = dnrp.charges;
-            dndh.CreatedBy = createdBy;
-            dndh.DateCreated = DateTime.Now;
-            dndh.GrandTotal = gtotal;
-
-            await demandNoticeDownloadHistory.Add(dndh);
-
-            return htmlContent;
-        }
-
-        public async Task<string> PopulateReportHtml1(string htmlContent, long billingno,
-            string rootUrl, string createdBy)
-        {
+            //string htmlContent = await File.ReadAllTextAsync(_templateDetails.DemandNoticeUrl);
             DemandNoticeReportModel dnrp = await dnts.ByBillingNo(billingno);
             if (dnrp.items.Count == 0)
             {
@@ -282,26 +156,7 @@ namespace RemsNG.Infrastructure.Managers
             htmlContent = htmlContent.Replace("LCDA_ADDRESS", dnrp.LcdaAddress);
             htmlContent = htmlContent.Replace("LCDA_STATE", dnrp.LcdaState);
 
-            //htmlContent = htmlContent.Replace("LAGOSLOGO", $"{rootUrl}/images/lagoslogo.jpg");
-            //htmlContent = htmlContent.Replace("LCDA_LOGO", $"{rootUrl}/images/{dnrp.LcdaLogoFileName}");
-
-            //htmlContent = htmlContent.Replace("LCDA_LOGO", "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync($"{rootUrl}/images/lagoslogo.png")));
-            //htmlContent = htmlContent.Replace("LAGOSLOGO", "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync($"{rootUrl}/images/lagoslogo.png")));
-            //htmlContent = htmlContent.Replace("LCDA_LOGO", Convert.ToBase64String(await File.ReadAllBytesAsync($"{rootUrl}/images/{dnrp.LcdaLogoFileName}")));
-
-            htmlContent = htmlContent.Replace("dated", DateTime.Now.ToString("dd-MM-yyyy HH:mm"));//./templates/lcdaLogo.jpeg
-                                                                                                  //  htmlContent = htmlContent.Replace("BKIMAGE", $"{rootUrl}/templates/lcdaLogo.jpeg");
-
-            //if (dnrp.BillingNumber.Length < 5)
-            //{
-            //string v = "";
-            //for (int i = 0; i < 5 - dnrp.BillingNumber.Length; i++)
-            //{
-            //    v = v + "0";
-            //}
-
-            //dnrp.BillingNumber = v + dnrp.BillingNumber;
-            //}
+            htmlContent = htmlContent.Replace("dated", DateTime.Now.ToString("dd-MM-yyyy HH:mm"));
 
             if (sector != null)
             {
@@ -330,15 +185,47 @@ namespace RemsNG.Infrastructure.Managers
             htmlContent = htmlContent.Replace("ARREARS_AMMOUNT", String.Format("{0:n}", decimal.Round(dnrp.arrears, 2)));
             htmlContent = htmlContent.Replace("PENALTY_AMOUNT", String.Format("{0:n}", decimal.Round(dnrp.penalty, 2)));
 
-            if (!string.IsNullOrEmpty(dnrp.CouncilTreasurerSigFilen))
+            #region  demand Notice images
+            if (!string.IsNullOrEmpty(_templateDetails.LcdaLogo) && templateType == TemplateType.DemandNotice)
             {
-                string sig = $"{rootUrl}/images/{dnrp.CouncilTreasurerSigFilen}";
+                htmlContent = htmlContent.Replace("LCDA_LOGO", "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync(_templateDetails.LcdaLogo)));
+            }
+            if (!string.IsNullOrEmpty(_templateDetails.LagosLogo) && templateType == TemplateType.DemandNotice)
+            {
+                htmlContent = htmlContent.Replace("LAGOSLOGO", "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync(_templateDetails.LagosLogo)));
+            }
+            if (!string.IsNullOrEmpty(_templateDetails.BackgroundLogo) && templateType == TemplateType.DemandNotice)
+            {
+                htmlContent = htmlContent.Replace("LCDA_LOGO", "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync(_templateDetails.BackgroundLogo)));
+            }
+            #endregion
+
+
+            #region Reminder Images
+            if (!string.IsNullOrEmpty(_templateDetails.ReminderLcdaLogo) && templateType == TemplateType.Reminder)
+            {
+                htmlContent = htmlContent.Replace("LCDA_LOGO", "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync(_templateDetails.ReminderLcdaLogo)));
+            }
+            if (!string.IsNullOrEmpty(_templateDetails.ReminderLagosLogo) && templateType == TemplateType.Reminder)
+            {
+                htmlContent = htmlContent.Replace("LAGOSLOGO", "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync(_templateDetails.ReminderLagosLogo)));
+            }
+            if (!string.IsNullOrEmpty(_templateDetails.ReminderBackgroundLogo) && templateType == TemplateType.Reminder)
+            {
+                htmlContent = htmlContent.Replace("LCDA_LOGO", "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync(_templateDetails.ReminderBackgroundLogo)));
+            }
+            #endregion
+
+
+            if (!string.IsNullOrEmpty(_templateDetails.CouncilTrasurerSignature))
+            {
+                string sig = _templateDetails.CouncilTrasurerSignature;
                 string tu = "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync(sig));
                 htmlContent = htmlContent.Replace("COUNCIL_TRESURER_SIG", tu);
             }
-            if (!string.IsNullOrEmpty(dnrp.RevCoodinatorSigFilen))
+            if (!string.IsNullOrEmpty(_templateDetails.RevenueCoodinatorSignature))
             {
-                htmlContent = htmlContent.Replace("REV_COORINATOR_SIG", $"{rootUrl}/images/{dnrp.RevCoodinatorSigFilen}");
+                htmlContent = htmlContent.Replace("REV_COORINATOR_SIG", _templateDetails.RevenueCoodinatorSignature);
             }
             htmlContent = htmlContent.Replace("TREASURER_MOBILE", string.IsNullOrEmpty(dnrp.CouncilTreasurerMobile) ? "nil" : dnrp.CouncilTreasurerMobile);
 
@@ -394,196 +281,35 @@ namespace RemsNG.Infrastructure.Managers
             return htmlContent;
         }
 
-        public async Task<byte[]> PopulateReportHtml(string htmlContent, long[] billingno,
-            string rootUrl, string createdBy)
+        public async Task<byte[]> GenerateDemandNotice(long[] billingno, string createdBy)
         {
             List<string> lst = new List<string>();
+            string htmlContent = await File.ReadAllTextAsync(_templateDetails.DemandNoticeUrl);
             foreach (var tm in billingno)
             {
-                string val = await PopulateReportHtml1(htmlContent, tm, rootUrl, createdBy);
+                string val = await LoadTemplate(htmlContent, tm, createdBy, TemplateType.DemandNotice);
                 lst.Add(val);
             }
 
-            byte[] result = _pdfService.GetPdf(lst.ToArray());
+            byte[] result = _pdfService.DemandNotice(lst.ToArray());
 
             return result;
         }
 
-        //public async Task<byte[]> PopulateReportHtml(string htmlContent, DemandNoticeTaxpayersModel[] billingno,
-        //    string rootUrl, string createdBy)
-        //{
-        //    List<string> lst = new List<string>();
-        //    foreach (var tm in billingno)
-        //    {
-        //        string val = await PopulateReportHtml1(htmlContent, tm, rootUrl, createdBy);
-        //        lst.Add(val);
-        //    }
-
-        //    byte[] result = _pdfService.GetPdf(lst.ToArray());
-
-        //    return result;
-        //}
-
-        public async Task<string> PopulateReportHtmlBase64(string htmlContent, long billingno,
-          string rootUrl, string createdBy)
+        public async Task<byte[]> GenerateReminder(long[] billingno, string createdBy)
         {
-            DemandNoticeReportModel dnrp = await dnts.ByBillingNo(billingno);
-            if (dnrp.items.Count == 0)
+            List<string> lst = new List<string>();
+            string htmlContent = await File.ReadAllTextAsync(_templateDetails.ReminderUrl);
+            foreach (var tm in billingno)
             {
-                return string.Empty;
-            }
-            SectorModel sector = await sectorService.ByTaxpayerId(dnrp.TaxpayerId);
-
-            htmlContent = htmlContent.Replace("LOCAL_GOVERNMENT_NAME", dnrp.DomainName);
-            htmlContent = htmlContent.Replace("LCDA_NAME", dnrp.LcdaName);
-            htmlContent = htmlContent.Replace("LCDA_ADDRESS", dnrp.LcdaAddress);
-            htmlContent = htmlContent.Replace("LCDA_STATE", dnrp.LcdaState);
-            htmlContent = htmlContent.Replace("LAGOSLOGO", Convert.ToBase64String(await File.ReadAllBytesAsync($"{rootUrl}/images/lagoslogo.jpg")));
-            htmlContent = htmlContent.Replace("LCDA_LOGO", Convert.ToBase64String(await File.ReadAllBytesAsync($"{rootUrl}/images/{dnrp.LcdaLogoFileName}")));
-            htmlContent = htmlContent.Replace("dated", DateTime.Now.ToString("dd-MM-yyyy HH:mm"));//./templates/lcdaLogo.jpeg
-            htmlContent = htmlContent.Replace("BKIMAGE", Convert.ToBase64String(await File.ReadAllBytesAsync($"{rootUrl}/templates/lcdaLogo.jpeg")));
-
-            //if (dnrp.BillingNumber.Length < 5)
-            //{
-            //    string v = "";
-            //    for (int i = 0; i < 5 - dnrp.BillingNumber.Length; i++)
-            //    {
-            //        v = v + "0";
-            //    }
-
-            //    dnrp.BillingNumber = v + dnrp.BillingNumber;
-            //}
-
-            if (sector != null)
-            {
-                htmlContent = htmlContent.Replace("BILL_NO", $"{sector.Prefix}{dnrp.BillingNumber}");
-            }
-            else
-            {
-                htmlContent = htmlContent.Replace("BILL_NO", dnrp.BillingNumber.ToString());
+                string val = await LoadTemplate(htmlContent, tm, createdBy, TemplateType.Reminder);
+                lst.Add(val);
             }
 
-            htmlContent = htmlContent.Replace("PAYER_NAME", dnrp.TaxpayersName);
-            htmlContent = htmlContent.Replace("PAYER_ADDRESS", dnrp.AddressName);
-            htmlContent = htmlContent.Replace("CURRENT_DATE", DateTime.Now.ToString("dd-MM-yyyy"));
-            htmlContent = htmlContent.Replace("BILLING_YEAR", dnrp.BillingYr.ToString());
-            htmlContent = htmlContent.Replace("WARD_NAME", dnrp.WardName);
+            byte[] result = _pdfService.DemandNotice(lst.ToArray());
 
-            htmlContent = htmlContent.Replace("ITEMLIST", DemandNoticeComponents.HtmlBuildItems(dnrp));
-
-            htmlContent = htmlContent.Replace("PATCH2", "");
-
-            var taxCategory = await _taxService.GetTaxpayerCategory(dnrp.TaxpayerId);
-            htmlContent = htmlContent.Replace("TAXPAYERCATEGORY", taxCategory.TaxpayerCategoryName);
-
-            htmlContent = htmlContent.Replace("BANKLIST", DemandNoticeComponents.HtmlBuildBanks(dnrp, _bankCategory, taxCategory));
-            htmlContent = htmlContent.Replace("ARREARS_AMMOUNT", String.Format("{0:n}", decimal.Round(dnrp.arrears, 2)));
-            htmlContent = htmlContent.Replace("PENALTY_AMOUNT", String.Format("{0:n}", decimal.Round(dnrp.penalty, 2)));
-
-            if (!string.IsNullOrEmpty(dnrp.CouncilTreasurerSigFilen))
-            {
-                htmlContent = htmlContent.Replace("COUNCIL_TRESURER_SIG", $"{rootUrl}/images/{dnrp.CouncilTreasurerSigFilen}");
-            }
-            if (!string.IsNullOrEmpty(dnrp.RevCoodinatorSigFilen))
-            {
-                htmlContent = htmlContent.Replace("REV_COORINATOR_SIG", $"{rootUrl}/images/{dnrp.RevCoodinatorSigFilen}");
-            }
-            htmlContent = htmlContent.Replace("TREASURER_MOBILE", string.IsNullOrEmpty(dnrp.CouncilTreasurerMobile) ? "nil" : dnrp.CouncilTreasurerMobile);
-            decimal gtotal = dnrp.items.Sum(x => x.itemAmount) + dnrp.arrears + dnrp.penalty;
-            htmlContent = htmlContent.Replace("GRAND_TOTAL", String.Format("{0:n}", decimal.Round(gtotal, 2)));
-
-            htmlContent = htmlContent.Replace("CHARGES", String.Format("{0:n}", decimal.Round(dnrp.charges, 2)));
-            decimal amountPaid = 0;
-            List<DemandNoticePaymentHistoryModel> dnpHistory = await dNPaymentHistoryService.ByBillingNumber(billingno);
-            dnpHistory = dnpHistory.Where(x => x.PaymentStatus == "APPROVED").ToList();
-            if (dnpHistory.Count > 0)
-            {
-                amountPaid = decimal.Round(dnpHistory.Sum(x => x.Amount), 2);
-            }
-            decimal finalTotal = gtotal + dnrp.charges - amountPaid;
-            var prepayment = await dNPaymentHistoryService.GetPrepaymentByTaxpayerId(dnrp.TaxpayerId);
-            //if (finalTotal < 0)
-            //{
-            //}
-            if (prepayment != null && finalTotal > 0)
-            {
-                finalTotal = finalTotal - prepayment.amount;
-            }
-            else if (finalTotal < 0)
-            {
-                finalTotal = 0;
-            }
-
-            htmlContent = htmlContent.Replace("AMOUNT_PAID", String.Format("{0:n}", decimal.Round(amountPaid, 2)));
-            htmlContent = htmlContent.Replace("FINAL_TOTAL", String.Format("{0:n}", decimal.Round(finalTotal, 2)));
-
-            if (finalTotal == 0)
-            {
-                htmlContent = htmlContent.Replace("AMOUNT_IN_WORD", "Zero");
-            }
-            else
-            {
-                htmlContent = htmlContent.Replace("AMOUNT_IN_WORD", CurrencyWords.ConvertToWords(finalTotal.ToString()));
-            }
-
-            htmlContent = htmlContent.Replace("PREPAYMENT", $"{String.Format("{0:n}", decimal.Round((prepayment == null ? 0 : prepayment.amount), 2))} naira");
-
-            DemandNoticeDownloadHistoryModel dndh = new DemandNoticeDownloadHistoryModel();
-            dndh.Id = Guid.NewGuid();
-            dndh.BillingNumber = billingno;
-            dndh.Charges = dnrp.charges;
-            dndh.CreatedBy = createdBy;
-            dndh.DateCreated = DateTime.Now;
-            dndh.GrandTotal = gtotal;
-
-            await demandNoticeDownloadHistory.Add(dndh);
-
-            return htmlContent;
+            return result;
         }
-
-        public async Task<string> LcdaTemlate(long billingno)
-        {
-            LcdaModel lgda = await lcdaService.ByBillingNumber(billingno);
-            if (lgda == null)
-            {
-                throw new NotFoundException($" {billingno} parent not found");
-            }
-            List<LcdaPropertyModel> lstProperties = await listPropertyService.ByLcda(lgda.Id);
-            var allowPayment = lstProperties
-                .FirstOrDefault(x => x.PropertyKey == "ALLOW_PAYMENT_SERVICES" && x.PropertyStatus == "ACTIVE");
-            var allowHeader = lstProperties
-               .FirstOrDefault(x => x.PropertyKey == "ALLOW_HEADER" && x.PropertyStatus == "ACTIVE");
-
-            return CommonList.Template((allowPayment == null ? "0" : allowPayment.PropertyValue),
-                (allowHeader == null ? "0" : allowHeader.PropertyValue));
-        }
-
-        public async Task<string> LcdaTemlateByLcda(Guid lcdaId)
-        {
-            List<LcdaPropertyModel> lstProperties = await listPropertyService.ByLcda(lcdaId);
-            var allowPayment = lstProperties
-                .FirstOrDefault(x => x.PropertyKey == "ALLOW_PAYMENT_SERVICES" && x.PropertyStatus == "ACTIVE");
-            var allowHeader = lstProperties
-               .FirstOrDefault(x => x.PropertyKey == "ALLOW_HEADER" && x.PropertyStatus == "ACTIVE");
-
-            return CommonList.Template((allowPayment == null ? "0" : allowPayment.PropertyValue),
-                (allowHeader == null ? "0" : allowHeader.PropertyValue));
-        }
-
-        public async Task<string> ReceiptTemlate(long billingno)
-        {
-            LcdaModel lgda = await lcdaService.ByBillingNumber(billingno);
-            if (lgda == null)
-            {
-                throw new NotFoundException($" {billingno} parent not found");
-            }
-            List<LcdaPropertyModel> lstProperties = await listPropertyService.ByLcda(lgda.Id);
-            var allowHeader = lstProperties
-               .FirstOrDefault(x => x.PropertyKey == "ALLOW_HEADER" && x.PropertyStatus == "ACTIVE");
-
-            return CommonList.ReceiptTemplate((allowHeader == null ? "0" : allowHeader.PropertyValue));
-        }
-
 
     }
 }
