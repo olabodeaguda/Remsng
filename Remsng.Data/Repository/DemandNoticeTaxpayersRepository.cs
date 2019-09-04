@@ -817,7 +817,9 @@ namespace RemsNG.Data.Repository
                 TaxpayerId = x.TaxpayerId,
                 TaxpayersName = x.TaxpayersName,
                 WardName = x.WardName,
-                StreetName = x.DemandNotice.Street.StreetName
+                StreetName = x.DemandNotice.Street.StreetName,
+                IsRunArrears = x.IsRunArrears,
+                IsRunPenalty = x.IsRunPenalty
             }).OrderByDescending(x => x.DateCreated).ToArrayAsync();
 
             return result;

@@ -124,11 +124,14 @@ namespace RemsNG.Infrastructure.Managers
 
         public async Task<TaxPayerModel[]> ValidTaxpayers(DemandNoticeRequestModel model)
         {
-            DemandNoticeTaxpayersModel[] dntModel = await _dnTaxpayerRepo.SearchTaxpayers(model);
+            //paid, partpayment, pending
+            string[] status = { "PART_PAYMENT", "PENDING" };
 
-            TaxPayerModel[] taxPayers =
-                (await _taxpayerRepository.SearchByDNRequest(model, dntModel.Where(s => !s.IsRunArrears).Select(x => x.TaxpayerId)
-                .ToArray())).Select(d =>
+            DemandNoticeTaxpayersModel[] dntModel = await _dnTaxpayerRepo.SearchTaxpayers(model);
+            Guid[] excludedTaxpayers = dntModel.Where(s => !s.IsRunArrears && status.Any(d => d == s.DemandNoticeStatus)).Select(x => x.TaxpayerId).ToArray();
+
+            TaxPayerModel[] taxPayers = (await _taxpayerRepository.SearchByDNRequest(model, excludedTaxpayers))
+                .Select(d =>
                 {
                     var r = d;
                     var t = dntModel.FirstOrDefault(x => x.TaxpayerId == r.Id);

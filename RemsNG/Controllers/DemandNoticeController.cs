@@ -503,7 +503,6 @@ namespace RemsNG.Controllers
             });
         }
 
-
         [HttpPost("arrears/add/all")]
         public async Task<IActionResult> AddArrears([FromBody] DemandNoticeRequestModel model)
         {
@@ -524,7 +523,6 @@ namespace RemsNG.Controllers
                 description = result ? "Arrears has been run successfully" : "Please try again or contact your administrator"
             });
         }
-
 
         [HttpPost("penalty/add/all")]
         public async Task<IActionResult> AddPenalty([FromBody]  DemandNoticeRequestModel model)
@@ -547,6 +545,5 @@ namespace RemsNG.Controllers
                 description = result ? "Penalty has been run successfully" : "Please try again or contact your administrator"
             });
         }
-
     }
 }

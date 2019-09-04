@@ -160,21 +160,6 @@ namespace RemsNG.Controllers
             }
             else
             {
-                if (dnph.IsWaiver)
-                {
-                    // get arrears
-                    //var arrears = await demandNoticeTaxpayerService.GetArrearsByTaxpayerId(dnph.ownerId);
-                    //if (arrears.Sum(x=>x.totalAmount) <= dnph.amount)
-                    //{
-                    //    string query1 = ""
-                    //}
-
-                    ////get penalty
-                    //var penalty = _penaltyService.ActivePenalty(dnph.ownerId);
-
-
-                }
-
                 var txpayer = await demandNoticeTaxpayerService.TaxpayerMiniByBillingNo(dnph.BillingNumber);
                 var prepay = await dNPaymentHistoryService.GetPrepaymentByTaxpayerId(txpayer.TaxpayerId);
                 if (prepay != null)
