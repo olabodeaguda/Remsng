@@ -182,7 +182,7 @@
                                                 <td>{{data.companyName}}</td>
                                                 <td>{{data.taxpayerStatus}}</td>
                                                 <td>{{data.lastmodifiedby?.length > 1? data.lastmodifiedby: data.createdBy}}</td>
-                                                <td>{{(data.lastModifiedDate?.length === '' ?data.lastModifiedDate :data.dateCreated)|
+                                                <td>{{(data.lastModifiedDate?.length !== '' ?data.lastModifiedDate :data.dateCreated)|
                                                     date}}
                                                 </td>
                                             </tr>

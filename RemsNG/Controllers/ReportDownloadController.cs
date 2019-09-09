@@ -76,8 +76,8 @@ namespace RemsNG.Controllers
             ed = ed.AddMinutes(59);
 
             List<ItemReportSummaryModel> current = await reportService.ByDate(sd, ed);
-            List<ItemReportSummaryModel> previous = await reportService.ByDate(
-                new DateTime(sd.Year, 1, 1, 0, 0, 0), sd);
+            //List<ItemReportSummaryModel> previous = await reportService.ByDate(
+            //    new DateTime(sd.Year, 1, 1, 0, 0, 0), sd);
 
             if (current.Count < 1)
             {
@@ -90,7 +90,7 @@ namespace RemsNG.Controllers
 
             DomainModel domain = await lcdaService.GetDomain(lgda.Id);
 
-            byte[] result = await excelService.WriteReportSummary(current, previous,
+            byte[] result = await excelService.WriteReportSummary(current,
                 (domain == null ? "Unknown" : domain.DomainName), lgda.LcdaName, sd, ed);
 
             HttpContext.Response.ContentType = "application/octet-stream";
@@ -329,6 +329,65 @@ namespace RemsNG.Controllers
 
             HttpContext.Response.ContentType = "application/octet-stream";
             HttpContext.Response.Body.Write(byt, 0, byt.Length);
+            return new ContentResult();
+        }
+
+        [RemsRequirementAttribute("DOWNLOAD_REPORT")]
+        [HttpGet("byward/{startDate}/{endDate}")]
+        public async Task<object> ByWard(string startDate, string endDate)
+        {
+            if (string.IsNullOrEmpty(startDate))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Start date is required"
+                });
+            }
+            else if (string.IsNullOrEmpty(endDate))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "End date is required"
+                });
+            }
+            Guid lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
+            LcdaModel lgda = await lcdaService.Get(lcdaId);
+            if (lgda == null)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.UNKNOWN,
+                    description = $"Log on user unknown"
+                });
+            }
+
+            DateTime sd = DateTime.ParseExact(startDate, "dd-MM-yyyy", null);
+            DateTime ed = DateTime.ParseExact(endDate, "dd-MM-yyyy", null);
+            ed = ed.AddHours(23);
+            ed = ed.AddMinutes(59);
+
+            List<ItemReportSummaryModel> current = await reportService.ByDate(sd, ed);
+            //List<ItemReportSummaryModel> previous = await reportService.ByDate(
+            //    new DateTime(sd.Year, 1, 1, 0, 0, 0), sd);
+
+            if (current.Count < 1)
+            {
+                return NotFound(new Response()
+                {
+                    code = MsgCode_Enum.NOTFOUND,
+                    description = "Zero record(s) found"
+                });
+            }
+
+            DomainModel domain = await lcdaService.GetDomain(lgda.Id);
+
+            byte[] result = await excelService.TaxpayerReportByWard(current,
+                (domain == null ? "Unknown" : domain.DomainName), lgda.LcdaName, sd, ed);
+
+            HttpContext.Response.ContentType = "application/octet-stream";
+            HttpContext.Response.Body.Write(result, 0, result.Length);
             return new ContentResult();
         }
     }

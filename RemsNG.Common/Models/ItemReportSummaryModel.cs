@@ -19,5 +19,10 @@ namespace RemsNG.Common.Models
         public string taxpayersName { get; set; }
         public string addressName { get; set; }
         public DateTime? lastModifiedDate { get; set; }
+        public string BankName { get; set; }
+        public string ItemsName { get; set; }
+        public DateTime BillingDate { get; set; }
+        public DateTime? PaymentDate { get; set; }
+        public string Reference { get; set; }
     }
 }

@@ -14,10 +14,12 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class TaxpayerManager : ITaxpayerManager
     {
+        private DemandNoticeTaxpayersRepository _dnRepo;
         private IDNAmountDueMgtManager amountDueMgtService;
         private TaxpayerRepository taxpayerDao;
         public TaxpayerManager(DbContext _db, ILoggerFactory loggerFactory, IDNAmountDueMgtManager _amountDueMgtService)
         {
+            _dnRepo = new DemandNoticeTaxpayersRepository(_db);
             taxpayerDao = new TaxpayerRepository(_db);
             amountDueMgtService = _amountDueMgtService;
         }
@@ -69,6 +71,7 @@ namespace RemsNG.Infrastructure.Managers
 
         public async Task<Response> Update(TaxPayerModel taxpayer)
         {
+            await _dnRepo.UpdateTaxpayerName(taxpayer.Id, $"{taxpayer.Surname} {taxpayer.Lastname} {taxpayer.Firstname}");
             return await taxpayerDao.Update(taxpayer);
         }
 

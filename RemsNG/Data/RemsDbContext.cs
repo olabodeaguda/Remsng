@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Remsng.Data.Entities;
+using RemsNG.Common.Models;
 using RemsNG.Data.Entities;
 
 namespace RemsNG.Data
@@ -47,7 +48,7 @@ namespace RemsNG.Data
         public DbSet<BatchDownloadRequest> BatchDownloadRequests { get; set; }
         public DbSet<ContactPerson> ContactPeople { get; set; }
         public DbSet<CloudData> CloudDatas { get; set; }
-
+        public DbQuery<ItemReportSummaryModel> ItemReportSummaryModels { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -111,6 +112,20 @@ namespace RemsNG.Data
                 .HasOne(x => x.Street)
                 .WithMany(r => r.Addresses)
                 .HasForeignKey(d => d.StreetId);
+            modelBuilder
+                .Query<ItemReportSummaryModel>().ToView("View_rptTBlDnItem");
         }
     }
 }
+/*
+ CREATE VIEW View_rptTBlDnItem AS 
+select dni.Id, dni.ItemAmount,dni.BillingNo,
+'ITEMS' as category,dn.WardId, dnt.WardName,
+dnt.TaxpayersName, item.ItemCode, item.ItemDescription,
+dni.LastModifiedDate, dnt.AddressName
+from tbl_demandNoticeItem as dni
+inner join tbl_item as item on item.Id = dni.ItemId
+inner join tbl_demandNoticeTaxpayers as dnt on dnt.Id = dni.dn_taxpayersDetailsId
+inner join tbl_demandnotice as dn on dn.Id = dnt.DnId
+
+ */

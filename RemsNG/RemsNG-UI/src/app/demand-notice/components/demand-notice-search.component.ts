@@ -34,8 +34,9 @@ export class DemandNoticeSearchComponent implements OnInit {
     @ViewChild('addArrears') addArrears: ElementRef;
     @ViewChild('paymentModal') paymentModal: ElementRef;
     @ViewChild('cancelDemandNoticeModal') cancelDemandNoticeModal: ElementRef;
-    @ViewChild('paymentListModal') paymentListModal: ElementRef;
+    @ViewChild('paymentListModal') paymentListModal: ElementRef;//
     @ViewChild('UnbilledModal') unbilledModal: ElementRef;
+    @ViewChild('editAddressModal') editAddressModal: ElementRef;
     selectDemandNotice;
     dnpModel: DemandNoticePaymentModel = new DemandNoticePaymentModel();
     isLoadingMini: boolean = false;
@@ -103,6 +104,12 @@ export class DemandNoticeSearchComponent implements OnInit {
         this.selectDemandNotice = data;
         console.log(data);
         jQuery(this.unbilledModal.nativeElement).modal('show');
+    }
+
+    openEditAddress(data) {
+        this.selectDemandNotice = data;
+        console.log(data);
+        jQuery(this.editAddressModal.nativeElement).modal('show');
     }
 
     submitUnbilled() {

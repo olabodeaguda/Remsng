@@ -105,54 +105,85 @@ namespace RemsNG.Data.Repository
             string[] status = { "PAID", "PENDING", "PART_PAYMENT" };
 
             // get pending notice created at that those date
+
+            string qry = $"select * from tbl_demandNoticeTaxpayers " +
+                $"where DemandNoticeStatus in ('PAID', 'PENDING', 'PART_PAYMENT')  " +
+                $"and (DateCreated >= CONVERT(varchar,'{startDate.ToString("yyyy-MM-dd")} 12:00:00',120) and DateCreated <= CONVERT(varchar,'{endDate.ToString("yyyy-MM-dd")} 11:59:00',120))";
+
             var dnBtwDate = await db.Set<DemandNoticeTaxpayer>()
-                .Where(x => x.DateCreated >= startDate && x.DateCreated <= endDate && status.Any(p => p == x.DemandNoticeStatus)).ToListAsync();
+                .FromSql(qry).ToArrayAsync();
+
+            //var dnBtwDate1 = await db.Set<DemandNoticeTaxpayer>()
+            //    .Where(x => x.DateCreated >= startDate && x.DateCreated <= endDate
+            //    && (x.DemandNoticeStatus == "PAID" || x.DemandNoticeStatus == "PENDING" || x.DemandNoticeStatus == "PART_PAYMENT"))// status.Any(p => p == x.DemandNoticeStatus))
+            //    .ToListAsync();
 
             // get all payment made during those period
             var payBtwDate = await db.Set<DemandNoticePaymentHistory>()
                 .Where(x => x.LastModifiedDate >= startDate && x.LastModifiedDate <= endDate && x.PaymentStatus == "APPROVED")
                 .ToListAsync();
 
-
             // merge the bill numbers
-            long[] billsNUmber = dnBtwDate.Select(x => x.BillingNumber).ToArray()
+            long[] billNUmbers = dnBtwDate.Select(x => x.BillingNumber).ToArray()
                 .Concat(payBtwDate.Select(x => x.BillingNumber).ToArray())
                 .Distinct()
                 .ToArray();
 
-            // get the report
-            var allDemandNotice = await db.Set<DemandNoticeTaxpayer>().Where(x => billsNUmber.Any(p => p == x.BillingNumber)).ToArrayAsync();
+            Guid[] txIds = dnBtwDate.Select(x => x.TaxpayerId).ToArray()
+                .Concat(payBtwDate.Select(x => x.OwnerId).ToArray())
+                .Distinct()
+                .ToArray();
+            string nNums = string.Join(',', billNUmbers);
+
+            string query = "select * from tbl_demandNoticeTaxpayers where BillingNumber in (" + nNums + ")";
+
             var allPayment = await db.Set<DemandNoticePaymentHistory>()
-                .Where(x => billsNUmber.Any(p => p == x.BillingNumber) && x.LastModifiedDate <= endDate && x.PaymentStatus == "APPROVED")
+                .Include(d => d.Bank)
+                .Where(x => billNUmbers.Any(p => p == x.BillingNumber)
+                && x.LastModifiedDate <= endDate && x.PaymentStatus == "APPROVED")
+                .Select(e => new DemandNoticePaymentHistoryModel
+                {
+                    Amount = e.Amount,
+                    BankId = e.BankId,
+                    BankName = e.Bank.BankName,
+                    BillingNumber = e.BillingNumber,
+                    CreatedBy = e.CreatedBy,
+                    DateCreated = e.DateCreated,
+                    Id = e.Id,
+                    Lastmodifiedby = e.Lastmodifiedby,
+                    LastModifiedDate = e.LastModifiedDate,
+                    OtherNames = e.OtherNames,
+                    PaymentMode = e.PaymentMode,
+                    OwnerId = e.OwnerId,
+                    PaymentStatus = e.PaymentStatus,
+                    ReferenceNumber = e.ReferenceNumber
+                })
                 .ToArrayAsync();
 
             #region Query result
+
             var items = await db.Set<DemandNoticeItem>()
-                    .Include(p => p.Item)
-                    .Join(db.Set<DemandNoticeTaxpayer>()
-                    .Include(x => x.DemandNotice)
-                    .ThenInclude(j => j.Street)
-                    .ThenInclude(j => j.Ward),
-                    itm => itm.dn_taxpayersDetailsId, dnt => dnt.Id, (itm, dnt) => new { itm, dnt })
-                    .Where(q =>
-                    q.dnt.DemandNotice.Ward.WardStatus == "ACTIVE" &&
-                   allDemandNotice.Any(x => x.Id == q.dnt.Id)
-                   && !q.dnt.IsUnbilled)
-                    .Select(s => new ItemReportSummaryModel
-                    {
-                        id = s.itm.Id,
-                        itemAmount = s.itm.ItemAmount,
-                        amountPaid = s.itm.AmountPaid,
-                        billingNo = s.itm.BillingNo,
-                        category = "ITEMS",
-                        wardId = s.dnt.DemandNotice.WardId.Value,
-                        wardName = s.dnt.WardName,
-                        taxpayersName = s.dnt.TaxpayersName,
-                        itemCode = s.itm.Item.ItemCode,
-                        itemDescription = s.itm.Item.ItemDescription,
-                        lastModifiedDate = s.itm.LastModifiedDate ?? s.itm.DateCreated,
-                        addressName = s.dnt.AddressName
-                    }).ToListAsync();
+                .Include(x => x.DemandNoticeTaxpayer)
+                .ThenInclude(d => d.DemandNotice)
+                .Where(s => s.DemandNoticeTaxpayer.DemandNotice.Ward.WardStatus == "ACTIVE"
+                && billNUmbers.Contains(s.BillingNo))
+                .Select(s => new ItemReportSummaryModel
+                {
+                    id = s.Id,
+                    itemAmount = s.ItemAmount,
+                    amountPaid = s.AmountPaid,
+                    billingNo = s.BillingNo,
+                    category = "ITEMS",
+                    wardId = s.DemandNoticeTaxpayer.DemandNotice.WardId.Value,
+                    wardName = s.DemandNoticeTaxpayer.WardName,
+                    taxpayersName = s.DemandNoticeTaxpayer.TaxpayersName,
+                    itemCode = s.Item.ItemCode,
+                    itemDescription = s.Item.ItemDescription,
+                    lastModifiedDate = s.LastModifiedDate ?? s.DateCreated,
+                    addressName = s.DemandNoticeTaxpayer.AddressName,
+                    BillingDate = s.DateCreated.Value
+                })
+                .ToListAsync();
 
             var arrears = await db.Set<DemandNoticeArrear>()
                  .Join(db.Set<DemandNoticeTaxpayer>()
@@ -161,7 +192,7 @@ namespace RemsNG.Data.Repository
                  .ThenInclude(j => j.Ward),
                  itm => itm.TaxpayerId, dnt => dnt.TaxpayerId, (itm, dnt) => new { itm, dnt })
                  .Where(q => q.itm.TaxPayer.Street.Ward.WardName == "ACTIVE"
-                 && allDemandNotice.Any(x => x.Id == q.dnt.Id)
+                    && billNUmbers.Any(x => x == q.dnt.BillingNumber)
                  && q.dnt.IsUnbilled == false && status.Any(x => x == q.itm.ArrearsStatus))
                  .Select(s => new ItemReportSummaryModel
                  {
@@ -173,10 +204,9 @@ namespace RemsNG.Data.Repository
                      wardId = s.dnt.DemandNotice.WardId.Value,
                      wardName = s.dnt.WardName,
                      taxpayersName = s.dnt.TaxpayersName,
-                     //itemCode = s.itm.Item.ItemCode,
-                     //itemDescription = s.itm.Item.ItemDescription,
                      lastModifiedDate = s.itm.LastModifiedDate ?? s.itm.DateCreated,
-                     addressName = s.dnt.AddressName
+                     addressName = s.dnt.AddressName,
+                     BillingDate = s.itm.DateCreated.Value
                  }).ToListAsync();
 
             var penalty = await db.Set<DemandNoticePenalty>()
@@ -186,7 +216,7 @@ namespace RemsNG.Data.Repository
                  .ThenInclude(j => j.Ward),
                  itm => itm.TaxpayerId, dnt => dnt.TaxpayerId, (itm, dnt) => new { itm, dnt })
                  .Where(q => q.itm.TaxPayer.Street.Ward.WardName == "ACTIVE"
-                 && allDemandNotice.Any(x => x.Id == q.dnt.Id)
+                    && txIds.Contains(q.itm.TaxpayerId)
                  && q.dnt.IsUnbilled == false && status.Any(x => x == q.itm.ItemPenaltyStatus))
                  .Select(s => new ItemReportSummaryModel
                  {
@@ -199,7 +229,8 @@ namespace RemsNG.Data.Repository
                      wardName = s.dnt.WardName,
                      taxpayersName = s.dnt.TaxpayersName,
                      lastModifiedDate = s.itm.LastModifiedDate ?? s.itm.DateCreated,
-                     addressName = s.dnt.AddressName
+                     addressName = s.dnt.AddressName,
+                     BillingDate = s.itm.DateCreated.Value
                  }).ToListAsync();
             #endregion
 
@@ -208,7 +239,8 @@ namespace RemsNG.Data.Repository
 
             foreach (var item in dats.GroupBy(x => x.billingNo))
             {
-                decimal paymentAmount = allPayment.Where(x => x.BillingNumber == item.Key).Sum(x => x.Amount);
+                var re = allPayment.Where(x => x.BillingNumber == item.Key);
+                decimal paymentAmount = re.Sum(x => x.Amount);
                 var data = item.ToList();
                 if (paymentAmount <= 0)
                 {
@@ -216,6 +248,8 @@ namespace RemsNG.Data.Repository
                     {
                         var r = x;
                         r.amountPaid = 0;
+                        r.BankName = "Nil";
+
                         return r;
                     }));
                 }
@@ -228,6 +262,9 @@ namespace RemsNG.Data.Repository
                     {
                         tm.amountPaid = (tm.itemAmount / totalAmount) * paymentAmount;
                         tm.amountPaid = Math.Round(tm.amountPaid, 2);
+                        tm.BankName = re.FirstOrDefault().BankName;
+                        tm.PaymentDate = re.FirstOrDefault().LastModifiedDate;
+                        tm.Reference = re.FirstOrDefault().ReferenceNumber;
                         lst.Add(tm);
                     }
                     decimal amt = lst.Sum(s => s.amountPaid);

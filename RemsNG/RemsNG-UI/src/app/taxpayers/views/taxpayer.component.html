@@ -107,6 +107,7 @@
                                                 <th>
                                                     Is Recursive
                                                 </th>
+                                                <th>Address</th>
                                                 <th>Last Modified by</th>
                                                 <th>Last Modified Date</th>
                                             </tr>
@@ -144,6 +145,7 @@
                                                 <td>{{data.companyName}}</td>
                                                 <td>{{data.taxpayerStatus}}</td>
                                                 <td>{{data.isOneTime? 'No':'Yes'}}</td>
+                                                <td>{{data.streetNumber}} {{data.streetName}}</td>
                                                 <td>{{data.lastmodifiedby?.length > 1? data.lastmodifiedby:
                                                     data.createdBy}}</td>
                                                 <td>{{(data.lastModifiedDate?.length > 1 ?data.lastModifiedDate

@@ -39,8 +39,7 @@ namespace RemsNG.Services
             font.FontHeightInPoints = (short)size;
         }
 
-        public async Task<byte[]> WriteReportSummary(List<ItemReportSummaryModel> rptLst,
-            List<ItemReportSummaryModel> previousYearList
+        public async Task<byte[]> WriteReportSummary(List<ItemReportSummaryModel> rptLst
             , string domainName, string lcdaName, DateTime startDate, DateTime enndDate)
         {
             try
@@ -109,19 +108,14 @@ namespace RemsNG.Services
                         rowHeader.CreateCell(colCount++).SetCellValue(tm.ToUpper());
                     }
 
-                    rowHeader.CreateCell(colCount++).SetCellValue("CURRENT WEEK");
-                    rowHeader.CreateCell(colCount++).SetCellValue("PREVIOUS AMOUNT");
-                    rowHeader.CreateCell(colCount++).SetCellValue("TO DATE");
-                    rowHeader.CreateCell(colCount++).SetCellValue("Cumulative");
+                    rowHeader.CreateCell(colCount++).SetCellValue("Total");
 
                     #endregion
 
                     string[] items = rptLst.Select(x => x.itemDescription).Distinct().ToArray();
                     decimal totalApproveEstimate = 0;
                     decimal totalCurrentAMountPaid = 0;
-                    decimal totalPreviousAMountPaid = 0;
 
-                    decimal cumulative = 0;
                     for (int i = 0; i < items.Length; i++)
                     {
                         #region body
@@ -145,21 +139,15 @@ namespace RemsNG.Services
                         rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round(currentAmountPaid, 2)));
                         totalCurrentAMountPaid = totalCurrentAMountPaid + currentAmountPaid;
 
-                        decimal previousAmount = previousYearList.Where(x => x.itemDescription == items[i]).Sum(x => x.amountPaid);
-                        rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round(previousAmount, 2)));
-                        totalPreviousAMountPaid = totalPreviousAMountPaid + previousAmount;
-
-                        cumulative = cumulative + decimal.Round((previousAmount + currentAmountPaid), 2);
-                        rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round((previousAmount + currentAmountPaid), 2)));
-                        rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", cumulative));
+                        //cumulative = cumulative + decimal.Round((previousAmount + currentAmountPaid), 2);
+                        //rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round((previousAmount + currentAmountPaid), 2)));
+                        //rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", cumulative));
                         #endregion
                     }
 
                     IRow rowbody1 = sheet1.CreateRow(rowIndex++);
                     rowbody1.CreateCell(3).SetCellValue(String.Format("{0:n}", decimal.Round(totalApproveEstimate, 2)));
-                    rowbody1.CreateCell(colCount - 4).SetCellValue(String.Format("{0:n}", decimal.Round(totalCurrentAMountPaid, 2)));
-                    rowbody1.CreateCell(colCount - 3).SetCellValue(String.Format("{0:n}", decimal.Round(totalPreviousAMountPaid, 2)));
-                    rowbody1.CreateCell(colCount - 2).SetCellValue(String.Format("{0:n}", decimal.Round(cumulative, 2)));
+                    rowbody1.CreateCell(colCount - 1).SetCellValue(String.Format("{0:n}", decimal.Round(totalCurrentAMountPaid, 2)));
 
                     sheet1.AutoSizeColumn(0);
                     MemoryStream memo = new MemoryStream();
@@ -174,8 +162,7 @@ namespace RemsNG.Services
             }
         }
 
-
-        public async Task<byte[]> WriteReportSummary(List<ItemReportSummaryModel> rptLst,
+        public async Task<byte[]> WriteReportSummaryOld(List<ItemReportSummaryModel> rptLst,
             string domainName, string lcdaName, DateTime startDate, DateTime endDate)
         {
             try
@@ -581,7 +568,6 @@ namespace RemsNG.Services
             }
         }
 
-
         public void WritePayment(IWorkbook workbook,
             string domainName, string lcdaName, DateTime startDate, DateTime endDate, List<DemandNoticePaymentHistoryModel> dnph)
         {
@@ -791,12 +777,14 @@ namespace RemsNG.Services
 
                 foreach (var tm in taxpayers.GroupBy(x => x.StreetName))
                 {
-                    string valu = Regex.Replace(tm.Key, "[!@#$%^&*()_+|\\}{[]';:/.,<>?]+", "");
+                    string valu = Regex.Replace(tm.Key, ".[!@#$%^&*()_+|\\}{[]';:/.,<>?]+", "");
                     valu = valu.Replace("[", "");
                     valu = valu.Replace("]", "");
                     valu = valu.Replace("/", "");
                     valu = valu.Replace("\\", "");
                     valu = valu.Replace("-", "");
+                    valu = valu.Replace(".", "");
+                    valu = valu.Replace("'", "");
                     ISheet sheet1;
                     var r = workbook.GetSheet(valu);
                     if (r != null)
@@ -857,6 +845,172 @@ namespace RemsNG.Services
             });
         }
 
-      
+
+        public async Task<byte[]> TaxpayerReportByWard(List<ItemReportSummaryModel> rptLst
+            , string domainName, string lcdaName, DateTime startDate, DateTime enndDate)
+        {
+            try
+            {
+                if (rptLst.Count < 1)
+                {
+                    return null;
+                }
+
+                return await Task.Run(() =>
+                {
+                    string[] wards = rptLst.Select(x => x.wardName).Distinct().ToArray();
+                    int rowCount = wards.Length + 6;
+
+                    IWorkbook workbook = new XSSFWorkbook();
+                    var wrds = rptLst.GroupBy(x => x.wardName).ToList();//.Select(x => x.wardName).Distinct().ToArray();
+
+
+                    for (int i = 0; i < wrds.Count; i++)
+                    {
+                        ISheet sheet1 = workbook.CreateSheet($"sheet {i + 1}");
+
+                        #region sub heading
+                        sheet1.AddMergedRegion(new CellRangeAddress(0, 0, 0, rowCount));
+                        sheet1.AddMergedRegion(new CellRangeAddress(1, 1, 0, rowCount));
+                        sheet1.AddMergedRegion(new CellRangeAddress(2, 2, 0, rowCount));
+                        sheet1.AddMergedRegion(new CellRangeAddress(3, 3, 0, rowCount));
+
+                        var rowIndex = 0;
+                        IRow rowDomain = sheet1.CreateRow(rowIndex);
+                        rowDomain.Height = 400;
+                        ICell cellDomain = rowDomain.CreateCell(0);
+                        cellDomain.SetCellValue(domainName.ToUpper());
+                        CellStyleHeader(cellDomain, workbook, 13);
+                        rowIndex++;
+
+                        IRow rowLcda = sheet1.CreateRow(rowIndex);
+                        rowLcda.Height = 300;
+                        ICell cellLcda = rowLcda.CreateCell(0);
+                        cellLcda.SetCellValue(lcdaName.ToUpper());
+                        CellStyleHeader(cellLcda, workbook, 10);
+                        rowIndex++;
+
+                        IRow rowTitle1 = sheet1.CreateRow(rowIndex);
+                        rowTitle1.Height = 300;
+                        ICell cellTitle1 = rowTitle1.CreateCell(0);
+                        cellTitle1.SetCellValue($"INTERNALLY GENERATED REVENUE " +
+                            $"FOR THE PERIOD OF {startDate.ToString("dd/MM/yyyy")} - {enndDate.ToString("dd/MM/yyyy")}");
+                        CellStyleHeader(cellTitle1, workbook, 10);
+                        rowIndex++;
+
+                        IRow rowTitle2 = sheet1.CreateRow(rowIndex);
+                        rowTitle2.Height = 300;
+                        ICell cellTitle2 = rowTitle2.CreateCell(0);
+                        cellTitle2.SetCellValue("REVENUE APPRAISAL SHEET");
+                        CellStyleHeader(cellTitle2, workbook, 10);
+                        rowIndex++;
+
+                        #endregion
+
+
+                        IRow wardRow1 = sheet1.CreateRow(rowIndex++);
+                        wardRow1.CreateCell(0).SetCellValue("");
+
+                        IRow wardRow2 = sheet1.CreateRow(rowIndex++);
+                        wardRow2.CreateCell(0).SetCellValue(wrds[i].Key);
+
+                        IRow wardRow3 = sheet1.CreateRow(rowIndex++);
+                        wardRow3.CreateCell(0).SetCellValue("");
+
+
+                        #region header
+
+                        IRow rowHeader = sheet1.CreateRow(rowIndex++);
+                        int colCount = 0;
+                        rowHeader.CreateCell(colCount++).SetCellValue("SN");
+                        rowHeader.CreateCell(colCount++).SetCellValue("TAXPAYER'S");
+                        rowHeader.CreateCell(colCount++).SetCellValue("WARD");
+                        rowHeader.CreateCell(colCount++).SetCellValue("ADDRESS");
+                        rowHeader.CreateCell(colCount++).SetCellValue("BILLING NO");
+                        rowHeader.CreateCell(colCount++).SetCellValue("ITEMS");
+                        rowHeader.CreateCell(colCount++).SetCellValue("ITEM AMOUNT");
+                        rowHeader.CreateCell(colCount++).SetCellValue("ARREARS");
+                        rowHeader.CreateCell(colCount++).SetCellValue("PENALTIES");
+                        rowHeader.CreateCell(colCount++).SetCellValue("AMOUNT PAID");
+                        rowHeader.CreateCell(colCount++).SetCellValue("TOTAL");
+                        rowHeader.CreateCell(colCount++).SetCellValue("OUTSTANDING");
+                        rowHeader.CreateCell(colCount++).SetCellValue("BILLING DATE");
+                        rowHeader.CreateCell(colCount++).SetCellValue("PAYMENT DATE");
+                        rowHeader.CreateCell(colCount++).SetCellValue("BANK");
+                        rowHeader.CreateCell(colCount++).SetCellValue("REFERENCE NO");
+
+                        #endregion
+
+
+                        #region body
+                        decimal totalAmountPaid = 0;
+                        decimal totalOutstanding = 0;
+                        decimal total = 0;
+
+                        var data = wrds[i].ToList();
+                        var subData = data.GroupBy(x => x.billingNo);
+
+                        int j = 1;
+                        foreach (var sbData in subData)
+                        {
+                            colCount = 0;
+                            IRow rowbody = sheet1.CreateRow(rowIndex++);
+                            rowbody.CreateCell(colCount++).SetCellValue(j++);
+
+                            var txPayr = sbData.FirstOrDefault();
+
+                            rowbody.CreateCell(colCount++).SetCellValue(txPayr.taxpayersName);
+                            rowbody.CreateCell(colCount++).SetCellValue(wrds[i].Key);
+                            rowbody.CreateCell(colCount++).SetCellValue(txPayr.addressName);
+                            rowbody.CreateCell(colCount++).SetCellValue(sbData.Key);
+                            // items
+                            var items = sbData.Where(x => x.category == "ITEMS");
+                            rowbody.CreateCell(colCount++).SetCellValue(string.Join(',', items.Select(x => x.itemDescription)));
+                            rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round(items.Count() > 0 ? items.Sum(x => x.itemAmount) : 0, 2)));
+                            //arrears
+                            var arrears = sbData.Where(x => x.category == "ARREARS");
+                            rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round(arrears.Count() > 0 ? arrears.Sum(x => x.itemAmount) : 0, 2)));
+                            //penalty
+                            var penalty = sbData.Where(x => x.category == "PENALTY");
+                            rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round(penalty.Count() > 0 ? penalty.Sum(x => x.itemAmount) : 0, 2)));
+
+                            decimal totalAmount = decimal.Round(sbData.Count() > 0 ? sbData.Sum(x => x.itemAmount) : 0, 2);
+                            decimal amountPaid = decimal.Round(sbData.Count() > 0 ? sbData.Sum(x => x.amountPaid) : 0, 2);
+
+                            rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", amountPaid));
+                            rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", totalAmount));
+                            rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", totalAmount - amountPaid));
+                            totalAmountPaid = totalAmountPaid + amountPaid;
+                            total = total + totalAmount;
+                            totalOutstanding = totalOutstanding + (totalAmount - amountPaid);
+
+                            rowbody.CreateCell(colCount++).SetCellValue(txPayr.BillingDate.ToString("dd-MM-yyyy"));
+                            rowbody.CreateCell(colCount++).SetCellValue(txPayr.PaymentDate == null ? "NIl" : txPayr.PaymentDate.Value.ToString("dd-MM-yyyy"));
+                            rowbody.CreateCell(colCount++).SetCellValue(txPayr.BankName);
+                            rowbody.CreateCell(colCount++).SetCellValue(txPayr.Reference);
+                        }
+
+                        IRow rowbody1 = sheet1.CreateRow(rowIndex++);
+                        rowbody1.CreateCell(9).SetCellValue(String.Format("{0:n}", decimal.Round(totalAmountPaid, 2)));
+                        rowbody1.CreateCell(10).SetCellValue(String.Format("{0:n}", decimal.Round(total, 2)));
+                        rowbody1.CreateCell(11).SetCellValue(String.Format("{0:n}", decimal.Round(totalOutstanding, 2)));
+                        #endregion
+                        sheet1.AutoSizeColumn(0);
+                    }
+
+
+                    MemoryStream memo = new MemoryStream();
+                    workbook.Write(memo);
+                    return memo.ToArray();
+                });
+            }
+            catch (Exception x)
+            {
+                logger.LogError(x.Message);
+                return null;
+            }
+        }
+
+
     }
 }

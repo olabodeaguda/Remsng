@@ -274,9 +274,30 @@
     </div>
 </div>
 
-
 <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
     #UnbilledModal>
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">{{selectDemandNotice?.isUnbilled?'Move to bills':'Move to Unbilled'}}</h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div class="box-body">
+                    Are you sure?
+                </div>
+                <div class="box-footer">
+                    <button [ladda]="isLoadingMini" type="submit" class="btn btn-success"
+                        (click)="submitUnbilled()">Submit</button>
+                    <button type="submit" class="btn btn-danger " data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    #editAddressModal>
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -405,6 +426,9 @@
                                                             {{data.isUnbilled?'Move to billed':'Move to
                                                                     Unbilled'}}
                                                         </a>
+                                                    </li><li>
+                                                        <a href="javascript:;" (click)="openEditAddress(data)">
+                                                            <i class="fa fa-edit"></i> Edit Address </a>
                                                     </li>
                                                 </ul>
                                             </div>

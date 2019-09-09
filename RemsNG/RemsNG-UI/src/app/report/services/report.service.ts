@@ -55,5 +55,10 @@ export class ReportService {
         .catch(error => this.dateService.handleError(error));
     }
 
+    reportByWard(startDate: string, endDate: string) {
+        return this.dateService.getBlob('report/byward/' + startDate + '/' + endDate)
+            .catch(error => this.dateService.handleError(error));
+    }
+
 }
 

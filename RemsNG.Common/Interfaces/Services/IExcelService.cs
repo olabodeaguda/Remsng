@@ -8,11 +8,10 @@ namespace RemsNG.Common.Interfaces.Services
     public interface IExcelService
     {
         Task<byte[]> WriteReportSummary(List<ItemReportSummaryModel> rptLst,
-            List<ItemReportSummaryModel> previousYearList,
              string domainName, string lcdaName, DateTime startDate, DateTime enndDate);
 
-        Task<byte[]> WriteReportSummary(List<ItemReportSummaryModel> rptLst,
-            string domainName, string lcdaName, DateTime startDate, DateTime endDate);
+        //Task<byte[]> WriteReportSummary(List<ItemReportSummaryModel> rptLst,
+        //    string domainName, string lcdaName, DateTime startDate, DateTime endDate);
 
         Task<byte[]> WriteReportSummaryConsolidated(List<ItemReportSummaryModel> rptLst,
            string domainName, string lcdaName, DateTime startDate, DateTime endDate, List<DemandNoticePaymentHistoryModel> dnph);
@@ -24,5 +23,7 @@ namespace RemsNG.Common.Interfaces.Services
             DateTime endDate, List<DemandNoticeItemModel> dnitem, List<DemandNoticePenaltyModel> dnPenalty,
             List<DemandNoticeArrearsModel> dnArrears);
         Task<byte[]> TaxpayerWithOutDemandNotice(TaxPayerModel[] taxpayers, int billingYear);
+        Task<byte[]> TaxpayerReportByWard(List<ItemReportSummaryModel> rptLst
+            , string domainName, string lcdaName, DateTime startDate, DateTime enndDate);
     }
 }

@@ -199,6 +199,35 @@ export class ReportComponent implements OnInit {
             });
     }
 
+    downloadByWard() {
+        if (this.startDate.length < 1) {
+            this.toasterService.pop('error', 'Error', 'Start Date is required');
+            return;
+        } else if (this.endDate.length < 1) {
+            this.toasterService.pop('error', 'Error', 'Start Date is required');
+            return;
+        } else if (this.startDate.length < 10) {
+            this.toasterService.pop('error', 'Error', 'Start Date is in the wrong format');
+            return;
+        } else if (this.endDate.length < 10) {
+            this.toasterService.pop('error', 'Error', 'Start Date is required');
+            return;
+        }
+        
+        this.isLoading = true;
+        this.reportService.reportByWard(this.startDate, this.endDate)
+            .subscribe(response => {
+                this.isLoading = false;
+                FileSaver.saveAs(response, this.selectedYr + 'reportbyward' + '.xlsx');
+                // const blob = new Blob([response], { type: 'text/xlsx' });
+                // const url = window.URL.createObjectURL(blob);
+                // window.open(url);
+            }, error => {
+                this.isLoading = false;
+                this.toasterService.pop('error', 'Error', error);
+            });
+    }
+
     downloadByCategory() {
         if (this.startDate.length < 1) {
             this.toasterService.pop('error', 'Error', 'Start Date is required');
