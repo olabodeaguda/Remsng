@@ -80,7 +80,6 @@ namespace RemsNG.Controllers
         }
 
         [Route("alldomainroles")]
-        //[RemsRequirementAttribute("GET_ROLES")]
         [HttpGet]
         public async Task<object> AllUserRoles([FromHeader] string username)
         {

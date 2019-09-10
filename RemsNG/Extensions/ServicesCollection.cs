@@ -102,6 +102,7 @@ namespace RemsNG.Extensions
                 });
 
             services.AddAppServices(Configuration);
+            services.AddDocumentationServices(Configuration);
 
         }
 

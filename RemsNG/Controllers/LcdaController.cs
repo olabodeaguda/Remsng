@@ -26,7 +26,7 @@ namespace RemsNG.Controllers
             roleService = _roleService;
         }
 
-        [Route("byusername/{username}")]
+        [HttpGet("byusername/{username}")]
         public async Task<IActionResult> LCDAByusername(string username)
         {
             if (string.IsNullOrEmpty(username))

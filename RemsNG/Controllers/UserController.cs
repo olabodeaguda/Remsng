@@ -36,7 +36,7 @@ namespace RemsNG.Controllers
             logger = loggerFactory.CreateLogger<UserController>();
         }
 
-        [Route("{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> Get([FromRoute] Guid id)
         {
             if (id == default(Guid))

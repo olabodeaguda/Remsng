@@ -33,7 +33,7 @@ namespace RemsNG.Controllers
             logger = loggerFactory.CreateLogger<UserController>();
         }
 
-        [Route("domainByusername/{username}")]
+        [HttpGet("domainByusername/{username}")]
         public async Task<IActionResult> ValidateUsername(string username)
         {
             if (string.IsNullOrEmpty(username))
@@ -63,7 +63,7 @@ namespace RemsNG.Controllers
             });
         }
 
-        [Route("activeDomain")]
+        [HttpGet("activeDomain")]
         public async Task<object> Get()
         {
             if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
@@ -85,7 +85,7 @@ namespace RemsNG.Controllers
             }
         }
 
-        [Route("all")]
+        [HttpGet("all")]
         public async Task<object> Get([FromHeader] string pageSize, [FromHeader] string pageNum)
         {
             if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
@@ -113,8 +113,9 @@ namespace RemsNG.Controllers
                 totalPageCount = 1
             };
         }
+
         [RemsRequirementAttribute("MOS-ADMIN")]
-        [Route("create")]
+        [HttpPost("create")]
         public async Task<IActionResult> Post([FromBody] DomainModel domain)
         {
             if (string.IsNullOrEmpty(domain.DomainCode))
@@ -169,8 +170,7 @@ namespace RemsNG.Controllers
         }
 
         [RemsRequirementAttribute("UPDATE_DOMAIN")]
-        [Route("update")]
-        [HttpPost]
+        [HttpPost("update")]
         public async Task<IActionResult> Update([FromBody] DomainModel domain)
         {
             if (string.IsNullOrEmpty(domain.DomainCode))
@@ -219,8 +219,7 @@ namespace RemsNG.Controllers
 
         //approval
         [RemsRequirementAttribute("MOS-ADMIN")]
-        [Route("changestatus")]
-        [HttpPost]
+        [HttpPost("changestatus")]
         public async Task<IActionResult> ChangeStatus([FromBody] DomainModel domain)
         {
             if (string.IsNullOrEmpty(domain.DomainStatus))
@@ -268,8 +267,7 @@ namespace RemsNG.Controllers
         }
 
         [RemsRequirementAttribute("MOS-ADMIN")]
-        [Route("currentdomain")]
-        [HttpGet]
+        [HttpGet("currentdomain")]
         public async Task<IActionResult> CurrentDomain()
         {
             if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))

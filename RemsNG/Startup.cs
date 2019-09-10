@@ -103,6 +103,13 @@ namespace RemsNG
                 FileProvider = new PhysicalFileProvider(Configuration.GetValue<string>("QuarterlyReportPath"))
             });
             app.UseStaticFiles();
+            app.UseSwagger();
+            //This line enables Swagger UI, which provides us with a nice, simple UI with which we can view our API calls.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Remsng Client API");
+                // c.RoutePrefix = "swagger/ui";
+            });
 
             app.UseMvc();
         }

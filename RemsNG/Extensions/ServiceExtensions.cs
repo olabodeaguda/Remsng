@@ -7,6 +7,9 @@ using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using RemsNG.Infrastructure.Managers;
 using RemsNG.Infrastructure.Services;
+using Swashbuckle.AspNetCore.Swagger;
+using System.Collections.Generic;
+using System.IO;
 
 namespace RemsNG.Extensions
 {
@@ -107,6 +110,40 @@ namespace RemsNG.Extensions
             services.AddScoped<IWardRepository, WardRepository>();
             services.AddScoped<IDNPaymentHistoryRepository, DNPaymentHistoryRepository>();
             #endregion
+        }
+
+        public static void AddDocumentationServices(this IServiceCollection services,
+        IConfiguration Configuration)
+        {
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info
+                {
+                    Version = "v1",
+                    Title = "Remsng Client API",
+                    //Description = "My First ASP.NET Core Web API",
+                    //TermsOfService = "None",
+                    //Contact = new Contact() { Name = "Fadipe Ayobami", Email = "ayfadipe@gmail.com", Url = "www.Fadipeayobami.com" }
+                });
+                //c.DescribeAllEnumsAsStrings();
+                // Configure Swagger to use the xml documentation file
+                var xmlFile = Path.ChangeExtension(typeof(Startup).Assembly.Location, ".xml");
+                c.IncludeXmlComments(xmlFile);
+
+                c.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                {
+                    In = "header",
+                    Description = "Please insert JWT with Bearer into field",
+                    Name = "Authorization",
+                    Type = "apiKey"
+                });
+
+                c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                  {
+                    { "Bearer", new string[] { } }
+                  });
+            });
+
         }
     }
 }

@@ -43,10 +43,8 @@ namespace RemsNG.Controllers
             _pdfService = pdfService;
         }
 
-
         [RemsRequirementAttribute("SINGLE_DOWNLOAD")]
-        [Route("single/{billingno}")]
-        [HttpGet]
+        [HttpGet("single/{billingno}")]
         public async Task<object> Get(long billingno)
         {
             if (billingno == default(long))
@@ -66,8 +64,7 @@ namespace RemsNG.Controllers
         }
 
         [RemsRequirementAttribute("BULK_DOWNLOAD")]
-        [Route("bulk")]
-        [HttpPost]
+        [HttpPost("bulk")]
         public async Task<IActionResult> BulkDownloadPdf([FromBody] long[] billingNo)
         {
             if (billingNo.Length <= 0)
@@ -87,8 +84,7 @@ namespace RemsNG.Controllers
         }
 
         [RemsRequirementAttribute("BULK_DOWNLOAD")]
-        [Route("bulk/{batchno}")]
-        [HttpGet]
+        [HttpGet("bulk/{batchno}")]
         public async Task<object> BulkZip(string batchno)
         {
             //log zip download by xxx user
@@ -159,7 +155,7 @@ namespace RemsNG.Controllers
         }
 
         [RemsRequirementAttribute("DOWNLOAD_RECEIPT")]
-        [Route("receipt/{id}")]
+        [HttpGet("receipt/{id}")]
         public async Task<object> DownloadReciept(Guid id)
         {
             if (id == Guid.Empty)
@@ -188,8 +184,7 @@ namespace RemsNG.Controllers
         }
 
         [RemsRequirementAttribute("BULK_DOWNLOAD")]
-        [Route("reminder")]
-        [HttpPost]
+        [HttpPost("reminder")]
         public async Task<IActionResult> Reminder([FromBody] long[] billingNo)
         {
             if (billingNo.Length <= 0)
