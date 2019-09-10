@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System;
@@ -12,10 +13,10 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class SectorManager : ISectorManager
     {
-        SectorRepository sectorDao;
-        public SectorManager(DbContext _db, ILoggerFactory loggerFactory)
+        private readonly ISectorRepository sectorDao;
+        public SectorManager(ISectorRepository sectorRepository)
         {
-            sectorDao = new SectorRepository(_db, loggerFactory);
+            sectorDao = sectorRepository;
         }
         public async Task<Response> Add(SectorModel sector)
         {

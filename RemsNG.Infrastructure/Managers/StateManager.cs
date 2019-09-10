@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System;
@@ -10,10 +11,10 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class StateManagers : IStateManagers
     {
-        private readonly StateRepository stateDao;
-        public StateManagers(DbContext _db)
+        private readonly IStateRepository stateDao;
+        public StateManagers(IStateRepository stateRepository)
         {
-            stateDao = new StateRepository(_db);
+            stateDao = stateRepository;
         }
 
         public async Task<List<StateModel>> All()

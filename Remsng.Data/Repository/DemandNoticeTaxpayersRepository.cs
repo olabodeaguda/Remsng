@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RemsNG.Common.Exceptions;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -10,12 +11,14 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class DemandNoticeTaxpayersRepository : AbstractRepository
+    public class DemandNoticeTaxpayersRepository : IDemandNoticeTaxpayersRepository
     {
-        private readonly ErrorRepository errorDao;
-        public DemandNoticeTaxpayersRepository(DbContext _db) : base(_db)
+        private readonly DbContext db;
+        private readonly IErrorRepository errorDao;
+        public DemandNoticeTaxpayersRepository(DbContext _db, IErrorRepository errorRepository)
         {
-            errorDao = new ErrorRepository(_db);
+            db = _db;
+            errorDao = errorRepository;
         }
 
         public async Task<List<DemandNoticeTaxpayersModel>> getTaxpayerByIds(string[] ids, int billingYr)
@@ -825,7 +828,8 @@ namespace RemsNG.Data.Repository
             return result;
         }
 
-        public async Task<DemandNoticeTaxpayersModel[]> ConstructByTaxpayerIds(DemandNoticeRequestModel model, Dictionary<string, ImagesModel> images)
+        public async Task<DemandNoticeTaxpayersModel[]> ConstructByTaxpayerIds(DemandNoticeRequestModel model,
+            Dictionary<string, ImagesModel> images)
         {
             string LcdaLogoFileName = images.ContainsKey(ImgTypesEnum.LOGO.ToString()) ? images[ImgTypesEnum.LOGO.ToString()].ImgFilename : string.Empty;
             string RevCoodinatorSigFilen = images.ContainsKey(ImgTypesEnum.REVENUE_COORDINATOR_SIGNATURE.ToString()) ? images[ImgTypesEnum.REVENUE_COORDINATOR_SIGNATURE.ToString()].ImgFilename : string.Empty;

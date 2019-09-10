@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RemsNG.Common.Exceptions;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -11,11 +12,13 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class LcdaRepository : AbstractRepository
+    public class LcdaRepository : ILcdaRepository
     {
+        private readonly DbContext db;
         private readonly ILogger logger;
-        public LcdaRepository(DbContext _db, ILoggerFactory loggerFactory) : base(_db)
+        public LcdaRepository(DbContext _db, ILoggerFactory loggerFactory)
         {
+            db = _db;
             logger = loggerFactory.CreateLogger("LCDA Dao");
         }
 
@@ -236,18 +239,6 @@ namespace RemsNG.Data.Repository
             }).ToList();
         }
 
-        public async Task<bool> AssignUserToLgda(UserLcda userLcda)
-        {
-            db.Set<UserLcda>().Add(userLcda);
-            int count = await db.SaveChangesAsync();
-            if (count > 0)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
         public async Task<List<LcdaModel>> UserDomainByUserId(Guid id)
         {
             var r = await db.Set<Lcda>().FromSql("sp_getUserLCDAByuserId @p0", new object[] { id }).ToListAsync();
@@ -264,18 +255,6 @@ namespace RemsNG.Data.Repository
                 LcdaCode = result.LcdaCode,
                 LcdaName = result.LcdaName,
                 LcdaStatus = result.LcdaStatus
-            }).ToList();
-        }
-
-        public async Task<List<UserLcdaModel>> UserRoleDomainbyUserId(Guid id)
-        {
-            var result = await db.Set<UserLcda>()
-                .Include("role").Where(x => x.UserId == id).ToListAsync();
-
-            return result.Select(x => new UserLcdaModel()
-            {
-                LgdaId = x.LgdaId,
-                UserId = x.UserId
             }).ToList();
         }
 

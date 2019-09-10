@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System;
@@ -12,10 +13,11 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class TaxpayerCategoryManager : ITaxpayerCategoryManager
     {
-        private TaxpayerCatgoryRepository taxpayerCatgoryDao;
-        public TaxpayerCategoryManager(DbContext _db, ILoggerFactory loggerFactory)
+        private ITaxpayerCatgoryRepository taxpayerCatgoryDao;
+        public TaxpayerCategoryManager(ITaxpayerCatgoryRepository taxpayerCatgoryRepository,
+            ILoggerFactory loggerFactory)
         {
-            taxpayerCatgoryDao = new TaxpayerCatgoryRepository(_db);
+            taxpayerCatgoryDao = taxpayerCatgoryRepository;
         }
 
         public async Task<Response> Add(TaxpayerCategoryModel taxpayerCategory)

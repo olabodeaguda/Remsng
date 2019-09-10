@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using RemsNG.Infrastructure.Extensions;
@@ -19,20 +20,24 @@ namespace RemsNG.Infrastructure.Managers
     public class UserManager : IUserManager
     {
         private readonly JwtIssuerOptions _jOptions;
-        private readonly LoginRepository loginDao;
-        private readonly DomainRepository domainDao;
-        private readonly RoleRepository roleDao;
-        private readonly LcdaRepository lcdaDao;
-        private readonly UserRepository userDao;
-        private readonly PermissionRepository permissionDao;
-        public UserManager(DbContext _db, ILoggerFactory loggerFactory, IOptions<JwtIssuerOptions> jOptions)
+        private readonly ILoginRepository loginDao;
+        private readonly IDomainRepository domainDao;
+        private readonly IRoleRepository roleDao;
+        private readonly ILcdaRepository lcdaDao;
+        private readonly IUserRepository userDao;
+        private readonly IPermissionRepository permissionDao;
+        public UserManager(ILoggerFactory loggerFactory, 
+            IOptions<JwtIssuerOptions> jOptions, ILoginRepository loginRepository,
+            IDomainRepository domainRepository,
+            IRoleRepository roleRepository, ILcdaRepository lcdaRepository,
+            IUserRepository userRepository, IPermissionRepository permissionRepository)
         {
-            loginDao = new LoginRepository(_db);
-            domainDao = new DomainRepository(_db);
-            roleDao = new RoleRepository(_db, loggerFactory);
-            lcdaDao = new LcdaRepository(_db, loggerFactory);
-            userDao = new UserRepository(_db);
-            permissionDao = new PermissionRepository(_db);
+            loginDao = loginRepository;
+            domainDao = domainRepository;
+            roleDao = roleRepository;
+            lcdaDao = lcdaRepository;
+            userDao = userRepository;
+            permissionDao = permissionRepository;
             _jOptions = jOptions.Value;
         }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RemsNG.Common.Exceptions;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -9,12 +10,13 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class UserRepository : AbstractRepository
+    public class UserRepository : IUserRepository
     {
-        public UserRepository(DbContext _db) : base(_db)
+        private readonly DbContext db;
+        public UserRepository(DbContext _db)
         {
+            db = _db;
         }
-
         public async Task<UserModel> Get(Guid id)
         {
             var result = await db.Set<User>().FirstOrDefaultAsync(x => x.Id == id);

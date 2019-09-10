@@ -7,7 +7,7 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class DemandNoticeChargesManager : IDemandNoticeChargesManager
     {
-        private ILcdaManager lcdaService;
+        private readonly ILcdaManager lcdaService;
         public DemandNoticeChargesManager(ILcdaManager _lcdaService)
         {
             lcdaService = _lcdaService;

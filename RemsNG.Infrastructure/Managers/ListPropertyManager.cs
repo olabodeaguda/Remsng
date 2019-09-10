@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System;
@@ -11,10 +12,10 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class ListPropertyManager : IListPropertyManager
     {
-        private readonly LcdaPropertyRepository lcdaPropertyDao;
-        public ListPropertyManager(DbContext _db)
+        private readonly ILcdaPropertyRepository lcdaPropertyDao;
+        public ListPropertyManager(ILcdaPropertyRepository lcdaPropertyRepository)
         {
-            lcdaPropertyDao = new LcdaPropertyRepository(_db);
+            lcdaPropertyDao = lcdaPropertyRepository;
         }
 
         public async Task<List<LcdaPropertyModel>> ByLcda(Guid lcdaId)

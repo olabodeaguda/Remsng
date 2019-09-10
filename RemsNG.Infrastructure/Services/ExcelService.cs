@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace RemsNG.Services
+namespace RemsNG.Infrastructure.Services
 {
     public class ExcelService : IExcelService
     {

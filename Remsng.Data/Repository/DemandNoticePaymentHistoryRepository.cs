@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RemsNG.Common.Exceptions;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -10,10 +11,12 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class DemandNoticePaymentHistoryRepository : AbstractRepository
+    public class DemandNoticePaymentHistoryRepository : IDemandNoticePaymentHistoryRepository
     {
-        public DemandNoticePaymentHistoryRepository(DbContext _db) : base(_db)
+        private readonly DbContext db;
+        public DemandNoticePaymentHistoryRepository(DbContext _db)
         {
+            db = _db;
         }
 
         public async Task<Response> AddAsync(DemandNoticePaymentHistoryModel dnph)

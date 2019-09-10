@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Remsng.Data;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using System;
 using System.Collections.Generic;
@@ -7,10 +8,12 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class SyncRepository : AbstractRepository
+    public class SyncRepository : ISyncRepository
     {
-        public SyncRepository(DbContext _db) : base(_db)
+        private readonly DbContext db;
+        public SyncRepository(DbContext _db)
         {
+            db = _db;
         }
 
         public async Task<List<SyncDataModel>> Get()

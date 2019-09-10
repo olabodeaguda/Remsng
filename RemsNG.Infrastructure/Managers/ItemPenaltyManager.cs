@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Remsng.Data;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Repository;
@@ -15,19 +16,20 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class ItemPenaltyManager : IItemPenaltyManager
     {
-        private ItemPenaltyRepository itemPenaltyDao;
+        private IItemPenaltyRepository itemPenaltyDao;
         private IDNAmountDueMgtManager _admService;
-        private readonly DemandNoticeTaxpayersRepository demandNoticeTaxpayersDao;
-        private readonly DemandNoticePenaltyRepository demandNoticePenaltyDao;
+        private readonly IDemandNoticeTaxpayersRepository demandNoticeTaxpayersDao;
+        private readonly IDemandNoticePenaltyRepository demandNoticePenaltyDao;
         private readonly ILogger logger;
-        public ItemPenaltyManager(DbContext _db
+        public ItemPenaltyManager(IItemPenaltyRepository itemPenaltyRepository
             , IDNAmountDueMgtManager dNAmountDueMgtService,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory, IDemandNoticeTaxpayersRepository demandNoticeTaxpayersRepository,
+            IDemandNoticePenaltyRepository demandNoticePenaltyRepository)
         {
-            itemPenaltyDao = new ItemPenaltyRepository(_db);
-            demandNoticeTaxpayersDao = new DemandNoticeTaxpayersRepository(_db);
+            itemPenaltyDao = itemPenaltyRepository;
+            demandNoticeTaxpayersDao = demandNoticeTaxpayersRepository;
             _admService = dNAmountDueMgtService;
-            demandNoticePenaltyDao = new DemandNoticePenaltyRepository(_db);
+            demandNoticePenaltyDao = demandNoticePenaltyRepository;
             logger = loggerFactory.CreateLogger("Items penalty");
         }
 

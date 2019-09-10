@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System;
@@ -10,11 +11,11 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class ItemManager : IItemManager
     {
-        private readonly ItemRepository itemDao;
+        private readonly IItemRepository itemDao;
 
-        public ItemManager(DbContext remsDb)
+        public ItemManager(IItemRepository itemRepository)
         {
-            itemDao = new ItemRepository(remsDb);
+            itemDao = itemRepository;
         }
 
         public async Task<Response> Add(ItemModel item)

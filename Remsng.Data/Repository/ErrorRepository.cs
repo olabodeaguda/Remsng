@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Entities;
 using System;
@@ -9,17 +10,16 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class ErrorRepository : AbstractRepository
+    public class ErrorRepository : IErrorRepository
     {
+        private readonly DbContext db;
         private readonly ILogger logger;
-        public ErrorRepository(DbContext _db, ILoggerFactory loggerFactory) : base(_db)
+        public ErrorRepository(DbContext _db, ILoggerFactory loggerFactory)
         {
+            db = _db;
             logger = loggerFactory.CreateLogger("Error Dao");
         }
 
-        public ErrorRepository(DbContext _db) : base(_db)
-        {
-        }
 
         public async Task<bool> Add(ErrorModel error)
         {

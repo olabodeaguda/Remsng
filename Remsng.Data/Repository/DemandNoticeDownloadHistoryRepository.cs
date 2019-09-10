@@ -1,17 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Remsng.Data;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Entities;
 using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class DemandNoticeDownloadHistoryRepository : AbstractRepository
+    public class DemandNoticeDownloadHistoryRepository : IDemandNoticeDownloadHistoryRepository
     {
-        private ILogger logger;
-        public DemandNoticeDownloadHistoryRepository(DbContext _db, ILoggerFactory loggerFactory) : base(_db)
+        private readonly DbContext db;
+        private readonly ILogger logger;
+        public DemandNoticeDownloadHistoryRepository(DbContext _db, ILoggerFactory loggerFactory)
         {
+            db = _db;
             logger = loggerFactory.CreateLogger("Demand Notice download History");
         }
 

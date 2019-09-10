@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Repository;
@@ -13,14 +14,15 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class DemandNoticeItemManager : IDemandNoticeItemManager
     {
-        private readonly CompanyItemRepository _companyItemDao;
-        private readonly DemandNoticeItemRepository dnDao;
+        private readonly ICompanyItemRepository _companyItemDao;
+        private readonly IDemandNoticeItemRepository dnDao;
         private readonly ILogger logger;
-        public DemandNoticeItemManager(DbContext _db, ILoggerFactory loggerFactory)
+        public DemandNoticeItemManager(ICompanyItemRepository companyItemRepository,
+            IDemandNoticeItemRepository demandNoticeItemRepository, ILoggerFactory loggerFactory)
         {
-            dnDao = new DemandNoticeItemRepository(_db);
-            _companyItemDao = new CompanyItemRepository(_db);
-            logger = logger = loggerFactory.CreateLogger("Demand Notice Item manager");
+            dnDao = demandNoticeItemRepository;
+            _companyItemDao = companyItemRepository;
+            logger = loggerFactory.CreateLogger("Demand Notice item manager");
         }
 
         public async Task<List<DemandNoticeItemModel>> ByBillingNumber(long billingno)
@@ -77,7 +79,7 @@ namespace RemsNG.Infrastructure.Managers
                      ItemName = itm.ItemName,
                      ItemStatus = "PENDING",
                      wardName = dn.WardName,
-                      
+
                  }).ToArray();
             Response response = await dnDao.Add(items);
             if (response.code != MsgCode_Enum.SUCCESS)

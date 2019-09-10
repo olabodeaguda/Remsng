@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System.Collections.Generic;
@@ -10,10 +11,10 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class BatchDwnRequestManager : IBatchDwnRequestManager
     {
-        private readonly BatchDownloadRequestRepository bnr;
-        public BatchDwnRequestManager(DbContext _db)
+        private readonly IBatchDownloadRequestRepository bnr;
+        public BatchDwnRequestManager(IBatchDownloadRequestRepository batchDownloadRequestRepository)
         {
-            bnr = new BatchDownloadRequestRepository(_db);
+            bnr = batchDownloadRequestRepository;
         }
 
         public async Task<Response> AddBatchRequest(BatchDemandNoticeModel bdnModel)

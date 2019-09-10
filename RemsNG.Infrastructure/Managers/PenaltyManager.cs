@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System;
@@ -14,12 +15,14 @@ namespace RemsNG.Infrastructure.Managers
     public class PenaltyManager : IPenaltyManager
     {
         private IHttpContextAccessor _httpAccessor;
-        private readonly DemandNoticeTaxpayersRepository _dNTaxpayersRep;
-        private readonly DemandNoticePenaltyRepository _penaltyRepo;
-        public PenaltyManager(DbContext db, IHttpContextAccessor httpContextAccessor)
+        private readonly IDemandNoticeTaxpayersRepository _dNTaxpayersRep;
+        private readonly IDemandNoticePenaltyRepository _penaltyRepo;
+        public PenaltyManager(IHttpContextAccessor httpContextAccessor,
+            IDemandNoticeTaxpayersRepository demandNoticeTaxpayersRepository,
+            IDemandNoticePenaltyRepository demandNoticePenaltyRepository)
         {
-            _dNTaxpayersRep = new DemandNoticeTaxpayersRepository(db);
-            _penaltyRepo = new DemandNoticePenaltyRepository(db);
+            _dNTaxpayersRep = demandNoticeTaxpayersRepository;
+            _penaltyRepo = demandNoticePenaltyRepository;
             _httpAccessor = httpContextAccessor;
         }
 

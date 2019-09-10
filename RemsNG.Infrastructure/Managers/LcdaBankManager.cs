@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System;
@@ -11,10 +12,10 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class LcdaBankManager : ILcdaBankManager
     {
-        private readonly LcdaBankRepository lcdaBankDao;
-        public LcdaBankManager(DbContext _db)
+        private readonly ILcdaBankRepository lcdaBankDao;
+        public LcdaBankManager(ILcdaBankRepository lcdaBankRepository)
         {
-            lcdaBankDao = new LcdaBankRepository(_db);
+            lcdaBankDao = lcdaBankRepository;
         }
         public async Task<List<BankLcdaModel>> Get(Guid lcdaId)
         {

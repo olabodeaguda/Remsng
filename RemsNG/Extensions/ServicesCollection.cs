@@ -7,14 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-using RemsNG.Common.Interfaces.Managers;
-using RemsNG.Common.Interfaces.Services;
 using RemsNG.Common.Models;
-using RemsNG.Infrastructure.Managers;
-using RemsNG.Infrastructure.Services;
 using RemsNG.Models;
 using RemsNG.Security;
-using RemsNG.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -106,53 +101,8 @@ namespace RemsNG.Extensions
                     options.Filters.Add(new CorsAuthorizationFilterFactory("CorsPolicy"));
                 });
 
-            #region service DI
-            services.AddTransient<IUserManager, UserManager>();
-            services.AddTransient<IDomainManager, DomainManager>();
-            services.AddTransient<ILcdaManager, LcdaManager>();
-            services.AddTransient<IWardManager, WardManager>();
-            services.AddTransient<IRoleManager, RoleManager>();
-            services.AddTransient<IPermissionManager, PermissionManager>();
-            services.AddTransient<IContactManager, ContactManager>();
-            services.AddTransient<IStreetManager, StreetManager>();
-            services.AddTransient<ISectorManager, SectorManager>();
-            services.AddTransient<IItemManager, ItemManager>();
-            services.AddTransient<IItemPenaltyManager, ItemPenaltyManager>();
-            services.AddTransient<ITaxpayerCategoryManager, TaxpayerCategoryManager>();
-            services.AddTransient<ITaxpayerManager, TaxpayerManager>();
-            services.AddTransient<ICompanyManager, CompanyManager>();
-            services.AddTransient<IAddressManager, AddressManager>();
-            services.AddTransient<ICompanyItemManager, CompanyItemManager>();
-            services.AddTransient<IDemandNoticeManager, DemanNoticeManager>();
-            services.AddTransient<IRunDemandNoticeManager, RunDemandNoticeManager>();
-            services.AddTransient<IDnTaxpayerManager, DnTaxpayerManagers>();
-            services.AddTransient<IStateManagers, StateManagers>();
-            services.AddTransient<IImageManager, ImageManager>();
-            services.AddTransient<IDemandNoticeTaxpayerManager, DemandNoticeTaxpayerManager>();
-            services.AddTransient<IDemandNoticeItemManager, DemandNoticeItemManager>();
-            services.AddTransient<IDnDownloadManager, DnDownloadManager>();
-            services.AddTransient<IDemandNoticeChargesManager, DemandNoticeChargesManager>();
-            services.AddTransient<IDemandNoticeChargesManager, DemandNoticeChargesManager>();
-            services.AddTransient<IDemandNoticeDownloadHistoryManager, DemandNoticeDownloadHistoryManager>();
-            services.AddTransient<ILcdaBankManager, LcdaBankManager>();
-            services.AddTransient<IBatchDwnRequestManager, BatchDwnRequestManager>();
-            services.AddTransient<IListPropertyManager, ListPropertyManager>();
-            services.AddTransient<IDNAmountDueMgtManager, DNAmountDueMgtManager>();
-            services.AddTransient<IDNPaymentHistoryManager, DNPaymentHistoryManager>();
-            services.AddTransient<IBankManager, BankManager>();
-            services.AddTransient<IAbstractManager, AbstractManager>();
-            services.AddTransient<IReportManager, ReportManager>();
-            services.AddTransient<IExcelService, ExcelService>();
-            services.AddTransient<ISyncManager, SyncManager>();
-            services.AddTransient<IPenaltyManager, PenaltyManager>();
-            services.AddTransient<IArrearsManager, ArrearsManager>(); services.AddSingleton<IConfigurationRoot>(provider => (IConfigurationRoot)Configuration);
-            services.AddSingleton(config.GetSection("BankCategory").Get<BankCategory>());
-            services.AddSingleton(config.GetSection("TemplateDetail").Get<TemplateDetail>());
-            #endregion
+            services.AddAppServices(Configuration);
 
-            #region Services
-            services.AddTransient<IPdfService, PdfService>();
-            #endregion
         }
 
         public static IConfigurationSection jwtAppSettingOptions => Configuration.GetSection(nameof(JwtIssuerOptions));

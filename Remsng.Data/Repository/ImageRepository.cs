@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -9,21 +10,16 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class ImageRepository : AbstractRepository
+    public class ImageRepository : IImageRepository
     {
-        public ImageRepository(DbContext _db) : base(_db)
+        private readonly DbContext db;
+        public ImageRepository(DbContext _db)
         {
+            db = _db;
         }
 
         public async Task<Response> Add(ImagesModel images)
         {
-            //DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addImages @p0, @p1, @p2, @p3", new object[] {
-            //   images.ImgFilename,
-            //   images.OwnerId,
-            //   images.ImgType,
-            //   images.CreatedBy
-            //}).FirstOrDefaultAsync();
-
             db.Set<Images>()
                 .Add(new Images
                 {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System;
@@ -12,16 +13,19 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class ReportManager : IReportManager
     {
-        private readonly DemandNoticePenaltyRepository dnPenaltyDao;
-        private readonly DemandNoticeArrearRepository dnArrearsDao;
-        private readonly DemandNoticeItemRepository dnitemDao;
-        private readonly ReportRepository reportDao;
-        public ReportManager(DbContext _db)
+        private readonly IDemandNoticePenaltyRepository dnPenaltyDao;
+        private readonly IDemandNoticeArrearRepository dnArrearsDao;
+        private readonly IDemandNoticeItemRepository dnitemDao;
+        private readonly IReportRepository reportDao;
+        public ReportManager(IDemandNoticePenaltyRepository demandNoticePenaltyRepository,
+            IDemandNoticeArrearRepository demandNoticeArrearRepository,
+            IDemandNoticeItemRepository demandNoticeItemRepository,
+            IReportRepository reportRepository)
         {
-            reportDao = new ReportRepository(_db);
-            dnitemDao = new DemandNoticeItemRepository(_db);
-            dnArrearsDao = new DemandNoticeArrearRepository(_db);
-            dnPenaltyDao = new DemandNoticePenaltyRepository(_db);
+            reportDao = reportRepository;
+            dnitemDao = demandNoticeItemRepository;
+            dnArrearsDao = demandNoticeArrearRepository;
+            dnPenaltyDao = demandNoticePenaltyRepository;
         }
 
         public async Task<List<ItemReportSummaryModel>> ByDate(DateTime startDate, DateTime endDate)

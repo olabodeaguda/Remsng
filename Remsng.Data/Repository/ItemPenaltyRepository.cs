@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RemsNG.Common.Exceptions;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -9,10 +10,12 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class ItemPenaltyRepository : AbstractRepository
+    public class ItemPenaltyRepository : IItemPenaltyRepository
     {
-        public ItemPenaltyRepository(DbContext _db) : base(_db)
+        private readonly DbContext db;
+        public ItemPenaltyRepository(DbContext _db)
         {
+            db = _db;
         }
 
         public async Task<Response> Add(ItemPenaltyModel item)

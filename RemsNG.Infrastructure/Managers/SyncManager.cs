@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Repository;
@@ -20,14 +21,13 @@ namespace RemsNG.Infrastructure.Managers
     public class SyncManager : ISyncManager
     {
         private static HttpClient client = new HttpClient();
-        private SyncRepository syncDao;
+        private ISyncRepository syncDao;
         private IConfiguration configuration;
         private ILogger logger;
-        public SyncManager(DbContext db, ILoggerFactory loggerFactory, IConfigurationRoot _configuration)
+        public SyncManager(ISyncRepository syncRepository, ILoggerFactory loggerFactory, IConfigurationRoot _configuration)
         {
             logger = loggerFactory.CreateLogger("Sync Service");
-            syncDao = new SyncRepository(db);
-
+            syncDao = syncRepository;
             configuration = _configuration;
         }
 

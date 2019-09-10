@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RemsNG.Common.Exceptions;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Entities;
 using System;
@@ -10,12 +11,14 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class RoleRepository : AbstractRepository
+    public class RoleRepository : IRoleRepository
     {
+        private readonly DbContext db;
         private readonly ILogger logger;
         public RoleRepository(DbContext _db,
-            ILoggerFactory loggerFactory) : base(_db)
+            ILoggerFactory loggerFactory)
         {
+            db = _db;
             logger = loggerFactory.CreateLogger("Role Dao");
         }
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RemsNG.Common.Exceptions;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -11,14 +12,17 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class DemandNoticeRepository : AbstractRepository
+    public class DemandNoticeRepository : IDemandNoticeRepository
     {
-        private StreetRepository streetDao;
-        WardRepository wardDao;
-        public DemandNoticeRepository(DbContext _db) : base(_db)
+        private IStreetRepository streetDao;
+        private IWardRepository wardDao;
+        private readonly DbContext db;
+        public DemandNoticeRepository(DbContext _db,
+            IWardRepository wardRepository, IStreetRepository streetRepository)
         {
-            wardDao = new WardRepository(_db);
-            streetDao = new StreetRepository(_db);
+            db = _db;
+            wardDao = wardRepository;
+            streetDao = streetRepository;
         }
 
         public async Task<Response> Add(DemandNoticeModel demandNotice)
@@ -83,7 +87,6 @@ namespace RemsNG.Data.Repository
                 totalPageCount = (totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)
             };
         }
-
 
         public async Task<Response> UpdateQuery(DemandNoticeModel demandNotice)
         {
@@ -197,29 +200,6 @@ namespace RemsNG.Data.Repository
                 data = lst,
                 totalPageCount = int.Parse(Math.Round((totalCount % pageModel.PageSize > 0 ? 1 : 0) + Math.Truncate((double)totalCount / pageModel.PageSize)).ToString())
             };
-        }
-
-        private async Task<DemandNoticeRequestModel> TranslateDemandNoticeRequest(string jsonObject)
-        {
-            string r = EncryptDecryptUtils.FromHexString(jsonObject);
-            DemandNoticeRequestModel s = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(EncryptDecryptUtils.FromHexString(jsonObject), new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
-            if (s.wardId != null)
-            {
-                WardModel ward = await wardDao.GetWard(s.wardId);
-                if (ward != null)
-                {
-                    s.wardName = ward.WardName;
-                }
-            }
-            if (s.streetId != null)
-            {
-                StreetModel street = await streetDao.ById(s.streetId);
-                if (street != null)
-                {
-                    s.streetName = street.StreetName;
-                }
-            }
-            return s;
         }
 
         public async Task<object> All(PageModel pageModel)
@@ -349,32 +329,6 @@ namespace RemsNG.Data.Repository
             };
         }
 
-        public async Task<DemandNoticeModel> DequeueDemandNotice()
-        {
-            var result = await db.Set<DemandNotice>()
-                .FromSql("sp_dequeueDemandNotice").FirstOrDefaultAsync();
-            if (result == null)
-            {
-                return null;
-            }
-            return new DemandNoticeModel()
-            {
-                BatchNo = result.BatchNo,
-                BillingYear = result.BillingYear,
-                CreatedBy = result.CreatedBy,
-                DateCreated = result.DateCreated,
-                DemandNoticeStatus = result.DemandNoticeStatus,
-                Id = result.Id,
-                IsUnbilled = result.IsUnbilled,
-                Lastmodifiedby = result.Lastmodifiedby,
-                LastModifiedDate = result.LastModifiedDate,
-                LcdaId = result.LcdaId,
-                Query = result.Query,
-                StreetId = result.StreetId.Value,
-                WardId = result.WardId.Value
-            };
-        }
-
         public async Task<DemandNoticeModel> GetLastEntry()
         {
             var result = await db.Set<DemandNotice>().OrderByDescending(x => x.DateCreated).FirstOrDefaultAsync();
@@ -399,5 +353,31 @@ namespace RemsNG.Data.Repository
                 WardId = result.WardId.Value
             };
         }
+
+
+
+        private async Task<DemandNoticeRequestModel> TranslateDemandNoticeRequest(string jsonObject)
+        {
+            string r = EncryptDecryptUtils.FromHexString(jsonObject);
+            DemandNoticeRequestModel s = JsonConvert.DeserializeObject<DemandNoticeRequestModel>(EncryptDecryptUtils.FromHexString(jsonObject), new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
+            if (s.wardId != null)
+            {
+                WardModel ward = await wardDao.GetWard(s.wardId);
+                if (ward != null)
+                {
+                    s.wardName = ward.WardName;
+                }
+            }
+            if (s.streetId != null)
+            {
+                StreetModel street = await streetDao.ById(s.streetId);
+                if (street != null)
+                {
+                    s.streetName = street.StreetName;
+                }
+            }
+            return s;
+        }
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RemsNG.Common.Exceptions;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -11,16 +12,14 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class StreetRepository : AbstractRepository
+    public class StreetRepository : IStreetRepository
     {
+        private readonly DbContext db;
         private readonly ILogger logger;
-        public StreetRepository(DbContext _db, ILoggerFactory loggerFactory) : base(_db)
+        public StreetRepository(DbContext _db, ILoggerFactory loggerFactory)
         {
+            db = _db;
             logger = loggerFactory.CreateLogger("LCDA Dao");
-        }
-
-        public StreetRepository(DbContext _db) : base(_db)
-        {
         }
 
         public async Task<Response> Add(StreetModel street)

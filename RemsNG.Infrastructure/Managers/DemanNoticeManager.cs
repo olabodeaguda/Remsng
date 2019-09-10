@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Repository;
@@ -14,29 +15,35 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class DemanNoticeManager : IDemandNoticeManager
     {
-        private LcdaPropertyRepository _lcdaPropertyRepo;
-        private StateRepository _stateRepository;
-        private AddressRepository _addressRepository;
-        private ImageRepository _imagesRepository;
-        private TaxpayerRepository _taxpayerRepository;
-        private StreetRepository _streetRepository;
-        private WardRepository _wardRepository;
-        private DemandNoticeRepository demandNoticeDao;
-        private DemandNoticeArrearRepository dnaDao;
-        private DemandNoticeTaxpayersRepository _dnTaxpayerRepo;
+        private ILcdaPropertyRepository _lcdaPropertyRepo;
+        private IStateRepository _stateRepository;
+        private IAddressRepository _addressRepository;
+        private IImageRepository _imagesRepository;
+        private ITaxpayerRepository _taxpayerRepository;
+        private IStreetRepository _streetRepository;
+        private IWardRepository _wardRepository;
+        private IDemandNoticeRepository demandNoticeDao;
+        private IDemandNoticeArrearRepository dnaDao;
+        private IDemandNoticeTaxpayersRepository _dnTaxpayerRepo;
         private readonly IDemandNoticeItemManager _dnItemManger;
-        public DemanNoticeManager(DbContext db, IDemandNoticeItemManager demandNoticeItemManager)
+        public DemanNoticeManager(
+            IDemandNoticeItemManager demandNoticeItemManager, ITaxpayerRepository taxpayerRepository,
+            ILcdaPropertyRepository lcdaPropertyRepository, IStreetRepository streetRepository,
+            IStateRepository stateRepository, IWardRepository wardRepository,
+            IAddressRepository addressRepository, IImageRepository imageRepository,
+            IDemandNoticeRepository demandNoticeRepository, IDemandNoticeArrearRepository demandNoticeArrearRepository,
+            IDemandNoticeTaxpayersRepository demandNoticeTaxpayersRepository)
         {
-            demandNoticeDao = new DemandNoticeRepository(db);
-            dnaDao = new DemandNoticeArrearRepository(db);
-            _dnTaxpayerRepo = new DemandNoticeTaxpayersRepository(db);
-            _wardRepository = new WardRepository(db);
-            _streetRepository = new StreetRepository(db);
-            _taxpayerRepository = new TaxpayerRepository(db);
-            _imagesRepository = new ImageRepository(db);
-            _addressRepository = new AddressRepository(db);
-            _stateRepository = new StateRepository(db);
-            _lcdaPropertyRepo = new LcdaPropertyRepository(db);
+            demandNoticeDao = demandNoticeRepository;
+            dnaDao = demandNoticeArrearRepository;
+            _dnTaxpayerRepo = demandNoticeTaxpayersRepository;
+            _wardRepository = wardRepository;
+            _streetRepository = streetRepository;
+            _taxpayerRepository = taxpayerRepository;
+            _imagesRepository = imageRepository;
+            _addressRepository = addressRepository;
+            _stateRepository = stateRepository;
+            _lcdaPropertyRepo = lcdaPropertyRepository;
             _dnItemManger = demandNoticeItemManager;
         }
 

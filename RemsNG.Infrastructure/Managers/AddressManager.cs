@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System;
@@ -11,13 +12,14 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class AddressManager : IAddressManager
     {
-        private readonly AddressRepository addressDao;
-        private readonly DemandNoticeTaxpayersRepository _dnTaxpayerRepository;
+        private readonly IAddressRepository addressDao;
+        private readonly IDemandNoticeTaxpayersRepository _dnTaxpayerRepository;
 
-        public AddressManager(DbContext _db)
+        public AddressManager(IAddressRepository addressRepository,
+            IDemandNoticeTaxpayersRepository demandNoticeTaxpayersRepository)
         {
-            addressDao = new AddressRepository(_db);
-            _dnTaxpayerRepository = new DemandNoticeTaxpayersRepository(_db);
+            addressDao = addressRepository;
+            _dnTaxpayerRepository = demandNoticeTaxpayersRepository;
         }
 
         public async Task<Response> Add(AddressModel address)

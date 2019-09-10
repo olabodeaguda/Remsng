@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System.Collections.Generic;
@@ -11,10 +12,10 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class DNAmountDueMgtManager : IDNAmountDueMgtManager
     {
-        private DNAmountDueMgtRepository dNAmountDueMgtDao;
-        public DNAmountDueMgtManager(DbContext _db)
+        private IDNAmountDueMgtRepository dNAmountDueMgtDao;
+        public DNAmountDueMgtManager(IDNAmountDueMgtRepository dNAmountDueMgtRepository)
         {
-            dNAmountDueMgtDao = new DNAmountDueMgtRepository(_db);
+            dNAmountDueMgtDao = dNAmountDueMgtRepository;
         }
 
         public async Task<List<DNAmountDueModel>> ByBillingNo(long billingno)

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RemsNG.Common.Exceptions;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -10,10 +11,12 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class ItemRepository : AbstractRepository
+    public class ItemRepository : IItemRepository
     {
-        public ItemRepository(DbContext _db) : base(_db)
+        private readonly DbContext db;
+        public ItemRepository(DbContext _db)
         {
+            db = _db;
         }
 
         public async Task<Response> Add(ItemModel item)
@@ -151,7 +154,7 @@ namespace RemsNG.Data.Repository
         public async Task<List<ItemModel>> GetByTaxPayersId(Guid taxpayersId)
         {
             var result = await db.Set<Item>()
-                .Join(db.Set<TaxPayer>().Include(d=>d.Company), t => t.LcdaId, tp => tp.Company.LcdaId,
+                .Join(db.Set<TaxPayer>().Include(d => d.Company), t => t.LcdaId, tp => tp.Company.LcdaId,
                 (t, tp) => new { t, tp })
                 .Where(x => x.tp.Id == taxpayersId)
                 .Select(x => new ItemModel()

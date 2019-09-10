@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Entities;
 using System;
@@ -8,10 +9,12 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class DemandNoticeArrearRepository : AbstractRepository
+    public class DemandNoticeArrearRepository : IDemandNoticeArrearRepository
     {
-        public DemandNoticeArrearRepository(DbContext _db) : base(_db)
+        private readonly DbContext db;
+        public DemandNoticeArrearRepository(DbContext _db)
         {
+            db = _db;
         }
 
         public async Task<List<DemandNoticeArrearsModel>> ByBillingNumber(long billingno)
@@ -39,7 +42,6 @@ namespace RemsNG.Data.Repository
             }).ToList();
         }
 
-
         public async Task<List<DemandNoticeArrearsModel>> ByBillingNumber(Guid taxpayerId)
         {
             string[] statuss = { "PENDING", "PART_PAYMENT" };
@@ -64,7 +66,6 @@ namespace RemsNG.Data.Repository
                 TotalAmount = x.TotalAmount
             }).ToList();
         }
-
 
         public async Task<List<DemandNoticeArrearsModel>> ByTaxpayer(Guid taxpayerId)
         {
@@ -222,6 +223,5 @@ namespace RemsNG.Data.Repository
 
             return true;
         }
-
     }
 }

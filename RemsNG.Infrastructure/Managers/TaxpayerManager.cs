@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Remsng.Data;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System;
@@ -14,13 +15,15 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class TaxpayerManager : ITaxpayerManager
     {
-        private DemandNoticeTaxpayersRepository _dnRepo;
+        private IDemandNoticeTaxpayersRepository _dnRepo;
         private IDNAmountDueMgtManager amountDueMgtService;
-        private TaxpayerRepository taxpayerDao;
-        public TaxpayerManager(DbContext _db, ILoggerFactory loggerFactory, IDNAmountDueMgtManager _amountDueMgtService)
+        private ITaxpayerRepository taxpayerDao;
+        public TaxpayerManager(IDemandNoticeTaxpayersRepository demandNoticeTaxpayersRepository,
+            ILoggerFactory loggerFactory,
+            IDNAmountDueMgtManager _amountDueMgtService, ITaxpayerRepository taxpayerRepository)
         {
-            _dnRepo = new DemandNoticeTaxpayersRepository(_db);
-            taxpayerDao = new TaxpayerRepository(_db);
+            _dnRepo = demandNoticeTaxpayersRepository;
+            taxpayerDao = taxpayerRepository;
             amountDueMgtService = _amountDueMgtService;
         }
 

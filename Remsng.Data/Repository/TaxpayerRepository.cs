@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RemsNG.Common.Exceptions;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -10,10 +11,12 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class TaxpayerRepository : AbstractRepository
+    public class TaxpayerRepository : ITaxpayerRepository
     {
-        public TaxpayerRepository(DbContext _db) : base(_db)
+        private readonly DbContext db;
+        public TaxpayerRepository(DbContext _db)
         {
+            db = _db;
         }
 
         public async Task<Response> Create(TaxPayerModel taxpayer, bool confirmCompany)

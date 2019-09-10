@@ -1,20 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace RemsNG.Services
+namespace RemsNG.Infrastructure.Managers
 {
     public class WardManager : IWardManager
     {
-        private WardRepository wardDao;
-        public WardManager(DbContext db)
+        private IWardRepository wardDao;
+        public WardManager(IWardRepository wardRepository)
         {
-            wardDao = new WardRepository(db);
+            wardDao = wardRepository;
         }
 
         public async Task<List<WardModel>> ActiveWard()

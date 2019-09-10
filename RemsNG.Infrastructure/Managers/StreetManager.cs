@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System;
@@ -12,10 +13,10 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class StreetManager : IStreetManager
     {
-        StreetRepository streetDao;
-        public StreetManager(DbContext _db, ILoggerFactory loggerFactory)
+        private readonly IStreetRepository streetDao;
+        public StreetManager(IStreetRepository streetRepository)
         {
-            streetDao = new StreetRepository(_db, loggerFactory);
+            streetDao = streetRepository;
         }
         public async Task<Response> Add(StreetModel street)
         {

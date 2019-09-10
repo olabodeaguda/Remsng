@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RemsNG.Common.Exceptions;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -10,27 +11,12 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class WardRepository : AbstractRepository
+    public class WardRepository : IWardRepository
     {
-        public WardRepository(DbContext _db) : base(_db)
+        private readonly DbContext db;
+        public WardRepository(DbContext _db)
         {
-        }
-
-        public async Task<List<WardModel>> all1()
-        {
-            var p = await db.Set<Ward>()
-                .ToListAsync();
-            return p.Select(x => new WardModel()
-            {
-                CreatedBy = x.CreatedBy,
-                DateCreated = x.DateCreated,
-                Id = x.Id,
-                Lastmodifiedby = x.Lastmodifiedby,
-                LastModifiedDate = x.LastModifiedDate,
-                LcdaId = x.LcdaId,
-                WardName = x.WardName,
-                WardStatus = x.WardStatus
-            }).ToList();
+            db = _db;
         }
 
         public async Task<List<WardModel>> All()
@@ -154,27 +140,6 @@ namespace RemsNG.Data.Repository
                 WardName = x.WardName,
                 WardStatus = x.WardStatus
             };
-        }
-
-        public async Task<List<WardModel>> GetWardByLGDAId1(Guid lgdaId)
-        {
-            var result = await db.Set<Ward>()
-                .Where(x => x.LcdaId == lgdaId).OrderBy(x => x.WardName).ToListAsync();
-            if (result.Count <= 0)
-            {
-                return new List<WardModel>();
-            }
-            return result.Select(x => new WardModel()
-            {
-                CreatedBy = x.CreatedBy,
-                DateCreated = x.DateCreated,
-                Id = x.Id,
-                Lastmodifiedby = x.Lastmodifiedby,
-                LastModifiedDate = x.LastModifiedDate,
-                LcdaId = x.LcdaId,
-                WardName = x.WardName,
-                WardStatus = x.WardStatus
-            }).ToList();
         }
 
         public async Task<List<WardModel>> GetWardByLGDAId(Guid lgdaId)

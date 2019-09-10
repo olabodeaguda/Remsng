@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System;
@@ -12,10 +13,10 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class RoleManager : IRoleManager
     {
-        private readonly RoleRepository roleDao;
-        public RoleManager(DbContext _db, ILoggerFactory loggerFactory)
+        private readonly IRoleRepository roleDao;
+        public RoleManager(IRoleRepository roleRepository)
         {
-            roleDao = new RoleRepository(_db, loggerFactory);
+            roleDao = roleRepository;
         }
 
         public async Task<bool> Add(RoleModel role)

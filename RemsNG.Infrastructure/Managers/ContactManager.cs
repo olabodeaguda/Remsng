@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System;
@@ -11,10 +12,10 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class ContactManager : IContactManager
     {
-        private ContactRepository contactDao;
-        public ContactManager(DbContext db)
+        private readonly IContactRepository contactDao;
+        public ContactManager(IContactRepository contactRepository)
         {
-            contactDao = new ContactRepository(db);
+            contactDao = contactRepository;
         }
 
         public async Task<bool> Add(ContactDetailModel contactDetail)
@@ -41,7 +42,7 @@ namespace RemsNG.Infrastructure.Managers
         {
             return await contactDao.Remove(contactDetail);
         }
-        
+
         public async Task<bool> Update(ContactDetailModel contactDetail)
         {
             return await contactDao.Update(contactDetail);

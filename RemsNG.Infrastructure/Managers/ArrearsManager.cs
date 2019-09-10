@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System;
@@ -14,12 +15,14 @@ namespace RemsNG.Infrastructure.Managers
     public class ArrearsManager : IArrearsManager
     {
         private IHttpContextAccessor _httpAccessor;
-        private readonly DemandNoticeArrearRepository _arrearsRepo;
-        private readonly DemandNoticeTaxpayersRepository _dNTaxpayersRep;
-        public ArrearsManager(DbContext db, IHttpContextAccessor httpContextAccessor)
+        private readonly IDemandNoticeArrearRepository _arrearsRepo;
+        private readonly IDemandNoticeTaxpayersRepository _dNTaxpayersRep;
+        public ArrearsManager(IHttpContextAccessor httpContextAccessor,
+            IDemandNoticeArrearRepository demandNoticeArrearRepository,
+            IDemandNoticeTaxpayersRepository demandNoticeTaxpayersRepository)
         {
-            _dNTaxpayersRep = new DemandNoticeTaxpayersRepository(db);
-            _arrearsRepo = new DemandNoticeArrearRepository(db);
+            _dNTaxpayersRep = demandNoticeTaxpayersRepository;
+            _arrearsRepo = demandNoticeArrearRepository;
             _httpAccessor = httpContextAccessor;
         }
 

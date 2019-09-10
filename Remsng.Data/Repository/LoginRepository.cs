@@ -1,18 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Remsng.Data;
+using RemsNG.Common.Interfaces.Repositories;
 
 namespace RemsNG.Data.Repository
 {
-    public class LoginRepository : AbstractRepository
+    public class LoginRepository : ILoginRepository
     {
-        public LoginRepository(DbContext _db) : base(_db)
+        private readonly DbContext db;
+        public LoginRepository(DbContext _db)
         {
+            db = _db;
         }
-
-        //public async Task<User> GetUser(string username)
-        //{
-        //    return await db.Users.FirstOrDefaultAsync(x => x.username == username.Trim());
-        //}
-
     }
 }

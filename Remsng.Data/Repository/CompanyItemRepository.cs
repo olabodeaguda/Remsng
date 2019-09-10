@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -9,10 +10,12 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class CompanyItemRepository : AbstractRepository
+    public class CompanyItemRepository : ICompanyItemRepository
     {
-        public CompanyItemRepository(DbContext _db) : base(_db)
+        private readonly DbContext db;
+        public CompanyItemRepository(DbContext _db)
         {
+            db = _db;
         }
 
         public async Task<Response> Add(CompanyItemModel model)

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RemsNG.Common.Exceptions;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -11,11 +12,13 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class SectorRepository : AbstractRepository
+    public class SectorRepository : ISectorRepository
     {
+        private readonly DbContext db;
         private readonly ILogger logger;
-        public SectorRepository(DbContext _db, ILoggerFactory loggerFactory) : base(_db)
+        public SectorRepository(DbContext _db, ILoggerFactory loggerFactory)
         {
+            db = _db;
             logger = loggerFactory.CreateLogger("Sector Dao");
         }
 
@@ -70,7 +73,7 @@ namespace RemsNG.Data.Repository
         public async Task<List<SectorModel>> ByLcdaId(Guid lcdaId)
         {
             var result = await db.Set<Sector>()
-                .Where(x => x.LcdaId == lcdaId).OrderBy(x=>x.SectorName).ToListAsync();
+                .Where(x => x.LcdaId == lcdaId).OrderBy(x => x.SectorName).ToListAsync();
 
             return result.Select(x => new SectorModel()
             {

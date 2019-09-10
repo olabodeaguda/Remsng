@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Repository;
@@ -13,11 +14,11 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class DemandNoticeTaxpayerManager : IDemandNoticeTaxpayerManager
     {
-        private readonly DemandNoticePaymentHistoryRepository _dphDao;
-        private DemandNoticeTaxpayersRepository dntDao;
+        private readonly IDemandNoticePaymentHistoryRepository _dphDao;
+        private IDemandNoticeTaxpayersRepository dntDao;
         private IDemandNoticeItemManager dnItemService;
-        private DemandNoticeArrearRepository dna;
-        private DemandNoticePenaltyRepository dnp;
+        private IDemandNoticeArrearRepository dna;
+        private IDemandNoticePenaltyRepository dnp;
         private ITaxpayerManager taxpayerService;
         private readonly IImageManager imageService;
         private readonly ILcdaBankManager lcdaBankService;
@@ -25,18 +26,21 @@ namespace RemsNG.Infrastructure.Managers
         private readonly IDemandNoticeChargesManager chargesService;
         private readonly ILcdaManager lcdaService;
         private IDNAmountDueMgtManager _admService;
-        public DemandNoticeTaxpayerManager(DbContext _db,
-            IDemandNoticeItemManager _dnItemService, ITaxpayerManager _taxpayerService,
+        public DemandNoticeTaxpayerManager(IDemandNoticeItemManager _dnItemService, ITaxpayerManager _taxpayerService,
              IImageManager _imageService, ILcdaBankManager _lcdaBankService,
              IListPropertyManager _lpService,
             IDemandNoticeChargesManager _chargesService, ILcdaManager _lcdaService,
-            IDNAmountDueMgtManager admService)
+            IDNAmountDueMgtManager admService,
+            IDemandNoticeTaxpayersRepository demandNoticeTaxpayersRepository,
+            IDemandNoticePaymentHistoryRepository demandNoticePaymentHistoryRepository,
+            IDemandNoticeArrearRepository demandNoticeArrearRepository,
+            IDemandNoticePenaltyRepository demandNoticePenaltyRepository)
         {
-            dntDao = new DemandNoticeTaxpayersRepository(_db);
-            _dphDao = new DemandNoticePaymentHistoryRepository(_db);
+            dntDao = demandNoticeTaxpayersRepository;
+            _dphDao = demandNoticePaymentHistoryRepository;
             dnItemService = _dnItemService;
-            dna = new DemandNoticeArrearRepository(_db);
-            dnp = new DemandNoticePenaltyRepository(_db);
+            dna = demandNoticeArrearRepository;
+            dnp = demandNoticePenaltyRepository;
             taxpayerService = _taxpayerService;
             imageService = _imageService;
             lcdaBankService = _lcdaBankService;

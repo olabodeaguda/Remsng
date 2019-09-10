@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System;
@@ -12,18 +13,20 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class LcdaManager : ILcdaManager
     {
-        private readonly LcdaRepository lcdaDao;
-        private readonly RoleRepository roleDao;
-        private readonly TaxpayerRepository taxpayerDao;
-        private readonly WardRepository wardDao;
-        private readonly StreetRepository streetDao;
-        public LcdaManager(DbContext _db, ILoggerFactory loggerFactory)
+        private readonly ILcdaRepository lcdaDao;
+        private readonly IRoleRepository roleDao;
+        private readonly ITaxpayerRepository taxpayerDao;
+        private readonly IWardRepository wardDao;
+        private readonly IStreetRepository streetDao;
+        public LcdaManager(ILcdaRepository lcdaRepository, IRoleRepository roleRepository,
+            ITaxpayerRepository taxpayerRepository, IWardRepository wardRepository,
+            IStreetRepository streetRepository)
         {
-            lcdaDao = new LcdaRepository(_db, loggerFactory);
-            roleDao = new RoleRepository(_db, loggerFactory);
-            taxpayerDao = new TaxpayerRepository(_db);
-            wardDao = new WardRepository(_db);
-            streetDao = new StreetRepository(_db, loggerFactory);
+            lcdaDao = lcdaRepository;
+            roleDao = roleRepository;
+            taxpayerDao = taxpayerRepository;
+            wardDao = wardRepository;
+            streetDao = streetRepository;
         }
 
         public async Task<List<LcdaModel>> ActiveLcdaByDomainId(Guid domainId)

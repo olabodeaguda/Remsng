@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System.Collections.Generic;
@@ -10,10 +11,10 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class BankManager : IBankManager
     {
-        private readonly BankRepository bankDao;
-        public BankManager(DbContext _db)
+        private readonly IBankRepository bankDao;
+        public BankManager(IBankRepository bankRepository)
         {
-            bankDao = new BankRepository(_db);
+            bankDao = bankRepository;
         }
 
         public async Task<List<BankModel>> GetBankAsync()

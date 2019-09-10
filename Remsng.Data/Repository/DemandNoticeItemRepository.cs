@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
@@ -9,39 +10,12 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class DemandNoticeItemRepository : AbstractRepository
+    public class DemandNoticeItemRepository : IDemandNoticeItemRepository
     {
-        public DemandNoticeItemRepository(DbContext _db) : base(_db)
+        private readonly DbContext db;
+        public DemandNoticeItemRepository(DbContext _db)
         {
-        }
-
-        public async Task<Response> Add(DemandNoticeTaxpayer dntd)
-        {
-            // get companyItems
-            // add demandnoticetaxpayers
-            DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addTaxpayerDemandNoticeItem @p0,@p1,@p2,@p3", new object[] {
-                dntd.DnId,
-                dntd.TaxpayerId,
-                dntd.BillingYr,
-                dntd.CreatedBy
-            }).FirstOrDefaultAsync();
-
-            if (dbResponse.success)
-            {
-                return new Response()
-                {
-                    code = MsgCode_Enum.SUCCESS,
-                    description = dbResponse.msg
-                };
-            }
-            else
-            {
-                return new Response()
-                {
-                    code = MsgCode_Enum.FAIL,
-                    description = dbResponse.msg
-                };
-            }
+            db = _db;
         }
 
         public async Task<Response> Add(DemandNoticeItemModel[] items)
@@ -98,7 +72,8 @@ namespace RemsNG.Data.Repository
             return result;
         }
 
-        public async Task<List<DemandNoticeItemModel>> UnpaidBillsByTaxpayerId(Guid taxpayerId, long billNumber, int billingYr)
+        public async Task<List<DemandNoticeItemModel>> UnpaidBillsByTaxpayerId(Guid taxpayerId,
+            long billNumber, int billingYr)
         {
             var r = await db.Set<DemandNoticeItem>()
                  .Join(db.Set<DemandNoticeTaxpayer>(),

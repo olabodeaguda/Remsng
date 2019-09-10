@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System;
@@ -12,10 +13,10 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class ErrorManager : IErrorManager
     {
-        private ErrorRepository errorDao;
-        public ErrorManager(DbContext _db, ILoggerFactory loggerFactory)
+        private IErrorRepository errorDao;
+        public ErrorManager(IErrorRepository errorRepository)
         {
-            errorDao = new ErrorRepository(_db, loggerFactory);
+            errorDao = errorRepository;
         }
 
         public async Task<bool> Add(ErrorModel error)

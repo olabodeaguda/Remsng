@@ -1,15 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Remsng.Data.Entities;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using System;
 using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class DNPaymentHistoryRepository : AbstractRepository
+    public class DNPaymentHistoryRepository : IDNPaymentHistoryRepository
     {
-        public DNPaymentHistoryRepository(DbContext _db) : base(_db)
-        { }
+        private readonly DbContext db;
+        public DNPaymentHistoryRepository(DbContext _db)
+        {
+            db = _db;
+        }
 
         public async Task<PrepaymentModel> Get(Guid taxpayerId)
         {

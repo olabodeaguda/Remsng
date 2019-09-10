@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Remsng.Data;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System.Collections.Generic;
@@ -10,10 +11,10 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class DnTaxpayerManagers : IDnTaxpayerManager
     {
-        private readonly DemandNoticeTaxpayersRepository dnTaxpayerDao;
-        public DnTaxpayerManagers(DbContext _db)
+        private readonly IDemandNoticeTaxpayersRepository dnTaxpayerDao;
+        public DnTaxpayerManagers(IDemandNoticeTaxpayersRepository demandNoticeTaxpayersRepository)
         {
-            dnTaxpayerDao = new DemandNoticeTaxpayersRepository(_db);
+            dnTaxpayerDao = demandNoticeTaxpayersRepository;
         }
 
         public async Task<DemandNoticeTaxpayersModel> ByBillingNo(long billingNo)

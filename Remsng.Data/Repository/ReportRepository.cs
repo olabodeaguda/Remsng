@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Entities;
 using System;
@@ -8,97 +9,13 @@ using System.Threading.Tasks;
 
 namespace RemsNG.Data.Repository
 {
-    public class ReportRepository : AbstractRepository
+    public class ReportRepository : IReportRepository
     {
-        public ReportRepository(DbContext _db) : base(_db)
+        private readonly DbContext db;
+        public ReportRepository(DbContext _db)
         {
+            db = _db;
         }
-
-        //public async Task<List<ItemReportSummaryModel>> ByDate2(DateTime startDate, DateTime endDate)
-        //{
-        //    //try
-        //    //{
-        //    List<ItemReportSummaryModel> results = new List<ItemReportSummaryModel>();
-        //    var items = await db.Set<DemandNoticeItem>()
-        //         .Include(x => x.Item)
-        //         .Include(p => p.TaxPayer)
-        //         .ThenInclude(s => s.Street)
-        //         .ThenInclude(s => s.Ward)
-        //         .Join(db.Set<DemandNoticeTaxpayer>(),
-        //         itm => itm.BillingNo, dnt => dnt.BillingNumber, (itm, dnt) => new { itm, dnt })
-        //         .Where(q => q.itm.TaxPayer.Street.Ward.WardName == "ACTIVE"
-        //         && (q.itm.DateCreated >= startDate && q.itm.DateCreated <= endDate)
-        //         && (q.itm.LastModifiedDate >= startDate && q.itm.LastModifiedDate <= endDate) && q.dnt.IsUnbilled == false)
-        //         .Select(s => new ItemReportSummaryModel
-        //         {
-        //             id = s.itm.Id,
-        //             itemAmount = s.itm.ItemAmount,
-        //             amountPaid = s.itm.AmountPaid,
-        //             billingNo = s.itm.BillingNo,
-        //             category = "ITEMS",
-        //             wardId = s.itm.TaxPayer.Street.WardId,
-        //             wardName = s.itm.TaxPayer.Street.Ward.WardName,
-        //             taxpayersName = $"{s.itm.TaxPayer.Firstname} {s.itm.TaxPayer.Lastname} {s.itm.TaxPayer.Surname}",
-        //             itemCode = s.itm.Item.ItemCode,
-        //             itemDescription = s.itm.Item.ItemDescription,
-        //             lastModifiedDate = s.itm.LastModifiedDate,
-        //             addressName = s.dnt.AddressName
-        //         }).ToListAsync();
-        //    results.AddRange(items);
-
-        //    var arrears = await db.Set<DemandNoticeArrear>()
-        //         //.Include(x => x.Item)
-        //         .Include(p => p.TaxPayer)
-        //         .ThenInclude(s => s.Street)
-        //         .ThenInclude(s => s.Ward)
-        //         .Join(db.Set<DemandNoticeTaxpayer>(),
-        //         itm => itm.BillingNo, dnt => dnt.BillingNumber, (itm, dnt) => new { itm, dnt })
-        //         .Where(q => q.itm.TaxPayer.Street.Ward.WardName == "ACTIVE"
-        //         && (q.itm.DateCreated >= startDate && q.itm.DateCreated <= endDate)
-        //         && (q.itm.LastModifiedDate >= startDate && q.itm.LastModifiedDate <= endDate) && q.dnt.IsUnbilled == false)
-        //         .Select(s => new ItemReportSummaryModel
-        //         {
-        //             id = s.itm.Id,
-        //             itemAmount = s.itm.TotalAmount,
-        //             amountPaid = s.itm.AmountPaid,
-        //             billingNo = s.itm.BillingNo,
-        //             category = "ARREARS",
-        //             wardId = s.itm.TaxPayer.Street.WardId,
-        //             wardName = s.itm.TaxPayer.Street.Ward.WardName,
-        //             taxpayersName = $"{s.itm.TaxPayer.Firstname} {s.itm.TaxPayer.Lastname} {s.itm.TaxPayer.Surname}",
-        //             //itemCode = s.itm.Item.ItemCode,
-        //             //itemDescription = s.itm.Item.ItemDescription,
-        //             lastModifiedDate = s.itm.LastModifiedDate,
-        //             addressName = s.dnt.AddressName
-        //         }).ToListAsync();
-        //    results.AddRange(arrears);
-
-        //    var penalty = await db.Set<DemandNoticePenalty>()
-        //         .Include(p => p.TaxPayer)
-        //         .ThenInclude(s => s.Street)
-        //         .ThenInclude(s => s.Ward)
-        //         .Join(db.Set<DemandNoticeTaxpayer>(),
-        //         itm => itm.BillingNo, dnt => dnt.BillingNumber, (itm, dnt) => new { itm, dnt })
-        //         .Where(q => q.itm.TaxPayer.Street.Ward.WardName == "ACTIVE"
-        //         && (q.itm.DateCreated >= startDate && q.itm.DateCreated <= endDate)
-        //         && (q.itm.LastModifiedDate >= startDate && q.itm.LastModifiedDate <= endDate) && q.dnt.IsUnbilled == false)
-        //         .Select(s => new ItemReportSummaryModel
-        //         {
-        //             id = s.itm.Id,
-        //             itemAmount = s.itm.TotalAmount,
-        //             amountPaid = s.itm.AmountPaid,
-        //             billingNo = s.itm.BillingNo,
-        //             category = "PENALTY",
-        //             wardId = s.itm.TaxPayer.Street.WardId,
-        //             wardName = s.itm.TaxPayer.Street.Ward.WardName,
-        //             taxpayersName = $"{s.itm.TaxPayer.Firstname} {s.itm.TaxPayer.Lastname} {s.itm.TaxPayer.Surname}",
-        //             lastModifiedDate = s.itm.LastModifiedDate,
-        //             addressName = s.dnt.AddressName
-        //         }).ToListAsync();
-        //    results.AddRange(penalty);
-
-        //    return results;
-        //}
 
         public async Task<List<ItemReportSummaryModel>> ByDate(DateTime startDate, DateTime endDate)
         {
