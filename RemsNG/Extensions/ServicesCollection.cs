@@ -34,12 +34,6 @@ namespace RemsNG.Extensions
 
             var builderException = services.AddMvc();
 
-            services.AddNodeServices(x =>
-            {
-                x.InvocationTimeoutMilliseconds = 6000000;
-                x.LaunchWithDebugging = false;
-            });
-
             services.Configure<JwtIssuerOptions>(options =>
             {
                 options.Issuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];

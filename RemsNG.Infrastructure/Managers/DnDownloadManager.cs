@@ -19,13 +19,13 @@ namespace RemsNG.Infrastructure.Managers
         private readonly IDemandNoticeChargesManager chargesService;
         private readonly IDemandNoticeDownloadHistoryManager demandNoticeDownloadHistory;
         private readonly ILcdaManager lcdaService;
-        private IListPropertyManager listPropertyService;
-        private ISectorManager sectorService;
-        private IDNAmountDueMgtManager amountDueMgtService;
-        private ITaxpayerCategoryManager _taxService;
+        private readonly IListPropertyManager listPropertyService;
+        private readonly ISectorManager sectorService;
+        private readonly IDNAmountDueMgtManager amountDueMgtService;
+        private readonly ITaxpayerCategoryManager _taxService;
         private readonly BankCategory _bankCategory;
         private readonly IPdfService _pdfService;
-        private TemplateDetail _templateDetails;
+        private readonly TemplateDetail _templateDetails;
         public DnDownloadManager(IDemandNoticeTaxpayerManager _dnts,
             IDemandNoticeChargesManager _chargesService,
             IDemandNoticeDownloadHistoryManager _demandNoticeDownloadHistory,
@@ -50,7 +50,7 @@ namespace RemsNG.Infrastructure.Managers
             _pdfService = pdfService;
         }
 
-        public async Task<string> GenerateReceipt(string createdBy, DemandNoticePaymentHistoryModel dnph)
+        private async Task<string> LoadTemplateReceipt(string createdBy, DemandNoticePaymentHistoryModel dnph)
         {
             string htmlContent = await File.ReadAllTextAsync(_templateDetails.RecieptUrl);
 
@@ -137,11 +137,12 @@ namespace RemsNG.Infrastructure.Managers
             string discp = string.Join(',', dnrp.items.Select(x => x.itemTitle));
 
             htmlContent = htmlContent.Replace("DESCRIPTION", discp);
+            htmlContent = htmlContent.Replace("BANK_NAME", dnph.BankName);
 
-            return htmlContent;
+            return htmlContent + "<br/><br/><br/>" + htmlContent;
         }
 
-        public async Task<string> LoadTemplate(string htmlContent, long billingno, string createdBy, TemplateType templateType)
+        public async Task<string> LoadTemplateDemandNotice(string htmlContent, long billingno, string createdBy, TemplateType templateType)
         {
             //string htmlContent = await File.ReadAllTextAsync(_templateDetails.DemandNoticeUrl);
             DemandNoticeReportModel dnrp = await dnts.ByBillingNo(billingno);
@@ -287,11 +288,11 @@ namespace RemsNG.Infrastructure.Managers
             string htmlContent = await File.ReadAllTextAsync(_templateDetails.DemandNoticeUrl);
             foreach (var tm in billingno)
             {
-                string val = await LoadTemplate(htmlContent, tm, createdBy, TemplateType.DemandNotice);
+                string val = await LoadTemplateDemandNotice(htmlContent, tm, createdBy, TemplateType.DemandNotice);
                 lst.Add(val);
             }
 
-            byte[] result = _pdfService.DemandNotice(lst.ToArray());
+            byte[] result = _pdfService.GetBytes(lst.ToArray());
 
             return result;
         }
@@ -302,11 +303,20 @@ namespace RemsNG.Infrastructure.Managers
             string htmlContent = await File.ReadAllTextAsync(_templateDetails.ReminderUrl);
             foreach (var tm in billingno)
             {
-                string val = await LoadTemplate(htmlContent, tm, createdBy, TemplateType.Reminder);
+                string val = await LoadTemplateDemandNotice(htmlContent, tm, createdBy, TemplateType.Reminder);
                 lst.Add(val);
             }
 
-            byte[] result = _pdfService.DemandNotice(lst.ToArray());
+            byte[] result = _pdfService.GetBytes(lst.ToArray());
+
+            return result;
+        }
+
+        public async Task<byte[]> GenerateReceipt(string createdBy, DemandNoticePaymentHistoryModel dnph)
+        {
+            string htmlTemplate = await LoadTemplateReceipt(createdBy, dnph);
+
+            byte[] result = _pdfService.GetBytes(new string[] { htmlTemplate });
 
             return result;
         }

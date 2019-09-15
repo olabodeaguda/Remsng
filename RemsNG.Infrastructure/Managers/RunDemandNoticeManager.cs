@@ -15,30 +15,21 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class RunDemandNoticeManager : IRunDemandNoticeManager
     {
-
         private readonly ILogger logger;
         private readonly IDnDownloadManager dnDownloadService;
         private readonly IBatchDwnRequestManager batchDwnRequestService;
         private readonly IDemandNoticeTaxpayerManager demandNoticeTaxpayerService;
-        private readonly ITaxpayerManager taxpayerService;
-        private IHostingEnvironment _hostEnvironment;
-        private INodeServices nodeServices;
         private readonly TemplateDetail _templateDetails;
 
         public RunDemandNoticeManager(
             ILoggerFactory loggerFactory,
-            IDnDownloadManager _dnDownloadService, IBatchDwnRequestManager _batchDwnRequestService,
-            IDemandNoticeTaxpayerManager _demandNoticeTaxpayerService
-            , ITaxpayerManager _taxpayerService,
-            INodeServices _nodeServices,
-            IHostingEnvironment hostingEnvironment,
+            IDnDownloadManager _dnDownloadService,
+            IBatchDwnRequestManager _batchDwnRequestService,
+            IDemandNoticeTaxpayerManager _demandNoticeTaxpayerService,
             TemplateDetail templateDetails)
         {
-            _templateDetails = templateDetails;
             logger = loggerFactory.CreateLogger("Demand Notice Jobs");
-            nodeServices = _nodeServices;
-            _hostEnvironment = hostingEnvironment;
-            dnDownloadService = _dnDownloadService;
+            _templateDetails = templateDetails;
             batchDwnRequestService = _batchDwnRequestService;
             demandNoticeTaxpayerService = _demandNoticeTaxpayerService;
         }

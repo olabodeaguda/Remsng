@@ -168,9 +168,7 @@ namespace RemsNG.Controllers
                 throw new NotFoundException("Request not found");
             }
 
-            string htmlContent = await dnd.GenerateReceipt(User.Identity.Name, dnph);
-            htmlContent = htmlContent.Replace("BANK_NAME", dnph.BankName);
-            var result = await nodeServices.InvokeAsync<byte[]>("./pdf", htmlContent);
+            var result = await dnd.GenerateReceipt(User.Identity.Name, dnph);
 
             HttpContext.Response.ContentType = "application/pdf";
             HttpContext.Response.Body.Write(result, 0, result.Length);

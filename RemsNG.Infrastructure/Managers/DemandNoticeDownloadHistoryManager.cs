@@ -12,7 +12,8 @@ namespace RemsNG.Infrastructure.Managers
     public class DemandNoticeDownloadHistoryManager : IDemandNoticeDownloadHistoryManager
     {
         private readonly IDemandNoticeDownloadHistoryRepository dndh;
-        public DemandNoticeDownloadHistoryManager(IDemandNoticeDownloadHistoryRepository demandNoticeDownloadHistoryRepository)
+        public DemandNoticeDownloadHistoryManager(
+            IDemandNoticeDownloadHistoryRepository demandNoticeDownloadHistoryRepository)
         {
             dndh = demandNoticeDownloadHistoryRepository;
         }

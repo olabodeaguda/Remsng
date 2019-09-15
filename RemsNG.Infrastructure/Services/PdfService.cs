@@ -19,7 +19,21 @@ namespace RemsNG.Infrastructure.Services
             _template = templateDetail;
         }
 
-        public byte[] DemandNotice(string htmlString)
+        public byte[] GetBytes(string[] htmlStrings)
+        {
+            byte[] pdfbyte = null;
+
+            List<byte[]> lt = new List<byte[]>();
+            foreach (var tm in htmlStrings)
+            {
+                lt.Add(GetBytes(tm));
+            }
+            pdfbyte = MergeFiles(lt);
+
+            return pdfbyte;
+        }
+
+        private byte[] GetBytes(string htmlString)
         {
             byte[] pdfbyte = null;
             MemoryStream memoryStream = new MemoryStream();
@@ -39,25 +53,6 @@ namespace RemsNG.Infrastructure.Services
             pdfbyte = memoryStream.ToArray();
             memoryStream.Dispose();
             return pdfbyte;
-        }
-
-        public byte[] DemandNotice(string[] htmlStrings)
-        {
-            byte[] pdfbyte = null;
-
-            List<byte[]> lt = new List<byte[]>();
-            foreach (var tm in htmlStrings)
-            {
-                lt.Add(DemandNotice(tm));
-            }
-            pdfbyte = MergeFiles(lt);
-
-            return pdfbyte;
-        }
-
-        public byte[] Reminder(string htmlString)
-        {
-            throw new NotImplementedException();
         }
 
         private byte[] MergeFiles(List<byte[]> sourceFiles)

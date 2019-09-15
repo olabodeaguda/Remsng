@@ -2384,9 +2384,6 @@
     <ProjectReference Include="..\RemsNG.Infrastructure\RemsNG.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="pdf.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="RemsNG.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

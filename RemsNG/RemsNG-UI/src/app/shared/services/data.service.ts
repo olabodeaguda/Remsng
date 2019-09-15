@@ -125,6 +125,7 @@ export class DataService {
     }
 
     handleError(err: any) {
+        console.log(err)
         const res = Object.assign(new ResponseModel(), err.error);
         if (err.status === 404) {
             return Observable.throw(res.description || 'Not found exception');
