@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remsng.Data", "Remsng.Data\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RemsNG.Infrastructure", "RemsNG.Infrastructure\RemsNG.Infrastructure.csproj", "{EEAB98FB-1D50-413E-9E13-8517169EC557}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remsng.Cloud", "Remsng.Cloud\Remsng.Cloud.csproj", "{C128899E-4A81-4447-9513-F049E00D1D30}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Remsng.Cloud", "Remsng.Cloud\Remsng.Cloud.csproj", "{C128899E-4A81-4447-9513-F049E00D1D30}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remsng.ChartOfAccount.API", "Remsng.ChartOfAccount.API\Remsng.ChartOfAccount.API.csproj", "{90ECF320-ABF6-478B-9D06-1C43C14705F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{C128899E-4A81-4447-9513-F049E00D1D30}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C128899E-4A81-4447-9513-F049E00D1D30}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C128899E-4A81-4447-9513-F049E00D1D30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90ECF320-ABF6-478B-9D06-1C43C14705F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90ECF320-ABF6-478B-9D06-1C43C14705F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90ECF320-ABF6-478B-9D06-1C43C14705F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90ECF320-ABF6-478B-9D06-1C43C14705F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
