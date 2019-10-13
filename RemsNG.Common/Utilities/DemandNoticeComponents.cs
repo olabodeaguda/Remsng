@@ -29,9 +29,9 @@ namespace RemsNG.Common.Utilities
             foreach (var tm in dnrm.items)
             {
                 htmlmarkup = htmlmarkup + $"<tr>";
-                htmlmarkup = htmlmarkup + $"<td width=\"90\" colspan=\"1\"> {count++} </td>";
-                htmlmarkup = htmlmarkup + $"<td width=\"45%\" colspan=\"8\"> {tm.itemTitle} </td>";
-                htmlmarkup = htmlmarkup + $"<td width=\"20%\" colspan=\"2\"></td><td width=\"30%\" colspan=\"2\"  text-align:'center'>{ String.Format("{0:n}", decimal.Round(tm.itemAmount, 2))}</ td ></tr>";
+                htmlmarkup = htmlmarkup + $"<td colspan=\"1\"> {count++} </td>";
+                htmlmarkup = htmlmarkup + $"<td colspan=\"7\" align=\"left\"> {tm.itemTitle} </td>";
+                htmlmarkup = htmlmarkup + $"<td colspan=\"2\"  align=\"center\">{ String.Format("{0:n}", decimal.Round(tm.itemAmount, 2))}</td></tr>";
             }
 
             return htmlmarkup;

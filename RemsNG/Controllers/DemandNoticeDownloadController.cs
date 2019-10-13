@@ -21,21 +21,20 @@ namespace RemsNG.Controllers
     {
         private readonly IPdfService _pdfService;
         private IHostingEnvironment hostingEnvironment;
-        private INodeServices nodeServices;
+        //private INodeServices nodeServices;
         private IDnDownloadManager dnd;
         private readonly ILogger logger;
         private readonly IBatchDwnRequestManager batchRequestService;
         private IDNPaymentHistoryManager paymentHistoryService;
         private readonly TemplateDetail _templateDetails;
         public DemandNoticeDownloadController(IHostingEnvironment _hostingEnvironment,
-            INodeServices _nodeServices, IDnDownloadManager _dnd,
+             IDnDownloadManager _dnd,
             IBatchDwnRequestManager _batchRequestService,
             IDNPaymentHistoryManager _paymentHistoryService,
             ILoggerFactory loggerFactory, IPdfService pdfService, TemplateDetail templateDetail)
         {
             _templateDetails = templateDetail;
             hostingEnvironment = _hostingEnvironment;
-            nodeServices = _nodeServices;
             dnd = _dnd;
             batchRequestService = _batchRequestService;
             paymentHistoryService = _paymentHistoryService;
