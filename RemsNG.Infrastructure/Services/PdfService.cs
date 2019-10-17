@@ -33,6 +33,20 @@ namespace RemsNG.Infrastructure.Services
             return pdfbyte;
         }
 
+        public byte[] GetBytes(string[] htmlStrings, TemplateType templateType)
+        {
+            byte[] pdfbyte = null;
+
+            List<byte[]> lt = new List<byte[]>();
+            foreach (var tm in htmlStrings)
+            {
+                lt.Add(GetBytes(tm, templateType));
+            }
+            pdfbyte = MergeFiles(lt);
+
+            return pdfbyte;
+        }
+
         private byte[] GetBytes(string htmlString)
         {
             byte[] pdfbyte = null;
@@ -43,6 +57,82 @@ namespace RemsNG.Infrastructure.Services
             PdfWriter.GetInstance(document, memoryStream);
             document.Open();
             var objects = HtmlWorker.ParseToList(new StringReader(htmlString), styles).ToArray();
+
+            for (int i = 0; i < objects.Length; i++)
+            {
+                document.Add((IElement)objects[i]);
+            }
+
+            document.Close();
+            pdfbyte = memoryStream.ToArray();
+            memoryStream.Dispose();
+            return pdfbyte;
+        }
+
+        private byte[] GetBytes(string htmlString, TemplateType templateType)
+        {
+            byte[] pdfbyte = null;
+            MemoryStream memoryStream = new MemoryStream();
+            var styles = new StyleSheet();
+
+            var document = new Document(PageSize.A4);
+            PdfWriter.GetInstance(document, memoryStream);
+            document.Open();
+            if (templateType == TemplateType.DemandNotice)
+            {
+                if (!string.IsNullOrEmpty(_template.LcdaLogo))
+                {
+                    Image lcda = Image.GetInstance(_template.LcdaLogo);
+                    lcda.SetAbsolutePosition(20, 717);
+                    lcda.ScaleAbsoluteHeight(120);
+                    lcda.ScaleAbsoluteWidth(120);
+
+                    document.Add(lcda);
+                }
+
+                if (!string.IsNullOrEmpty(_template.LagosLogo))
+                {
+                    Image lag = Image.GetInstance(_template.LagosLogo);
+                    lag.SetAbsolutePosition(460, 717);
+                    lag.ScaleAbsoluteHeight(120);
+                    lag.ScaleAbsoluteWidth(120);
+                    document.Add(lag);
+                }
+            }
+            else if (templateType == TemplateType.Reminder)
+            {
+                if (!string.IsNullOrEmpty(_template.ReminderLcdaLogo))
+                {
+                    Image lcda = Image.GetInstance(_template.ReminderLcdaLogo);
+                    lcda.SetAbsolutePosition(20, 717);
+                    lcda.ScaleAbsoluteHeight(120);
+                    lcda.ScaleAbsoluteWidth(120);
+
+                    document.Add(lcda);
+                }
+
+                if (!string.IsNullOrEmpty(_template.ReminderLagosLogo))
+                {
+                    Image lag = Image.GetInstance(_template.ReminderLagosLogo);
+                    lag.SetAbsolutePosition(460, 717);
+                    lag.ScaleAbsoluteHeight(120);
+                    lag.ScaleAbsoluteWidth(120);
+                    document.Add(lag);
+                }
+
+                if (!string.IsNullOrEmpty(_template.ReminderBackgroundLogo))
+                {
+                    Image bkgrd = Image.GetInstance(_template.ReminderBackgroundLogo);
+                    bkgrd.SetAbsolutePosition(250, 350);
+                    bkgrd.ScaleAbsoluteHeight(200);
+                    bkgrd.ScaleAbsoluteWidth(200);
+                    document.Add(bkgrd);
+                }
+            }
+
+            var objects = HtmlWorker.ParseToList(new StringReader(htmlString), styles).ToArray();
+
+
 
             for (int i = 0; i < objects.Length; i++)
             {

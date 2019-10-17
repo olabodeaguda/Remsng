@@ -144,7 +144,6 @@ namespace RemsNG.Infrastructure.Managers
 
         public async Task<string> LoadTemplateDemandNotice(string htmlContent, long billingno, string createdBy, TemplateType templateType)
         {
-            //string htmlContent = await File.ReadAllTextAsync(_templateDetails.DemandNoticeUrl);
             DemandNoticeReportModel dnrp = await dnts.ByBillingNo(billingno);
             if (dnrp.items.Count == 0)
             {
@@ -176,8 +175,6 @@ namespace RemsNG.Infrastructure.Managers
 
             htmlContent = htmlContent.Replace("ITEMLIST", DemandNoticeComponents.HtmlBuildItems(dnrp));
 
-            htmlContent = htmlContent.Replace("PATCH2", "");
-
             var taxCategory = await _taxService.GetTaxpayerCategory(dnrp.TaxpayerId);
             htmlContent = htmlContent.Replace("TAXPAYERCATEGORY", taxCategory.TaxpayerCategoryName);
 
@@ -187,34 +184,34 @@ namespace RemsNG.Infrastructure.Managers
             htmlContent = htmlContent.Replace("PENALTY_AMOUNT", String.Format("{0:n}", decimal.Round(dnrp.penalty, 2)));
 
             #region  demand Notice images
-            if (!string.IsNullOrEmpty(_templateDetails.LcdaLogo) && templateType == TemplateType.DemandNotice)
-            {
-                htmlContent = htmlContent.Replace("LCDA_LOGO", "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync(_templateDetails.LcdaLogo)));
-            }
-            if (!string.IsNullOrEmpty(_templateDetails.LagosLogo) && templateType == TemplateType.DemandNotice)
-            {
-                htmlContent = htmlContent.Replace("LAGOSLOGO", "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync(_templateDetails.LagosLogo)));
-            }
-            if (!string.IsNullOrEmpty(_templateDetails.BackgroundLogo) && templateType == TemplateType.DemandNotice)
-            {
-                htmlContent = htmlContent.Replace("LCDA_LOGO", "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync(_templateDetails.BackgroundLogo)));
-            }
+            //if (!string.IsNullOrEmpty(_templateDetails.LcdaLogo) && templateType == TemplateType.DemandNotice)
+            //{
+            //    //htmlContent = htmlContent.Replace("LCDA_LOGO", "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync(_templateDetails.LcdaLogo)));
+            //}
+            //if (!string.IsNullOrEmpty(_templateDetails.LagosLogo) && templateType == TemplateType.DemandNotice)
+            //{
+            //    htmlContent = htmlContent.Replace("LAGOSLOGO", "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync(_templateDetails.LagosLogo)));
+            //}
+            //if (!string.IsNullOrEmpty(_templateDetails.BackgroundLogo) && templateType == TemplateType.DemandNotice)
+            //{
+            //    //htmlContent = htmlContent.Replace("LCDA_LOGO", "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync(_templateDetails.BackgroundLogo)));
+            //}
             #endregion
 
 
             #region Reminder Images
-            if (!string.IsNullOrEmpty(_templateDetails.ReminderLcdaLogo) && templateType == TemplateType.Reminder)
-            {
-                htmlContent = htmlContent.Replace("LCDA_LOGO", "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync(_templateDetails.ReminderLcdaLogo)));
-            }
-            if (!string.IsNullOrEmpty(_templateDetails.ReminderLagosLogo) && templateType == TemplateType.Reminder)
-            {
-                htmlContent = htmlContent.Replace("LAGOSLOGO", "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync(_templateDetails.ReminderLagosLogo)));
-            }
-            if (!string.IsNullOrEmpty(_templateDetails.ReminderBackgroundLogo) && templateType == TemplateType.Reminder)
-            {
-                htmlContent = htmlContent.Replace("LCDA_LOGO", "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync(_templateDetails.ReminderBackgroundLogo)));
-            }
+            //if (!string.IsNullOrEmpty(_templateDetails.ReminderLcdaLogo) && templateType == TemplateType.Reminder)
+            //{
+            //    htmlContent = htmlContent.Replace("LCDA_LOGO", "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync(_templateDetails.ReminderLcdaLogo)));
+            //}
+            //if (!string.IsNullOrEmpty(_templateDetails.ReminderLagosLogo) && templateType == TemplateType.Reminder)
+            //{
+            //    htmlContent = htmlContent.Replace("LAGOSLOGO", "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync(_templateDetails.ReminderLagosLogo)));
+            //}
+            //if (!string.IsNullOrEmpty(_templateDetails.ReminderBackgroundLogo) && templateType == TemplateType.Reminder)
+            //{
+            //    htmlContent = htmlContent.Replace("LCDA_LOGO", "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync(_templateDetails.ReminderBackgroundLogo)));
+            //}
             #endregion
 
 
@@ -260,7 +257,7 @@ namespace RemsNG.Infrastructure.Managers
 
             if (finalTotal == 0)
             {
-                htmlContent = htmlContent.Replace("AMOUNT_IN_WORD", "Zero");
+                htmlContent = htmlContent.Replace("AMOUNT_IN_WORD", "Payment fully paid");
             }
             else
             {
@@ -292,7 +289,7 @@ namespace RemsNG.Infrastructure.Managers
                 lst.Add(val);
             }
 
-            byte[] result = _pdfService.GetBytes(lst.ToArray());
+            byte[] result = _pdfService.GetBytes(lst.ToArray(), TemplateType.DemandNotice);
 
             return result;
         }
@@ -307,7 +304,7 @@ namespace RemsNG.Infrastructure.Managers
                 lst.Add(val);
             }
 
-            byte[] result = _pdfService.GetBytes(lst.ToArray());
+            byte[] result = _pdfService.GetBytes(lst.ToArray(), TemplateType.Reminder);
 
             return result;
         }
