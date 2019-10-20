@@ -562,11 +562,6 @@ namespace RemsNG.Infrastructure.Services
                     }
 
                     return pathname;
-
-
-                    //MemoryStream memo = new MemoryStream();
-                    //workbook.Write(memo);
-                    //return memo.ToArray();
                 });
             }
             catch (Exception x)
@@ -853,7 +848,6 @@ namespace RemsNG.Infrastructure.Services
             });
         }
 
-
         public async Task<byte[]> TaxpayerReportByWard(List<ItemReportSummaryModel> rptLst
             , string domainName, string lcdaName, DateTime startDate, DateTime enndDate)
         {
@@ -1018,7 +1012,5 @@ namespace RemsNG.Infrastructure.Services
                 return null;
             }
         }
-
-
     }
 }
