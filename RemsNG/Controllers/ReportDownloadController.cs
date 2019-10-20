@@ -278,9 +278,18 @@ namespace RemsNG.Controllers
             ed = ed.AddHours(23);
             ed = ed.AddMinutes(59);
 
-            List<DemandNoticeItemModel> dnitem = await reportService.ReportitemsByCategory(sd, ed);
-            List<DemandNoticePenaltyModel> dnPenalty = await reportService.ReportPenaltyByCategory(sd, ed);
-            List<DemandNoticeArrearsModel> dnArrears = await reportService.ReportArrearsByCategory(sd, ed);
+            var ids = await reportService.AllIdsByDate(sd, ed);
+            if (ids.billNumbers.Length < 0)
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.NOTFOUND,
+                    description = $"No record(s) found"
+                });
+
+
+            List<DemandNoticeItemModel> dnitem = await reportService.ReportitemsByCategory(ids.billNumbers);
+            List<DemandNoticePenaltyModel> dnPenalty = await reportService.ReportPenaltyByCategory(ids.taxpayerIds);
+            List<DemandNoticeArrearsModel> dnArrears = await reportService.ReportArrearsByCategory(ids.taxpayerIds);
 
             Guid lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
             LcdaModel lgda = await lcdaService.Get(lcdaId);

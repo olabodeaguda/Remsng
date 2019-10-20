@@ -106,13 +106,13 @@ namespace RemsNG.Data.Repository
 
             string[] status = { "PENDING", "PART_PAYMENT", "PAID" };
 
-            var lst1 = await db.Set<DemandNoticeItem>()
-             .Include(x => x.TaxPayer)
-             .ThenInclude(x => x.Company)
-             .ThenInclude(x => x.TaxPayerCatgeory)
-             .Include(x => x.DemandNoticeTaxpayer)
-             .Where(x => x.DateCreated >= startDate && x.DateCreated <= endDate && status.Any(t => t == x.ItemStatus))
-             .ToListAsync();
+            //var lst1 = await db.Set<DemandNoticeItem>()
+            // .Include(x => x.TaxPayer)
+            // .ThenInclude(x => x.Company)
+            // .ThenInclude(x => x.TaxPayerCatgeory)
+            // .Include(x => x.DemandNoticeTaxpayer)
+            // .Where(x => x.DateCreated >= startDate && x.DateCreated <= endDate && status.Any(t => t == x.ItemStatus))
+            // .ToListAsync();
 
             List<DemandNoticeItemModel> lst = await db.Set<DemandNoticeItem>()
               .Include(x => x.TaxPayer)
@@ -143,5 +143,36 @@ namespace RemsNG.Data.Repository
             return lst;
         }
 
+        public async Task<List<DemandNoticeItemModel>> ReportByCategory(long[] billNumbers)
+        {
+            string[] status = { "PENDING", "PART_PAYMENT", "PAID" };
+            List<DemandNoticeItemModel> lst = await db.Set<DemandNoticeItem>()
+             .Include(x => x.TaxPayer)
+             .ThenInclude(x => x.Company)
+             .ThenInclude(x => x.TaxPayerCatgeory)
+             .Include(x => x.DemandNoticeTaxpayer)
+             .Where(x => billNumbers.Any(s => s == x.BillingNo) && status.Any(t => t == x.ItemStatus))
+             .Select(p => new DemandNoticeItemModel()
+             {
+                 AmountPaid = p.AmountPaid,
+                 BillingNo = p.BillingNo,
+                 CreatedBy = p.CreatedBy,
+                 DateCreated = p.DateCreated,
+                 DemandNoticeId = p.DemandNoticeId,
+                 DnTaxpayersDetailsId = p.dn_taxpayersDetailsId,
+                 Id = p.Id,
+                 ItemAmount = p.ItemAmount,
+                 ItemId = p.ItemId,
+                 ItemName = p.ItemName,
+                 ItemStatus = p.ItemStatus,
+                 Lastmodifiedby = p.Lastmodifiedby,
+                 LastModifiedDate = p.LastModifiedDate,
+                 TaxpayerId = p.TaxpayerId,
+                 wardName = p.DemandNoticeTaxpayer.WardName,
+                 category = p.TaxPayer.Company.TaxPayerCatgeory.TaxpayerCategoryName
+             }).ToListAsync();
+
+            return lst;
+        }
     }
 }

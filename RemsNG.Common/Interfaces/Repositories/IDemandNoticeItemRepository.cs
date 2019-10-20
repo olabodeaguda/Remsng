@@ -13,5 +13,6 @@ namespace RemsNG.Common.Interfaces.Repositories
         Task<List<DemandNoticeItemModel>> UnpaidBillsByTaxpayerId(Guid taxpayerId,
             long billNumber, int billingYr);
         Task<List<DemandNoticeItemModel>> ReportByCategory(DateTime fromDate, DateTime toDate);
+        Task<List<DemandNoticeItemModel>> ReportByCategory(long[] billNumbers);
     }
 }

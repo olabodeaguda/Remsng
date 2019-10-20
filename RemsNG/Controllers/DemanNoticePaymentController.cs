@@ -121,8 +121,8 @@ namespace RemsNG.Controllers
         }
 
         [RemsRequirementAttribute("APPROVE_PAYMENT")]
-        [HttpPost("changestatus/{id}")]
-        public async Task<object> ApprovePayment(Guid id, [FromHeader] string pmt)
+        [HttpPost("changestatus1/{id}")]
+        public async Task<object> ApprovePayment1(Guid id, [FromHeader] string pmt)
         {
             if (id == default(Guid))
             {
@@ -142,7 +142,6 @@ namespace RemsNG.Controllers
                     description = "New status is required"
                 });
             }
-
             DemandNoticePaymentHistoryModel dnph = await dNPaymentHistoryService.ById(id);
             if (dnph == null)
             {
@@ -153,6 +152,8 @@ namespace RemsNG.Controllers
                     description = "Payment not found"
                 });
             }
+            var paymnetHistryAmt = (await dNPaymentHistoryService.ByBillingNumber(dnph.BillingNumber)).Where(x => x.PaymentStatus == "APPROVED").Sum(x => x.Amount);
+
             string query = string.Empty;
             if (pmt == DemandNoticeStatus.CANCELED.ToString())
             {
@@ -178,14 +179,17 @@ namespace RemsNG.Controllers
                 }
                 List<DNAmountDueModel> paymentDueList = await amountDueMgtService.ByBillingNo(dnph.BillingNumber);
 
-                if ((dnph.Amount + dnph.Charges) == paymentDueList.Sum(x => (x.itemAmount - x.amountPaid)))
+                decimal amtDue = paymentDueList.Sum(x => x.itemAmount) - paymnetHistryAmt;
+
+
+                if ((dnph.Amount + dnph.Charges) == amtDue)
                 {
                     amountDueMgtService.CurrentAmountDue(paymentDueList, dnph.Amount, true);
 
                     query = query + amountDueMgtService.PaymentQuery(paymentDueList, dnph,
                        DemandNoticeStatus.PAID.ToString(), User.Identity.Name);
                 }
-                else if ((dnph.Amount + dnph.Charges) > paymentDueList.Sum(x => (x.itemAmount - x.amountPaid)))
+                else if ((dnph.Amount + dnph.Charges) > amtDue)
                 {
                     decimal rmain = (dnph.Amount + dnph.Charges) - paymentDueList.Sum(x => (x.itemAmount - x.amountPaid));
 
@@ -236,6 +240,21 @@ namespace RemsNG.Controllers
                     description = "An error occur while processing payment. Please try again or contact administrator"
                 });
             }
+        }
+
+        [RemsRequirementAttribute("APPROVE_PAYMENT")]
+        [HttpPost("changestatus/{id}")]
+        public async Task<IActionResult> ApprovePayment(Guid id, [FromHeader] DemandNoticeStatus pmt)
+        {
+            if (id == default(Guid))
+                return BadRequest(new Response { code = MsgCode_Enum.FAIL, description = "Please select payment" });
+
+            bool result = await dNPaymentHistoryService.ApprovePayment(id, pmt);
+            return Ok(new Response()
+            {
+                code = MsgCode_Enum.SUCCESS,
+                description = $"Payment has been {pmt.ToString().ToLower()}"
+            });
         }
     }
 }

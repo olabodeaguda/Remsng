@@ -380,6 +380,7 @@ namespace RemsNG.Infrastructure.Services
 
                     decimal totalAmountPaid = 0;
                     decimal totalAllAMount = 0;
+                    decimal outstandingAmount = 0;
                     foreach (var eachGrp in allitems)
                     {
                         #region body
@@ -414,7 +415,9 @@ namespace RemsNG.Infrastructure.Services
 
                         decimal totalAmount = eachGrp.Sum(x => x.itemAmount);
                         totalAllAMount = totalAllAMount + totalAmount;
-                        rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round(totalAmount - amountPaid, 2)));
+                        decimal outstanding = totalAmount - amountPaid;
+                        rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round(outstanding, 2)));
+                        outstandingAmount = outstandingAmount + outstanding;
                         rowbody.CreateCell(colCount++).SetCellValue(firstTaxpayer.lastModifiedDate != null ?
                             firstTaxpayer.lastModifiedDate.Value.ToShortDateString() : "");
 
@@ -431,7 +434,7 @@ namespace RemsNG.Infrastructure.Services
                     colCount = items.Count() + 8;
                     IRow rowbody1 = sheet1.CreateRow(rowIndex++);
                     rowbody1.CreateCell(8).SetCellValue(String.Format("{0:n}", decimal.Round(totalAmountPaid, 2)));
-                    rowbody1.CreateCell(9).SetCellValue(String.Format("{0:n}", decimal.Round(totalAllAMount, 2)));
+                    rowbody1.CreateCell(9).SetCellValue(String.Format("{0:n}", decimal.Round(outstandingAmount, 2)));
 
                     sheet1.AutoSizeColumn(0);
                     MemoryStream memo = new MemoryStream();
@@ -559,6 +562,11 @@ namespace RemsNG.Infrastructure.Services
                     }
 
                     return pathname;
+
+
+                    //MemoryStream memo = new MemoryStream();
+                    //workbook.Write(memo);
+                    //return memo.ToArray();
                 });
             }
             catch (Exception x)

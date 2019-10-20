@@ -225,12 +225,10 @@ namespace RemsNG.Infrastructure.Managers
             {
                 htmlContent = htmlContent.Replace("REV_COORINATOR_SIG", _templateDetails.RevenueCoodinatorSignature);
             }
+
             htmlContent = htmlContent.Replace("TREASURER_MOBILE", string.IsNullOrEmpty(dnrp.CouncilTreasurerMobile) ? "nil" : dnrp.CouncilTreasurerMobile);
-
             decimal gtotal = dnrp.items.Sum(x => x.itemAmount) + dnrp.arrears + dnrp.penalty;
-
             htmlContent = htmlContent.Replace("GRAND_TOTAL", String.Format("{0:n}", decimal.Round(gtotal, 2)));
-
             htmlContent = htmlContent.Replace("CHARGES", String.Format("{0:n}", decimal.Round(dnrp.charges, 2)));
             decimal amountPaid = 0;
             List<DemandNoticePaymentHistoryModel> dnpHistory = await dNPaymentHistoryService.ByBillingNumber(billingno);
@@ -243,11 +241,11 @@ namespace RemsNG.Infrastructure.Managers
             decimal finalTotal = gtotal + dnrp.charges - amountPaid;
             var prepayment = await dNPaymentHistoryService.GetPrepaymentByTaxpayerId(dnrp.TaxpayerId);
 
-            if (prepayment != null && finalTotal > 0)
+            if (prepayment != null)
             {
                 finalTotal = finalTotal - prepayment.amount;
             }
-            else if (finalTotal < 0)
+            if (finalTotal < 0)
             {
                 finalTotal = 0;
             }
@@ -264,7 +262,7 @@ namespace RemsNG.Infrastructure.Managers
                 htmlContent = htmlContent.Replace("AMOUNT_IN_WORD", CurrencyWords.ConvertToWords(finalTotal.ToString()));
             }
 
-            htmlContent = htmlContent.Replace("PREPAYMENT", $"{String.Format("{0:n}", decimal.Round((prepayment == null ? 0 : prepayment.amount), 2))} naira");
+            htmlContent = htmlContent.Replace("PREPAYMENT", $"{String.Format("{0:n}", decimal.Round((prepayment == null ? 0 : prepayment.amount), 2))}");
 
             DemandNoticeDownloadHistoryModel dndh = new DemandNoticeDownloadHistoryModel();
             dndh.Id = Guid.NewGuid();
@@ -275,7 +273,6 @@ namespace RemsNG.Infrastructure.Managers
             dndh.GrandTotal = gtotal;
 
             await demandNoticeDownloadHistory.Add(dndh);
-
             return htmlContent;
         }
 

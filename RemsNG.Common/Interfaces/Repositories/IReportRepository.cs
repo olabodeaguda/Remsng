@@ -10,5 +10,6 @@ namespace RemsNG.Common.Interfaces.Repositories
     {
         Task<List<ItemReportSummaryModel>> ByDate(DateTime startDate, DateTime endDate);
         Task<List<ChartReportModel>> ReportByYear();
+        Task<(long[] billNumbers, Guid[] taxpayerIds)> AllIdsByDate(DateTime startDate, DateTime endDate);
     }
 }

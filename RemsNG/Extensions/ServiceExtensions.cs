@@ -108,7 +108,6 @@ namespace RemsNG.Extensions
             services.AddScoped<ITaxpayerRepository, TaxpayerRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IWardRepository, WardRepository>();
-            services.AddScoped<IDNPaymentHistoryRepository, DNPaymentHistoryRepository>();
             #endregion
         }
 

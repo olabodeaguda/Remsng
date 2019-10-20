@@ -13,6 +13,7 @@ namespace RemsNG.Common.Interfaces.Repositories
         Task<List<DemandNoticeArrearsModel>> ByTaxpayer(Guid taxpayerId);
         Task<DemandNoticeArrearsModel[]> ByTaxpayer(Guid[] taxpayerIds);
         Task<bool> AddArrears(DemandNoticeArrearsModel x);
+        Task<List<DemandNoticeArrearsModel>> ReportByCategory(Guid[] taxpayerIds);
         Task<List<DemandNoticeArrearsModel>> ReportByCategory(DateTime fromDate, DateTime toDate);
         Task<bool> AddArrears(DemandNoticeArrearsModel[] models);
         Task<bool> UpdateArrearsStatus(DemandNoticeArrearsModel[] models, string status);

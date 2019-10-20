@@ -143,6 +143,40 @@ namespace RemsNG.Data.Repository
             return true;
         }
 
+        public async Task<List<DemandNoticeArrearsModel>> ReportByCategory(Guid[] taxpayerIds)
+        {
+            string[] status = { "PAID", "PENDING", "PART_PAYMENT" };
+
+            var result = await db.Set<DemandNoticeArrear>()
+                .Include(x => x.TaxPayer)
+                .Include(x => x.TaxPayer.Company)
+                .ThenInclude(x => x.TaxPayerCatgeory)
+                .Include(s => s.TaxPayer.Street)
+                .ThenInclude(w => w.Ward)
+                .Where(x => taxpayerIds.Any(s => s == x.TaxpayerId) && status.Any(p => p == x.ArrearsStatus))
+                .Select(e => new DemandNoticeArrearsModel()
+                {
+                    AmountPaid = e.AmountPaid,
+                    ArrearsStatus = e.ArrearsStatus,
+                    BillingNo = e.BillingNo,
+                    CreatedBy = e.CreatedBy,
+                    Category = e.TaxPayer.Company.TaxPayerCatgeory.TaxpayerCategoryName,
+                    DateCreated = e.DateCreated,
+                    Id = e.Id,
+                    //ItemId = e.ItemId,
+                    Lastmodifiedby = e.Lastmodifiedby,
+                    LastModifiedDate = e.LastModifiedDate,
+                    OriginatedYear = e.OriginatedYear,
+                    TaxpayerId = e.TaxpayerId,
+                    TotalAmount = e.TotalAmount,
+                    WardName = e.TaxPayer.Street.Ward.WardName
+                })
+                .ToListAsync();
+
+            return result;
+        }
+
+
         public async Task<List<DemandNoticeArrearsModel>> ReportByCategory(DateTime fromDate, DateTime toDate)
         {
             DateTime startDate = new DateTime(fromDate.Year, fromDate.Month, fromDate.Day, 0, 0, 0);

@@ -17,7 +17,7 @@ namespace RemsNG.Data.Repository
             db = _db;
         }
 
-        public async Task<List<ItemReportSummaryModel>> ByDate(DateTime startDate, DateTime endDate)
+        public async Task<(long[] billNumbers, Guid[] taxpayerIds)> AllIdsByDate(DateTime startDate, DateTime endDate)
         {
             string[] status = { "PAID", "PENDING", "PART_PAYMENT" };
 
@@ -29,11 +29,6 @@ namespace RemsNG.Data.Repository
 
             var dnBtwDate = await db.Set<DemandNoticeTaxpayer>()
                 .FromSql(qry).ToArrayAsync();
-
-            //var dnBtwDate1 = await db.Set<DemandNoticeTaxpayer>()
-            //    .Where(x => x.DateCreated >= startDate && x.DateCreated <= endDate
-            //    && (x.DemandNoticeStatus == "PAID" || x.DemandNoticeStatus == "PENDING" || x.DemandNoticeStatus == "PART_PAYMENT"))// status.Any(p => p == x.DemandNoticeStatus))
-            //    .ToListAsync();
 
             // get all payment made during those period
             var payBtwDate = await db.Set<DemandNoticePaymentHistory>()
@@ -50,9 +45,19 @@ namespace RemsNG.Data.Repository
                 .Concat(payBtwDate.Select(x => x.OwnerId).ToArray())
                 .Distinct()
                 .ToArray();
-            string nNums = string.Join(',', billNUmbers);
 
-            string query = "select * from tbl_demandNoticeTaxpayers where BillingNumber in (" + nNums + ")";
+            return (billNUmbers, txIds);
+        }
+
+        public async Task<List<ItemReportSummaryModel>> ByDate(DateTime startDate, DateTime endDate)
+        {
+            var identites = await AllIdsByDate(startDate, endDate);
+            string[] status = { "PAID", "PENDING", "PART_PAYMENT" };
+
+            long[] billNUmbers = identites.billNumbers;
+            Guid[] txIds = identites.taxpayerIds;
+
+            string nNums = string.Join(',', billNUmbers);
 
             var allPayment = await db.Set<DemandNoticePaymentHistory>()
                 .Include(d => d.Bank)

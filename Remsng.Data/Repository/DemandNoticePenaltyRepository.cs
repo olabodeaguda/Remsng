@@ -156,6 +156,42 @@ namespace RemsNG.Data.Repository
             return result;
         }
 
+        public async Task<List<DemandNoticePenaltyModel>> ReportByCategory(Guid[] taxpayerIds)
+        {
+            string[] status = { "PENDING", "PART_PAYMENT", "PAID" };
+
+            var result = await db.Set<DemandNoticePenalty>()
+                .Join(db.Set<TaxPayer>()
+                .Include(x => x.Company)
+                .ThenInclude(x => x.TaxPayerCatgeory), dnp => dnp.TaxpayerId, tp => tp.Id, (dnp, tp) => new { dnp, tp })
+                .Join(db.Set<Street>().Include(x => x.Ward), res => res.tp.StreetId, str => str.Id,
+                (res, str) => new DemandNoticePenaltyModel
+                {
+                    AmountPaid = res.dnp.AmountPaid,
+                    BillingNo = res.dnp.BillingNo,
+                    BillingYear = res.dnp.BillingYear,
+                    CreatedBy = res.dnp.CreatedBy,
+                    DateCreated = res.dnp.DateCreated,
+                    Id = res.dnp.Id,
+                    ItemPenaltyStatus = res.dnp.ItemPenaltyStatus,
+                    Lastmodifiedby = res.dnp.Lastmodifiedby,
+                    LastModifiedDate = res.dnp.LastModifiedDate,
+                    OriginatedYear = res.dnp.OriginatedYear,
+                    TaxpayerId = res.dnp.TaxpayerId,
+                    TotalAmount = res.dnp.TotalAmount,
+                    wardName = str.Ward.WardName,
+                    category = res.tp.Company.TaxPayerCatgeory.TaxpayerCategoryName
+                })
+                .Where(x => taxpayerIds.Any(s => s == x.TaxpayerId) && status.Any(p => p == x.ItemPenaltyStatus)).ToListAsync();
+
+
+            //List<DemandNoticeItemPenaltyModelExt> lst =
+            //    await db.Set<DemandNoticeItemPenaltyModelExt>().FromSql("sp_getPenaltyByCategoryDate @p0,@p1",
+            //    new object[] { startDate, endDate }).ToListAsync();
+
+            return result;
+        }
+
         public async Task<List<DemandNoticePenaltyModel>> ReportByCategory(DateTime fromDate, DateTime toDate)
         {
             DateTime startDate = new DateTime(fromDate.Year, fromDate.Month, fromDate.Day, 0, 0, 0);

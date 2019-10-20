@@ -28,6 +28,11 @@ namespace RemsNG.Infrastructure.Managers
             dnPenaltyDao = demandNoticePenaltyRepository;
         }
 
+        public async Task<(long[] billNumbers, Guid[] taxpayerIds)> AllIdsByDate(DateTime startDate, DateTime endDate)
+        {
+            return await reportDao.AllIdsByDate(startDate, endDate);
+        }
+
         public async Task<List<ItemReportSummaryModel>> ByDate(DateTime startDate, DateTime endDate)
         {
             return await reportDao.ByDate(startDate, endDate);
@@ -40,7 +45,11 @@ namespace RemsNG.Infrastructure.Managers
 
         public async Task<List<DemandNoticeItemModel>> ReportitemsByCategory(DateTime startDate, DateTime endDate)
         {
-            return await dnitemDao.ReportByCategory(startDate, endDate);
+            var ids = await reportDao.AllIdsByDate(startDate, endDate);
+            if (ids.billNumbers.Length <= 0)
+                throw new Exception("Empty Record");
+
+            return await dnitemDao.ReportByCategory(ids.billNumbers);
         }
 
         public async Task<List<DemandNoticeArrearsModel>> ReportArrearsByCategory(DateTime startDate, DateTime endDate)
@@ -51,6 +60,21 @@ namespace RemsNG.Infrastructure.Managers
         public async Task<List<DemandNoticePenaltyModel>> ReportPenaltyByCategory(DateTime startDate, DateTime endDate)
         {
             return await dnPenaltyDao.ReportByCategory(startDate, endDate);
+        }
+
+        public async Task<List<DemandNoticeItemModel>> ReportitemsByCategory(long[] billnumbers)
+        {
+            return await dnitemDao.ReportByCategory(billnumbers);
+        }
+
+        public async Task<List<DemandNoticeArrearsModel>> ReportArrearsByCategory(Guid[] taxpayerIds)
+        {
+            return await dnArrearsDao.ReportByCategory(taxpayerIds);
+        }
+
+        public async Task<List<DemandNoticePenaltyModel>> ReportPenaltyByCategory(Guid[] taxpayerIds)
+        {
+            return await dnPenaltyDao.ReportByCategory(taxpayerIds);
         }
     }
 }

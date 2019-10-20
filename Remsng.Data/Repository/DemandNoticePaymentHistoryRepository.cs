@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data.Entities;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
@@ -48,6 +49,20 @@ namespace RemsNG.Data.Repository
                 code = MsgCode_Enum.SUCCESS,
                 description = "Payment has been recoreded sucessfully"
             };
+        }
+
+        public async Task<bool> UpdateStatus(Guid id, DemandNoticeStatus status)
+        {
+            var entity = await db.Set<DemandNoticePaymentHistory>().FindAsync(id);
+            if (entity == null)
+                return false;
+
+            if (entity.PaymentStatus == status.ToString())
+                return true;
+
+            entity.PaymentStatus = status.ToString();
+            await db.SaveChangesAsync();
+            return true;
         }
 
         public async Task<Response> UpdateAsync(DemandNoticePaymentHistoryModel dnph)
@@ -278,6 +293,133 @@ namespace RemsNG.Data.Repository
                 }).ToListAsync();
 
             return result;
+        }
+
+        public async Task<PrepaymentModel> GetPrepayment(Guid taxpayerId)
+        {
+            var r = await db.Set<Prepayment>()
+                .FirstOrDefaultAsync(x => x.taxpayerId == taxpayerId && x.prepaymentStatus == "ACTIVE");
+            if (r == null)
+            {
+                return null;
+            }
+
+            return new PrepaymentModel()
+            {
+                amount = r.amount,
+                datecreated = r.datecreated,
+                id = r.id,
+                prepaymentStatus = r.prepaymentStatus,
+                taxpayerId = r.taxpayerId
+            };
+        }
+        public async Task<PrepaymentModel[]> GetPrepaymentList(Guid taxpayerId)
+        {
+            var rr = await db.Set<Prepayment>()
+                .Where(x => x.taxpayerId == taxpayerId && x.prepaymentStatus == "ACTIVE").ToListAsync();
+            if (rr.Count <= 0)
+            {
+                return Array.Empty<PrepaymentModel>();
+            }
+
+            return rr.Select(r => new PrepaymentModel()
+            {
+                amount = r.amount,
+                datecreated = r.datecreated,
+                id = r.id,
+                prepaymentStatus = r.prepaymentStatus,
+                taxpayerId = r.taxpayerId
+            }).ToArray();
+        }
+
+        public async Task<PrepaymentModel> AddPrepaymentForAlreadyRegisterdAmount(PrepaymentModel prepayment)
+        {
+            //var prep = await db.Set<Prepayment>()
+            //    .FirstOrDefaultAsync(x => x.taxpayerId == prepayment.taxpayerId
+            //    && prepayment.amount == x.amount && x.prepaymentStatus != "CLOSED");
+
+            //if (prep == null)
+            //{
+            Prepayment pm = new Prepayment()
+            {
+                taxpayerId = prepayment.taxpayerId,
+                amount = prepayment.amount,
+                datecreated = prepayment.datecreated,
+                id = prepayment.id,
+                prepaymentStatus = prepayment.prepaymentStatus
+            };
+            pm.datecreated = DateTime.Now;
+            db.Set<Prepayment>().Add(pm);
+            await db.SaveChangesAsync();
+            prepayment.id = pm.id;
+            return prepayment;
+            //}
+            //return prepayment;
+        }
+
+        public async Task<bool> UpdatePrepaymentStatus(long id, string prepaymentStatus)
+        {
+            var entity = await db.Set<Prepayment>().FindAsync(id);
+            if (entity == null)
+                return false;
+
+            if (entity.prepaymentStatus == prepaymentStatus)
+                return true;
+
+            entity.prepaymentStatus = prepaymentStatus;
+            await db.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> UpdatePrepaymentStatus(long[] id, string prepaymentStatus)
+        {
+            var entity = await db.Set<Prepayment>().Where(s => id.Any(w => w == s.id)).ToListAsync();
+            if (entity.Count <= 0)
+                return true;
+
+            foreach (var tm in entity)
+            {
+                tm.prepaymentStatus = prepaymentStatus;
+            }
+
+            await db.SaveChangesAsync();
+            return true;
+        }
+
+
+        public string PaymentQuery(List<AmountDueModel> paymentDueList,
+            DemandNoticePaymentHistoryModel dnph, string status, string createdby)
+        {
+            string query = "";
+
+            if (paymentDueList.Count > 0)
+            {
+                foreach (var tm in paymentDueList)
+                {
+                    switch (tm.Category)
+                    {
+                        case Category.Arrears:
+                            query = query + $"update tbl_demandNoticeArrears set arrearsStatus = '{status}', " +
+                                $" lastModifiedDate = getdate(),lastmodifiedby='{createdby}' where id='{tm.Id}';";
+                            break;
+                        case Category.Penalty:
+                            query = query + $"update tbl_demandNoticePenalty set itemPenaltyStatus = '{status}', " +
+                                $" lastModifiedDate = getdate(),lastmodifiedby='{createdby}' where id='{tm.Id}';";
+                            break;
+                        case Category.Item:
+                            query = query + $"update tbl_demandNoticeItem set itemStatus = '{status}', " +
+                                $" lastModifiedDate = getdate(),lastmodifiedby='{createdby}' where id='{tm.Id}';";
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                query = query + $"update tbl_demandNoticeTaxpayers set demandNoticeStatus = '{status}' where billingNumber = '{dnph.BillingNumber}';";
+                query = query + $"update tbl_demandNoticePaymentHistory set paymentStatus = 'APPROVED',lastModifiedDate=getdate(),lastmodifiedby='{createdby}' where id = '{dnph.Id}';";
+            }
+
+            return query;
         }
     }
 }

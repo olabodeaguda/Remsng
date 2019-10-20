@@ -1,4 +1,5 @@
 ﻿using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -17,5 +18,6 @@ namespace RemsNG.Common.Interfaces.Managers
         Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel);
         Task<PrepaymentModel> GetPrepaymentByTaxpayerId(Guid taxpayerId);
         Task<PrepaymentModel> AddPrepaymentForAlreadyRegisterdAmount(PrepaymentModel prepayment);
+        Task<bool> ApprovePayment(Guid id, DemandNoticeStatus status);
     }
 }

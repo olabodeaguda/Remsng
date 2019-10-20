@@ -15,17 +15,17 @@ namespace RemsNG.Infrastructure.Managers
     public class DemandNoticeTaxpayerManager : IDemandNoticeTaxpayerManager
     {
         private readonly IDemandNoticePaymentHistoryRepository _dphDao;
-        private IDemandNoticeTaxpayersRepository dntDao;
-        private IDemandNoticeItemManager dnItemService;
-        private IDemandNoticeArrearRepository dna;
-        private IDemandNoticePenaltyRepository dnp;
-        private ITaxpayerManager taxpayerService;
+        private readonly IDemandNoticeTaxpayersRepository dntDao;
+        private readonly IDemandNoticeItemManager dnItemService;
+        private readonly IDemandNoticeArrearRepository dna;
+        private readonly IDemandNoticePenaltyRepository dnp;
+        private readonly ITaxpayerManager taxpayerService;
         private readonly IImageManager imageService;
         private readonly ILcdaBankManager lcdaBankService;
         private readonly IListPropertyManager lpService;
         private readonly IDemandNoticeChargesManager chargesService;
         private readonly ILcdaManager lcdaService;
-        private IDNAmountDueMgtManager _admService;
+        private readonly IDNAmountDueMgtManager _admService;
         public DemandNoticeTaxpayerManager(IDemandNoticeItemManager _dnItemService, ITaxpayerManager _taxpayerService,
              IImageManager _imageService, ILcdaBankManager _lcdaBankService,
              IListPropertyManager _lpService,
@@ -48,6 +48,92 @@ namespace RemsNG.Infrastructure.Managers
             chargesService = _chargesService;
             lcdaService = _lcdaService;
             _admService = admService;
+        }
+
+        public async Task<(decimal amountDue, List<AmountDueModel> amountDueDetails)> AmountDue(long billingNo)
+        {
+            var t = await dntDao.ByBillingNo(billingNo);
+
+            if (t == null)
+            {
+                throw new NotFoundException($"{billingNo} does not exist");
+            }
+            decimal amtDue = 0;
+            List<AmountDueModel> amountDue = new List<AmountDueModel>();
+
+            List<DemandNoticeItemModel> dnitem = await dnItemService.ByBillingNumber(billingNo);
+            if (dnitem.Count > 0)
+            {
+                var res = dnitem.Where(r => r.TaxpayerId == t.TaxpayerId);
+                amountDue.AddRange(res
+                    .Select(x => new AmountDueModel()
+                    {
+                        Description = x.ItemName,
+                        Amount = x.ItemAmount,
+                        Category = Category.Item,
+                        Id = x.Id.ToString()
+                    }).ToList());
+                amtDue = amtDue + res.Sum(d => d.ItemAmount);
+            }
+            var penalties = await dnp.ByTaxpayerId(t.TaxpayerId);
+            if (penalties.Count > 0)
+            {
+                amountDue.AddRange(penalties
+                    .Select(x => new AmountDueModel()
+                    {
+                        Description = Category.Penalty.ToString(),
+                        Amount = x.CurrentAmount,
+                        Category = Category.Penalty,
+                        Id = x.Id.ToString()
+                    }).ToList());
+
+                amtDue = amtDue + penalties.Sum(s => s.CurrentAmount);
+            }
+
+            var arrears = await dna.ByBillingNumber(t.TaxpayerId);
+            if (arrears.Count > 0)
+            {
+                amountDue.AddRange(arrears
+                   .Select(x => new AmountDueModel()
+                   {
+                       Description = Category.Arrears.ToString(),
+                       Amount = x.CurrentAmount,
+                       Category = Category.Arrears,
+                       Id = x.Id.ToString()
+                   }).ToList());
+                amtDue = amtDue + arrears.Sum(x => x.CurrentAmount);
+            }
+
+            var amtPaid = (await _dphDao.ByBillingNumber(billingNo))
+                .Where(x => x.PaymentStatus == "APPROVED").ToArray();
+            if (amtPaid.Length > 0)
+            {
+                amountDue.AddRange(amtPaid
+                      .Select(x => new AmountDueModel()
+                      {
+                          Description = Category.Arrears.ToString(),
+                          Amount = x.Amount,
+                          Category = Category.Paid,
+                          Id = x.Id.ToString()
+                      }).ToList());
+                amtDue = amtDue - amtPaid.Sum(x => x.Amount);
+            }
+
+            var prepayment = await _dphDao.GetPrepaymentList(t.TaxpayerId);
+            if (prepayment.Length > 0)
+            {
+                amountDue.AddRange(prepayment
+                     .Select(x => new AmountDueModel()
+                     {
+                         Description = Category.Prepayment.ToString(),
+                         Amount = x.amount,
+                         Category = Category.Prepayment,
+                         Id = x.id.ToString()
+                     }).ToList());
+                amtDue = amtDue - prepayment.Sum(x => x.amount);
+            }
+
+            return (amtDue, amountDue);
         }
 
         public async Task<DemandNoticeReportModel> ByBillingNo(long billingNo)
@@ -150,118 +236,6 @@ namespace RemsNG.Infrastructure.Managers
                 throw;
             }
         }
-
-        public async Task<DemandNoticeReportModel> ReportbyBillNumber(long billingNo)
-        {
-            try
-            {
-                var t = await dntDao.ByBillingNo(billingNo);
-
-                if (t == null)
-                {
-                    return null;
-                }
-
-                DemandNoticeReportModel dnrm = new DemandNoticeReportModel()
-                {
-                    AddressName = t.AddressName,
-                    BillingNumber = t.BillingNumber,
-                    BillingYr = t.BillingYr,
-                    CouncilTreasurerMobile = t.CouncilTreasurerMobile,
-                    CouncilTreasurerSigFilen = t.CouncilTreasurerSigFilen,
-                    CreatedBy = t.CreatedBy,
-                    DomainName = t.DomainName.ToUpper(),
-                    LcdaAddress = t.LcdaAddress,
-                    LcdaLogoFileName = t.LcdaLogoFileName,
-                    LcdaName = t.LcdaName.ToUpper(),
-                    LcdaState = t.LcdaState,
-                    RevCoodinatorSigFilen = t.RevCoodinatorSigFilen,
-                    TaxpayersName = t.TaxpayersName,
-                    WardName = t.WardName,
-                    TaxpayerId = t.TaxpayerId,
-                    DemandNoticeStatus = t.DemandNoticeStatus
-                };
-                LcdaModel lgda = await lcdaService.ByBillingNumber(billingNo);
-                List<LcdaPropertyModel> ls = new List<LcdaPropertyModel>();
-                if (lgda != null)
-                {
-                    dnrm.lcdaId = lgda.Id;
-                    ls = await lpService.ByLcda(lgda.Id);
-                }
-                List<LcdaPropertyModel> coucilNum = ls.Where(z => z.PropertyKey == "COUNCIL_TREASURER_MOBILE").ToList();
-                if (coucilNum.Count > 0)
-                {
-                    dnrm.CouncilTreasurerMobile = String.Join(",", coucilNum.Select(x => x.PropertyValue));
-                }
-
-                dnrm.LcdaLogoFileName = await imageService.ImageNameByOwnerIdAsync(lgda.Id, ImgTypesEnum.LOGO.ToString());
-                dnrm.RevCoodinatorSigFilen = await imageService.ImageNameByOwnerIdAsync(lgda.Id, ImgTypesEnum.REVENUE_COORDINATOR_SIGNATURE.ToString());
-                dnrm.CouncilTreasurerSigFilen = await imageService.ImageNameByOwnerIdAsync(lgda.Id, ImgTypesEnum.COUNCIL_TREASURER_SIGNATURE.ToString());
-
-                List<DemandNoticeItemModel> dnitem = await dnItemService.ByBillingNumber(billingNo);
-
-                dnrm.items = dnitem.Select(x => new DnReportItemModel()
-                {
-                    itemTitle = x.ItemName,
-                    itemAmount = x.ItemAmount
-                }).ToList();
-
-                dnrm.banks = await lcdaBankService.Get(lgda.Id);
-
-                var penalties = await dnp.ByTaxpayerId(dnrm.TaxpayerId);
-                dnrm.penalty = penalties.Sum(x => x.TotalAmount);
-
-                var arrears = await dna.ByBillingNumber(dnrm.TaxpayerId);
-                dnrm.arrears = arrears.Sum(x => x.TotalAmount);
-
-                var amtDue = await _dphDao.ByBillingNumber(billingNo);
-                dnrm.amountPaid = amtDue.Sum(x => x.Amount);
-
-                LcdaPropertyModel isEnablePayment = ls.FirstOrDefault(x =>
-                x.PropertyKey == "ALLOW_PAYMENT_SERVICES" && x.PropertyStatus == "ACTIVE");
-
-                decimal gtotal = dnrm.items.Sum(x => x.itemAmount) + dnrm.arrears + dnrm.penalty;
-                dnrm.amountDue = gtotal;
-                if (isEnablePayment != null)
-                {
-                    if (isEnablePayment.PropertyValue == "1")
-                    {
-                        dnrm.charges = await chargesService.getCharges(gtotal, dnrm.lcdaId);
-                    }
-                    else
-                    {
-                        dnrm.charges = 0;
-                    }
-                }
-                else
-                {
-                    dnrm.charges = 0;
-                }
-
-                return dnrm;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
-        public async Task<DemandNoticeReportModel[]> ByBillingNo(long[] billingNo)
-        {
-            List<DemandNoticeReportModel> lst = new List<DemandNoticeReportModel>();
-
-            foreach (var tm in billingNo)
-            {
-                var b = await ReportbyBillNumber(tm);
-                if (b != null)
-                {
-                    lst.Add(b);
-                }
-            }
-
-            return lst.ToArray();
-        }
-
         public async Task<List<DemandNoticeTaxpayersModel>> GetDNTaxpayerByBatchNoAsync(string batchno)
         {
             return await dntDao.GetDNTaxpayerByBatchNoAsync(batchno);
@@ -285,11 +259,6 @@ namespace RemsNG.Infrastructure.Managers
         public async Task<bool> BlinkClosesDemandNoticeByCompany(Guid companyId)
         {
             return await dntDao.BlinkClosesDemandNoticeByCompany(companyId);
-        }
-
-        public async Task<DemandNoticeTaxpayersModel[]> GetAllReceivables()
-        {
-            return await dntDao.GetAllReceivables();
         }
 
         public async Task<List<object>> GetTaxpayerPayables(Guid taxpayerId)
@@ -327,11 +296,6 @@ namespace RemsNG.Infrastructure.Managers
         public async Task<bool> MoveToUnBills(long billno)
         {
             return await dntDao.MoveToUnBills(billno);
-        }
-
-        public async Task<List<DemandNoticeArrearsModel>> GetArrearsByTaxpayerId(Guid taxpayerId)
-        {
-            return await dna.ByTaxpayer(taxpayerId);
         }
 
         public async Task<PageModel<DemandNoticeTaxpayersModel[]>> SearchByLcdaId(DemandNoticeRequestModel rhModel,
