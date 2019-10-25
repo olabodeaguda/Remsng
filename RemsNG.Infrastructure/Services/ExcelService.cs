@@ -409,7 +409,7 @@ namespace RemsNG.Infrastructure.Services
                         decimal penalties = eachGrp.Where(x => x.category == "PENALTY").Sum(x => x.itemAmount);
                         rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round(penalties, 2)));
 
-                        decimal amountPaid = eachGrp.Sum(x => x.amountPaid);
+                        decimal amountPaid = dnph.Where(x => x.BillingNumber == eachGrp.Key).Sum(x => x.Amount); // eachGrp.Sum(x => x.amountPaid);
                         totalAmountPaid = totalAmountPaid + amountPaid;
                         rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round(amountPaid, 2)));
 
@@ -417,8 +417,10 @@ namespace RemsNG.Infrastructure.Services
                         totalAllAMount = totalAllAMount + totalAmount;
                         decimal outstanding = totalAmount - amountPaid;
                         rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round(outstanding, 2)));
+
+
                         outstandingAmount = outstandingAmount + outstanding;
-                        rowbody.CreateCell(colCount++).SetCellValue(firstTaxpayer.lastModifiedDate != null ?
+                        rowbody.CreateCell(colCount++).SetCellValue((firstTaxpayer.lastModifiedDate != null && amountPaid > 0) ?
                             firstTaxpayer.lastModifiedDate.Value.ToShortDateString() : "");
 
                         var res = dnph.Where(x => x.BillingNumber == firstTaxpayer.billingNo);

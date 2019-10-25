@@ -135,7 +135,8 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<DemandNoticePaymentHistoryModel>> ByBillingNumbers(long[] billingnumber)
         {
-            var model = await db.Set<DemandNoticePaymentHistory>().Include(x => x.Bank)
+            var model = await db.Set<DemandNoticePaymentHistory>()
+                .Include(x => x.Bank)
                .Join(db.Set<DemandNoticeTaxpayer>(), dnph => dnph.BillingNumber,
                dnt => dnt.BillingNumber, (dnph, dnt) => new DemandNoticePaymentHistoryModel()
                {
