@@ -119,5 +119,10 @@ namespace RemsNG.Infrastructure.Managers
             if (re.Length > 0)
                 await dnph.UpdatePrepaymentStatus(re.Select(x => long.Parse(x.Id)).ToArray(), "CLOSED");
         }
+
+        public async Task<decimal> TotalAmountPaid(long billerNumber)
+        {
+            return await dnph.TotalAmountPaid(billerNumber);
+        }
     }
 }

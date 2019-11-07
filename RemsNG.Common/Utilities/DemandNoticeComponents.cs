@@ -39,9 +39,14 @@ namespace RemsNG.Common.Utilities
 
         public static string HtmlBuildBanks(DemandNoticeReportModel dnrm)
         {
+            string[] str = new string[] { "uba", "Polaris Bank" };
             string htmlmarkup = string.Empty;
             foreach (var tm in dnrm.banks)
             {
+                if (tm.bankName.ToLower() == "united bank for africa plc" || tm.bankName.ToLower() == "polaris bank")
+                {
+                    continue;
+                }
                 htmlmarkup = htmlmarkup + $"<li>{tm.bankName}:{tm.bankAccount}</li>";
             }
 

@@ -166,7 +166,6 @@
                                         <th>Category</th>
                                         <th>Item Description</th>
                                         <th>Item Amount</th>
-                                        <th>Amount Paid</th>
                                     </thead>
                                     <tbody>
                                         <tr *ngFor="let data of amountDueList; let i=index">
@@ -178,14 +177,18 @@
                                             <td>{{data.category}}</td>
                                             <td>{{data.itemDescription}}</td>
                                             <td>{{data.itemAmount}}</td>
-                                            <td>{{data.amountPaid}}</td>
                                         </tr>
                                         <tr>
                                             <td></td>
                                             <td></td>
-                                            <td></td>
+                                            <td>Total amount due</td>
                                             <td>{{getSum('itemAmount')}}</td>
-                                            <td>{{getSum('amountPaid')}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td>Total Amount Paid</td>
+                                            <td>{{amountPaid}}</td>
                                         </tr>
                                     </tbody>
                                 </table>

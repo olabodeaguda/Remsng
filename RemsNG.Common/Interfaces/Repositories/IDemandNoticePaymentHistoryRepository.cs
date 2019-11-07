@@ -26,5 +26,6 @@ namespace RemsNG.Common.Interfaces.Repositories
         Task<bool> UpdatePrepaymentStatus(long[] id, string prepaymentStatus);
         string PaymentQuery(List<AmountDueModel> paymentDueList,
              DemandNoticePaymentHistoryModel dnph, string status, string createdby);
+        Task<decimal> TotalAmountPaid(long billNumber);
     }
 }

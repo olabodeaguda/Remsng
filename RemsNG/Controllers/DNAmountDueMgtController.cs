@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
 using RemsNG.Security;
 using System;
 using System.Collections.Generic;
@@ -40,6 +41,8 @@ namespace RemsNG.Controllers
             return await amountDueMgtService.ByBillingNo(billingno);
         }
 
+
+
         [RemsRequirementAttribute("AMOUNT_DUE")]
         // POST api/values
         [HttpPost]
@@ -61,10 +64,7 @@ namespace RemsNG.Controllers
 
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
+
+
     }
 }

@@ -1041,7 +1041,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> UpdateTaxpayerName(Guid taxpayerId, string name)
         {
-            string[] status = { "PART_PAYMENT", "PENDING" };
+            string[] status = { "PART_PAYMENT", "PENDING", "PAID" };
             var entities = await db.Set<DemandNoticeTaxpayer>().Where(x => x.TaxpayerId == taxpayerId && status.Any(s => s == x.DemandNoticeStatus)).ToListAsync();
             if (entities.Count > 0)
             {
@@ -1058,6 +1058,26 @@ namespace RemsNG.Data.Repository
             int count = await db.SaveChangesAsync();
 
             return count > 0;
+        }
+
+
+        public async Task<bool> UpdateWard(Guid taxpayerId, string wardName)
+        {
+            string[] status = new string[] { "PENDING", "PART_PAYMENT", "PAID" };
+            var entities = await db.Set<DemandNoticeTaxpayer>()
+                .Where(x => x.TaxpayerId == taxpayerId && status.Any(p => p == x.DemandNoticeStatus))
+                .ToArrayAsync();
+
+            if (entities.Length <= 0)
+                return true;
+
+            foreach (var tm in entities)
+            {
+                tm.WardName = wardName;
+            }
+
+            await db.SaveChangesAsync();
+            return true;
         }
     }
 }

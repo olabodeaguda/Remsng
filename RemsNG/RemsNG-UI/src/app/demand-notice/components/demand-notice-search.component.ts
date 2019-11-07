@@ -28,6 +28,7 @@ export class DemandNoticeSearchComponent implements OnInit {
     items = [];
     pageModel: PageModel = new PageModel();
     amountDueList = [];
+    amountPaid:Number = 0;
     searchModel: DemandNoticeSearch = new DemandNoticeSearch();
     amountDueModel: AmountDueModel = new AmountDueModel();
     @ViewChild('addModal') addModel: ElementRef;
@@ -261,6 +262,7 @@ export class DemandNoticeSearchComponent implements OnInit {
         this.amountDueModel.billingNumber = billingNo;
         jQuery(this.addModel.nativeElement).modal('show');
         this.getAmountDueByBillingNo(billingNo);
+        this.getAmountPaidByBillingNo(billingNo);
     }
 
     openArrears(data: any) {
@@ -328,6 +330,18 @@ export class DemandNoticeSearchComponent implements OnInit {
             this.toasterService.pop('error', 'Error', error);
         })
     }
+
+    getAmountPaidByBillingNo(billingNo: string) {
+        this.isLoading = true;
+        this.dnTaxpayer.amountPaidByBillingNo(billingNo).subscribe(response => {
+            this.amountPaid = response.data;
+            this.isLoading = false;
+        }, error => {
+            this.isLoading = false;
+            this.toasterService.pop('error', 'Error', error);
+        })
+    }
+
 
     selectItems(data) {
         let s = this.amountDueModel.billingNumber;

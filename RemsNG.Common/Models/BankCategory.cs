@@ -8,6 +8,7 @@ namespace RemsNG.Common.Models
         public Guid BankId { get; set; }
         public string BankIds { get; set; }
         public string ExceludeBanks { get; set; }
+        public int RecieptType { get; set; }
     }
     public class BankCategories
     {

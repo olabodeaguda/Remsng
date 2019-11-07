@@ -15,13 +15,16 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class TaxpayerManager : ITaxpayerManager
     {
+        private readonly IWardRepository _wardRepository;
         private IDemandNoticeTaxpayersRepository _dnRepo;
         private IDNAmountDueMgtManager amountDueMgtService;
         private ITaxpayerRepository taxpayerDao;
         public TaxpayerManager(IDemandNoticeTaxpayersRepository demandNoticeTaxpayersRepository,
             ILoggerFactory loggerFactory,
-            IDNAmountDueMgtManager _amountDueMgtService, ITaxpayerRepository taxpayerRepository)
+            IDNAmountDueMgtManager _amountDueMgtService,
+            ITaxpayerRepository taxpayerRepository, IWardRepository wardRepository)
         {
+            _wardRepository = wardRepository;
             _dnRepo = demandNoticeTaxpayersRepository;
             taxpayerDao = taxpayerRepository;
             amountDueMgtService = _amountDueMgtService;
@@ -75,6 +78,9 @@ namespace RemsNG.Infrastructure.Managers
         public async Task<Response> Update(TaxPayerModel taxpayer)
         {
             await _dnRepo.UpdateTaxpayerName(taxpayer.Id, $"{taxpayer.Surname} {taxpayer.Lastname} {taxpayer.Firstname}");
+            var ward = await _wardRepository.GetWard(taxpayer.WardId);
+            if (ward != null)
+                await _dnRepo.UpdateWard(taxpayer.Id, ward.WardName);
             return await taxpayerDao.Update(taxpayer);
         }
 

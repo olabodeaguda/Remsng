@@ -422,5 +422,16 @@ namespace RemsNG.Data.Repository
 
             return query;
         }
+
+        public async Task<decimal> TotalAmountPaid(long billNumber)
+        {
+            var entities = await db.Set<DemandNoticePaymentHistory>()
+                .Where(x => x.BillingNumber == billNumber && x.PaymentStatus == "APPROVED")
+                .ToListAsync();
+            if (entities.Count <= 0)
+                return 0;
+
+            return entities.Sum(x => x.Amount);
+        }
     }
 }

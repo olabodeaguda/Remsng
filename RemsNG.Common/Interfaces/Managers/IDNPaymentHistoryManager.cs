@@ -19,5 +19,6 @@ namespace RemsNG.Common.Interfaces.Managers
         Task<PrepaymentModel> GetPrepaymentByTaxpayerId(Guid taxpayerId);
         Task<PrepaymentModel> AddPrepaymentForAlreadyRegisterdAmount(PrepaymentModel prepayment);
         Task<bool> ApprovePayment(Guid id, DemandNoticeStatus status);
+        Task<decimal> TotalAmountPaid(long billerNumber);
     }
 }

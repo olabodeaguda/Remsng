@@ -569,5 +569,15 @@ namespace RemsNG.Data.Repository
 
             return result;
         }
+
+        public async Task<bool> UpdateStreet(Guid taxpayerId, Guid streetId)
+        {
+            var entity = await db.Set<TaxPayer>().FindAsync(taxpayerId);
+            if (entity == null)
+                return false;
+            entity.StreetId = streetId;
+            await db.SaveChangesAsync();
+            return true;
+        }
     }
 }

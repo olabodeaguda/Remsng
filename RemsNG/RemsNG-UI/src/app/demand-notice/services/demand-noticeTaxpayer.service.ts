@@ -53,5 +53,9 @@ export class DemandNoticeTaxpayerService{
         }).catch(error => this.dataservice.handleError(error));
     }
 
+    amountPaidByBillingNo(billingnumber:string){
+        return this.dataservice.get('payment/amountpaid/'+billingnumber)
+        .catch(error => this.dataservice.handleError(error));
+    }
     
 }

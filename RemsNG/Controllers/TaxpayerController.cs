@@ -329,7 +329,8 @@ namespace RemsNG.Controllers
             int sucessCount = 0;
             if (address.Addressnumber != taxpayerExtension.StreetNumber || taxpayerExtension.CompanyId != te.CompanyId
                 || taxpayerExtension.Firstname != te.Firstname ||
-                    taxpayerExtension.Lastname != te.Lastname || taxpayerExtension.Surname != te.Surname || taxpayerExtension.IsOneTime != te.IsOneTime)
+                    taxpayerExtension.Lastname != te.Lastname || taxpayerExtension.Surname != te.Surname
+                    || taxpayerExtension.IsOneTime != te.IsOneTime || taxpayerExtension.StreetId != te.StreetId)
             {
                 if (address.Addressnumber != taxpayerExtension.StreetNumber)
                 {

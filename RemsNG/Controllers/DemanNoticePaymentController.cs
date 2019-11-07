@@ -256,5 +256,23 @@ namespace RemsNG.Controllers
                 description = $"Payment has been {pmt.ToString().ToLower()}"
             });
         }
+
+        // GET api/values/5
+        [HttpGet("amountpaid/{billingno}")]
+        public async Task<IActionResult> AmountPaid(long billingno)
+        {
+            if (billingno == default(long))
+            {
+                throw new InvalidCredentialsException("Billing number is required");
+            }
+
+
+            return Ok(new Response()
+            {
+                code = MsgCode_Enum.SUCCESS,
+                data = await dNPaymentHistoryService.TotalAmountPaid(billingno)
+            });
+        }
+
     }
 }

@@ -25,5 +25,6 @@ namespace RemsNG.Common.Interfaces.Repositories
         Task<List<TaxPayerModel>> SearchInStreet(Guid streetid, string queryParams);
         Task<TaxPayerModel[]> GetUnbilledTaxpayer(int billingYear);
         Task<TaxPayerModel[]> SearchByDNRequest(DemandNoticeRequestModel rhModel, Guid[] excludedId);
+        Task<bool> UpdateStreet(Guid taxpayerId, Guid streetId);
     }
 }
