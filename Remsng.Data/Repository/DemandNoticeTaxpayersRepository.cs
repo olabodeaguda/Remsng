@@ -1020,7 +1020,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> UpdateAddress(Guid taxpayerId, string address)
         {
-            string[] status = { "PART_PAYMENT", "PENDING" };
+            string[] status = { "PART_PAYMENT", "PENDING", "PAID" };
             var entities = await db.Set<DemandNoticeTaxpayer>().Where(x => x.TaxpayerId == taxpayerId && status.Any(s => s == x.DemandNoticeStatus)).ToListAsync();
             if (entities.Count > 0)
             {
@@ -1079,5 +1079,6 @@ namespace RemsNG.Data.Repository
             await db.SaveChangesAsync();
             return true;
         }
+
     }
 }
