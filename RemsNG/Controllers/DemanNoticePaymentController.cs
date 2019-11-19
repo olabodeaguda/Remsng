@@ -244,8 +244,13 @@ namespace RemsNG.Controllers
 
         [RemsRequirementAttribute("APPROVE_PAYMENT")]
         [HttpPost("changestatus/{id}")]
-        public async Task<IActionResult> ApprovePayment(Guid id, [FromHeader] DemandNoticeStatus pmt)
+        public async Task<IActionResult> ApprovePayment(Guid id)
         {
+            if (!Request.Headers.ContainsKey("pmt"))
+                return BadRequest(new Response { code = MsgCode_Enum.FAIL, description = "Invalid request" });
+
+            DemandNoticeStatus pmt = Request.Headers["pmt"].ToString().ToEnum<DemandNoticeStatus>();
+
             if (id == default(Guid))
                 return BadRequest(new Response { code = MsgCode_Enum.FAIL, description = "Please select payment" });
 

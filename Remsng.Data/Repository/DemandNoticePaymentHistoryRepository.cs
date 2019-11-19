@@ -57,8 +57,8 @@ namespace RemsNG.Data.Repository
             if (entity == null)
                 return false;
 
-            if (entity.PaymentStatus == status.ToString())
-                return true;
+            //if (entity.PaymentStatus == status.ToString())
+            //    return true;
 
             entity.PaymentStatus = status.ToString();
             await db.SaveChangesAsync();
