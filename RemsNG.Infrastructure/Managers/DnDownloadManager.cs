@@ -101,7 +101,8 @@ namespace RemsNG.Infrastructure.Managers
                 var tt = dnpHistory.OrderByDescending(x => x.DateCreated).FirstOrDefault();
                 htmlContent = htmlContent.Replace("PAYMENT_DATE", tt.DateCreated.Value.ToString("dd-MM-yyyy"));
             }
-            htmlContent = htmlContent.Replace("TOTAL_AMOUNT", $"{String.Format("{0:n}", decimal.Round(dnph.Amount, 2))} naira");
+            decimal displayAMount = _bankCategory.RecieptType == 0 ? dnph.Amount : dnrp.amountPaid;
+            htmlContent = htmlContent.Replace("TOTAL_AMOUNT", $"{String.Format("{0:n}", decimal.Round(displayAMount, 2))} naira");
 
             if (dnrp.amountPaid > amtDue)
             {
