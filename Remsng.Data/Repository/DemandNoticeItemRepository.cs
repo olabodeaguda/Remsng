@@ -169,9 +169,41 @@ namespace RemsNG.Data.Repository
                  LastModifiedDate = p.LastModifiedDate,
                  TaxpayerId = p.TaxpayerId,
                  wardName = p.DemandNoticeTaxpayer.WardName,
-                 category = p.TaxPayer.Company.TaxPayerCatgeory.TaxpayerCategoryName
+                 category = p.TaxPayer.Company.TaxPayerCatgeory.TaxpayerCategoryName,
              }).ToListAsync();
 
+            return lst;
+        }
+
+        public async Task<DemandNoticeItemModelExt[]> ReportByCatgory(long[] billNumbers)
+        {
+            string[] status = { "PENDING", "PART_PAYMENT", "PAID" };
+            DemandNoticeItemModelExt[] lst = await db.Set<DemandNoticeItem>()
+             .Include(x => x.TaxPayer)
+             .ThenInclude(x => x.Company)
+             .ThenInclude(x => x.TaxPayerCatgeory)
+             .Include(x => x.DemandNoticeTaxpayer)
+             .Where(x => billNumbers.Any(s => s == x.BillingNo) && status.Any(t => t == x.ItemStatus))
+             .Select(p => new DemandNoticeItemModelExt()
+             {
+                 AmountPaid = p.AmountPaid,
+                 BillingNo = p.BillingNo,
+                 CreatedBy = p.CreatedBy,
+                 DateCreated = p.DateCreated,
+                 DemandNoticeId = p.DemandNoticeId,
+                 DnTaxpayersDetailsId = p.dn_taxpayersDetailsId,
+                 Id = p.Id,
+                 ItemAmount = p.ItemAmount,
+                 ItemId = p.ItemId,
+                 ItemName = p.ItemName,
+                 ItemStatus = p.ItemStatus,
+                 Lastmodifiedby = p.Lastmodifiedby,
+                 LastModifiedDate = p.LastModifiedDate,
+                 TaxpayerId = p.TaxpayerId,
+                 wardName = p.DemandNoticeTaxpayer.WardName,
+                 category = p.TaxPayer.Company.TaxPayerCatgeory.TaxpayerCategoryName,
+                 TaxpayerName = p.DemandNoticeTaxpayer.TaxpayersName
+             }).ToArrayAsync();
             return lst;
         }
     }

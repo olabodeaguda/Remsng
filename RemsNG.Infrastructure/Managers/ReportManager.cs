@@ -76,5 +76,10 @@ namespace RemsNG.Infrastructure.Managers
         {
             return await dnPenaltyDao.ReportByCategory(taxpayerIds);
         }
+
+        public async Task<DemandNoticeItemModelExt[]> ReportByCatgoryExt(long[] billNumbers)
+        {
+            return await dnitemDao.ReportByCategory(billnumbers);
+        }
     }
 }

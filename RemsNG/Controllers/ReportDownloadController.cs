@@ -378,8 +378,6 @@ namespace RemsNG.Controllers
             ed = ed.AddMinutes(59);
 
             List<ItemReportSummaryModel> current = await reportService.ByDate(sd, ed);
-            //List<ItemReportSummaryModel> previous = await reportService.ByDate(
-            //    new DateTime(sd.Year, 1, 1, 0, 0, 0), sd);
 
             if (current.Count < 1)
             {

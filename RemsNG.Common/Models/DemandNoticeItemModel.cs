@@ -2,6 +2,10 @@
 
 namespace RemsNG.Common.Models
 {
+    public class DemandNoticeItemModelExt : DemandNoticeItemModel
+    {
+        public string TaxpayerName { get; set; }
+    }
     public class DemandNoticeItemModel
     {
         public Guid Id { get; set; }

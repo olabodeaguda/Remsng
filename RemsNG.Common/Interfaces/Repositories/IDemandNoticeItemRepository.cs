@@ -14,5 +14,6 @@ namespace RemsNG.Common.Interfaces.Repositories
             long billNumber, int billingYr);
         Task<List<DemandNoticeItemModel>> ReportByCategory(DateTime fromDate, DateTime toDate);
         Task<List<DemandNoticeItemModel>> ReportByCategory(long[] billNumbers);
+        Task<DemandNoticeItemModelExt[]> ReportByCatgory(long[] billNumbers);
     }
 }
