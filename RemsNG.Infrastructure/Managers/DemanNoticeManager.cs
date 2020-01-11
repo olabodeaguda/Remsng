@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Managers;
@@ -26,14 +27,18 @@ namespace RemsNG.Infrastructure.Managers
         private IDemandNoticeArrearRepository dnaDao;
         private IDemandNoticeTaxpayersRepository _dnTaxpayerRepo;
         private readonly IDemandNoticeItemManager _dnItemManger;
+        private readonly IArrearsManager _arrearsManager;
+        private readonly ILogger _log;
         public DemanNoticeManager(
             IDemandNoticeItemManager demandNoticeItemManager, ITaxpayerRepository taxpayerRepository,
             ILcdaPropertyRepository lcdaPropertyRepository, IStreetRepository streetRepository,
             IStateRepository stateRepository, IWardRepository wardRepository,
             IAddressRepository addressRepository, IImageRepository imageRepository,
             IDemandNoticeRepository demandNoticeRepository, IDemandNoticeArrearRepository demandNoticeArrearRepository,
-            IDemandNoticeTaxpayersRepository demandNoticeTaxpayersRepository)
+            IDemandNoticeTaxpayersRepository demandNoticeTaxpayersRepository,
+            IArrearsManager arrearsManager, ILoggerFactory loggerFactory)
         {
+            _arrearsManager = arrearsManager;
             demandNoticeDao = demandNoticeRepository;
             dnaDao = demandNoticeArrearRepository;
             _dnTaxpayerRepo = demandNoticeTaxpayersRepository;
@@ -45,6 +50,7 @@ namespace RemsNG.Infrastructure.Managers
             _stateRepository = stateRepository;
             _lcdaPropertyRepo = lcdaPropertyRepository;
             _dnItemManger = demandNoticeItemManager;
+            _log = loggerFactory.CreateLogger("DemanNoticeManager");
         }
 
         public async Task<Response> Add(DemandNoticeModel demandNotice)
@@ -135,7 +141,24 @@ namespace RemsNG.Infrastructure.Managers
             string[] status = { "PART_PAYMENT", "PENDING" };
 
             DemandNoticeTaxpayersModel[] dntModel = await _dnTaxpayerRepo.SearchTaxpayers(model);
+
             Guid[] excludedTaxpayers = dntModel.Where(s => !s.IsRunArrears && status.Any(d => d == s.DemandNoticeStatus)).Select(x => x.TaxpayerId).ToArray();
+
+            Guid[] DnIds = dntModel.Where(s => !s.IsRunArrears && status.Any(d => d == s.DemandNoticeStatus)).Select(x => x.Id).ToArray();
+
+            if (DnIds.Length > 0 && model.RunArrears)
+            {
+                // run arrears
+                try
+                {
+                    await _arrearsManager.RunTaxpayerArrears(DnIds);
+                    excludedTaxpayers = new Guid[] { };
+                }
+                catch (Exception x)
+                {
+                    _log.LogError(x, "Arrears run error", model);
+                }
+            }
 
             TaxPayerModel[] taxPayers = (await _taxpayerRepository.SearchByDNRequest(model, excludedTaxpayers))
                 .Select(d =>
@@ -165,6 +188,9 @@ namespace RemsNG.Infrastructure.Managers
             {
                 throw new InvalidCredentialsException("Please select Taxpayer");
             }
+
+            //run arrears
+            //get valid demandnotice Id
 
             TaxPayerModel[] dntModel = await ValidTaxpayers(model);
             var unknownId = model.TaxpayerIds.Where(x => !dntModel.Any(p => p.Id == x)).ToArray();

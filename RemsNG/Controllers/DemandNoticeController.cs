@@ -212,6 +212,8 @@ namespace RemsNG.Controllers
             }
             demandNoticeRequest.createdBy = User.Identity.Name;
             demandNoticeRequest.lcdaId = lcdaId;
+
+
             bool result = await demandService.AddDemanNotice(demandNoticeRequest);
             if (!result)
             {
@@ -429,6 +431,7 @@ namespace RemsNG.Controllers
             modl.searchByName = model.SearchByName;
             modl.streetId = string.IsNullOrEmpty(model.StreetId) ? default(Guid) : Guid.Parse(model.StreetId);
             modl.wardId = string.IsNullOrEmpty(model.WardId) ? default(Guid) : Guid.Parse(model.WardId);
+            modl.RunArrears = model.runArrears;
 
             TaxPayerModel[] taxpayers = await demandService.ValidTaxpayers(modl);
             return Ok(new Response

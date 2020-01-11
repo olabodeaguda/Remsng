@@ -166,7 +166,8 @@ export class DemandNoticeService {
             streetId: searchModel.streetId,
             searchByName: searchModel.searchByName,
             dateYear: searchModel.dateYear,
-            lcdaId: null
+            lcdaId: null,
+            runArrears: searchModel.runArrears
         };
         return this.datataservice
         .post('demandnotice/validtaxpayers/', s)
