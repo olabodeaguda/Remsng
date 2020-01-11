@@ -59,5 +59,10 @@ namespace RemsNG.Infrastructure.Managers
         {
             return await taxpayerCatgoryDao.GetTaxpayerCategory(taxpayerId);
         }
+
+        public async Task<string[]> GetCategory()
+        {
+            return await taxpayerCatgoryDao.GetCategory();
+        }
     }
 }

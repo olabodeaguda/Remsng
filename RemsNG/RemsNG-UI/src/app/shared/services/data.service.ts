@@ -74,6 +74,19 @@ export class DataService {
         return this.http.get((this.appConfig.BASE_URL + url), options);
     }
 
+    getBlob2(url, category): Observable<any> {
+        const tk: UserModel = this.storageService.get();
+
+        const options = {
+            headers: new HttpHeaders({
+                'Authorization': 'Bearer ' + tk.tk,
+                'category': category
+            })
+            , responseType: 'blob' as 'blob'
+        };
+        return this.http.get((this.appConfig.BASE_URL + url), options);
+    }
+
 
     postBlob(url, payload): Observable<any> {
         const tk: UserModel = this.storageService.get();

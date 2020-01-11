@@ -12,6 +12,10 @@ export class CategoryService {
         return this.dataService.get('taxpayercategory/bylcda/' + lcdaId).catch(x => this.dataService.handleError(x));
     }
 
+    getCategoryType() {
+        return this.dataService.get('taxpayercategory').catch(x => this.dataService.handleError(x));
+    }
+
     add(categoryModel: CategoryModel) {
         return this.dataService.post('taxpayercategory', {
             taxpayerCategoryName: categoryModel.taxpayerCategoryName,

@@ -193,5 +193,14 @@ namespace RemsNG.Data.Repository
                 TaxpayerCategoryName = t.TaxpayerCategoryName
             };
         }
+
+        public async Task<string[]> GetCategory()
+        {
+            return await db.Set<TaxpayerCategory>()
+                .Select(x => x.TaxpayerCategoryName)
+                .Distinct()
+                .OrderBy(x => x)
+                .ToArrayAsync();
+        }
     }
 }

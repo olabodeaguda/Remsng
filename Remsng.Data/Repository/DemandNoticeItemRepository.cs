@@ -175,7 +175,7 @@ namespace RemsNG.Data.Repository
             return lst;
         }
 
-        public async Task<DemandNoticeItemModelExt[]> ReportByCatgory(long[] billNumbers)
+        public async Task<DemandNoticeItemModelExt[]> ReportByCatgoryExt(long[] billNumbers)
         {
             string[] status = { "PENDING", "PART_PAYMENT", "PAID" };
             DemandNoticeItemModelExt[] lst = await db.Set<DemandNoticeItem>()
@@ -202,7 +202,8 @@ namespace RemsNG.Data.Repository
                  TaxpayerId = p.TaxpayerId,
                  wardName = p.DemandNoticeTaxpayer.WardName,
                  category = p.TaxPayer.Company.TaxPayerCatgeory.TaxpayerCategoryName,
-                 TaxpayerName = p.DemandNoticeTaxpayer.TaxpayersName
+                 TaxpayerName = p.DemandNoticeTaxpayer.TaxpayersName,
+                 AddressName = p.DemandNoticeTaxpayer.AddressName
              }).ToArrayAsync();
             return lst;
         }

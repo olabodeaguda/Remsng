@@ -15,6 +15,7 @@ namespace RemsNG.Common.Interfaces.Repositories
         Task<List<DemandNoticePenaltyModel>> ByTaxpayerId(Guid taxpayerId);
         Task<List<DemandNoticePenaltyModel>> ByTaxpayerId(Guid taxpayerId, int billingYr);
         Task<List<DemandNoticePenaltyModel>> ReportByCategory(Guid[] taxpayerIds);
+        Task<List<DemandNoticePenaltyModelExt>> ReportByCategoryExt(Guid[] taxpayerIds);
         Task<List<DemandNoticePenaltyModel>> ReportByCategory(DateTime fromDate, DateTime toDate);
         Task<DemandNoticePenaltyModel[]> ByTaxpayerId(Guid[] taxpayerIds);
         Task<bool> UpdatePenaltyStatus(DemandNoticePenaltyModel[] models, string status);

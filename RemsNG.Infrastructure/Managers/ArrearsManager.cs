@@ -71,6 +71,17 @@ namespace RemsNG.Infrastructure.Managers
             return result;
         }
 
+        public async Task<bool> RunTaxpayerArrears(DemandNoticeRequestModel model)
+        {
+            var sResult = await _dNTaxpayersRep.Search(model);
+            if (sResult.Length <= 0)
+            {
+                return false;
+            }
+
+            return await RunTaxpayerArrears(sResult.Where(X => !X.IsRunArrears).Select(d => d.Id).ToArray());
+        }
+
         public async Task<bool> RunTaxpayerArrears(Guid[] dnTaxpayerIds)
         {
             if (dnTaxpayerIds.Length <= 0)

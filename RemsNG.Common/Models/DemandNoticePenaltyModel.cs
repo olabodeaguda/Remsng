@@ -4,6 +4,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RemsNG.Common.Models
 {
+    public class DemandNoticePenaltyModelExt : DemandNoticePenaltyModel
+    {
+        public string TaxpayerName { get; set; }
+        public string Address { get; set; }
+    }
+
     public class DemandNoticePenaltyModel
     {
         public Guid Id { get; set; }

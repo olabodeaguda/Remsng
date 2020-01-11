@@ -18,6 +18,9 @@ namespace RemsNG.Common.Interfaces.Managers
         Task<List<DemandNoticeItemModel>> ReportitemsByCategory(long[] billnumbers);
         Task<List<DemandNoticeArrearsModel>> ReportArrearsByCategory(Guid[] taxpayerIds);
         Task<List<DemandNoticePenaltyModel>> ReportPenaltyByCategory(Guid[] taxpayerIds);
-        Task<DemandNoticeItemModelExt[]> ReportByCatgoryExt(long[] billNumbers);
+
+        Task<List<ItemReportSummaryModel>> GetReportByCategory(DateTime startDate, DateTime endDate, string category);
+
+
     }
 }

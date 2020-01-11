@@ -33,6 +33,7 @@ namespace RemsNG.Controllers
 
             return await taxpayerCategoryService.GetListByLcdaIdAsync(lcdaId);
         }
+
         [Route("paginated/{lcdaid}")]
         [HttpGet]
         public async Task<object> ByLcdaId(Guid lcdaId, [FromHeader] string pageSize, [FromHeader] string pageNum)
@@ -164,6 +165,16 @@ namespace RemsNG.Controllers
             Response response = await taxpayerCategoryService.Delete(id);
 
             return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCateghoryTypes()
+        {
+            return Ok(new Response
+            {
+                code = MsgCode_Enum.SUCCESS,
+                data = await taxpayerCategoryService.GetCategory()
+            });
         }
     }
 }

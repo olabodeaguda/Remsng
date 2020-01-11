@@ -291,6 +291,15 @@ namespace RemsNG.Controllers
             List<DemandNoticePenaltyModel> dnPenalty = await reportService.ReportPenaltyByCategory(ids.taxpayerIds);
             List<DemandNoticeArrearsModel> dnArrears = await reportService.ReportArrearsByCategory(ids.taxpayerIds);
 
+            string category = Request.Headers["category"].ToString();
+            if (!string.IsNullOrEmpty(category))
+            {
+                dnitem = dnitem.Where(x => x.category.Equals(category, StringComparison.OrdinalIgnoreCase)).ToList();
+                dnPenalty = dnPenalty.Where(x => x.category.Equals(category, StringComparison.OrdinalIgnoreCase)).ToList();
+                dnArrears = dnArrears.Where(x => x.Category.Equals(category, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+
             Guid lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
             LcdaModel lgda = await lcdaService.Get(lcdaId);
             if (lgda == null)
@@ -306,6 +315,71 @@ namespace RemsNG.Controllers
 
             var result = await excelService.WriteReportCategory(
                (domain == null ? "Unknown" : domain.DomainName), lgda.LcdaName, sd, ed, dnitem, dnPenalty, dnArrears);
+
+            HttpContext.Response.ContentType = "application/octet-stream";
+            HttpContext.Response.Body.Write(result, 0, result.Length);
+            return new ContentResult();
+        }
+
+
+        [HttpGet("categorydetails/{startDate}/{endDate}")]
+        public async Task<IActionResult> GetByCategoryReportDetails(string startDate, string endDate)
+        {
+            if (string.IsNullOrEmpty(startDate))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Start date is required"
+                });
+            }
+            else if (string.IsNullOrEmpty(endDate))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "End date is required"
+                });
+            }
+
+            DateTime sd = DateTime.ParseExact(startDate, "dd-MM-yyyy", null);
+            DateTime ed = DateTime.ParseExact(endDate, "dd-MM-yyyy", null);
+            ed = ed.AddHours(23);
+            ed = ed.AddMinutes(59);
+
+            //var ids = await reportService.AllIdsByDate(sd, ed);
+            //if (ids.billNumbers.Length < 0)
+            //    return BadRequest(new Response()
+            //    {
+            //        code = MsgCode_Enum.NOTFOUND,
+            //        description = $"No record(s) found"
+            //    });
+
+            string category = Request.Headers["category"].ToString();
+
+            List<ItemReportSummaryModel> lst = await reportService.GetReportByCategory(sd, ed, category);
+
+            Guid lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
+            LcdaModel lgda = await lcdaService.Get(lcdaId);
+            if (lgda == null)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.UNKNOWN,
+                    description = $"Log on user unknown"
+                });
+            }
+
+            DomainModel domain = await lcdaService.GetDomain(lgda.Id);
+
+            //var result = await excelService.WriteReportCategory(
+            //   (domain == null ? "Unknown" : domain.DomainName), lgda.LcdaName, sd, ed, dnitem, dnPenalty, dnArrears);
+
+            byte[] result = await excelService.TaxpayerReportByWard(lst,
+              (domain == null ? "Unknown" : domain.DomainName), lgda.LcdaName, sd, ed);
+
+            //return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
 
             HttpContext.Response.ContentType = "application/octet-stream";
             HttpContext.Response.Body.Write(result, 0, result.Length);

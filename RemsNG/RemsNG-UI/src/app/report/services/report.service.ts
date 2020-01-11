@@ -12,7 +12,6 @@ export class ReportService {
         .catch(error => this.dateService.handleError(error));
     }
 
-// reportdata
     html(startDate: string, endDate: string) {
         return this.dateService.get('report/revenuehtml/' + startDate + '/' + endDate)
         .catch(error => this.dateService.handleError(error));
@@ -23,8 +22,13 @@ export class ReportService {
         .catch(error => this.dateService.handleError(error));
     }
 
-    downloadReportByCategory(startDate: string, endDate: string) {
-        return this.dateService.getBlob('report/category/' + startDate + '/' + endDate)
+    downloadReportByCategory(startDate: string, endDate: string, category: string) {
+        return this.dateService.getBlob2('report/category/' + startDate + '/' + endDate, category)
+        .catch(error => this.dateService.handleError(error));
+    }
+
+    downloadReportByCategoryExt(startDate: string, endDate: string, category: string) {
+        return this.dateService.getBlob2('report/categorydetails/' + startDate + '/' + endDate, category)
         .catch(error => this.dateService.handleError(error));
     }
 

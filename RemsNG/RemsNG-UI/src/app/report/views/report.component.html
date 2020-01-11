@@ -20,22 +20,29 @@
                 <div class="row">
                     <div class="row">
                         <div class="col-xs-12">
-                            <div class="form-group col-md-3">
+                            <div class="form-group col-md-2">
                                 <label for="startDate">Start Date</label>
                                 <my-date-picker name="startDate" [options]="myDatePickerOptions" (dateChanged)="onDateChanged($event,'startDate')"></my-date-picker>
                             </div>
-                            <div class="form-group col-md-3">
+                            <div class="form-group col-md-2">
                                 <label for="endDate">End Date</label>
                                 <my-date-picker name="endDate" [options]="myDatePickerOptions" (dateChanged)="onDateChanged($event,'endDate')"></my-date-picker>
                             </div>
-                            <div class="form-group col-md-3">
+                            <div class="form-group col-md-2">
                                 <label for="dateYear">Select Year</label>
                                 <select name="dateYear" class="form-control" [(ngModel)]="selectedYr">
                                     <option selected="selected">Select Year</option>
                                     <option *ngFor="let data of yrLst;" [ngValue]="data">{{data}}</option>
                                 </select>
                             </div>
-                            <div class="form-group col-md-3">
+                            <div class="form-group col-md-2">
+                                <label for="category">Select Category</label>
+                                <select name="category" class="form-control" [(ngModel)]="selectCategory">
+                                    <option selected="selected">Select Category</option>
+                                    <option *ngFor="let data of catgories;" [ngValue]="data">{{data}}</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-2">
                                 <label></label>
                                 <div class="row">
                                     <div class="col-ms-3">
@@ -61,17 +68,22 @@
                                                         <a href="javascript:;" (click)="downloadReportBreakDown()">
                                                             <i class="fa fa-download"></i> Report Breakdown</a>
                                                     </li>
-
+    
                                                     <li>
                                                         <a href="javascript:;" (click)="downloadReportBreakDownSeperate()">
                                                             <i class="fa fa-download"></i> Report Breakdown Seperate</a>
                                                     </li>
-
+    
                                                     <li>
                                                         <a href="javascript:;" (click)="downloadByCategory()">
                                                             <i class="fa fa-download"></i> Report by category</a>
                                                     </li>
-
+    
+                                                    <li>
+                                                        <a href="javascript:;" (click)="downloadByCategoryDetails()">
+                                                            <i class="fa fa-download"></i> Report by category details</a>
+                                                    </li>
+    
                                                     <li>
                                                         <a href="javascript:;" (click)="downloadTWithoutDN()">
                                                             <i class="fa fa-download"></i> Taxpayer without demand notice</a>
@@ -84,8 +96,9 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                           
                         </div>
+                    </div>                   
                     </div>
                 </div>
                 <div class="row" [innerHtml]="htmlresult"></div>

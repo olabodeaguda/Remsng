@@ -16,5 +16,6 @@ namespace RemsNG.Common.Interfaces.Repositories
         Task<object> GetListByLcdaIdAsync(Guid lcdaId, PageModel pageModel);
         Task<object> GetByNameAndLcdaId(Guid lcdaid, string name);
         Task<TaxpayerCategoryModel> GetTaxpayerCategory(Guid taxpayerId);
+        Task<string[]> GetCategory();
     }
 }

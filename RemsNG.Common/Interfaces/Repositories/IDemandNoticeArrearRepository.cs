@@ -17,5 +17,7 @@ namespace RemsNG.Common.Interfaces.Repositories
         Task<List<DemandNoticeArrearsModel>> ReportByCategory(DateTime fromDate, DateTime toDate);
         Task<bool> AddArrears(DemandNoticeArrearsModel[] models);
         Task<bool> UpdateArrearsStatus(DemandNoticeArrearsModel[] models, string status);
+        Task<List<DemandNoticeArrearsModelExt>> ReportByCategoryExt(DateTime fromDate, DateTime toDate);
+        Task<List<DemandNoticeArrearsModelExt>> ReportByCategoryExt(Guid[] taxpayerIds);
     }
 }

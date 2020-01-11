@@ -5,6 +5,7 @@ import { ReportService } from '../services/report.service';
 import * as FileSaver from 'file-saver';
 import { AppSettings } from '../../shared/models/app.settings';
 import { isNullOrUndefined } from 'util';
+import { CategoryService } from '../../Category/services/category.service';
 
 @Component({
     selector: 'app-report',
@@ -18,18 +19,30 @@ export class ReportComponent implements OnInit {
     htmlresult: string = '';
     yrLst = [];
     selectedYr;
+    selectCategory;
     isLoading: boolean = false;
+    catgories = [];
     public myDatePickerOptions: IMyDpOptions = {
         dateFormat: 'dd-mm-yyyy',
     };
 
     constructor(private toasterService: ToasterService,
         private reportService: ReportService,
-        private appsettings: AppSettings) {
+        private appsettings: AppSettings, private catService: CategoryService ) {
     }
 
     ngOnInit() {
         this.yrLst = this.appsettings.getYearList();
+        this.getCategoryType();
+    }
+
+    getCategoryType(){
+        this.catService.getCategoryType()
+        .subscribe(response=>{
+            this.catgories = response.data;
+        }, error=>{
+            console.log(error)
+        })
     }
 
     onDateChanged(event: IMyDateModel, dataType: string) {
@@ -219,9 +232,6 @@ export class ReportComponent implements OnInit {
             .subscribe(response => {
                 this.isLoading = false;
                 FileSaver.saveAs(response, this.selectedYr + 'reportbyward' + '.xlsx');
-                // const blob = new Blob([response], { type: 'text/xlsx' });
-                // const url = window.URL.createObjectURL(blob);
-                // window.open(url);
             }, error => {
                 this.isLoading = false;
                 this.toasterService.pop('error', 'Error', error);
@@ -242,9 +252,36 @@ export class ReportComponent implements OnInit {
             this.toasterService.pop('error', 'Error', 'Start Date is required');
             return;
         }
+        console.log(this.selectCategory);
 
         this.isLoading = true;
-        this.reportService.downloadReportByCategory(this.startDate, this.endDate)
+        this.reportService.downloadReportByCategory(this.startDate, this.endDate, this.selectCategory)
+            .subscribe(response => {
+                this.isLoading = false;
+                FileSaver.saveAs(response, this.startDate + '-' + this.endDate + 'report' + '.xlsx');
+            }, error => {
+                this.isLoading = false;
+                this.toasterService.pop('error', 'Error', error);
+            });
+    }
+
+    downloadByCategoryDetails() {
+        if (this.startDate.length < 1) {
+            this.toasterService.pop('error', 'Error', 'Start Date is required');
+            return;
+        } else if (this.endDate.length < 1) {
+            this.toasterService.pop('error', 'Error', 'Start Date is required');
+            return;
+        } else if (this.startDate.length < 10) {
+            this.toasterService.pop('error', 'Error', 'Start Date is in the wrong format');
+            return;
+        } else if (this.endDate.length < 10) {
+            this.toasterService.pop('error', 'Error', 'Start Date is required');
+            return;
+        }
+
+        this.isLoading = true;
+        this.reportService.downloadReportByCategoryExt(this.startDate, this.endDate, this.selectCategory)
             .subscribe(response => {
                 this.isLoading = false;
                 FileSaver.saveAs(response, this.startDate + '-' + this.endDate + 'report' + '.xlsx');

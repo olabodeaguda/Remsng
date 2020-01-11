@@ -177,6 +177,42 @@ namespace RemsNG.Data.Repository
         }
 
 
+        public async Task<List<DemandNoticeArrearsModelExt>> ReportByCategoryExt(Guid[] taxpayerIds)
+        {
+            string[] status = { "PAID", "PENDING", "PART_PAYMENT" };
+
+            var result = await db.Set<DemandNoticeArrear>()
+                .Include(x => x.TaxPayer)
+                .Include(x => x.TaxPayer.Company)
+                .ThenInclude(x => x.TaxPayerCatgeory)
+                .Include(s => s.TaxPayer.Street)
+                .ThenInclude(w => w.Ward)
+                .Include(s => s.TaxPayer.Address)
+                .Where(x => taxpayerIds.Any(s => s == x.TaxpayerId) && status.Any(p => p == x.ArrearsStatus))
+                .Select(e => new DemandNoticeArrearsModelExt()
+                {
+                    AmountPaid = e.AmountPaid,
+                    ArrearsStatus = e.ArrearsStatus,
+                    BillingNo = e.BillingNo,
+                    CreatedBy = e.CreatedBy,
+                    Category = e.TaxPayer.Company.TaxPayerCatgeory.TaxpayerCategoryName,
+                    DateCreated = e.DateCreated,
+                    Id = e.Id,
+                    Lastmodifiedby = e.Lastmodifiedby,
+                    LastModifiedDate = e.LastModifiedDate,
+                    OriginatedYear = e.OriginatedYear,
+                    TaxpayerId = e.TaxpayerId,
+                    TotalAmount = e.TotalAmount,
+                    WardName = e.TaxPayer.Street.Ward.WardName,
+                    AddressName = $"{e.TaxPayer.Address.Addressnumber} {e.TaxPayer.Street.StreetName}",
+                    TaxpayerName = $"{e.TaxPayer.Surname} {e.TaxPayer.Firstname} {e.TaxPayer.Lastname}"
+                })
+                .ToListAsync();
+
+            return result;
+        }
+
+
         public async Task<List<DemandNoticeArrearsModel>> ReportByCategory(DateTime fromDate, DateTime toDate)
         {
             DateTime startDate = new DateTime(fromDate.Year, fromDate.Month, fromDate.Day, 0, 0, 0);
@@ -198,7 +234,6 @@ namespace RemsNG.Data.Repository
                     Category = e.TaxPayer.Company.TaxPayerCatgeory.TaxpayerCategoryName,
                     DateCreated = e.DateCreated,
                     Id = e.Id,
-                    //ItemId = e.ItemId,
                     Lastmodifiedby = e.Lastmodifiedby,
                     LastModifiedDate = e.LastModifiedDate,
                     OriginatedYear = e.OriginatedYear,
@@ -210,6 +245,44 @@ namespace RemsNG.Data.Repository
 
             return result;
         }
+
+        public async Task<List<DemandNoticeArrearsModelExt>> ReportByCategoryExt(DateTime fromDate, DateTime toDate)
+        {
+            DateTime startDate = new DateTime(fromDate.Year, fromDate.Month, fromDate.Day, 0, 0, 0);
+            DateTime endDate = new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59);
+
+            var result = await db.Set<DemandNoticeArrear>()
+                .Include(x => x.TaxPayer)
+                .Include(x => x.TaxPayer.Company)
+                .ThenInclude(x => x.TaxPayerCatgeory)
+                .Include(s => s.TaxPayer.Street)
+                .ThenInclude(w => w.Ward)
+                .Include(s => s.TaxPayer.Address)
+                .Where(x => x.DateCreated >= startDate && x.DateCreated <= endDate)
+                .Select(e => new DemandNoticeArrearsModelExt()
+                {
+                    AmountPaid = e.AmountPaid,
+                    ArrearsStatus = e.ArrearsStatus,
+                    BillingNo = e.BillingNo,
+                    CreatedBy = e.CreatedBy,
+                    Category = e.TaxPayer.Company.TaxPayerCatgeory.TaxpayerCategoryName,
+                    DateCreated = e.DateCreated,
+                    Id = e.Id,
+                    Lastmodifiedby = e.Lastmodifiedby,
+                    LastModifiedDate = e.LastModifiedDate,
+                    OriginatedYear = e.OriginatedYear,
+                    TaxpayerId = e.TaxpayerId,
+                    TotalAmount = e.TotalAmount,
+                    WardName = e.TaxPayer.Street.Ward.WardName,
+                    AddressName = $"{e.TaxPayer.Address.Addressnumber} {e.TaxPayer.Street.StreetName}"
+                })
+                .ToListAsync();
+
+            return result;
+        }
+
+
+
 
         public async Task<bool> AddArrears(DemandNoticeArrearsModel[] models)
         {
