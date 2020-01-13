@@ -24,6 +24,7 @@ namespace RemsNG.Common.Interfaces.Services
             List<DemandNoticeArrearsModel> dnArrears);
         Task<byte[]> TaxpayerWithOutDemandNotice(TaxPayerModel[] taxpayers, int billingYear);
         Task<byte[]> TaxpayerReportByWard(List<ItemReportSummaryModel> rptLst
-            , string domainName, string lcdaName, DateTime startDate, DateTime enndDate);
+            , string domainName, string lcdaName, DateTime startDate, DateTime enndDate,
+            List<DemandNoticePaymentHistoryModel> dnph, string categoryType);
     }
 }

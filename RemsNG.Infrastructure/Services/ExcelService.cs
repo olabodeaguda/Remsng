@@ -851,7 +851,8 @@ namespace RemsNG.Infrastructure.Services
         }
 
         public async Task<byte[]> TaxpayerReportByWard(List<ItemReportSummaryModel> rptLst
-            , string domainName, string lcdaName, DateTime startDate, DateTime enndDate)
+            , string domainName, string lcdaName, DateTime startDate, DateTime enndDate,
+            List<DemandNoticePaymentHistoryModel> dnph, string categoryType)
         {
             try
             {
@@ -897,7 +898,7 @@ namespace RemsNG.Infrastructure.Services
                         IRow rowTitle1 = sheet1.CreateRow(rowIndex);
                         rowTitle1.Height = 300;
                         ICell cellTitle1 = rowTitle1.CreateCell(0);
-                        cellTitle1.SetCellValue($"INTERNALLY GENERATED REVENUE " +
+                        cellTitle1.SetCellValue($"INTERNALLY GENERATED REVENUE by Category ({categoryType}) " +
                             $"FOR THE PERIOD OF {startDate.ToString("dd/MM/yyyy")} - {enndDate.ToString("dd/MM/yyyy")}");
                         CellStyleHeader(cellTitle1, workbook, 10);
                         rowIndex++;
@@ -989,9 +990,13 @@ namespace RemsNG.Infrastructure.Services
                             totalOutstanding = totalOutstanding + (totalAmount - amountPaid);
 
                             rowbody.CreateCell(colCount++).SetCellValue(txPayr.BillingDate.ToString("dd-MM-yyyy"));
+
+                            var s = dnph.Where(x => x.BillingNumber == txPayr.billingNo).ToList();
+
                             rowbody.CreateCell(colCount++).SetCellValue(txPayr.PaymentDate == null ? "NIl" : txPayr.PaymentDate.Value.ToString("dd-MM-yyyy"));
-                            rowbody.CreateCell(colCount++).SetCellValue(txPayr.BankName);
-                            rowbody.CreateCell(colCount++).SetCellValue(txPayr.Reference);
+
+                            rowbody.CreateCell(colCount++).SetCellValue(s.Count <= 0 ? "Nil" : String.Join(',', s.Select(d => d.BankName)));
+                            rowbody.CreateCell(colCount++).SetCellValue(s.Count <= 0 ? "Nil" : String.Join(',', s.Select(d => d.ReferenceNumber)));
                         }
 
                         IRow rowbody1 = sheet1.CreateRow(rowIndex++);

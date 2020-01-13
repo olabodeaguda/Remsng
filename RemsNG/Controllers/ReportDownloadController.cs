@@ -375,8 +375,11 @@ namespace RemsNG.Controllers
             //var result = await excelService.WriteReportCategory(
             //   (domain == null ? "Unknown" : domain.DomainName), lgda.LcdaName, sd, ed, dnitem, dnPenalty, dnArrears);
 
+
+            List<DemandNoticePaymentHistoryModel> dnph = await dNPaymentHistoryService.ByBillingNumbers(lst.Select(x => x.billingNo).ToArray());
+
             byte[] result = await excelService.TaxpayerReportByWard(lst,
-              (domain == null ? "Unknown" : domain.DomainName), lgda.LcdaName, sd, ed);
+              (domain == null ? "Unknown" : domain.DomainName), lgda.LcdaName, sd, ed, dnph, string.IsNullOrEmpty(category) ? "All" : category);
 
             //return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
