@@ -132,7 +132,7 @@ namespace RemsNG.Infrastructure.Managers
             else
             {
                 htmlContent = htmlContent.Replace("AMOUNT_IN_WORD",
-                   CurrencyWords.ConvertToWords(decimal.Round(dnph.Amount, 2).ToString()));
+                   CurrencyWords.ConvertToWords(decimal.Round(displayAMount, 2).ToString()));
             }
 
             string discp = string.Join(',', dnrp.items.Select(x => x.itemTitle));

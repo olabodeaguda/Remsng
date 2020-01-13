@@ -26,5 +26,7 @@ namespace RemsNG.Common.Interfaces.Services
         Task<byte[]> TaxpayerReportByWard(List<ItemReportSummaryModel> rptLst
             , string domainName, string lcdaName, DateTime startDate, DateTime enndDate,
             List<DemandNoticePaymentHistoryModel> dnph, string categoryType);
+        Task<byte[]> TaxpayerReportByWard(List<ItemReportSummaryModel> rptLst
+            , string domainName, string lcdaName, DateTime startDate, DateTime enndDate);
     }
 }
