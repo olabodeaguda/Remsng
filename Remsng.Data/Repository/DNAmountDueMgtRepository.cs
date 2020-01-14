@@ -23,9 +23,17 @@ namespace RemsNG.Data.Repository
             //var result = await db.Set<DNAmountDueModel>()
             //    .FromSql("sp_getBillingNumberTotalDue @p0", new object[] { billingno }).ToListAsync();
 
+            DemandNoticeTaxpayer dnTaxpayer = await db.Set<DemandNoticeTaxpayer>().FirstOrDefaultAsync(x => x.BillingNumber == billingno);
+            if (dnTaxpayer == null)
+            {
+                throw new NotFoundException("Demand notice does not exist");
+            }
+
+            string[] status = { "PART_PAYMENT", "PENDING" };
+
             List<DNAmountDueModel> results = new List<DNAmountDueModel>();
             var arrears = await db.Set<DemandNoticeArrear>()
-                .Where(r => r.BillingNo == billingno)
+                .Where(r => r.TaxpayerId == dnTaxpayer.TaxpayerId && status.Any(x => x == r.ArrearsStatus))
                 .Select(x => new DNAmountDueModel()
                 {
                     id = x.Id,
@@ -38,11 +46,6 @@ namespace RemsNG.Data.Repository
                     itemStatus = x.ArrearsStatus
                 }).ToListAsync();
             results.AddRange(arrears);
-            DemandNoticeTaxpayer dnTaxpayer = await db.Set<DemandNoticeTaxpayer>().FirstOrDefaultAsync(x => x.BillingNumber == billingno);
-            if (dnTaxpayer == null)
-            {
-                throw new NotFoundException("Demand notice does not exist");
-            }
 
             var penalty = await db.Set<DemandNoticePenalty>().Where(x => x.TaxpayerId == dnTaxpayer.TaxpayerId).Select(x => new DNAmountDueModel
             {
@@ -56,7 +59,7 @@ namespace RemsNG.Data.Repository
             }).ToListAsync();
             results.AddRange(penalty);
             var items = await db.Set<DemandNoticeItem>().Include(s => s.Item)
-                 .Where(p => p.BillingNo == billingno && p.TaxpayerId == dnTaxpayer.TaxpayerId).Select(x => new DNAmountDueModel
+                 .Where(p => p.TaxpayerId == dnTaxpayer.TaxpayerId).Select(x => new DNAmountDueModel
                  {
                      id = x.Id,
                      itemAmount = x.ItemAmount,

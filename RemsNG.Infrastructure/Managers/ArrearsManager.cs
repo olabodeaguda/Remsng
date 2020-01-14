@@ -17,10 +17,13 @@ namespace RemsNG.Infrastructure.Managers
         private IHttpContextAccessor _httpAccessor;
         private readonly IDemandNoticeArrearRepository _arrearsRepo;
         private readonly IDemandNoticeTaxpayersRepository _dNTaxpayersRep;
+        private readonly IDemandNoticePaymentHistoryRepository _paymentRepository;
         public ArrearsManager(IHttpContextAccessor httpContextAccessor,
             IDemandNoticeArrearRepository demandNoticeArrearRepository,
-            IDemandNoticeTaxpayersRepository demandNoticeTaxpayersRepository)
+            IDemandNoticeTaxpayersRepository demandNoticeTaxpayersRepository,
+            IDemandNoticePaymentHistoryRepository demandNoticePaymentHistoryRepository)
         {
+            _paymentRepository = demandNoticePaymentHistoryRepository;
             _dNTaxpayersRep = demandNoticeTaxpayersRepository;
             _arrearsRepo = demandNoticeArrearRepository;
             _httpAccessor = httpContextAccessor;
@@ -98,6 +101,8 @@ namespace RemsNG.Infrastructure.Managers
                 throw new NotFoundException("No record found");
             }
 
+            var payments = await _paymentRepository.ByBillingNumbers(dnTaxpayer.Select(x => x.BillingNumber).ToArray());
+
 
             DemandNoticeArrearsModel[] previousArrears = await _arrearsRepo.ByTaxpayer(dnTaxpayer.Select(x => x.TaxpayerId).ToArray());
 
@@ -105,8 +110,17 @@ namespace RemsNG.Infrastructure.Managers
             foreach (var tm in dnTaxpayer.GroupBy(x => x.TaxpayerId))
             {
                 var ndTaxpayer = tm.FirstOrDefault();
-                decimal currAmount = tm.SelectMany(x => x.DemandNoticeItem).Sum(x => (x.ItemAmount - x.AmountPaid));
-                var pArrears = previousArrears.Where(x => x.TaxpayerId == tm.Key).Sum(t => (t.TotalAmount - t.AmountPaid));
+                decimal currAmount = tm.SelectMany(x => x.DemandNoticeItem)
+                    .Sum(x => x.ItemAmount);
+
+                var pArrears = previousArrears.Where(x => x.TaxpayerId == tm.Key)
+                    .Sum(t => t.TotalAmount);
+
+                var amountPaid = payments.
+                    Where(x => x.BillingNumber == ndTaxpayer.BillingNumber)
+                    .Sum(x => x.Amount);
+
+                decimal newArrear = (currAmount + pArrears) - amountPaid;
                 DemandNoticeArrearsModel dnArrears = new DemandNoticeArrearsModel()
                 {
                     AmountPaid = 0,
@@ -120,7 +134,7 @@ namespace RemsNG.Infrastructure.Managers
                     OriginatedYear = ndTaxpayer.BillingYr,
                     TaxpayerId = ndTaxpayer.TaxpayerId,
                     WardName = ndTaxpayer.WardName,
-                    TotalAmount = currAmount + pArrears,
+                    TotalAmount = newArrear,
                     CurrentAmount = currAmount
                 };
                 newArrears.Add(dnArrears);

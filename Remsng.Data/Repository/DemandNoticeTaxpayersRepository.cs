@@ -796,6 +796,11 @@ namespace RemsNG.Data.Repository
                 query = query.Where(x => EF.Functions.Like(x.TaxpayersName, $"%{rhModel.searchByName}%"));
             }
 
+            if (rhModel.TaxpayerIds.Length > 0)
+            {
+                query = query.Where(x => rhModel.TaxpayerIds.Any(p => p == x.TaxpayerId));
+            }
+
             var result = await query.Select(x => new DemandNoticeTaxpayersModel()
             {
                 AddressName = x.AddressName,

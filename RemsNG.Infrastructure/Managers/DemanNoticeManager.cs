@@ -145,13 +145,17 @@ namespace RemsNG.Infrastructure.Managers
             Guid[] excludedTaxpayers = dntModel.Where(s => !s.IsRunArrears && status.Any(d => d == s.DemandNoticeStatus)).Select(x => x.TaxpayerId).ToArray();
 
             Guid[] DnIds = dntModel.Where(s => !s.IsRunArrears && status.Any(d => d == s.DemandNoticeStatus)).Select(x => x.Id).ToArray();
-
-            if (DnIds.Length > 0 && model.RunArrears)
+            int temp = model.dateYear;
+            model.dateYear = model.dateYear - 1;
+            DemandNoticeTaxpayersModel[] dntModelPreviousYr = await _dnTaxpayerRepo.SearchTaxpayers(model);
+            Guid[] dnIdsPrevious = dntModelPreviousYr.Where(s => !s.IsRunArrears && status.Any(d => d == s.DemandNoticeStatus)).Select(x => x.Id).ToArray();
+            if ((DnIds.Length > 0 || dnIdsPrevious.Length > 0) && model.RunArrears)
             {
                 // run arrears
                 try
                 {
-                    await _arrearsManager.RunTaxpayerArrears(DnIds);
+                    Guid[] idss = DnIds.Concat(dnIdsPrevious).ToArray();
+                    await _arrearsManager.RunTaxpayerArrears(idss);
                     excludedTaxpayers = new Guid[] { };
                 }
                 catch (Exception x)
@@ -159,7 +163,7 @@ namespace RemsNG.Infrastructure.Managers
                     _log.LogError(x, "Arrears run error", model);
                 }
             }
-
+            model.dateYear = temp;
             TaxPayerModel[] taxPayers = (await _taxpayerRepository.SearchByDNRequest(model, excludedTaxpayers))
                 .Select(d =>
                 {
