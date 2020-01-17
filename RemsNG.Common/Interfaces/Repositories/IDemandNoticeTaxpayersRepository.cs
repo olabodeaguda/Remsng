@@ -1,4 +1,5 @@
 ﻿using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -41,5 +42,6 @@ namespace RemsNG.Common.Interfaces.Repositories
         Task<bool> UpdateTaxpayerName(Guid taxpayerId, string name);
         Task<List<DemandNoticeTaxpayersModel>> GetDNTaxpayerByBatchNoAsync(string batchno);
         Task<bool> UpdateWard(Guid taxpayerId, string wardName);
+        Task<bool> UpdateDemandNoticeStatus(Guid[] demandNoticeIds, DemandNoticeStatus status);
     }
 }

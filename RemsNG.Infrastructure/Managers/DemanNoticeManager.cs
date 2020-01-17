@@ -135,28 +135,39 @@ namespace RemsNG.Infrastructure.Managers
             return model;
         }
 
-        public async Task<TaxPayerModel[]> ValidTaxpayers(DemandNoticeRequestModel model)
+        public async Task<TaxPayerModel[]> ValidTaxpayers(DemandNoticeRequestModel model, bool persist)
         {
             //paid, partpayment, pending
             string[] status = { "PART_PAYMENT", "PENDING" };
 
             DemandNoticeTaxpayersModel[] dntModel = await _dnTaxpayerRepo.SearchTaxpayers(model);
 
-            Guid[] excludedTaxpayers = dntModel.Where(s => !s.IsRunArrears && status.Any(d => d == s.DemandNoticeStatus)).Select(x => x.TaxpayerId).ToArray();
+            Guid[] excludedTaxpayerids = dntModel
+                .Where(s => !s.IsRunArrears && status.Any(d => d == s.DemandNoticeStatus))
+                .Select(x => x.TaxpayerId)
+                .ToArray();
 
-            Guid[] DnIds = dntModel.Where(s => !s.IsRunArrears && status.Any(d => d == s.DemandNoticeStatus)).Select(x => x.Id).ToArray();
+            Guid[] demandNoticeIds = dntModel
+                .Where(s => !s.IsRunArrears && status.Any(d => d == s.DemandNoticeStatus))
+                .Select(x => x.Id)
+                .ToArray();
+
+            // run arrears
+            #region run arrears 
             int temp = model.dateYear;
             model.dateYear = model.dateYear - 1;
             DemandNoticeTaxpayersModel[] dntModelPreviousYr = await _dnTaxpayerRepo.SearchTaxpayers(model);
             Guid[] dnIdsPrevious = dntModelPreviousYr.Where(s => !s.IsRunArrears && status.Any(d => d == s.DemandNoticeStatus)).Select(x => x.Id).ToArray();
-            if ((DnIds.Length > 0 || dnIdsPrevious.Length > 0) && model.RunArrears)
+            if ((demandNoticeIds.Length > 0 || dnIdsPrevious.Length > 0) && model.RunArrears)
             {
-                // run arrears
                 try
                 {
-                    Guid[] idss = DnIds.Concat(dnIdsPrevious).ToArray();
-                    await _arrearsManager.RunTaxpayerArrears(idss);
-                    excludedTaxpayers = new Guid[] { };
+                    Guid[] idss = demandNoticeIds.Concat(dnIdsPrevious).Distinct().ToArray();
+                    if (persist)
+                    {
+                        await _arrearsManager.RunTaxpayerArrears(idss);
+                    }
+                    excludedTaxpayerids = new Guid[] { };
                 }
                 catch (Exception x)
                 {
@@ -164,7 +175,9 @@ namespace RemsNG.Infrastructure.Managers
                 }
             }
             model.dateYear = temp;
-            TaxPayerModel[] taxPayers = (await _taxpayerRepository.SearchByDNRequest(model, excludedTaxpayers))
+            #endregion
+
+            TaxPayerModel[] taxPayers = (await _taxpayerRepository.SearchByDNRequest(model, excludedTaxpayerids))
                 .Select(d =>
                 {
                     var r = d;
@@ -196,7 +209,7 @@ namespace RemsNG.Infrastructure.Managers
             //run arrears
             //get valid demandnotice Id
 
-            TaxPayerModel[] dntModel = await ValidTaxpayers(model);
+            TaxPayerModel[] dntModel = await ValidTaxpayers(model, true);
             var unknownId = model.TaxpayerIds.Where(x => !dntModel.Any(p => p.Id == x)).ToArray();
 
             if (unknownId.Length > 0)
@@ -238,7 +251,7 @@ namespace RemsNG.Infrastructure.Managers
 
             model.DemandNoticeId = demandNotice.Id;
             DemandNoticeTaxpayersModel[] dnTaxpayer = await _dnTaxpayerRepo.ConstructByTaxpayerIds(model, images);
-            demandNotice.TaxpayerModel = dnTaxpayer.ToList();
+            //demandNotice.TaxpayerModel = dnTaxpayer.ToList();
 
             Response response = await demandNoticeDao.Add(demandNotice);
             if (response.code == MsgCode_Enum.SUCCESS)

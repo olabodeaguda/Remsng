@@ -570,6 +570,34 @@ namespace RemsNG.Data.Repository
             return result;
         }
 
+        public async Task<TaxPayerModel[]> ByTaxpayerId(Guid[] taxpayerId)
+        {
+            return await db.Set<TaxPayer>().Include(x => x.Street).Include(x => x.Items)
+                .Select(tp => new TaxPayerModel()
+                {
+                    AddressId = tp.AddressId,
+                    CompanyId = tp.CompanyId,
+                    StreetId = tp.StreetId,
+                    companyName = tp.Company.CompanyName,
+                    CreatedBy = tp.CreatedBy,
+                    DateCreated = tp.DateCreated.Value,
+                    Firstname = tp.Firstname,
+                    Id = tp.Id,
+                    Lastmodifiedby = tp.Lastmodifiedby,
+                    LastModifiedDate = tp.LastModifiedDate,
+                    Lastname = tp.Lastname,
+                    StreetNumber = tp.Address.Addressnumber,
+                    Surname = tp.Surname,
+                    TaxpayerStatus = tp.TaxpayerStatus,
+                    WardName = tp.Street.Ward.WardName,
+                    StreetName = tp.Street.StreetName,
+                    WardId = tp.Street.WardId,
+                    ItemCount = tp.Items.Count,
+                    IsOneTime = tp.IsOneTime
+                }).Where(x => x.TaxpayerStatus == "ACTIVE" && taxpayerId.Any(p => p == x.Id)).ToArrayAsync();
+        }
+
+
         public async Task<bool> UpdateStreet(Guid taxpayerId, Guid streetId)
         {
             var entity = await db.Set<TaxPayer>().FindAsync(taxpayerId);

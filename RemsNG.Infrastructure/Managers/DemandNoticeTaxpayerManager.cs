@@ -199,12 +199,12 @@ namespace RemsNG.Infrastructure.Managers
                 dnrm.banks = await lcdaBankService.Get(lgda.Id);
 
                 var penalties = await dnp.ByTaxpayerId(dnrm.TaxpayerId);
-                dnrm.penalty = penalties.Sum(x => x.TotalAmount);
+                dnrm.penalty = penalties.Where(x => x.BillingYear == t.BillingYr).Sum(x => x.TotalAmount);
 
                 //dnrm.amountPaid = dnrm.amountPaid + penalties.Sum(x => x.AmountPaid);
 
                 var arrears = await dna.ByBillingNumber(dnrm.TaxpayerId);
-                dnrm.arrears = arrears.Sum(x => x.TotalAmount);
+                dnrm.arrears = arrears.Where(x => x.BillingYear == t.BillingYr).Sum(x => x.TotalAmount);
 
                 var amtDue = await _dphDao.ByBillingNumber(billingNo);
                 dnrm.amountPaid = amtDue.Sum(x => x.Amount);//dnrm.amountPaid + arrears.Sum(x => x.amountPaid);

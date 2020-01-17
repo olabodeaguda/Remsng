@@ -16,7 +16,7 @@ namespace RemsNG.Common.Interfaces.Managers
         Task<DemandNoticeModel> GetByBatchId(string batchId);
         Task<PageModel<DemandNoticeTaxpayersModel[]>> SearchDemandNotice(DemandNoticeRequestModel rhModel, PageModel pageModel);
         Task<DemandNoticeRequestModel> SearchInfo(DemandNoticeRequestModel model);
-        Task<TaxPayerModel[]> ValidTaxpayers(DemandNoticeRequestModel model);
+        Task<TaxPayerModel[]> ValidTaxpayers(DemandNoticeRequestModel model, bool persist);
         Task<bool> AddDemanNotice(DemandNoticeRequestModel model);
         Task<DemandNoticeTaxpayersModel[]> SearchDemandNotice(DemandNoticeRequestModel rhModel);
         Task<object> SearchDemandNotice(DemandNoticeModel rhModel, PageModel pageModel);

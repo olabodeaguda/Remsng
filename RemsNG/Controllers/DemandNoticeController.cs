@@ -433,7 +433,7 @@ namespace RemsNG.Controllers
             modl.wardId = string.IsNullOrEmpty(model.WardId) ? default(Guid) : Guid.Parse(model.WardId);
             modl.RunArrears = model.runArrears;
 
-            TaxPayerModel[] taxpayers = await demandService.ValidTaxpayers(modl);
+            TaxPayerModel[] taxpayers = await demandService.ValidTaxpayers(modl, false);
             return Ok(new Response
             {
                 code = MsgCode_Enum.SUCCESS,

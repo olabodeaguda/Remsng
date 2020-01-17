@@ -74,18 +74,7 @@ namespace RemsNG.Infrastructure.Managers
             return result;
         }
 
-        public async Task<bool> RunTaxpayerArrears(DemandNoticeRequestModel model)
-        {
-            var sResult = await _dNTaxpayersRep.Search(model);
-            if (sResult.Length <= 0)
-            {
-                return false;
-            }
-
-            return await RunTaxpayerArrears(sResult.Where(X => !X.IsRunArrears).Select(d => d.Id).ToArray());
-        }
-
-        public async Task<bool> RunTaxpayerArrears(Guid[] dnTaxpayerIds)
+        public async Task<bool> RunTaxpayerArrears1(Guid[] dnTaxpayerIds)
         {
             if (dnTaxpayerIds.Length <= 0)
             {
@@ -205,5 +194,60 @@ namespace RemsNG.Infrastructure.Managers
             return true;
         }
 
+        public async Task<bool> RunTaxpayerArrears(Guid[] demandNoticeIds)
+        {
+            string[] payableStatus = { "PENDING", "PART_PAYMENT" };
+            var demandNoticeTaxpayer = await _dNTaxpayersRep.ById(demandNoticeIds);
+            if (demandNoticeTaxpayer.Length <= 0) return false;
+
+            var demandNotice = demandNoticeTaxpayer.Where(x => payableStatus.Any(t => t == x.DemandNoticeStatus) && !x.IsRunArrears).ToArray();
+            if (demandNotice.Length <= 0) return false;
+
+            var payments = await _paymentRepository.ByBillingNumbers(demandNotice.Select(x => x.BillingNumber).ToArray());
+            DemandNoticeArrearsModel[] previousArrears = await _arrearsRepo.ByTaxpayer(demandNotice.Select(x => x.TaxpayerId).ToArray());
+
+            List<DemandNoticeArrearsModel> newArrears = new List<DemandNoticeArrearsModel>();
+            foreach (var tm in demandNotice)
+            {
+                decimal items = tm.DemandNoticeItem.Sum(x => x.ItemAmount);
+                var arr = previousArrears.Where(x => x.TaxpayerId == tm.TaxpayerId).ToArray();
+                decimal arrears = arr.Sum(x => x.TotalAmount);
+                var payment = payments.Where(x => x.BillingNumber == tm.BillingNumber).Sum(x => x.Amount);
+
+                decimal currentArrears = (items + arrears) - payment;
+
+                if (currentArrears > 0)
+                {
+                    newArrears.Add(new DemandNoticeArrearsModel()
+                    {
+                        AmountPaid = 0,
+                        ArrearsStatus = "PENDING",
+                        BillingNo = tm.BillingNumber,
+                        BillingYear = DateTime.Now.Year,
+                        CreatedBy = _httpAccessor.HttpContext.User.Identity.Name,
+                        DateCreated = DateTime.Now,
+                        Id = Guid.NewGuid(),
+                        OriginatedYear = tm.BillingYr,
+                        TaxpayerId = tm.TaxpayerId,
+                        WardName = tm.WardName,
+                        TotalAmount = currentArrears,
+                        CurrentAmount = 0
+                    });
+                }
+            }
+
+            if (newArrears.Count > 0)
+            {
+                bool result = await _arrearsRepo.AddArrears(newArrears.ToArray());
+                if (result)
+                {
+                    await _arrearsRepo.UpdateArrearsStatus(previousArrears, "CLOSED");
+                    await _dNTaxpayersRep.UpdateArrearsStatus(demandNotice, true);
+                    await _dNTaxpayersRep.UpdateDemandNoticeStatus(demandNotice.Select(x => x.Id).ToArray(), Common.Utilities.DemandNoticeStatus.CLOSED);
+                }
+            }
+
+            return true;
+        }
     }
 }
