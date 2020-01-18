@@ -4,10 +4,8 @@ namespace RemsNG.Common.Models
 {
     public class BankCategory
     {
-        public string CatgoryName { get; set; }
-        public Guid BankId { get; set; }
-        public string BankIds { get; set; }
-        public string ExceludeBanks { get; set; }
+        public string CatgoryAccountNumbers { get; set; }
+        public string DefaultAccountNumber { get; set; }
         public int RecieptType { get; set; }
     }
     public class BankCategories

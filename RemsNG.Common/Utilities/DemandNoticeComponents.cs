@@ -55,39 +55,18 @@ namespace RemsNG.Common.Utilities
         public static string HtmlBuildBanks(DemandNoticeReportModel dnrm, BankCategory bankCategory, TaxpayerCategoryModel taxpayerCategory)
         {
             List<BankLcdaModel> lst = new List<BankLcdaModel>();
+            Dictionary<string, string[]> config = ConvertCatgeory(bankCategory.CatgoryAccountNumbers);
 
             string htmlmarkup = string.Empty;
-            if (bankCategory != null && taxpayerCategory != null)
+            if (config.ContainsKey(taxpayerCategory.TaxpayerCategoryName.ToLower()))
             {
-                Guid[] guids = bankCategory.BankIds.Split(new char[] { ';' })
-                    .Select(x => Guid.Parse(x))
-                    .ToArray();
-                var re = dnrm.banks.Where(x => guids.Any(s => s == x.bankId)).ToList();// x.bankId == bankCategory.BankId).ToList();
-                if (bankCategory.CatgoryName.ToLower() == taxpayerCategory.TaxpayerCategoryName.ToLower())
-                {
-                    if (re.Count > 0)
-                    {
-                        lst = re;
-                    }
-                }
-                else
-                {
-                    lst = dnrm.banks.Where(s => !guids.Any(x => x == s.bankId)).ToList();
-                }
+                var bk = config[taxpayerCategory.TaxpayerCategoryName.ToLower()];
+                lst = dnrm.banks.Where(x => bk.Any(p => p == x.bankAccount)).ToList();
             }
-
-            if (lst.Count <= 0)
+            else
             {
-                lst = dnrm.banks;
-            }
-
-            if (!string.IsNullOrEmpty(bankCategory.ExceludeBanks))
-            {
-                var exemptBanks = bankCategory.ExceludeBanks.Split(new char[] { ';' })
-                            .Select(x => Guid.Parse(x))
-                            .ToList();
-
-                lst = lst.Where(x => !exemptBanks.Any(s => s == x.bankId)).ToList();
+                string[] deft = bankCategory.DefaultAccountNumber.Split(new char[] { ',' });
+                lst = dnrm.banks.Where(x => deft.Any(p => p == x.bankAccount)).ToList();
             }
 
             foreach (var tm in lst)
@@ -96,6 +75,24 @@ namespace RemsNG.Common.Utilities
             }
 
             return htmlmarkup;
+        }
+
+        private static Dictionary<string, string[]> ConvertCatgeory(string value)
+        {
+            string[] arr = value.Split(new char[] { ';' });
+
+            Dictionary<string, string[]> s = new Dictionary<string, string[]>();
+            foreach (var tm in arr)
+            {
+                string[] d = tm.Split(new char[] { ':' });
+                if (d.Length <= 1)
+                    continue;
+                string key = d[0].ToLower();
+                string[] accountNumbers = d[1].Split(new char[] { ',' });
+                s.Add(key, accountNumbers);
+            }
+
+            return s;
         }
     }
 }
