@@ -25,6 +25,17 @@ export class TaxpayerService {
             .catch(x => this.dataservice.handleError(x));
     }
 
+    
+
+    UpdateWard(wardid: string, streetId: string, taxpayers) {
+        return this.dataservice.post('taxpayer/updatewardstreet',{
+            WardId: wardid,
+            StreetId: streetId,
+            TaxpayerIds: taxpayers            
+        })
+            .catch(x => this.dataservice.handleError(x));
+    }
+
     byStreet(lcdaId: string, pageModel: PageModel) {
         this.dataservice.addToHeader('pageNum', pageModel.pageNum.toString());
         this.dataservice.addToHeader('pageSize', pageModel.pageSize.toString());

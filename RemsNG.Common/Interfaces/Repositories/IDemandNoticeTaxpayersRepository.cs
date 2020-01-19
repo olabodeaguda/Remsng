@@ -43,5 +43,7 @@ namespace RemsNG.Common.Interfaces.Repositories
         Task<List<DemandNoticeTaxpayersModel>> GetDNTaxpayerByBatchNoAsync(string batchno);
         Task<bool> UpdateWard(Guid taxpayerId, string wardName);
         Task<bool> UpdateDemandNoticeStatus(Guid[] demandNoticeIds, DemandNoticeStatus status);
+        Task<bool> UpdateWardStreet(Guid[] taxpayerIds, string wardName, string street,
+            List<TaxPayerModel> lst);
     }
 }

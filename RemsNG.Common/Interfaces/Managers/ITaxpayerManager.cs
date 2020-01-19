@@ -21,5 +21,6 @@ namespace RemsNG.Common.Interfaces.Managers
         Task<bool> Delete(Guid taxpayerId);
         Task<List<TaxPayerModel>> SearchInStreet(Guid streetId, string query);
         Task<TaxPayerModel[]> UnBilledTaxpayer(int billingYear);
+        Task<bool> UpdateStreet(Guid[] taxpayers, Guid wardId, Guid streetId);
     }
 }

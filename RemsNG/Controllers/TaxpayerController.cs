@@ -6,6 +6,7 @@ using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Infrastructure.Extensions;
+using RemsNG.RequestModel;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -435,6 +436,38 @@ namespace RemsNG.Controllers
             }
 
             return Ok(await taxpayerService.SearchInStreet(streetId, query));
+        }
+
+        [HttpPost("updatewardstreet")]
+        public async Task<IActionResult> UpdateWardStreet([FromBody] WardStreetVm model)
+        {
+
+            if (model.TaxpayerIds.Length <= 0)
+                return BadRequest(new Response
+                {
+                    description = "Please select taxpayer",
+                    code = MsgCode_Enum.FAIL
+                });
+            if (model.StreetId == default(Guid))
+                return BadRequest(new Response
+                {
+                    description = "Please select Street",
+                    code = MsgCode_Enum.FAIL
+                });
+
+            bool result = await taxpayerService.UpdateStreet(model.TaxpayerIds, model.WardId, model.StreetId);
+            if (!result)
+                return BadRequest(new Response
+                {
+                    description = "Update failed, please try again or contact your administrator if it persist",
+                    code = MsgCode_Enum.FAIL
+                });
+
+            return Ok(new Response
+            {
+                description = "Taxpayers has been updated successfully",
+                code = MsgCode_Enum.SUCCESS
+            });
         }
 
     }

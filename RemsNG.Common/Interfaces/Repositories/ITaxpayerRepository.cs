@@ -12,6 +12,7 @@ namespace RemsNG.Common.Interfaces.Repositories
         Task<TaxPayerModel> Get(Guid streetId, Guid companyId);
         Task<List<TaxPayerModel>> GetActiveTaxpayers(DemandNoticeRequestModel demandNoticeRequest);
         Task<TaxPayerModel> ById(Guid id);
+        Task<List<TaxPayerModel>> ById(Guid[] id);
         Task<List<TaxPayerModel>> ByStreetId(Guid streetId);
         Task<object> ByStreetId(Guid streetId, PageModel pageModel);
         Task<List<TaxPayerModel>> ByCompanyId(Guid companyId);
@@ -27,5 +28,6 @@ namespace RemsNG.Common.Interfaces.Repositories
         Task<TaxPayerModel[]> SearchByDNRequest(DemandNoticeRequestModel rhModel, Guid[] excludedId);
         Task<bool> UpdateStreet(Guid taxpayerId, Guid streetId);
         Task<TaxPayerModel[]> ByTaxpayerId(Guid[] taxpayerId);
+        Task<bool> UpdateStreet(Guid[] taxpayers, Guid streetId);
     }
 }

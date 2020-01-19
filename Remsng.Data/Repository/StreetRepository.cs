@@ -34,45 +34,16 @@ namespace RemsNG.Data.Repository
                 StreetDescription = street.StreetDescription
             });
 
-            //DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_addStreet @p0, @p1, @p2, @p3, @p4, @p5", new object[] {
-            //    street.Id,
-            //    street.WardId,
-            //    street.StreetName,
-            //    street.NumberOfHouse,
-            //    street.CreatedBy,
-            //    street.StreetDescription
-            //}).FirstOrDefaultAsync();
-
-            //if (dbResponse.success)
-            //{
             await db.SaveChangesAsync();
             return new Response()
             {
                 code = MsgCode_Enum.SUCCESS,
                 description = "Street has been added sucessfully"
             };
-            //}
-            //else
-            //{
-            //    return new Response()
-            //    {
-            //        code = MsgCode_Enum.FAIL,
-            //        description = dbResponse.msg
-            //    };
-            //}
         }
 
         public async Task<Response> Update(StreetModel street)
         {
-            //DbResponse dbResponse = await db.Set<DbResponse>().FromSql("sp_updateStreet @p0, @p1, @p2, @p3, @p4, @p5", new object[] {
-            //    street.Id,
-            //    street.WardId,
-            //    street.StreetName,
-            //    street.NumberOfHouse,
-            //    street.Lastmodifiedby,
-            //    street.StreetDescription
-            //}).FirstOrDefaultAsync();
-
             Street s = await db.Set<Street>().FindAsync(street.Id);
             if (s == null)
             {
@@ -114,13 +85,14 @@ namespace RemsNG.Data.Repository
         public async Task<StreetModel> ById(Guid streetId)
         {
             var t = await db.Set<Street>()
+                .Include(x => x.Ward)
                 .FirstOrDefaultAsync(x => x.Id == streetId);
             if (t == null)
             {
                 return null;
             }
 
-            return new StreetModel()
+            StreetModel s = new StreetModel()
             {
                 CreatedBy = t.CreatedBy,
                 DateCreated = t.DateCreated,
@@ -133,6 +105,18 @@ namespace RemsNG.Data.Repository
                 StreetStatus = t.StreetStatus,
                 WardId = t.WardId
             };
+
+            if (t.Ward != null)
+            {
+                s.Ward = new WardModel
+                {
+                    Id = t.Ward.Id,
+                    WardName = t.Ward.WardName,
+                    WardStatus = t.Ward.WardStatus
+                };
+            }
+
+            return s;
         }
 
         public async Task<List<StreetModel>> ByWard(Guid wardId)

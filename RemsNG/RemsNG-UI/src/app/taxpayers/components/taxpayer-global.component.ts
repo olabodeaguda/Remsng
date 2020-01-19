@@ -37,7 +37,7 @@ export class TaxPayerGlobalComponent implements OnInit {
         private companyservice: CompanyService,
         private toasterService: ToasterService,
         private itemservice: ItemService, private wardService: WardService) {
-        this.taxpayerModel = new TaxpayerModel();
+        this.taxpayerModel = new TaxpayerModel({});
         this.streetModel = new StreetModel();
         this.pageModel = new PageModel();
     }
@@ -161,7 +161,7 @@ export class TaxPayerGlobalComponent implements OnInit {
 
     open(eventType: string, data: any) {
         if (eventType == 'ADD') {
-            this.taxpayerModel = new TaxpayerModel();
+            this.taxpayerModel = new TaxpayerModel({});
             this.taxpayerModel.streetId = this.streetModel.id;
             jQuery(this.addModal.nativeElement).modal('show');
         } else if (eventType == 'EDIT') {

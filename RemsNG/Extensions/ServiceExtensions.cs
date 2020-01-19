@@ -18,6 +18,7 @@ namespace RemsNG.Extensions
         public static void AddAppServices(this IServiceCollection services,
           IConfiguration config)
         {
+            // services.AddScoped<IHttpContextAccessor, HttpAccessorService>();
             //Managers
             #region Managers
             services.AddScoped<IUserManager, UserManager>();

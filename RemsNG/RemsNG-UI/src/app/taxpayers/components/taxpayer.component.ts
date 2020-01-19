@@ -9,6 +9,9 @@ import { TaxpayerService } from "../services/taxpayer.service";
 import { CompanyService } from "../../company/services/company.service";
 import { ResponseModel } from "../../shared/models/response.model";
 import { ItemService } from "../../items/services/item.service";
+import { WardService } from '../../ward/services/ward.service';
+import { DemandNoticeSearch } from '../../demand-notice/models/demand-notice.search';
+import { isNullOrUndefined } from 'util';
 declare var jQuery: any;
 
 @Component({
@@ -18,24 +21,31 @@ declare var jQuery: any;
 
 export class TaxPayerComponent implements OnInit {
     query;
+    wardLst = [];
+    streetLst = [];
     companies = [];
     streets = [];
     taxpayerModel: TaxpayerModel;
-    taxpayers = [];
+    taxpayers: TaxpayerModel[] = [];
     streetModel: StreetModel;
     isLoading: boolean = false;
     pageModel: PageModel;
+    masterCheck: boolean = false;
     @ViewChild('addModal') addModal: ElementRef;
+    @ViewChild('wardModal') wardModal: ElementRef;
+    searchModel: DemandNoticeSearch;
 
     constructor(private activeRoute: ActivatedRoute,
         private streetservice: StreetService,
         private taxpayerservice: TaxpayerService,
         private companyservice: CompanyService,
         private toasterService: ToasterService,
-        private itemservice: ItemService) {
-        this.taxpayerModel = new TaxpayerModel();
+        private itemservice: ItemService,
+        private wardservice: WardService) {
+        this.taxpayerModel = new TaxpayerModel({});
         this.streetModel = new StreetModel();
         this.pageModel = new PageModel();
+        this.searchModel = new DemandNoticeSearch();
     }
 
     ngOnInit(): void {
@@ -46,6 +56,8 @@ export class TaxPayerComponent implements OnInit {
         this.activeRoute.params.subscribe((param: any) => {
             this.getStreet(param["id"]);
         });
+
+        this.getWards();
     }
 
     getStreet(streetId: string) {
@@ -85,7 +97,7 @@ export class TaxPayerComponent implements OnInit {
             this.isLoading = false;
             const objSchema = { data: [], totalPageCount: 1 }
             const result = Object.assign(objSchema, response);
-            this.taxpayers = result.data;
+            this.taxpayers = result.data.map(x => new TaxpayerModel(x));
             this.pageModel.totalPageCount = result.totalPageCount;
         }, error => {
             this.isLoading = false;
@@ -108,9 +120,82 @@ export class TaxPayerComponent implements OnInit {
             })
     }
 
+    submitMoveTaxpayer() {
+        var x = this.taxpayers.filter(b => b.isChecked == true).map(x => x.id);
+        if (x.length <= 0) {
+            this.toasterService.pop('error', 'Error', 'Taxpayer is required');
+            return;
+        }
+
+        if (isNullOrUndefined(this.searchModel.wardId)) {
+            this.toasterService.pop('error', 'Error', 'Ward is required');
+            return;
+        }
+        if (isNullOrUndefined(this.searchModel.streetId)) {
+            this.toasterService.pop('error', 'Error', 'Street is required');
+            return;
+        }
+        this.isLoading = true;
+        this.taxpayerservice.UpdateWard(this.searchModel.wardId,
+            this.searchModel.streetId, x)
+            .subscribe(response => {
+                this.isLoading = false;                
+                jQuery(this.wardModal.nativeElement).modal('hide');
+                const result = Object.assign(new ResponseModel(), response);
+                if (result.code === "00"){
+                    this.initilaizePage();
+                    this.toasterService.pop('success', 'Success', result.description);
+                }
+                else
+                    this.toasterService.pop('warning', 'Warning', result.description);
+            }, error => {
+                this.isLoading = false;
+                jQuery(this.wardModal.nativeElement).modal('hide');
+                this.toasterService.pop('error', 'Error', error);
+            });
+    }
+
+    wardMoveModal() {
+        var x = this.taxpayers.filter(b => b.isChecked == true).map(x => x.id);
+        if (x.length <= 0) {
+            this.toasterService.pop('error', 'Error', 'Taxpayer is required');
+            return;
+        }
+
+        jQuery(this.wardModal.nativeElement).modal('show');
+    }
+
+    getWards() {
+        this.isLoading = true;
+        this.wardservice.all().subscribe(response => {
+            this.wardLst = response;
+            this.isLoading = false;
+        }, error => {
+            this.isLoading = false;
+            this.toasterService.pop('error', 'Error', error);
+        });
+    }
+
+
+    loadStreets(event) {
+        this.getStreetByWard(this.searchModel.wardId);
+    }
+
+
+    getStreetByWard(wardId: string) {
+        this.isLoading = true;
+        this.streetservice.byWardId(wardId).subscribe(response => {
+            this.isLoading = false;
+            this.streetLst = response;
+        }, error => {
+            this.isLoading = false;
+            this.toasterService.pop('error', 'Error', error);
+        })
+    }
+
     open(eventType: string, data: any) {
         if (eventType == 'ADD') {
-            this.taxpayerModel = new TaxpayerModel();
+            this.taxpayerModel = new TaxpayerModel({});
             this.taxpayerModel.streetId = this.streetModel.id;
             jQuery(this.addModal.nativeElement).modal('show');
         } else if (eventType == 'EDIT') {
@@ -202,6 +287,15 @@ export class TaxPayerComponent implements OnInit {
             this.pageModel.pageNum = 1;
         }
         this.getTaxpayersBystreet();
+    }
+
+
+    CheckAll() {
+        this.masterCheck = !this.masterCheck;
+        for (let i = 0; i < this.taxpayers.length; i++) {
+            const model: TaxpayerModel = this.taxpayers[i];
+            this.taxpayers[i].isChecked = this.masterCheck;
+        }
     }
 
 }

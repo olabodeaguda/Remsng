@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
@@ -13,9 +14,11 @@ namespace RemsNG.Data.Repository
 {
     public class TaxpayerRepository : ITaxpayerRepository
     {
+        private readonly IHttpContextAccessor _httpAccessor;
         private readonly DbContext db;
-        public TaxpayerRepository(DbContext _db)
+        public TaxpayerRepository(DbContext _db, IHttpContextAccessor httpContextAccessor)
         {
+            _httpAccessor = httpContextAccessor;
             db = _db;
         }
 
@@ -129,13 +132,16 @@ namespace RemsNG.Data.Repository
 
         public async Task<TaxPayerModel> ById(Guid id)
         {
-            var result = await db.Set<TaxPayer>().FirstOrDefaultAsync(x => x.Id == id);//.FromSql("sp_TaxpayerById @p0", new object[] { id }).FirstOrDefaultAsync();
+            var result = await db.Set<TaxPayer>()
+                .Include(x => x.Address)
+                .ThenInclude(d => d.Street)
+                .FirstOrDefaultAsync(x => x.Id == id);//.FromSql("sp_TaxpayerById @p0", new object[] { id }).FirstOrDefaultAsync();
             if (result == null || result.TaxpayerStatus == TaxPayerEnum.DELETED.ToString())
             {
                 return null;
             }
 
-            return new TaxPayerModel()
+            TaxPayerModel s = new TaxPayerModel()
             {
                 AddressId = result.AddressId,
                 CompanyId = result.CompanyId,
@@ -151,6 +157,53 @@ namespace RemsNG.Data.Repository
                 TaxpayerStatus = result.TaxpayerStatus,
                 IsOneTime = result.IsOneTime
             };
+
+            if (result.Address != null)
+            {
+                s.StreetNumber = result.Address.Addressnumber;
+                s.StreetName = result.Address.Street.StreetName;
+            }
+
+            return s;
+        }
+
+        public async Task<List<TaxPayerModel>> ById(Guid[] id)
+        {
+            var entities = await db.Set<TaxPayer>()
+                .Include(x => x.Address)
+                .ThenInclude(d => d.Street)
+                .Where(x => id.Any(d => d == x.Id)).ToArrayAsync();
+            List<TaxPayerModel> lst = new List<TaxPayerModel>();
+            foreach (var result in entities)
+            {
+
+                TaxPayerModel s = new TaxPayerModel()
+                {
+                    AddressId = result.AddressId,
+                    CompanyId = result.CompanyId,
+                    CreatedBy = result.CreatedBy,
+                    DateCreated = result.DateCreated,
+                    Firstname = result.Firstname,
+                    Id = result.Id,
+                    Lastmodifiedby = result.Lastmodifiedby,
+                    LastModifiedDate = result.LastModifiedDate,
+                    Lastname = result.Lastname,
+                    StreetId = result.StreetId,
+                    Surname = result.Surname,
+                    TaxpayerStatus = result.TaxpayerStatus,
+                    IsOneTime = result.IsOneTime
+                };
+
+                if (result.Address != null)
+                {
+                    s.StreetNumber = result.Address.Addressnumber;
+                    s.StreetName = result.Address.Street.StreetName;
+                }
+
+                lst.Add(s);
+            }
+
+            return lst;
         }
 
         public async Task<List<TaxPayerModel>> ByStreetId(Guid streetId)
@@ -597,7 +650,6 @@ namespace RemsNG.Data.Repository
                 }).Where(x => x.TaxpayerStatus == "ACTIVE" && taxpayerId.Any(p => p == x.Id)).ToArrayAsync();
         }
 
-
         public async Task<bool> UpdateStreet(Guid taxpayerId, Guid streetId)
         {
             var entity = await db.Set<TaxPayer>().FindAsync(taxpayerId);
@@ -607,5 +659,23 @@ namespace RemsNG.Data.Repository
             await db.SaveChangesAsync();
             return true;
         }
+
+        public async Task<bool> UpdateStreet(Guid[] taxpayers, Guid streetId)
+        {
+            var entities = await db.Set<TaxPayer>().Where(x => taxpayers.Any(p => p == x.Id)).ToListAsync();
+            if (entities.Count <= 0) return false;
+
+            foreach (var tm in entities)
+            {
+                tm.StreetId = streetId;
+                tm.LastModifiedDate = DateTime.Now;
+                tm.Lastmodifiedby = _httpAccessor.HttpContext.User.Identity.Name;
+            }
+
+            await db.SaveChangesAsync();
+            return true;
+        }
+
+
     }
 }

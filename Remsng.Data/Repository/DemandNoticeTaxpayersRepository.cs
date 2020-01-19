@@ -1102,5 +1102,37 @@ namespace RemsNG.Data.Repository
             return true;
         }
 
+
+
+        public async Task<bool> UpdateWardStreet(Guid[] taxpayerIds, string wardName, string street,
+            List<TaxPayerModel> lst)
+        {
+            string[] status = new string[] { "PENDING", "PART_PAYMENT", "PAID" };
+            var entities = await db.Set<DemandNoticeTaxpayer>()
+                .Where(x => taxpayerIds.Any(s => s == x.TaxpayerId) && status.Any(p => p == x.DemandNoticeStatus))
+                .ToArrayAsync();
+
+            if (entities.Length <= 0)
+                return true;
+
+            foreach (var tm in entities)
+            {
+                var f = lst.FirstOrDefault(s => s.Id == tm.TaxpayerId);
+
+                tm.WardName = wardName;
+                if (f != null)
+                {
+                    tm.AddressName = $"{f.StreetNumber} {f.StreetName}";
+                }
+                else
+                {
+                    tm.AddressName = $"{street}";
+                }
+            }
+
+            await db.SaveChangesAsync();
+            return true;
+        }
+
     }
 }

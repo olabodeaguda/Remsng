@@ -19,11 +19,15 @@ namespace RemsNG.Infrastructure.Managers
         private IDemandNoticeTaxpayersRepository _dnRepo;
         private IDNAmountDueMgtManager amountDueMgtService;
         private ITaxpayerRepository taxpayerDao;
+        private readonly IStreetRepository _streetRepository;
         public TaxpayerManager(IDemandNoticeTaxpayersRepository demandNoticeTaxpayersRepository,
             ILoggerFactory loggerFactory,
             IDNAmountDueMgtManager _amountDueMgtService,
-            ITaxpayerRepository taxpayerRepository, IWardRepository wardRepository)
+            ITaxpayerRepository taxpayerRepository, IWardRepository wardRepository,
+            IStreetRepository streetRepository)
         {
+
+            _streetRepository = streetRepository;
             _wardRepository = wardRepository;
             _dnRepo = demandNoticeTaxpayersRepository;
             taxpayerDao = taxpayerRepository;
@@ -123,6 +127,26 @@ namespace RemsNG.Infrastructure.Managers
         public async Task<TaxPayerModel[]> UnBilledTaxpayer(int billingYear)
         {
             return await taxpayerDao.GetUnbilledTaxpayer(billingYear);
+        }
+
+        public async Task<bool> UpdateStreet(Guid[] taxpayers, Guid wardId, Guid streetId)
+        {
+            if (taxpayers.Length <= 0)
+                return false;
+
+            var ward = await _wardRepository.GetWard(wardId);
+            if (ward == null)
+                throw new Exception("Ward does not exist");
+
+            var street = await _streetRepository.ById(streetId);
+            if (street == null)
+                throw new Exception("Street does not exist");
+
+            await taxpayerDao.UpdateStreet(taxpayers, streetId);
+            var tpayers = await taxpayerDao.ById(taxpayers);
+            var result = await _dnRepo.UpdateWardStreet(taxpayers, ward.WardName, street.StreetName, tpayers);
+
+            return true;
         }
     }
 }
