@@ -291,14 +291,16 @@ namespace RemsNG.Controllers
             List<DemandNoticePenaltyModel> dnPenalty = await reportService.ReportPenaltyByCategory(ids.taxpayerIds);
             List<DemandNoticeArrearsModel> dnArrears = await reportService.ReportArrearsByCategory(ids.taxpayerIds);
 
-            string category = Request.Headers["category"].ToString();
+            string category = string.Empty;
+            if (Request.Headers.ContainsKey("category"))
+                category = Request.Headers["category"].ToString();
+
             if (!string.IsNullOrEmpty(category))
             {
                 dnitem = dnitem.Where(x => x.category.Equals(category, StringComparison.OrdinalIgnoreCase)).ToList();
                 dnPenalty = dnPenalty.Where(x => x.category.Equals(category, StringComparison.OrdinalIgnoreCase)).ToList();
                 dnArrears = dnArrears.Where(x => x.Category.Equals(category, StringComparison.OrdinalIgnoreCase)).ToList();
             }
-
 
             Guid lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
             LcdaModel lgda = await lcdaService.Get(lcdaId);
@@ -347,15 +349,9 @@ namespace RemsNG.Controllers
             ed = ed.AddHours(23);
             ed = ed.AddMinutes(59);
 
-            //var ids = await reportService.AllIdsByDate(sd, ed);
-            //if (ids.billNumbers.Length < 0)
-            //    return BadRequest(new Response()
-            //    {
-            //        code = MsgCode_Enum.NOTFOUND,
-            //        description = $"No record(s) found"
-            //    });
-
-            string category = Request.Headers["category"].ToString();
+            string category = string.Empty;
+            if (Request.Headers.ContainsKey("category"))
+                category = Request.Headers["category"].ToString();
 
             List<ItemReportSummaryModel> lst = await reportService.GetReportByCategory(sd, ed, category);
 

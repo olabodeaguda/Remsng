@@ -54,7 +54,7 @@ namespace RemsNG.Common.Utilities
         }
         public static string HtmlBuildBanks(DemandNoticeReportModel dnrm, BankCategory bankCategory, TaxpayerCategoryModel taxpayerCategory)
         {
-            List<BankLcdaModel> lst = new List<BankLcdaModel>();
+            List<BankLcdaModel> lst = dnrm.banks;
             Dictionary<string, string[]> config = ConvertCatgeory(bankCategory.CatgoryAccountNumbers);
 
             string htmlmarkup = string.Empty;
@@ -65,8 +65,13 @@ namespace RemsNG.Common.Utilities
             }
             else
             {
-                string[] deft = bankCategory.DefaultAccountNumber.Split(new char[] { ',' });
-                lst = dnrm.banks.Where(x => deft.Any(p => p == x.bankAccount)).ToList();
+                string[] deft = bankCategory.DefaultAccountNumber.Split(new char[] { ',' })
+                    .Where(x => x.Length > 0).ToArray();
+
+                if (deft.Length > 0)
+                {
+                    lst = dnrm.banks.Where(x => deft.Any(p => p == x.bankAccount)).ToList();
+                }
             }
 
             foreach (var tm in lst)
