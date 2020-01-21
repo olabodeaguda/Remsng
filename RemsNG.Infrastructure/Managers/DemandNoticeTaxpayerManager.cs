@@ -164,7 +164,8 @@ namespace RemsNG.Infrastructure.Managers
                     TaxpayersName = t.TaxpayersName,
                     WardName = t.WardName,
                     TaxpayerId = t.TaxpayerId,
-                    DemandNoticeStatus = t.DemandNoticeStatus
+                    DemandNoticeStatus = t.DemandNoticeStatus,
+                    Period = t.Period
                 };
                 LcdaModel lgda = await lcdaService.ByBillingNumber(billingNo); //await taxpayerService.getLcda(t.taxpayerId);
                 List<LcdaPropertyModel> ls = new List<LcdaPropertyModel>();

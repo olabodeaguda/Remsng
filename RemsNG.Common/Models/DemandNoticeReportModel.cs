@@ -14,5 +14,6 @@ namespace RemsNG.Common.Models
         public decimal charges { get; set; }
         public decimal amountPaid { get; set; }
         public decimal amountDue { get; set; }
+        public int Period { get; set; }
     }
 }

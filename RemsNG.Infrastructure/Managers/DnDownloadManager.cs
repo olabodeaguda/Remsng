@@ -61,6 +61,7 @@ namespace RemsNG.Infrastructure.Managers
             htmlContent = htmlContent.Replace("LCDA_NAME", dnrp.LcdaName);
             htmlContent = htmlContent.Replace("LCDA_ADDRESS", dnrp.LcdaAddress);
             htmlContent = htmlContent.Replace("LCDA_STATE", dnrp.LcdaState);
+            htmlContent = htmlContent.Replace("#PERIOD#", ConvertPeriod(dnrp.Period));
 
             if (!string.IsNullOrEmpty(_templateDetails.LagosLogo))
             {
@@ -143,6 +144,19 @@ namespace RemsNG.Infrastructure.Managers
             return htmlContent + "<br/><br/><br/>" + htmlContent;
         }
 
+        private string ConvertPeriod(int period)
+        {
+            if (period == 1)
+                return "1st Quarter";
+            else if (period == 2)
+                return "2st Quarter";
+            else if (period == 3)
+                return "3st Quarter";
+            else if (period == 4)
+                return "Yearly";
+            else return "Nil";
+        }
+
         public async Task<string> LoadTemplateDemandNotice(string htmlContent, long billingno, string createdBy, TemplateType templateType)
         {
             DemandNoticeReportModel dnrp = await dnts.ByBillingNo(billingno);
@@ -156,6 +170,7 @@ namespace RemsNG.Infrastructure.Managers
             htmlContent = htmlContent.Replace("LCDA_NAME", dnrp.LcdaName);
             htmlContent = htmlContent.Replace("LCDA_ADDRESS", dnrp.LcdaAddress);
             htmlContent = htmlContent.Replace("LCDA_STATE", dnrp.LcdaState);
+            htmlContent = htmlContent.Replace("#PERIOD#", ConvertPeriod(dnrp.Period));
 
             htmlContent = htmlContent.Replace("dated", DateTime.Now.ToString("dd-MM-yyyy HH:mm"));
 

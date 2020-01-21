@@ -246,7 +246,11 @@ namespace RemsNG.Data.Repository
                 RevCoodinatorSigFilen = x.RevCoodinatorSigFilen,
                 TaxpayerId = x.TaxpayerId,
                 TaxpayersName = x.TaxpayersName,
-                WardName = x.WardName
+                WardName = x.WardName,
+                Period = x.Period,
+                IsRunArrears = x.IsRunArrears,
+                IsRunPenalty = x.IsRunPenalty,
+                StreetName = x.AddressName
             }).FirstOrDefaultAsync(p => p.BillingNumber == billingNo);
 
             return result;
