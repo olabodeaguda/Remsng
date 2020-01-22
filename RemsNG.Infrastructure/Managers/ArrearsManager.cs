@@ -205,7 +205,7 @@ namespace RemsNG.Infrastructure.Managers
 
             var payments = await _paymentRepository.ByBillingNumbers(demandNotice.Select(x => x.BillingNumber).ToArray());
             DemandNoticeArrearsModel[] previousArrears = await _arrearsRepo.ByTaxpayer(demandNotice.Select(x => x.TaxpayerId).ToArray());
-
+            previousArrears = previousArrears.Where(d => d.ArrearsStatus == "ACTIVE").ToArray();
             List<DemandNoticeArrearsModel> newArrears = new List<DemandNoticeArrearsModel>();
             foreach (var tm in demandNotice)
             {

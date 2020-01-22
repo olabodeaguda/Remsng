@@ -59,7 +59,7 @@ namespace RemsNG.Data.Repository
             }).ToListAsync();
             results.AddRange(penalty);
             var items = await db.Set<DemandNoticeItem>().Include(s => s.Item)
-                 .Where(p => p.TaxpayerId == dnTaxpayer.TaxpayerId).Select(x => new DNAmountDueModel
+                 .Where(p => p.dn_taxpayersDetailsId == dnTaxpayer.Id).Select(x => new DNAmountDueModel
                  {
                      id = x.Id,
                      itemAmount = x.ItemAmount,
