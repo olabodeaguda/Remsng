@@ -14,7 +14,7 @@ namespace RemsNG.Extensions
             services.AddDbContextPool<RemsDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
                  sqlServerOptions => sqlServerOptions.CommandTimeout(15000)));
             services.AddHangfire(x => x.UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
-            services.AddScoped<DbContext, RemsDbContext>();
+            services.AddTransient<DbContext, RemsDbContext>();
 
         }
 

@@ -104,12 +104,12 @@ namespace RemsNG.Data.Repository
 
         public async Task<bool> RemovePermission(RolePermissionModel rolePermission)
         {
+            var result = await db.Set<RolePermission>()
+               .FirstOrDefaultAsync(x => x.PermissionId == rolePermission.PermissionId
+           && x.RoleId == rolePermission.RoleId);
+
             db.Set<RolePermission>()
-                .Remove(new RolePermission()
-                {
-                    RoleId = rolePermission.RoleId,
-                    PermissionId = rolePermission.PermissionId
-                });
+                .Remove(result);
             int count = await db.SaveChangesAsync();
             if (count > 0)
             {

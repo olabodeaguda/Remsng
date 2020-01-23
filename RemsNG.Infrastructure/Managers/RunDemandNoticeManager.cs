@@ -107,7 +107,7 @@ namespace RemsNG.Infrastructure.Managers
                     {
                         id = bdnm.id,
                         batchFileName = $"{bdnm.batchNo}.zip",
-                        requestStatus = "ERROR",
+                        requestStatus = $"{x.Message} {x.StackTrace} {x.InnerException}",
                         createdBy = "APPLICATION"
                     });
                 }

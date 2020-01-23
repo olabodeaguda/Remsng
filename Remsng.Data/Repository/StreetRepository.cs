@@ -31,7 +31,8 @@ namespace RemsNG.Data.Repository
                 StreetName = street.StreetName,
                 NumberOfHouse = street.NumberOfHouse,
                 CreatedBy = street.CreatedBy,
-                StreetDescription = street.StreetDescription
+                StreetDescription = street.StreetDescription,
+                StreetStatus = "ACTIVE"
             });
 
             await db.SaveChangesAsync();

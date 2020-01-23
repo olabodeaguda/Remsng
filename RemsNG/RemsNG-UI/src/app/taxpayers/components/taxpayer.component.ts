@@ -216,7 +216,7 @@ export class TaxPayerComponent implements OnInit {
             } else if (this.taxpayerModel.streetId.length < 1) {
                 this.toasterService.pop('error', 'Error', 'Street is required');
                 return;
-            } else if (this.taxpayerModel.streetNumber.length < 1) {
+            } else if (isNullOrUndefined(this.taxpayerModel.streetNumber)) {
                 this.toasterService.pop('error', 'Error', 'Street number is required');
                 return;
             }

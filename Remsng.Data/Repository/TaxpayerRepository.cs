@@ -24,21 +24,21 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> Create(TaxPayerModel taxpayer, bool confirmCompany)
         {
-            var r = await Get(taxpayer.StreetId.Value, taxpayer.CompanyId);
+            //var r = await Get(taxpayer.StreetId.Value, taxpayer.CompanyId);
 
-            if (r != null && confirmCompany)
-            {
-                throw new DuplicateCompanyException("Company already exist on the street");
-            }
-            if (r != null)
-            {
-                if (taxpayer.Lastname == r.Lastname &&
-                    taxpayer.Surname == r.Surname
-                    && taxpayer.Firstname == r.Firstname)
-                {
-                    throw new DuplicateCompanyException("Taxpayer already exist");
-                }
-            }
+            //if (r != null && confirmCompany)
+            //{
+            //    throw new DuplicateCompanyException("Company already exist on the street");
+            //}
+            //if (r != null)
+            //{
+            //    if (taxpayer.Lastname == r.Lastname &&
+            //        taxpayer.Surname == r.Surname
+            //        && taxpayer.Firstname == r.Firstname)
+            //    {
+            //        throw new DuplicateCompanyException("Taxpayer already exist");
+            //    }
+            //}
             TaxPayer t = new TaxPayer()
             {
                 Id = taxpayer.Id,
