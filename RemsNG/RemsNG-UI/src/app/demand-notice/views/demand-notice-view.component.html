@@ -26,15 +26,22 @@
                     <div class="row">
                         <div class="col-xs-2"><b>Ward</b>: {{ searchModel.wardName?
                             searchModel.wardName:'Nil'}}</div>
-                        <div class="col-xs-3"><b>Street</b>: {{searchModel.streetName ? searchModel?.streetName:'Nil'}}</div>
+                        <div class="col-xs-2"><b>Street</b>: {{searchModel.streetName ? searchModel?.streetName:'Nil'}}</div>
                         <div class="col-xs-2"><b>Search Query</b>: {{searchModel.searchByName ?
                             searchModel?.searchByName: 'Nil'}}</div>
                         <div class="col-xs-2"><b>Billing Year</b>: {{searchModel?.dateYear}}</div>
-                        <div class="col-xs-3">
+                        <div class="col-xs-2">
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="runArrears" 
                                 (change)="searchModel.runArrears = !searchModel.runArrears">
                                 <label class="form-check-label" for="useSingleBill">Run Arrears</label>
+                            </div>
+                        </div> 
+                        <div class="col-xs-2">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="runPenalty" 
+                                (change)="searchModel.runPenalty = !searchModel.runPenalty">
+                                <label class="form-check-label" for="useSingleBill">Run Penalty</label>
                             </div>
                         </div> 
                     </div>
@@ -106,11 +113,12 @@
                                 <tbody>
                                     <tr *ngFor="let data of taxpayers; let i=index">
                                         <td>
-                                            <div class="form-check">
+                                            <div class="form-check" *ngIf= "data.demandNoticeStatus === 'New'">
                                                 <input type="checkbox" class="form-check-input" [(ngModel)]="data.isChecked"
                                                     id="{{data.id}}">
                                                 <label class="form-check-label" for="runAll"></label>
                                             </div>
+                                            
                                         </td>
                                         <td>{{i+1}}</td>
                                         <td>{{data.taxpayerName}}</td>

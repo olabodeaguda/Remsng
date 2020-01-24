@@ -14,6 +14,7 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class ArrearsManager : IArrearsManager
     {
+        private IPenaltyManager _penaltyManager;
         private IHttpContextAccessor _httpAccessor;
         private readonly IDemandNoticeArrearRepository _arrearsRepo;
         private readonly IDemandNoticeTaxpayersRepository _dNTaxpayersRep;
@@ -21,8 +22,9 @@ namespace RemsNG.Infrastructure.Managers
         public ArrearsManager(IHttpContextAccessor httpContextAccessor,
             IDemandNoticeArrearRepository demandNoticeArrearRepository,
             IDemandNoticeTaxpayersRepository demandNoticeTaxpayersRepository,
-            IDemandNoticePaymentHistoryRepository demandNoticePaymentHistoryRepository)
+            IDemandNoticePaymentHistoryRepository demandNoticePaymentHistoryRepository, IPenaltyManager penaltyManager)
         {
+            _penaltyManager = penaltyManager;
             _paymentRepository = demandNoticePaymentHistoryRepository;
             _dNTaxpayersRep = demandNoticeTaxpayersRepository;
             _arrearsRepo = demandNoticeArrearRepository;
@@ -241,6 +243,83 @@ namespace RemsNG.Infrastructure.Managers
                 bool result = await _arrearsRepo.AddArrears(newArrears.ToArray());
                 if (result)
                 {
+                    await _arrearsRepo.UpdateArrearsStatus(previousArrears, "CLOSED");
+                    await _dNTaxpayersRep.UpdateArrearsStatus(demandNotice, true);
+                    await _dNTaxpayersRep.UpdateDemandNoticeStatus(demandNotice.Select(x => x.Id).ToArray(), Common.Utilities.DemandNoticeStatus.CLOSED);
+                }
+            }
+
+            return true;
+        }
+
+
+        public async Task<bool> RunTaxpayerArrears(Guid[] demandNoticeIds, DemandNoticeRequestModel model, int billingYr)
+        {
+            string[] payableStatus = { "PENDING", "PART_PAYMENT" };
+            var demandNoticeTaxpayer = await _dNTaxpayersRep.ById(demandNoticeIds);
+            if (demandNoticeTaxpayer.Length <= 0) return false;
+
+            var demandNotice = demandNoticeTaxpayer.Where(x => payableStatus.Any(t => t == x.DemandNoticeStatus) && !x.IsRunArrears).ToArray();
+            if (demandNotice.Length <= 0) return false;
+
+            var payments = await _paymentRepository.ByBillingNumbers(demandNotice.Select(x => x.BillingNumber).ToArray());
+            DemandNoticeArrearsModel[] previousArrears = await _arrearsRepo.ByTaxpayer(demandNotice.Select(x => x.TaxpayerId).ToArray());
+            previousArrears = previousArrears.Where(d => d.ArrearsStatus == "PENDING" || d.ArrearsStatus == "PART_PAYMENT").ToArray();
+            List<DemandNoticeArrearsModel> newArrears = new List<DemandNoticeArrearsModel>();
+            List<DemantNoticePenaltyModelExt2> newPenalty = new List<DemantNoticePenaltyModelExt2>();
+            foreach (var tm in demandNotice)
+            {
+                decimal items = tm.DemandNoticeItem.Sum(x => x.ItemAmount);
+                var arr = previousArrears.Where(x => x.TaxpayerId == tm.TaxpayerId).ToArray();
+                decimal arrears = arr.Sum(x => x.TotalAmount);
+                var payment = payments.Where(x => x.BillingNumber == tm.BillingNumber).Sum(x => x.Amount);
+                decimal currentArrears = (items + arrears) - payment;
+                decimal penalty = 0;
+                if (model.RunPenalty)
+                {
+                    penalty = currentArrears * 0.1m;
+                    newPenalty.Add(new DemantNoticePenaltyModelExt2
+                    {
+                        TaxpayerId = tm.TaxpayerId,
+                        TotalAmount = penalty,
+                        BillingNo = tm.BillingNumber,
+                        BillingYear = billingYr,
+                        CreatedBy = _httpAccessor.HttpContext.User.Identity.Name,
+                        DateCreated = DateTime.Now,
+                        Id = Guid.NewGuid(),
+                        OriginatedYear = tm.BillingYr,
+                        CurrentAmount = 0,
+                        ItemPenaltyStatus = "PENDING",
+                        DemandNoticeId = tm.Id
+                    });
+                }
+
+                if (currentArrears > 0)
+                {
+                    newArrears.Add(new DemandNoticeArrearsModel()
+                    {
+                        AmountPaid = 0,
+                        ArrearsStatus = "PENDING",
+                        BillingNo = tm.BillingNumber,
+                        BillingYear = billingYr,
+                        CreatedBy = _httpAccessor.HttpContext.User.Identity.Name,
+                        DateCreated = DateTime.Now,
+                        Id = Guid.NewGuid(),
+                        OriginatedYear = tm.BillingYr,
+                        TaxpayerId = tm.TaxpayerId,
+                        WardName = tm.WardName,
+                        TotalAmount = currentArrears,
+                        CurrentAmount = 0
+                    });
+                }
+            }
+
+            if (newArrears.Count > 0)
+            {
+                bool result = await _arrearsRepo.AddArrears(newArrears.ToArray());
+                if (result)
+                {
+                    await _penaltyManager.AddPenalty(newPenalty.ToArray());
                     await _arrearsRepo.UpdateArrearsStatus(previousArrears, "CLOSED");
                     await _dNTaxpayersRep.UpdateArrearsStatus(demandNotice, true);
                     await _dNTaxpayersRep.UpdateDemandNoticeStatus(demandNotice.Select(x => x.Id).ToArray(), Common.Utilities.DemandNoticeStatus.CLOSED);

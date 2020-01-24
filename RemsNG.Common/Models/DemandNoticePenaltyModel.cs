@@ -10,6 +10,11 @@ namespace RemsNG.Common.Models
         public string Address { get; set; }
     }
 
+    public class DemantNoticePenaltyModelExt2 : DemandNoticePenaltyModel
+    {
+        public Guid DemandNoticeId { get; set; }
+    }
+
     public class DemandNoticePenaltyModel
     {
         public Guid Id { get; set; }

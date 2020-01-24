@@ -29,5 +29,6 @@ namespace RemsNG.Common.Interfaces.Repositories
         Task<bool> UpdateStreet(Guid taxpayerId, Guid streetId);
         Task<TaxPayerModel[]> ByTaxpayerId(Guid[] taxpayerId);
         Task<bool> UpdateStreet(Guid[] taxpayers, Guid streetId);
+        Task<TaxPayerModel[]> SearchByDNValidateTaxpayer(DemandNoticeRequestModel rhModel, Guid[] excludedId);
     }
 }

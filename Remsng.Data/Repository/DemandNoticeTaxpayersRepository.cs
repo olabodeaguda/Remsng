@@ -1027,6 +1027,23 @@ namespace RemsNG.Data.Repository
             return true;
         }
 
+
+        public async Task<bool> UpdatePenaltyStatus(Guid[] dntaxpayers, bool isRunPenalty)
+        {
+            foreach (var dnt in dntaxpayers)
+            {
+                DemandNoticeTaxpayer s = await db.Set<DemandNoticeTaxpayer>().FindAsync(dnt);
+                if (s != null)
+                {
+                    s.IsRunPenalty = isRunPenalty;
+                }
+            }
+
+            await db.SaveChangesAsync();
+            return true;
+        }
+
+
         public async Task<bool> UpdateAddress(Guid taxpayerId, string address)
         {
             string[] status = { "PART_PAYMENT", "PENDING", "PAID" };

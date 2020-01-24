@@ -80,6 +80,34 @@ namespace RemsNG.Infrastructure.Managers
             return result;
         }
 
+        public async Task<bool> AddPenalty(DemantNoticePenaltyModelExt2[] model)
+        {
+            if (model.Length < 0)
+                return false;
+
+            DemandNoticePenaltyModel[] previousPenalty = await _penaltyRepo.ByTaxpayerId(model.Select(x => x.TaxpayerId).ToArray());
+            List<DemandNoticePenaltyModel> newPenalty = new List<DemandNoticePenaltyModel>();
+            foreach (var tm in model)
+            {
+                var prev = previousPenalty.Where(x => x.TaxpayerId == tm.TaxpayerId).ToList();
+                if (prev.Count > 0)
+                {
+                    tm.TotalAmount = tm.TotalAmount + prev.Sum(x => x.TotalAmount);
+                }
+                newPenalty.Add(tm);
+            }
+
+            bool result = await _penaltyRepo.CreatePenalty(newPenalty.ToArray());
+            if (result)
+            {
+                await _penaltyRepo.UpdatePenaltyStatus(previousPenalty, "CLOSED");
+                await _dNTaxpayersRep.UpdatePenaltyStatus(model.Select(x => x.DemandNoticeId).ToArray(), true);
+            }
+
+            return true;
+        }
+
+
         public async Task<bool> RemovePenalty(Guid[] dnTaxpayerIds)
         {
             if (dnTaxpayerIds.Length <= 0)

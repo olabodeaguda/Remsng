@@ -195,17 +195,15 @@ namespace RemsNG.Infrastructure.Managers
                     itemAmount = x.ItemAmount
                 }).ToList();
 
-                // dnrm.amountPaid = dnrm.amountPaid + dnitem.Sum(x => x.AmountPaid);
+                string[] status = { "PENDING", "PART_PAYMENT" };
 
                 dnrm.banks = await lcdaBankService.Get(lgda.Id);
 
                 var penalties = await dnp.ByTaxpayerId(dnrm.TaxpayerId);
-                dnrm.penalty = penalties.Where(x => x.BillingYear == t.BillingYr).Sum(x => x.TotalAmount);
-
-                //dnrm.amountPaid = dnrm.amountPaid + penalties.Sum(x => x.AmountPaid);
+                dnrm.penalty = penalties.Where(x => x.BillingYear == t.BillingYr && status.Any(p => p == x.ItemPenaltyStatus)).Sum(x => x.TotalAmount);
 
                 var arrears = await dna.ByBillingNumber(dnrm.TaxpayerId);
-                dnrm.arrears = arrears.Where(x => x.BillingYear == t.BillingYr).Sum(x => x.TotalAmount);
+                dnrm.arrears = arrears.Where(x => x.BillingYear == t.BillingYr && status.Any(p => p == x.ArrearsStatus)).Sum(x => x.TotalAmount);
 
                 var amtDue = await _dphDao.ByBillingNumber(billingNo);
                 dnrm.amountPaid = amtDue.Sum(x => x.Amount);//dnrm.amountPaid + arrears.Sum(x => x.amountPaid);

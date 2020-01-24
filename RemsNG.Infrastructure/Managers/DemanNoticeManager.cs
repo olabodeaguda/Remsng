@@ -165,7 +165,7 @@ namespace RemsNG.Infrastructure.Managers
                     Guid[] idss = demandNoticeIds.Concat(dnIdsPrevious).Distinct().ToArray();
                     if (persist)
                     {
-                        await _arrearsManager.RunTaxpayerArrears(idss);
+                        await _arrearsManager.RunTaxpayerArrears(idss, model, temp);
                     }
                     excludedTaxpayerids = new Guid[] { };
                 }
@@ -184,7 +184,7 @@ namespace RemsNG.Infrastructure.Managers
                     var t = dntModel.FirstOrDefault(x => x.TaxpayerId == r.Id);
                     r.DemandNoticeStatus = t == null ? "New" : t.DemandNoticeStatus;
                     return r;
-                }).ToArray();
+                }).Where(x => x.DemandNoticeStatus == "New").ToArray();
 
 
             return taxPayers.Where(x => !x.IsOneTime).ToArray();

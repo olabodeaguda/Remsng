@@ -45,5 +45,6 @@ namespace RemsNG.Common.Interfaces.Repositories
         Task<bool> UpdateDemandNoticeStatus(Guid[] demandNoticeIds, DemandNoticeStatus status);
         Task<bool> UpdateWardStreet(Guid[] taxpayerIds, string wardName, string street,
             List<TaxPayerModel> lst);
+        Task<bool> UpdatePenaltyStatus(Guid[] dntaxpayers, bool isRunPenalty);
     }
 }

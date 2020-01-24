@@ -623,6 +623,52 @@ namespace RemsNG.Data.Repository
             return result;
         }
 
+
+        public async Task<TaxPayerModel[]> SearchByDNValidateTaxpayer(DemandNoticeRequestModel rhModel, Guid[] excludedId)
+        {
+            var query = db.Set<TaxPayer>().Include(x => x.Street).Include(x => x.Items)
+                .Select(tp => new TaxPayerModel()
+                {
+                    AddressId = tp.AddressId,
+                    CompanyId = tp.CompanyId,
+                    StreetId = tp.StreetId,
+                    companyName = tp.Company.CompanyName,
+                    CreatedBy = tp.CreatedBy,
+                    DateCreated = tp.DateCreated.Value,
+                    Firstname = tp.Firstname,
+                    Id = tp.Id,
+                    Lastmodifiedby = tp.Lastmodifiedby,
+                    LastModifiedDate = tp.LastModifiedDate,
+                    Lastname = tp.Lastname,
+                    StreetNumber = tp.Address.Addressnumber,
+                    Surname = tp.Surname,
+                    TaxpayerStatus = tp.TaxpayerStatus,
+                    WardName = tp.Street.Ward.WardName,
+                    StreetName = tp.Street.StreetName,
+                    WardId = tp.Street.WardId,
+                    ItemCount = tp.Items.Count,
+                    IsOneTime = tp.IsOneTime
+                }).Where(x => x.TaxpayerStatus == "ACTIVE");
+
+            if (rhModel.streetId != default(Guid))
+            {
+                query = query.Where(x => x.StreetId == rhModel.streetId);
+            }
+            else if (rhModel.wardId != default(Guid))
+            {
+                query = query.Where(x => x.WardId == rhModel.wardId);
+            }
+            var alltaxpayer = await query.ToListAsync();
+            var isOntimeUser = alltaxpayer.Where(x => x.IsOneTime).ToList();
+
+            var minResult = alltaxpayer.Where(x => !excludedId.Any(p => p == x.Id)).ToList();
+
+
+            return minResult.Concat(isOntimeUser).Distinct().ToArray();
+        }
+
+
+
         public async Task<TaxPayerModel[]> ByTaxpayerId(Guid[] taxpayerId)
         {
             return await db.Set<TaxPayer>().Include(x => x.Street).Include(x => x.Items)
