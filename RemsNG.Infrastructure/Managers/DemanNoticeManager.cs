@@ -181,13 +181,16 @@ namespace RemsNG.Infrastructure.Managers
                 .Select(d =>
                 {
                     var r = d;
+                    r.Firstname = r.Firstname ?? string.Empty;
+                    r.Surname = r.Surname ?? string.Empty;
+                    r.Lastname = r.Lastname ?? string.Empty;
                     var t = dntModel.FirstOrDefault(x => x.TaxpayerId == r.Id);
                     r.DemandNoticeStatus = t == null ? "New" : t.DemandNoticeStatus;
                     return r;
                 }).Where(x => x.DemandNoticeStatus == "New").ToArray();
 
 
-            return taxPayers.Where(x => !x.IsOneTime).ToArray();
+            return taxPayers;
         }
 
         public async Task<bool> AddDemanNotice(DemandNoticeRequestModel model)
