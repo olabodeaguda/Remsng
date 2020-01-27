@@ -147,6 +147,9 @@ namespace RemsNG.Infrastructure.Managers
                     throw new NotFoundException($"{billingNo} does not exist");
                 }
 
+                var taxpayer = await taxpayerService.ById(t.TaxpayerId);
+
+
                 DemandNoticeReportModel dnrm = new DemandNoticeReportModel()
                 {
                     AddressName = t.AddressName,
@@ -165,7 +168,8 @@ namespace RemsNG.Infrastructure.Managers
                     WardName = t.WardName,
                     TaxpayerId = t.TaxpayerId,
                     DemandNoticeStatus = t.DemandNoticeStatus,
-                    Period = t.Period
+                    Period = t.Period,
+                    StreetId = taxpayer.StreetId.ToString()
                 };
                 LcdaModel lgda = await lcdaService.ByBillingNumber(billingNo); //await taxpayerService.getLcda(t.taxpayerId);
                 List<LcdaPropertyModel> ls = new List<LcdaPropertyModel>();

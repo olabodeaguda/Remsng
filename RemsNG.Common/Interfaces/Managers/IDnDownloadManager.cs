@@ -12,6 +12,6 @@ namespace RemsNG.Common.Interfaces.Managers
 
         Task<byte[]> GenerateReminder(long[] billingno, string createdBy);
 
-        Task<string> LoadTemplateDemandNotice(string htmlContent, long billingno, string createdBy, TemplateType templateType);
+        Task<string> LoadTemplateDemandNotice(string htmlContent, long billingno, string createdBy, TemplateType templateType,DemandNoticeReportModel dnrp);
     }
 }

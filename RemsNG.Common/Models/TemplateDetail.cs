@@ -20,6 +20,7 @@ namespace RemsNG.Common.Models
         public string ReminderLagosLogo { get; set; }
         public string ReminderLcdaLogo { get; set; }
         public string ReminderBackgroundLogo { get; set; }
+        public string SpecialTaxpayer { get; set; }
     }
 
     public enum TemplateType
