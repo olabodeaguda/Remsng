@@ -33,7 +33,7 @@ namespace RemsNG.Data.Repository
 
             List<DNAmountDueModel> results = new List<DNAmountDueModel>();
             var arrears = await db.Set<DemandNoticeArrear>()
-                .Where(r => r.TaxpayerId == dnTaxpayer.TaxpayerId && status.Any(x => x == r.ArrearsStatus))
+                .Where(r => r.TaxpayerId == dnTaxpayer.TaxpayerId && r.BillingYear == dnTaxpayer.BillingYr && status.Any(x => x == r.ArrearsStatus))
                 .Select(x => new DNAmountDueModel()
                 {
                     id = x.Id,
