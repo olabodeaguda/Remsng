@@ -23,12 +23,6 @@ namespace RemsNG.Controllers
             amountDueMgtService = _amountDueMgtService;
         }
 
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
         // GET api/values/5
         [HttpGet("{billingno}")]
         public async Task<List<DNAmountDueModel>> Get(long billingno)
@@ -40,8 +34,6 @@ namespace RemsNG.Controllers
 
             return await amountDueMgtService.ByBillingNo(billingno);
         }
-
-
 
         [RemsRequirementAttribute("AMOUNT_DUE")]
         // POST api/values

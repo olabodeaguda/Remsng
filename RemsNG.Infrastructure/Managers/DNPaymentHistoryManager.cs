@@ -139,7 +139,8 @@ namespace RemsNG.Infrastructure.Managers
             // get amount due
             var amtDuelist = await _amountDueRposiotry.ByBillingNo(payment.BillingNumber);
 
-            decimal amountDue = amtDuelist.Sum(x => x.itemAmount);
+            decimal amountDue = amtDuelist
+                .Sum(x => x.itemAmount);
             DemandNoticeStatus paymentStatus = default(DemandNoticeStatus);
             if (amountPaid == amountDue)
             {

@@ -111,7 +111,6 @@ namespace RemsNG.Infrastructure.Managers
 
             var totalAmountDue = await TotalAmountDue(dnrp);
 
-
             if (totalAmountDue.status == DemandNoticeStatus.OVERPAYMENT)
             {
                 // overpayment
@@ -190,8 +189,7 @@ namespace RemsNG.Infrastructure.Managers
             htmlContent = htmlContent.Replace("PAYMENT_DATE", dnph.DateCreated.Value.ToString("dd-MM-yyyy"));
 
             // total amount paid from reciept page
-            List<DemandNoticePaymentHistoryModel> dnpHistory = new List<DemandNoticePaymentHistoryModel>();
-            //await dNPaymentHistoryService.ByBillingNumber(dnph.BillingNumber);
+            List<DemandNoticePaymentHistoryModel> dnpHistory = await dNPaymentHistoryService.ByBillingNumber(dnph.BillingNumber);
             dnpHistory = dnpHistory.Where(x => x.PaymentStatus == "APPROVED").ToList();
 
             dnrp.amountPaid = dnpHistory.Sum(x => x.Amount);

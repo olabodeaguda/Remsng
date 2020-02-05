@@ -70,6 +70,21 @@ namespace RemsNG.Data.Repository
                      itemStatus = x.ItemStatus
                  }).ToListAsync();
             results.AddRange(items);
+
+            //var prepayment = await db.Set<Prepayment>()
+            //    .Where(x => x.taxpayerId == dnTaxpayer.TaxpayerId && x.prepaymentStatus == "ACTIVE")
+            //    .Select(x => new DNAmountDueModel
+            //    {
+            //        itemAmount = x.amount,
+            //        amountPaid = 0,
+            //        billingNo = x.id,
+            //        category = "Prepayment",
+            //        itemDescription = string.Empty,
+            //        itemStatus = x.prepaymentStatus
+            //    })
+            //    .ToListAsync();
+
+
             return results;
         }
 
