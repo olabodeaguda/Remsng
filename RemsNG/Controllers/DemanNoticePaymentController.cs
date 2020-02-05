@@ -254,7 +254,7 @@ namespace RemsNG.Controllers
             if (id == default(Guid))
                 return BadRequest(new Response { code = MsgCode_Enum.FAIL, description = "Please select payment" });
 
-            bool result = await dNPaymentHistoryService.ApprovePayment(id, pmt);
+            bool result = await dNPaymentHistoryService.ApprovePaymentV2(id, pmt);
             return Ok(new Response()
             {
                 code = MsgCode_Enum.SUCCESS,

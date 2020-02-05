@@ -2,6 +2,7 @@
 {
     public enum DemandNoticeStatus
     {
+        None,
         ACTIVE,
         DEACTIVE,
         CANCELED,

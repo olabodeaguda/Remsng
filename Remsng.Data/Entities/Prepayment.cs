@@ -13,5 +13,6 @@ namespace Remsng.Data.Entities
         public decimal amount { get; set; }
         public DateTime datecreated { get; set; }
         public string prepaymentStatus { get; set; }
+        public long? BillingNo { get; set; }
     }
 }

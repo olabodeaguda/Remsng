@@ -1,4 +1,5 @@
 ﻿using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,5 +14,7 @@ namespace RemsNG.Common.Interfaces.Repositories
         Task<Response> UpdateAmount(DNAmountDueModel dnamount);
         string PaymentQuery(List<DNAmountDueModel> paymentDueList,
             DemandNoticePaymentHistoryModel dnph, string status, string createdby);
+        Task<string> GetQueryUpdateAmount(DNAmountDueModel[] dNAmountDueModels, DemandNoticeStatus status, string createdby);
+        Task<PrepaymentModel[]> GetPrepayment(Guid taxpayerId);
     }
 }

@@ -741,6 +741,8 @@ namespace RemsNG.Migrations
                     b.Property<long>("id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<long?>("BillingNo");
+
                     b.Property<decimal>("amount");
 
                     b.Property<DateTime>("datecreated");

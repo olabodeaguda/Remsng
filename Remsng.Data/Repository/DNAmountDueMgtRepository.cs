@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Remsng.Data.Entities;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
 using RemsNG.Data.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,9 +22,6 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<DNAmountDueModel>> ByBillingNo(long billingno)
         {
-            //var result = await db.Set<DNAmountDueModel>()
-            //    .FromSql("sp_getBillingNumberTotalDue @p0", new object[] { billingno }).ToListAsync();
-
             DemandNoticeTaxpayer dnTaxpayer = await db.Set<DemandNoticeTaxpayer>().FirstOrDefaultAsync(x => x.BillingNumber == billingno);
             if (dnTaxpayer == null)
             {
@@ -47,7 +46,8 @@ namespace RemsNG.Data.Repository
                 }).ToListAsync();
             results.AddRange(arrears);
 
-            var penalty = await db.Set<DemandNoticePenalty>().Where(x => x.TaxpayerId == dnTaxpayer.TaxpayerId).Select(x => new DNAmountDueModel
+            var penalty = await db.Set<DemandNoticePenalty>().Where(x => x.TaxpayerId == dnTaxpayer.TaxpayerId
+            && x.BillingYear == dnTaxpayer.BillingYr && status.Any(d => d == x.ItemPenaltyStatus)).Select(x => new DNAmountDueModel
             {
                 id = x.Id,
                 itemAmount = x.TotalAmount,
@@ -202,6 +202,46 @@ namespace RemsNG.Data.Repository
             }
 
             return query;
+        }
+
+        public async Task<string> GetQueryUpdateAmount(DNAmountDueModel[] dNAmountDueModels, DemandNoticeStatus status, string createdby)
+        {
+            string query = "";
+
+            foreach (var tm in dNAmountDueModels)
+            {
+                if (tm.category.ToUpper() == "ARREARS".ToUpper())
+                {
+                    query = query + $"update tbl_demandNoticeArrears set arrearsStatus = '{status.ToString()}', " +
+                               $" lastModifiedDate = getdate(),lastmodifiedby='{createdby}' where id='{tm.id}';";
+                }
+                else if (tm.category.ToUpper() == "PENALTY".ToUpper())
+                {
+                    query = query + $"update tbl_demandNoticePenalty set itemPenaltyStatus = '{status}', " +
+                               $" lastModifiedDate = getdate(),lastmodifiedby='{createdby}' where id='{tm.id}';";
+                }
+                else if (tm.category.ToUpper() == "ITEMS".ToUpper())
+                {
+                    query = query + $"update tbl_demandNoticeItem set itemStatus = '{status}', " +
+                              $" lastModifiedDate = getdate(),lastmodifiedby='{createdby}' where id='{tm.id}';";
+                }
+            }
+            return query;
+        }
+
+        public async Task<PrepaymentModel[]> GetPrepayment(Guid taxpayerId)
+        {
+            return await db.Set<Prepayment>()
+                 .Where(x => x.taxpayerId == taxpayerId && x.prepaymentStatus == "ACTIVE")
+                 .Select(s => new PrepaymentModel
+                 {
+                     amount = s.amount,
+                     datecreated = s.datecreated,
+                     id = s.id,
+                     prepaymentStatus = s.prepaymentStatus,
+                     taxpayerId = s.taxpayerId
+                 })
+                 .ToArrayAsync();
         }
     }
 }

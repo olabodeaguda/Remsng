@@ -99,35 +99,38 @@ namespace RemsNG.Infrastructure.Managers
 
             dnrp.amountPaid = dnpHistory.Sum(x => x.Amount);
             decimal amtDue = dnrp.amountDue;
-            // dnrp.amountPaid = amtPaid;
 
             if (dnpHistory.Count > 0)
             {
                 var tt = dnpHistory.OrderByDescending(x => x.DateCreated).FirstOrDefault();
                 htmlContent = htmlContent.Replace("PAYMENT_DATE", tt.DateCreated.Value.ToString("dd-MM-yyyy"));
             }
+
             decimal displayAMount = _bankCategory.RecieptType == 0 ? dnph.Amount : dnrp.amountPaid;
             htmlContent = htmlContent.Replace("TOTAL_AMOUNT", $"{String.Format("{0:n}", decimal.Round(displayAMount, 2))} naira");
 
-            if (dnrp.amountPaid > amtDue)
+            var totalAmountDue = await TotalAmountDue(dnrp);
+
+
+            if (totalAmountDue.status == DemandNoticeStatus.OVERPAYMENT)
             {
                 // overpayment
                 htmlContent = htmlContent.Replace("PAYMENT_STATUS", DemandNoticeStatus.OVERPAYMENT.ToString());//PAYMENT_STATUS
-                htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Overpaid : {String.Format("{0:n}", decimal.Round(dnrp.amountPaid - amtDue, 2))} naira");//PAYMENT_STATUS
+                htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Overpaid : {String.Format("{0:n}", decimal.Round(totalAmountDue.amountDue, 2))} naira");//PAYMENT_STATUS
 
             }
-            else if (dnrp.amountPaid < amtDue)
+            else if (totalAmountDue.status == DemandNoticeStatus.PART_PAYMENT)
             {
                 htmlContent = htmlContent.Replace("PAYMENT_STATUS", DemandNoticeStatus.PART_PAYMENT.ToString());//PAYMENT_STATUS
                 htmlContent = htmlContent.Replace("AMOUNT_REMAINING",
-                    $"Outstanding Balance : {String.Format("{0:n}", decimal.Round(amtDue - dnrp.amountPaid, 2))} naira");//PAYMENT_STATUS
+                    $"Outstanding Balance : {String.Format("{0:n}", decimal.Round(totalAmountDue.amountDue, 2))} naira");//PAYMENT_STATUS
 
             }
             else
             {
                 htmlContent = htmlContent.Replace("PAYMENT_STATUS", DemandNoticeStatus.PAID.ToString());//PAYMENT_STATUS
                 htmlContent = htmlContent.Replace("AMOUNT_REMAINING",
-                    $"Outstanding Balance : {String.Format("{0:n}", decimal.Round(0, 2))} naira");//PAYMENT_STATUS
+                    $"Outstanding Balance : {String.Format("{0:n}", decimal.Round(totalAmountDue.amountDue, 2))} naira");//PAYMENT_STATUS
             }
 
             if (dnph.Amount == 0)
@@ -203,26 +206,30 @@ namespace RemsNG.Infrastructure.Managers
             decimal displayAMount = _bankCategory.RecieptType == 0 ? dnph.Amount : dnrp.amountPaid;
             htmlContent = htmlContent.Replace("TOTAL_AMOUNT", $"{String.Format("{0:n}", decimal.Round(displayAMount, 2))} naira");
 
-            if (dnrp.amountPaid > amtDue)
+            var totalAmountDue = await TotalAmountDue(dnrp);
+
+
+            if (totalAmountDue.status == DemandNoticeStatus.OVERPAYMENT)
             {
                 // overpayment
                 htmlContent = htmlContent.Replace("PAYMENT_STATUS", DemandNoticeStatus.OVERPAYMENT.ToString());//PAYMENT_STATUS
-                htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Overpaid : {String.Format("{0:n}", decimal.Round(dnrp.amountPaid - amtDue, 2))} naira");//PAYMENT_STATUS
+                htmlContent = htmlContent.Replace("AMOUNT_REMAINING", $"Amount Overpaid : {String.Format("{0:n}", decimal.Round(totalAmountDue.amountDue, 2))} naira");//PAYMENT_STATUS
 
             }
-            else if (dnrp.amountPaid < amtDue)
+            else if (totalAmountDue.status == DemandNoticeStatus.PART_PAYMENT)
             {
                 htmlContent = htmlContent.Replace("PAYMENT_STATUS", DemandNoticeStatus.PART_PAYMENT.ToString());//PAYMENT_STATUS
                 htmlContent = htmlContent.Replace("AMOUNT_REMAINING",
-                    $"Outstanding Balance : {String.Format("{0:n}", decimal.Round(amtDue - dnrp.amountPaid, 2))} naira");//PAYMENT_STATUS
+                    $"Outstanding Balance : {String.Format("{0:n}", decimal.Round(totalAmountDue.amountDue, 2))} naira");//PAYMENT_STATUS
 
             }
             else
             {
                 htmlContent = htmlContent.Replace("PAYMENT_STATUS", DemandNoticeStatus.PAID.ToString());//PAYMENT_STATUS
                 htmlContent = htmlContent.Replace("AMOUNT_REMAINING",
-                    $"Outstanding Balance : {String.Format("{0:n}", decimal.Round(0, 2))} naira");//PAYMENT_STATUS
+                    $"Outstanding Balance : {String.Format("{0:n}", decimal.Round(totalAmountDue.amountDue, 2))} naira");//PAYMENT_STATUS
             }
+
 
             if (dnph.Amount == 0)
             {
@@ -255,7 +262,8 @@ namespace RemsNG.Infrastructure.Managers
             else return "Nil";
         }
 
-        public async Task<string> LoadTemplateDemandNotice(string htmlContent, long billingno, string createdBy, TemplateType templateType, DemandNoticeReportModel dnrp)
+        public async Task<string> LoadTemplateDemandNotice(string htmlContent, long billingno, string createdBy,
+            TemplateType templateType, DemandNoticeReportModel dnrp)
         {
             //DemandNoticeReportModel dnrp = await dnts.ByBillingNo(billingno);
             if (dnrp.items.Count == 0)
@@ -312,7 +320,6 @@ namespace RemsNG.Infrastructure.Managers
             //}
             #endregion
 
-
             #region Reminder Images
             //if (!string.IsNullOrEmpty(_templateDetails.ReminderLcdaLogo) && templateType == TemplateType.Reminder)
             //{
@@ -327,7 +334,6 @@ namespace RemsNG.Infrastructure.Managers
             //    htmlContent = htmlContent.Replace("LCDA_LOGO", "data:image/png;base64," + Convert.ToBase64String(await File.ReadAllBytesAsync(_templateDetails.ReminderBackgroundLogo)));
             //}
             #endregion
-
 
             if (!string.IsNullOrEmpty(_templateDetails.CouncilTrasurerSignature))
             {
@@ -353,11 +359,12 @@ namespace RemsNG.Infrastructure.Managers
             }
 
             decimal finalTotal = gtotal + dnrp.charges - amountPaid;
-            var prepayment = await dNPaymentHistoryService.GetPrepaymentByTaxpayerId(dnrp.TaxpayerId);
+            var prepayment1 = await dNPaymentHistoryService.GetPrepayment(dnrp.TaxpayerId, dnrp.BillingNumber);
 
-            if (prepayment != null)
+            decimal prepayment = (prepayment1.closed > 0 ? prepayment1.closed : prepayment1.active);
+            if (prepayment > 0)
             {
-                finalTotal = finalTotal - prepayment.amount;
+                finalTotal = finalTotal - prepayment;
             }
             if (finalTotal < 0)
             {
@@ -376,7 +383,7 @@ namespace RemsNG.Infrastructure.Managers
                 htmlContent = htmlContent.Replace("AMOUNT_IN_WORD", CurrencyWords.ConvertToWords(finalTotal.ToString()));
             }
 
-            htmlContent = htmlContent.Replace("PREPAYMENT", $"{String.Format("{0:n}", decimal.Round((prepayment == null ? 0 : prepayment.amount), 2))}");
+            htmlContent = htmlContent.Replace("PREPAYMENT", $"{String.Format("{0:n}", decimal.Round(prepayment, 2))}");
 
             DemandNoticeDownloadHistoryModel dndh = new DemandNoticeDownloadHistoryModel();
             dndh.Id = Guid.NewGuid();
@@ -551,6 +558,44 @@ namespace RemsNG.Infrastructure.Managers
             byte[] result = _pdfService.GetBytes(new string[] { htmlTemplate });
 
             return result;
+        }
+
+        public async Task<(decimal amountDue, DemandNoticeStatus status)> TotalAmountDue(DemandNoticeReportModel dnrp)
+        {
+            decimal amountPaid = 0;
+            List<DemandNoticePaymentHistoryModel> dnpHistory = await dNPaymentHistoryService.ByBillingNumber(dnrp.BillingNumber);
+            dnpHistory = dnpHistory.Where(x => x.PaymentStatus == "APPROVED").ToList();
+            if (dnpHistory.Count > 0)
+            {
+                amountPaid = decimal.Round(dnpHistory.Sum(x => x.Amount), 2);
+            }
+
+            var prepayment1 = await dNPaymentHistoryService.GetPrepayment(dnrp.TaxpayerId, dnrp.BillingNumber);
+
+            decimal prepayment = (prepayment1.closed > 0 ? prepayment1.closed : prepayment1.active);
+            if (prepayment > 0)
+            {
+                amountPaid = amountPaid + prepayment;
+            }
+
+            decimal finalTotal = dnrp.items.Sum(x => x.itemAmount) + dnrp.arrears + dnrp.penalty + dnrp.charges;
+
+            DemandNoticeStatus status = default(DemandNoticeStatus);
+
+            if (amountPaid > finalTotal)
+                status = DemandNoticeStatus.OVERPAYMENT;
+            else if (finalTotal == amountPaid)
+                status = DemandNoticeStatus.PAID;
+            else if (amountPaid < finalTotal)
+                status = DemandNoticeStatus.PART_PAYMENT;
+
+            finalTotal = finalTotal - amountPaid;
+
+            if (finalTotal < 0)
+            {
+                finalTotal = 0;
+            }
+            return (finalTotal, status);
         }
     }
 }

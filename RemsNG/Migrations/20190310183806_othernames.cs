@@ -6,17 +6,17 @@ namespace RemsNG.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "OtherNames",
-                table: "tbl_demandNoticePaymentHistory",
-                nullable: true);
+            //migrationBuilder.AddColumn<string>(
+            //    name: "OtherNames",
+            //    table: "tbl_demandNoticePaymentHistory",
+            //    nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "OtherNames",
-                table: "tbl_demandNoticePaymentHistory");
+            //migrationBuilder.DropColumn(
+            //    name: "OtherNames",
+            //    table: "tbl_demandNoticePaymentHistory");
         }
     }
 }

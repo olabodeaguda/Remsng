@@ -314,6 +314,29 @@ namespace RemsNG.Data.Repository
                 taxpayerId = r.taxpayerId
             };
         }
+
+
+        public async Task<PrepaymentModel[]> GetPrepayment(Guid taxpayerId, long billingNo)
+        {
+            var rr = await db.Set<Prepayment>()
+                .Where(x => (x.taxpayerId == taxpayerId && x.prepaymentStatus == "ACTIVE")
+                || (x.BillingNo == billingNo && x.prepaymentStatus == "CLOSED")).ToArrayAsync();
+            if (rr.Length <= 0)
+            {
+                return Array.Empty<PrepaymentModel>();
+            }
+
+            return rr.Select(r => new PrepaymentModel()
+            {
+                amount = r.amount,
+                datecreated = r.datecreated,
+                id = r.id,
+                prepaymentStatus = r.prepaymentStatus,
+                taxpayerId = r.taxpayerId
+            }).ToArray();
+        }
+
+
         public async Task<PrepaymentModel[]> GetPrepaymentList(Guid taxpayerId)
         {
             var rr = await db.Set<Prepayment>()

@@ -27,5 +27,6 @@ namespace RemsNG.Common.Interfaces.Repositories
         string PaymentQuery(List<AmountDueModel> paymentDueList,
              DemandNoticePaymentHistoryModel dnph, string status, string createdby);
         Task<decimal> TotalAmountPaid(long billNumber);
+        Task<PrepaymentModel[]> GetPrepayment(Guid taxpayerId, long billingNo);
     }
 }
