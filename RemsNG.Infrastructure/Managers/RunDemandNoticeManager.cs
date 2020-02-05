@@ -28,6 +28,7 @@ namespace RemsNG.Infrastructure.Managers
             IDemandNoticeTaxpayerManager _demandNoticeTaxpayerService,
             TemplateDetail templateDetails)
         {
+            dnDownloadService = _dnDownloadService;
             logger = loggerFactory.CreateLogger("Demand Notice Jobs");
             _templateDetails = templateDetails;
             batchDwnRequestService = _batchDwnRequestService;
