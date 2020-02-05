@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -11,6 +12,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using RemsNG.Common.Models;
 using RemsNG.Extensions;
+using RemsNG.Filters;
 using RemsNG.Security;
 using System.IO;
 
@@ -40,7 +42,10 @@ namespace RemsNG
             services.AddDatabaseService(Configuration);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             ServicesCollection.Initialize(services, Configuration, loggerFactory);
-            services.AddMvc().AddJsonOptions(options =>
+            services.AddMvc(config =>
+            {
+                config.Filters.Add(new GlobalExceptionFilter());
+            }).AddJsonOptions(options =>
             {
                 options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
                 options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
@@ -56,7 +61,6 @@ namespace RemsNG
             loggerFactory.AddDebug();
             loggerFactory.AddConsole();
             loggerFactory.AddFile("Logs/remsng-logs-{Date}.txt");
-            //DbInitializer.Initialize(dbContext);
             app.UseCors("CorsPolicy");
             app.UseHangfireDashboard();
 
@@ -83,18 +87,19 @@ namespace RemsNG
                     async context =>
                     {
                         var error = context.Features.Get<IExceptionHandlerFeature>();
-                        Response response = new Response();
-                        ExceptionTranslator ex = new ExceptionTranslator(loggerFactory);
-                        ex.Translate(context, error.Error, response);
-                        var result = JsonConvert.SerializeObject(response,
-                            new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
-                        await context.Response.WriteAsync(result);
+                        var exception = error.Error;
+
+
+                        var (responseModel, statusCode) = GlobalExceptionFilter.GetStatusCode<object>(exception);
+                        context.Response.StatusCode = (int)statusCode;
+                        context.Response.ContentType = "application/json";
+
+                        var responseJson = JsonConvert.SerializeObject(responseModel, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
+                        await context.Response.WriteAsync(responseJson);
                     });
             });
 
             app.UseMiddleware(typeof(HangfireMiddleware));
-
-            app.UseMiddleware(typeof(ErrorHandlingMiddleware));
 
             app.UseDefaultFiles();
 
@@ -104,11 +109,9 @@ namespace RemsNG
             });
             app.UseStaticFiles();
             app.UseSwagger();
-            //This line enables Swagger UI, which provides us with a nice, simple UI with which we can view our API calls.
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Remsng Client API");
-                // c.RoutePrefix = "swagger/ui";
             });
 
             app.UseMvc();

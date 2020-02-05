@@ -16,5 +16,6 @@ namespace RemsNG.Common.Interfaces.Repositories
             DemandNoticePaymentHistoryModel dnph, string status, string createdby);
         Task<string> GetQueryUpdateAmount(DNAmountDueModel[] dNAmountDueModels, DemandNoticeStatus status, string createdby);
         Task<PrepaymentModel[]> GetPrepayment(Guid taxpayerId);
+        Task<string> TogglePrepayment(long id);
     }
 }

@@ -145,24 +145,24 @@ export class DataService {
         } else if (err.status === 401) {
             const d = err.error;
             if (res.code === '09' || res.code === '10' || res.code === '11') {
-                this.toasterService.pop('error', res.description || 'Connection to the service failed');
+                this.toasterService.pop('error', res.description || 'Token has expired');
                 if (res.code === '11') {
                     this.router.navigate(['/login'])
                 }
                 this.storageService.remove();
             }
-            return Observable.throw(res.description || 'Connection to the service failed');
+            return Observable.throw(res.description || 'Token has expired');
         } else if (err.status === 403) {
             if (res.code === '09' || res.code === '10' || res.code === '11') {
-                this.toasterService.pop('error', res.description || 'Connection to the service failed');
+                this.toasterService.pop('error', res.description || 'You have not permission to access this request');
                 if (res.code === '11') {
                     this.router.navigate(['/login'])
                 }
                 this.storageService.remove();
             }
-            return Observable.throw(res.description || 'Connection to the service failed');
+            return Observable.throw(res.description || 'You have not permission to access this request');
         } else if (err.status === 500) {
-            return Observable.throw(res.description || 'Connection to the service failed');
+            return Observable.throw(res.description || 'Internal server error occur. Please contact administrator');
         } else if (err.status === 0) {
             return Observable.throw(res.description || 'Connection to the service failed');
         } else if (err.status === 400) {

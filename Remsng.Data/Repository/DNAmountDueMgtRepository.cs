@@ -258,5 +258,14 @@ namespace RemsNG.Data.Repository
                  })
                  .ToArrayAsync();
         }
+
+        public async Task<string> TogglePrepayment(long id)
+        {
+            var entity = await db.Set<Prepayment>().FindAsync(id);
+            entity.prepaymentStatus = entity.prepaymentStatus == "ACTIVE" ? "CLOSED" : "ACTIVE";
+            await db.SaveChangesAsync();
+
+            return entity.prepaymentStatus;
+        }
     }
 }

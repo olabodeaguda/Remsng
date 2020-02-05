@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using RemsNG.Common.Models;
+using RemsNG.Filters;
 using RemsNG.Models;
 using RemsNG.Security;
 using System;
@@ -59,13 +60,12 @@ namespace RemsNG.Extensions
                         Response response = new Response();
                         Exception except = context.Exception;
 
-                        ExceptionTranslator ex = new ExceptionTranslator(loggerFactory);
-                        ex.Translate(context.HttpContext, context.Exception, response);
-                        var result = JsonConvert.SerializeObject(response,
-                            new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
+                        var (responseModel, statusCode) = GlobalExceptionFilter.GetStatusCode<object>(except);
+                        context.Response.StatusCode = (int)statusCode;
+                        context.Response.ContentType = "application/json";
 
-                        context.Fail(result);
-
+                        var responseJson = JsonConvert.SerializeObject(responseModel, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
+                        context.Fail(responseJson);
                         return Task.FromException(except);// CompletedTask;
                     }
                 };

@@ -112,39 +112,39 @@ export class DemandNoticeService {
     }
 
     addArrears(data: any) {
-        // const outD: any = {
-        //     billingNo: data.billingNumber,
-        //     taxpayerId: data.id,
-        //     totalAmount: data.itemAmount,
-        //     itemId: data.itemId
-        // };
         const outD: any = {
             id: data.dnId,
             amount: data.itemAmount,
             itemId: data.itemId
         };
 
-        return this.datataservice.post('demandnotice/arrears/single/add', outD).catch(x => this.datataservice.handleError(x));
+        return this.datataservice.post('demandnotice/arrears/single/add', outD)
+        .catch(x => this.datataservice.handleError(x));
     }
 
     cancelDemandNotice(billingNo: string) {
-        return this.datataservice.get('dnt/cancel/' + billingNo).catch(x => this.datataservice.handleError(x));
+        return this.datataservice.get('dnt/cancel/' + billingNo)
+        .catch(x => this.datataservice.handleError(x));
     }
 
     currentReport() {
-        return this.datataservice.get('dnt/cancel').catch(x => this.datataservice.handleError(x));
+        return this.datataservice.get('dnt/cancel')
+        .catch(x => this.datataservice.handleError(x));
     }
 
     demandNoticeError(id: string) {
-        return this.datataservice.get('dnt/error/' + id).catch(x => this.datataservice.handleError(x));
+        return this.datataservice.get('dnt/error/' + id)
+        .catch(x => this.datataservice.handleError(x));
     }
 
     MovetoBills(billno) {
-        return this.datataservice.get('dnt/movetobill/' + billno).catch(x => this.datataservice.handleError(x));
+        return this.datataservice.get('dnt/movetobill/' + billno)
+        .catch(x => this.datataservice.handleError(x));
     }
 
     MovetoUnBills(billno) {
-        return this.datataservice.get('dnt/movetoUnbill/' + billno).catch(x => this.datataservice.handleError(x));
+        return this.datataservice.get('dnt/movetoUnbill/' + billno)
+        .catch(x => this.datataservice.handleError(x));
     }
 
     searchInfo(searchModel: DemandNoticeSearch) {

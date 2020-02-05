@@ -47,7 +47,7 @@ namespace RemsNG.Controllers
 
             if (value.itemAmount < 0)
             {
-                throw new InvalidCredentialsException("Item amount can't be less than zero"); ;
+                throw new InvalidCredentialsException("Item amount can't be less than zero");
             }
 
             Response response = await amountDueMgtService.UpdateAmount(value);
@@ -56,7 +56,25 @@ namespace RemsNG.Controllers
 
         }
 
+        [HttpPost("prepayment/toggletatus/{id}")]
+        public async Task<IActionResult> UpdatePrepayment(long id)
+        {
+            if (id <= default(long))
+                throw new InvalidCredentialsException("Please select a prepayment");
 
+            var result = await amountDueMgtService.TogglePrepayment(id);
+            return Ok(new Response
+            {
+                code = MsgCode_Enum.SUCCESS,
+                status = true,
+                description = $"Prepayment has been {result.ToLower()}"
+            });
+        }
 
+        [HttpGet("prepayment/{id}")]
+        public async Task<IActionResult> GetPrepayment(Guid id)
+        {
+            return Ok(await amountDueMgtService.GetPrepayment(id));
+        }
     }
 }

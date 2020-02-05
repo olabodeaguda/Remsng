@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import { DataService } from '../../shared/services/data.service';
 import { PageModel } from '../../shared/models/page.model';
 import { DemandNoticeSearch } from '../models/demand-notice.search';
@@ -6,56 +6,68 @@ import { AmountDueModel } from '../models/amount-due.model';
 
 
 @Injectable()
-export class DemandNoticeTaxpayerService{
+export class DemandNoticeTaxpayerService {
 
-  
-    constructor(private dataservice:DataService) {
-        
+
+    constructor(private dataservice: DataService) {
+
     }
 
-    byBatchId(batchId:string,pageModel:PageModel){
+    byBatchId(batchId: string, pageModel: PageModel) {
         this.dataservice.addToHeader('pageNum', pageModel.pageNum.toString());
         this.dataservice.addToHeader('pageSize', pageModel.pageSize.toString());
-        return this.dataservice.get('dnt/batchno/'+batchId)
-        .catch(error => this.dataservice.handleError(error));
+        return this.dataservice.get('dnt/batchno/' + batchId)
+            .catch(error => this.dataservice.handleError(error));
     }
 
     Search(billingnumber: string) {
         return this.dataservice.get('dnt/search/' + billingnumber)
-        .catch(error => this.dataservice.handleError(error));
+            .catch(error => this.dataservice.handleError(error));
     }
 
     ByBillingno(billingnumber: string) {
         return this.dataservice.get('dnt/billingno/' + billingnumber)
-        .catch(error => this.dataservice.handleError(error));
+            .catch(error => this.dataservice.handleError(error));
     }
 
     downloadRpt(url: string) {
         return this.dataservice.getBlob('dndownload/single/' + url)
-        .catch(error => this.dataservice.handleError(error));
+            .catch(error => this.dataservice.handleError(error));
     }
 
-    downloadReceipt(url:string){
+    downloadReceipt(url: string) {
         return this.dataservice.getBlob('dndownload/receipt/' + url)
-        .catch(error => this.dataservice.handleError(error));
+            .catch(error => this.dataservice.handleError(error));
     }
 
-    amountDueByBillingNo(billingnumber:string){
-        return this.dataservice.get('amountdue/'+billingnumber)
-        .catch(error => this.dataservice.handleError(error));
+    amountDueByBillingNo(billingnumber: string) {
+        return this.dataservice.get('amountdue/' + billingnumber)
+            .catch(error => this.dataservice.handleError(error));
     }
 
-    UpdateAmount(amountDueModel: AmountDueModel){
-        return this.dataservice.post('amountdue',{
-            id:amountDueModel.id,
-            itemAmount:amountDueModel.itemAmount,
-            category:amountDueModel.category
+    getPrepayment(taxpayerId: string) {
+        return this.dataservice.get('amountdue/prepayment/' + taxpayerId)
+            .catch(error => this.dataservice.handleError(error));
+    }
+
+    UpdateAmount(amountDueModel: AmountDueModel) {
+        return this.dataservice.post('amountdue', {
+            id: amountDueModel.id,
+            itemAmount: amountDueModel.itemAmount,
+            category: amountDueModel.category
         }).catch(error => this.dataservice.handleError(error));
     }
 
-    amountPaidByBillingNo(billingnumber:string){
-        return this.dataservice.get('payment/amountpaid/'+billingnumber)
-        .catch(error => this.dataservice.handleError(error));
+
+
+    togglePrepayment(prepaymentId: string) {
+        return this.dataservice.post('amountdue/prepayment/toggletatus/' + prepaymentId, {})
+            .catch(error => this.dataservice.handleError(error));
     }
-    
+
+    amountPaidByBillingNo(billingnumber: string) {
+        return this.dataservice.get('payment/amountpaid/' + billingnumber)
+            .catch(error => this.dataservice.handleError(error));
+    }
+
 }

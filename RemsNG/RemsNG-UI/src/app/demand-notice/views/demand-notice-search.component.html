@@ -176,19 +176,19 @@
                                             </td>
                                             <td>{{data.category}}</td>
                                             <td>{{data.itemDescription}}</td>
-                                            <td>{{data.itemAmount}}</td>
+                                            <td>{{data.itemAmount|number:'1.2'}}</td>
                                         </tr>
                                         <tr>
                                             <td></td>
                                             <td></td>
                                             <td>Total amount due</td>
-                                            <td>{{getSum('itemAmount')}}</td>
+                                            <td>{{getSum('itemAmount')|number:'1.2'}}</td>
                                         </tr>
                                         <tr>
                                             <td></td>
                                             <td></td>
                                             <td>Total Amount Paid</td>
-                                            <td>{{amountPaid}}</td>
+                                            <td>{{amountPaid|number:'1.2'}}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -252,6 +252,58 @@
         </div>
     </div>
 </div>
+
+
+<div class="modal fade" role="dialog" id="prepayment" #prepayment>
+    <div class=" modal-dialog ">
+        <div class="modal-content " style="width:500px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Amount due for bill Number {{amountDueModel.billingNumber}}</h4>
+            </div>
+            <form role="form">
+                <div class="modal-body clearfix ">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Fill in the details</h3>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <th style="width:40px;"></th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th></th>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let data of prepaymentLst; let i=index">
+                                            <td>
+                                                <b>{{i+1}}</b>
+                                            </td>
+                                            <td>{{data.amount|number:'1.2'}}</td>
+                                            <td>{{data.prepaymentStatus}}</td>
+                                            <td><a href="javascript:;" (click)="togglePrepayment(data)">
+                                                <i class="fa fa-caret-square-o-down"></i>
+                                            </a></td>
+                                        </tr>
+                                        <tr *ngIf="prepaymentLst.length < 1">
+                                            <td style="width:100%" colspan="4">No record !!!</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="loading" *ngIf="isLoading"></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
 
 <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
     #cancelDemandNoticeModal>
@@ -402,6 +454,10 @@
                                                     <li>
                                                         <a href="javascript:;" (click)="openEdit(data.billingNumber)">
                                                             <i class="fa fa-edit"></i> Edit </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="javascript:;" (click)="openPrepayment(data.taxpayerId)">
+                                                            <i class="fa fa-edit"></i> Prepayment </a>
                                                     </li>
                                                     <li>
                                                         <a href="javascript:;" (click)="openArrears(data)">

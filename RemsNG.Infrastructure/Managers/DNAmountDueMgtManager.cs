@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Remsng.Data;
+using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -68,6 +70,25 @@ namespace RemsNG.Infrastructure.Managers
         public string PaymentQuery(List<DNAmountDueModel> paymentDueList, DemandNoticePaymentHistoryModel dnph, string status, string createdby)
         {
             return dNAmountDueMgtDao.PaymentQuery(paymentDueList, dnph, status, createdby);
+        }
+
+        public async Task<string> TogglePrepayment(long id)
+        {
+            if (id == default(long))
+            {
+                throw new InvalidCredentialsException("Please select atleast a prepayment");
+            }
+
+            return await dNAmountDueMgtDao.TogglePrepayment(id);
+        }
+
+        public async Task<PrepaymentModel[]> GetPrepayment(Guid taxpayerId)
+        {
+            if (taxpayerId == default(Guid))
+            {
+                throw new InvalidCredentialsException("Please selet atleast a prepayment");
+            }
+            return await dNAmountDueMgtDao.GetPrepayment(taxpayerId);
         }
     }
 }

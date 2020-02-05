@@ -26,12 +26,14 @@ export class DemandNoticeSearchComponent implements OnInit {
     taxpayersLst = [];
     banks = [];
     items = [];
+    prepaymentLst = [];
     pageModel: PageModel = new PageModel();
     amountDueList = [];
     amountPaid:Number = 0;
     searchModel: DemandNoticeSearch = new DemandNoticeSearch();
     amountDueModel: AmountDueModel = new AmountDueModel();
     @ViewChild('addModal') addModel: ElementRef;
+    @ViewChild('prepayment') prepayment: ElementRef;
     @ViewChild('addArrears') addArrears: ElementRef;
     @ViewChild('paymentModal') paymentModal: ElementRef;
     @ViewChild('cancelDemandNoticeModal') cancelDemandNoticeModal: ElementRef;
@@ -265,6 +267,12 @@ export class DemandNoticeSearchComponent implements OnInit {
         this.getAmountPaidByBillingNo(billingNo);
     }
 
+
+    openPrepayment(taxpayerId: string) {
+        jQuery(this.prepayment.nativeElement).modal('show');
+        this.getPrepayment(taxpayerId);
+    }
+
     openArrears(data: any) {
         this.amountDueModel.billingNumber = data.billingNumber;
         this.amountDueModel.id = data.taxpayerId;
@@ -325,6 +333,30 @@ export class DemandNoticeSearchComponent implements OnInit {
         this.dnTaxpayer.amountDueByBillingNo(billingNo).subscribe(response => {
             this.amountDueList = response;
             this.isLoading = false;
+        }, error => {
+            this.isLoading = false;
+            this.toasterService.pop('error', 'Error', error);
+        })
+    }
+
+
+    getPrepayment(taxpayerId: string){
+        this.isLoading = true;
+        this.dnTaxpayer.getPrepayment(taxpayerId).subscribe(response => {
+            this.prepaymentLst = response;
+            this.isLoading = false;
+        }, error => {
+            this.isLoading = false;
+            this.toasterService.pop('error', 'Error', error);
+        })
+    }
+
+    togglePrepayment(data){
+        this.isLoading = true;
+        this.dnTaxpayer.togglePrepayment(data.id)
+        .subscribe(response => { 
+            this.isLoading = false;
+            this.getPrepayment(data.taxpayerId);
         }, error => {
             this.isLoading = false;
             this.toasterService.pop('error', 'Error', error);
