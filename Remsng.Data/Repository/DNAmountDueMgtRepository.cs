@@ -262,7 +262,7 @@ namespace RemsNG.Data.Repository
         public async Task<string> TogglePrepayment(long id)
         {
             var entity = await db.Set<Prepayment>().FindAsync(id);
-            entity.prepaymentStatus = entity.prepaymentStatus == "ACTIVE" ? "CLOSED" : "ACTIVE";
+            entity.prepaymentStatus = "CANCEL";
             await db.SaveChangesAsync();
 
             return entity.prepaymentStatus;

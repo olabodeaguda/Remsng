@@ -214,7 +214,7 @@ namespace RemsNG.Controllers
 
             DomainModel domain = await lcdaService.GetDomain(lgda.Id);
 
-            var result = await excelService.WriteReportSummaryConsolidatedSeperate(valid,
+            var result = await excelService.WriteReportSummaryConsolidatedSeperateV2(valid,
                 (domain == null ? "Unknown" : domain.DomainName), lgda.LcdaName, sd, ed, dnph);
 
             // var result1 = await System.IO.File.ReadAllBytesAsync(result);
@@ -223,11 +223,9 @@ namespace RemsNG.Controllers
             // HttpContext.Response.Body.Write(result1, 0, result1.Length);
             //return new ContentResult();
 
-            return Ok(new Response()
-            {
-                code = MsgCode_Enum.SUCCESS,
-                data = result
-            });
+            HttpContext.Response.ContentType = "application/octet-stream";
+            HttpContext.Response.Body.Write(result, 0, result.Length);
+            return new ContentResult();
         }
 
         [HttpGet("reportreceivables")]

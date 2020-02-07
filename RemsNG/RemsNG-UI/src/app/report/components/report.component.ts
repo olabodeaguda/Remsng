@@ -125,8 +125,10 @@ export class ReportComponent implements OnInit {
         this.reportService.downloadReportBreakDownSeperate(this.startDate, this.endDate)
             .subscribe(response => {
                 this.isLoading = false;
-                let downloadUrl: string = `/remsng/quarterlyreport/${response.data}`;
-                window.open(downloadUrl);
+               // let downloadUrl: string = `/remsng/quarterlyreport/${response.data}`;
+               // window.open(downloadUrl);
+
+                FileSaver.saveAs(response, this.startDate + '-' + this.endDate + 'reportbreakDownseperate' + '.xlsx');
             }, error => {
                 this.isLoading = false;
                 this.toasterService.pop('error', 'Error', error);

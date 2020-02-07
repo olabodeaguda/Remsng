@@ -30,9 +30,13 @@ namespace RemsNG.Data.Repository
             var dnBtwDate = await db.Set<DemandNoticeTaxpayer>()
                 .FromSql(qry).ToArrayAsync();
 
+
+            long[] d = dnBtwDate.Select(s => s.BillingNumber).ToArray();
+
             // get all payment made during those period
             var payBtwDate = await db.Set<DemandNoticePaymentHistory>()
-                .Where(x => x.LastModifiedDate >= startDate && x.LastModifiedDate <= endDate && x.PaymentStatus == "APPROVED")
+                .Where(x => x.LastModifiedDate >= startDate && x.LastModifiedDate <= endDate
+                && x.PaymentStatus == "APPROVED" && d.Any(s => s == x.BillingNumber))
                 .ToListAsync();
 
             // merge the bill numbers
@@ -182,8 +186,11 @@ namespace RemsNG.Data.Repository
 
                     foreach (var tm in data)
                     {
-                        tm.amountPaid = (tm.itemAmount / totalAmount) * paymentAmount;
-                        tm.amountPaid = Math.Round(tm.amountPaid, 2);
+                        if (totalAmount > 0)
+                        {
+                            tm.amountPaid = (tm.itemAmount / totalAmount) * paymentAmount;
+                            tm.amountPaid = Math.Round(tm.amountPaid, 2);
+                        }
                         tm.BankName = re.FirstOrDefault().BankName;
                         tm.PaymentDate = re.FirstOrDefault().LastModifiedDate;
                         tm.Reference = re.FirstOrDefault().ReferenceNumber;
