@@ -84,8 +84,8 @@ namespace RemsNG.Infrastructure.Services
                 {
                     Image lcda = Image.GetInstance(_template.LcdaLogo);
                     lcda.SetAbsolutePosition(20, 717);
-                    lcda.ScaleAbsoluteHeight(120);
-                    lcda.ScaleAbsoluteWidth(120);
+                    lcda.ScaleAbsoluteHeight(90);
+                    lcda.ScaleAbsoluteWidth(80);
 
                     document.Add(lcda);
                 }
@@ -94,8 +94,8 @@ namespace RemsNG.Infrastructure.Services
                 {
                     Image lag = Image.GetInstance(_template.LagosLogo);
                     lag.SetAbsolutePosition(460, 717);
-                    lag.ScaleAbsoluteHeight(120);
-                    lag.ScaleAbsoluteWidth(120);
+                    lag.ScaleAbsoluteHeight(90);
+                    lag.ScaleAbsoluteWidth(80);
                     document.Add(lag);
                 }
             }

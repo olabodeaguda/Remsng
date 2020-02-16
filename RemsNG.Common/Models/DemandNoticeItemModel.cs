@@ -16,6 +16,7 @@ namespace RemsNG.Common.Models
         public Guid TaxpayerId { get; set; }
         public Guid ItemId { get; set; }
         public string ItemName { get; set; }
+        public string ItemCode { get; set; }
         public decimal ItemAmount { get; set; }
         public decimal AmountPaid { get; set; }
         public string ItemStatus { get; set; }

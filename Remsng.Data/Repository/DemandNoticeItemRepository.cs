@@ -50,6 +50,7 @@ namespace RemsNG.Data.Repository
         public async Task<List<DemandNoticeItemModel>> ByBillingNumber(long billingno)
         {
             var result = await db.Set<DemandNoticeItem>()
+                .Include(s => s.Item)
                 .Where(x => x.ItemStatus != "CANCEL" && x.BillingNo == billingno)
                 .Select(x => new DemandNoticeItemModel()
                 {
@@ -66,7 +67,8 @@ namespace RemsNG.Data.Repository
                     ItemName = x.ItemName,
                     Lastmodifiedby = x.Lastmodifiedby,
                     LastModifiedDate = x.LastModifiedDate,
-                    TaxpayerId = x.TaxpayerId
+                    TaxpayerId = x.TaxpayerId,
+                    ItemCode = x.Item.ItemCode
                 }).ToListAsync();
 
             return result;

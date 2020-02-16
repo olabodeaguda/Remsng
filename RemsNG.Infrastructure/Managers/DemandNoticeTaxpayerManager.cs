@@ -195,7 +195,7 @@ namespace RemsNG.Infrastructure.Managers
 
                 dnrm.items = dnitem.Where(r => r.TaxpayerId == dnrm.TaxpayerId).Select(x => new DnReportItemModel()
                 {
-                    itemTitle = x.ItemName,
+                    itemTitle = $"{x.ItemName} - ({x.ItemCode})",
                     itemAmount = x.ItemAmount
                 }).ToList();
 
