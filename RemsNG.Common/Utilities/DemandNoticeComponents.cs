@@ -52,6 +52,7 @@ namespace RemsNG.Common.Utilities
 
             return htmlmarkup;
         }
+
         public static string HtmlBuildBanks(DemandNoticeReportModel dnrm, BankCategory bankCategory, TaxpayerCategoryModel taxpayerCategory)
         {
             List<BankLcdaModel> lst = dnrm.banks;
