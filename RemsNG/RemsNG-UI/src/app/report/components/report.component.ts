@@ -67,10 +67,13 @@ export class ReportComponent implements OnInit {
         } else if (this.endDate.length < 10) {
             this.toasterService.pop('error', 'Error', 'Start Date is required');
             return;
+        }else if(this.selectedYr.length <= 0){
+            this.toasterService.pop('error', 'Error', 'Billing year is required');
+            return;
         }
 
         this.isLoading = true;
-        this.reportService.downloadReport(this.startDate, this.endDate)
+        this.reportService.downloadReport(this.startDate, this.endDate, this.selectedYr)
             .subscribe(response => {
                 this.isLoading = false;
                 FileSaver.saveAs(response, this.startDate + '-' + this.endDate + 'report' + '.xlsx');
@@ -93,10 +96,13 @@ export class ReportComponent implements OnInit {
         } else if (this.endDate.length < 10) {
             this.toasterService.pop('error', 'Error', 'Start Date is required');
             return;
+        } else if(this.selectedYr.length <= 0){
+            this.toasterService.pop('error', 'Error', 'Billing year is required');
+            return;
         }
 
         this.isLoading = true;
-        this.reportService.downloadReportBreakDown(this.startDate, this.endDate)
+        this.reportService.downloadReportBreakDown(this.startDate, this.endDate, this.selectedYr)
             .subscribe(response => {
                 this.isLoading = false;
                 FileSaver.saveAs(response, this.startDate + '-' + this.endDate + 'reportbreakDown' + '.xlsx');
@@ -119,15 +125,15 @@ export class ReportComponent implements OnInit {
         } else if (this.endDate.length < 10) {
             this.toasterService.pop('error', 'Error', 'Start Date is required');
             return;
+        }else if(this.selectedYr.length <= 0){
+            this.toasterService.pop('error', 'Error', 'Billing year is required');
+            return;
         }
 
         this.isLoading = true;
-        this.reportService.downloadReportBreakDownSeperate(this.startDate, this.endDate)
+        this.reportService.downloadReportBreakDownSeperate(this.startDate, this.endDate, this.selectedYr)
             .subscribe(response => {
                 this.isLoading = false;
-               // let downloadUrl: string = `/remsng/quarterlyreport/${response.data}`;
-               // window.open(downloadUrl);
-
                 FileSaver.saveAs(response, this.startDate + '-' + this.endDate + 'reportbreakDownseperate' + '.xlsx');
             }, error => {
                 this.isLoading = false;
@@ -227,10 +233,13 @@ export class ReportComponent implements OnInit {
         } else if (this.endDate.length < 10) {
             this.toasterService.pop('error', 'Error', 'Start Date is required');
             return;
+        }else if(this.selectedYr.length <= 0){
+            this.toasterService.pop('error', 'Error', 'Billing year is required');
+            return;
         }
         
         this.isLoading = true;
-        this.reportService.reportByWard(this.startDate, this.endDate)
+        this.reportService.reportByWard(this.startDate, this.endDate, this.selectedYr)
             .subscribe(response => {
                 this.isLoading = false;
                 FileSaver.saveAs(response, this.selectedYr + 'reportbyward' + '.xlsx');
@@ -253,11 +262,13 @@ export class ReportComponent implements OnInit {
         } else if (this.endDate.length < 10) {
             this.toasterService.pop('error', 'Error', 'Start Date is required');
             return;
+        }else if(this.selectedYr.length <= 0){
+            this.toasterService.pop('error', 'Error', 'Billing year is required');
+            return;
         }
-        console.log(this.selectCategory);
 
         this.isLoading = true;
-        this.reportService.downloadReportByCategory(this.startDate, this.endDate, this.selectCategory)
+        this.reportService.downloadReportByCategory(this.startDate, this.endDate, this.selectCategory,this.selectedYr)
             .subscribe(response => {
                 this.isLoading = false;
                 FileSaver.saveAs(response, this.startDate + '-' + this.endDate + 'report' + '.xlsx');
@@ -280,10 +291,13 @@ export class ReportComponent implements OnInit {
         } else if (this.endDate.length < 10) {
             this.toasterService.pop('error', 'Error', 'Start Date is required');
             return;
+        }else if(this.selectedYr.length <= 0){
+            this.toasterService.pop('error', 'Error', 'Billing year is required');
+            return;
         }
 
         this.isLoading = true;
-        this.reportService.downloadReportByCategoryExt(this.startDate, this.endDate, this.selectCategory)
+        this.reportService.downloadReportByCategoryExt(this.startDate, this.endDate, this.selectCategory, this.selectedYr)
             .subscribe(response => {
                 this.isLoading = false;
                 FileSaver.saveAs(response, this.startDate + '-' + this.endDate + 'report' + '.xlsx');

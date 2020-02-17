@@ -7,8 +7,8 @@ export class ReportService {
     constructor(private dateService: DataService) {
     }
 
-    downloadReport(startDate: string, endDate: string) {
-        return this.dateService.getBlob('report/revenue/' + startDate + '/' + endDate)
+    downloadReport(startDate: string, endDate: string, billingYr: string) {
+        return this.dateService.getBlob('report/revenue/' + startDate + '/' + endDate+ '/'+ billingYr)
         .catch(error => this.dateService.handleError(error));
     }
 
@@ -17,18 +17,18 @@ export class ReportService {
         .catch(error => this.dateService.handleError(error));
     }
 
-    downloadReportBreakDown(startDate: string, endDate: string) {
-        return this.dateService.getBlob('report/outstandingbybillno/' + startDate + '/' + endDate)
+    downloadReportBreakDown(startDate: string, endDate: string, billingYr: string) {
+        return this.dateService.getBlob('report/outstandingbybillno/' + startDate + '/' + endDate+ '/'+ billingYr)
         .catch(error => this.dateService.handleError(error));
     }
 
-    downloadReportByCategory(startDate: string, endDate: string, category: string) {
-        return this.dateService.getBlob2('report/category/' + startDate + '/' + endDate, category)
+    downloadReportByCategory(startDate: string, endDate: string, category: string, billingYr: string) {
+        return this.dateService.getBlob2('report/category/' + startDate + '/' + endDate, category+ '/'+ billingYr)
         .catch(error => this.dateService.handleError(error));
     }
 
-    downloadReportByCategoryExt(startDate: string, endDate: string, category: string) {
-        return this.dateService.getBlob2('report/categorydetails/' + startDate + '/' + endDate, category)
+    downloadReportByCategoryExt(startDate: string, endDate: string, category: string, billingYr: string) {
+        return this.dateService.getBlob2('report/categorydetails/' + startDate + '/' + endDate+ '/'+ billingYr, category)
         .catch(error => this.dateService.handleError(error));
     }
 
@@ -37,8 +37,8 @@ export class ReportService {
         .catch(error => this.dateService.handleError(error));
     }
 
-    downloadReportBreakDownSeperate(startDate: string, endDate: string) {
-        return this.dateService.get('report/outstandingbybillnoseperate/' + startDate + '/' + endDate)
+    downloadReportBreakDownSeperate(startDate: string, endDate: string, billingYr: string) {
+        return this.dateService.getBlob('report/outstandingbybillnoseperate/' + startDate + '/' + endDate+ '/'+ billingYr)
         .catch(error => this.dateService.handleError(error));
     }
 
@@ -59,8 +59,8 @@ export class ReportService {
         .catch(error => this.dateService.handleError(error));
     }
 
-    reportByWard(startDate: string, endDate: string) {
-        return this.dateService.getBlob('report/byward/' + startDate + '/' + endDate)
+    reportByWard(startDate: string, endDate: string, billingYr: string) {
+        return this.dateService.getBlob('report/byward/' + startDate + '/' + endDate+ '/'+ billingYr)
             .catch(error => this.dateService.handleError(error));
     }
 

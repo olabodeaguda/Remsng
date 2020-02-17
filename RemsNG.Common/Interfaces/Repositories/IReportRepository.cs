@@ -9,7 +9,9 @@ namespace RemsNG.Common.Interfaces.Repositories
     public interface IReportRepository
     {
         Task<List<ItemReportSummaryModel>> ByDate(DateTime startDate, DateTime endDate);
+        Task<List<ItemReportSummaryModel>> ByDate(DateTime startDate, DateTime endDate, int billingYr);
         Task<List<ChartReportModel>> ReportByYear();
         Task<(long[] billNumbers, Guid[] taxpayerIds)> AllIdsByDate(DateTime startDate, DateTime endDate);
+        Task<(long[] billNumbers, Guid[] taxpayerIds)> AllIdsByDate(DateTime startDate, DateTime endDate, int billingYr);
     }
 }

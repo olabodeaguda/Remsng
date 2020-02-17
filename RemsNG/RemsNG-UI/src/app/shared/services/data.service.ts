@@ -73,6 +73,20 @@ export class DataService {
         };
         return this.http.get((this.appConfig.BASE_URL + url), options);
     }
+    
+
+    getBlobYr(url, billingYr): Observable<any> {
+        const tk: UserModel = this.storageService.get();
+
+        const options = {
+            headers: new HttpHeaders({
+                'Authorization': 'Bearer ' + tk.tk,
+                'billingyr': billingYr
+            })
+            , responseType: 'blob' as 'blob'
+        };
+        return this.http.get((this.appConfig.BASE_URL + url), options);
+    }
 
     getBlob2(url, category): Observable<any> {
         const tk: UserModel = this.storageService.get();
@@ -142,16 +156,15 @@ export class DataService {
         const res = Object.assign(new ResponseModel(), err.error);
         if (err.status === 404) {
             return Observable.throw(res.description || 'Not found exception');
-        } else if (err.status === 401) {
+        } else if (err.status === 401 || err.status === 504) {
             const d = err.error;
-            if (res.code === '09' || res.code === '10' || res.code === '11') {
-                this.toasterService.pop('error', res.description || 'Token has expired');
-                if (res.code === '11') {
-                    this.router.navigate(['/login'])
-                }
-                this.storageService.remove();
+            this.toasterService.pop('error', res.description || 'Token has expired');
+            this.router.navigate(['/login'])
+            this.storageService.remove();
+            if(err.status === 401){
+                return Observable.throw(res.description || 'Token has expired');
             }
-            return Observable.throw(res.description || 'Token has expired');
+            return Observable.throw(res.description || 'Connection to the server failed');
         } else if (err.status === 403) {
             if (res.code === '09' || res.code === '10' || res.code === '11') {
                 this.toasterService.pop('error', res.description || 'You have not permission to access this request');
@@ -169,7 +182,9 @@ export class DataService {
             return Observable.throw(res.description || 'Internal server error occur. Please contact administrator');
         } else if (err.status === 409) {
             return Observable.throw(res.description || 'Internal server error occur. Please contact administrator');
-        } else {
+        } else if (err.status === 200) {
+            return Observable.throw(res.description || 'Internal server error occur. Please contact administrator');
+        }else {
             return Observable.throw(res.description || 'Connection to the server failed');
         }
     }

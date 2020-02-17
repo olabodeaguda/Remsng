@@ -33,9 +33,20 @@ namespace RemsNG.Infrastructure.Managers
             return await reportDao.AllIdsByDate(startDate, endDate);
         }
 
+        public async Task<(long[] billNumbers, Guid[] taxpayerIds)> AllIdsByDate(DateTime startDate, DateTime endDate, int billingYr)
+        {
+            return await reportDao.AllIdsByDate(startDate, endDate, billingYr);
+        }
+
         public async Task<List<ItemReportSummaryModel>> ByDate(DateTime startDate, DateTime endDate)
         {
             return await reportDao.ByDate(startDate, endDate);
+        }
+
+
+        public async Task<List<ItemReportSummaryModel>> ByDate(DateTime startDate, DateTime endDate, int billingYr)
+        {
+            return await reportDao.ByDate(startDate, endDate, billingYr);
         }
 
         public async Task<List<ChartReportModel>> ReportByCurrentYear()
@@ -174,5 +185,90 @@ namespace RemsNG.Infrastructure.Managers
 
             return lst;
         }
+
+
+        public async Task<List<ItemReportSummaryModel>> GetReportByCategory(DateTime startDate, DateTime endDate, string category, int billingYr)
+        {
+            var ids = await reportDao.AllIdsByDate(startDate, endDate, billingYr);
+            if (ids.billNumbers.Length <= 0)
+                throw new Exception("Empty Record");
+
+            List<ItemReportSummaryModel> lst = new List<ItemReportSummaryModel>();
+
+            var items = await dnitemDao.ReportByCatgoryExt(ids.billNumbers);
+            if (items.Length > 0 && !string.IsNullOrEmpty(category))
+            {
+                var itm = items.Where(x => x.category.Equals(category, StringComparison.OrdinalIgnoreCase)).ToList();
+                if (itm.Count > 0)
+                {
+                    lst.AddRange(itm.Select(s => new ItemReportSummaryModel
+                    {
+                        id = s.Id,
+                        itemAmount = s.ItemAmount,
+                        amountPaid = s.AmountPaid,
+                        billingNo = s.BillingNo,
+                        category = "ITEMS",
+                        wardId = Guid.Empty,
+                        wardName = s.wardName,
+                        taxpayersName = s.TaxpayerName,
+                        itemCode = s.ItemName,
+                        itemDescription = s.ItemName,
+                        lastModifiedDate = s.LastModifiedDate ?? s.DateCreated,
+                        addressName = s.AddressName,
+                        BillingDate = s.DateCreated.Value
+                    }));
+                }
+            }
+
+            var arrears = await dnArrearsDao.ReportByCategoryExt(ids.taxpayerIds);
+            if (arrears.Count > 0 && !string.IsNullOrEmpty(category))
+            {
+                var itm = arrears.Where(x => x.Category.Equals(category, StringComparison.OrdinalIgnoreCase)).ToList();
+                if (itm.Count > 0)
+                {
+                    lst.AddRange(itm.Select(s => new ItemReportSummaryModel
+                    {
+                        id = s.Id,
+                        itemAmount = s.TotalAmount,
+                        amountPaid = s.AmountPaid,
+                        billingNo = s.BillingNo,
+                        category = "ARREARS",
+                        wardName = s.WardName,
+                        taxpayersName = s.TaxpayerName,
+                        lastModifiedDate = s.LastModifiedDate ?? s.DateCreated,
+                        addressName = s.AddressName,
+                        BillingDate = s.DateCreated.Value
+                    }));
+                }
+            }
+
+            var penalty = await dnPenaltyDao.ReportByCategoryExt(ids.taxpayerIds);
+            if (penalty.Count > 0 && !string.IsNullOrEmpty(category))
+            {
+                var itm = penalty.Where(x => x.category.Equals(category, StringComparison.OrdinalIgnoreCase)).ToList();
+                if (itm.Count > 0)
+                {
+                    lst.AddRange(itm.Select(s => new ItemReportSummaryModel
+                    {
+                        id = s.Id,
+                        itemAmount = s.TotalAmount,
+                        amountPaid = s.AmountPaid,
+                        billingNo = s.BillingNo,
+                        category = "PENALTY",
+                        wardName = s.wardName,
+                        taxpayersName = s.TaxpayerName,
+                        lastModifiedDate = s.LastModifiedDate ?? s.DateCreated,
+                        addressName = s.Address,
+                        BillingDate = s.DateCreated.Value
+                    }));
+                }
+            }
+
+
+
+
+            return lst;
+        }
+
     }
 }

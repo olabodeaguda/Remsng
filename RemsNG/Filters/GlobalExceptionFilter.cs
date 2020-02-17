@@ -17,7 +17,6 @@ namespace RemsNG.Filters
     {
         public void OnException(ExceptionContext context)
         {
-            // _log.Information($"Error occured. Error details: {context.Exception.Message}, Stack Trace: {context.Exception.StackTrace}, Inner Exception Details: " + (context.Exception.InnerException == null ? context.Exception.Message : context.Exception.InnerException.Message));
             var content = GetStatusCode<object>(context.Exception);
             HttpResponse response = context.HttpContext.Response;
             response.StatusCode = (int)content.Item2;

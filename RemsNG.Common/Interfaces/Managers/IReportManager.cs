@@ -8,7 +8,9 @@ namespace RemsNG.Common.Interfaces.Managers
     public interface IReportManager
     {
         Task<(long[] billNumbers, Guid[] taxpayerIds)> AllIdsByDate(DateTime startDate, DateTime endDate);
+        Task<(long[] billNumbers, Guid[] taxpayerIds)> AllIdsByDate(DateTime startDate, DateTime endDate, int billingYr);
         Task<List<ItemReportSummaryModel>> ByDate(DateTime startDate, DateTime endDate);
+        Task<List<ItemReportSummaryModel>> ByDate(DateTime startDate, DateTime endDate, int billingYr);
         Task<List<ChartReportModel>> ReportByCurrentYear();
         Task<List<DemandNoticeItemModel>> ReportitemsByCategory(DateTime startDate, DateTime endDate);
         Task<List<DemandNoticeArrearsModel>> ReportArrearsByCategory(DateTime startDate, DateTime endDate);
@@ -20,6 +22,7 @@ namespace RemsNG.Common.Interfaces.Managers
         Task<List<DemandNoticePenaltyModel>> ReportPenaltyByCategory(Guid[] taxpayerIds);
 
         Task<List<ItemReportSummaryModel>> GetReportByCategory(DateTime startDate, DateTime endDate, string category);
+        Task<List<ItemReportSummaryModel>> GetReportByCategory(DateTime startDate, DateTime endDate, string category, int billingYr);
 
 
     }

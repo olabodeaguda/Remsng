@@ -764,7 +764,7 @@ namespace RemsNG.Infrastructure.Services
                 rowbody.CreateCell(colCount++).SetCellValue(String.Format("{0:n}", decimal.Round(tm.Amount, 2)));
                 rowbody.CreateCell(colCount++).SetCellValue(tm.PaymentMode);
                 rowbody.CreateCell(colCount++).SetCellValue(tm.ReferenceNumber);
-                rowbody.CreateCell(colCount++).SetCellValue("xxx");
+                rowbody.CreateCell(colCount++).SetCellValue(tm.BankName);
                 rowbody.CreateCell(colCount++).SetCellValue(tm.PaymentStatus);
                 #endregion
             }
