@@ -2,8 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Data;
+using RemsNG.Data.Entities;
 using System;
+using System.Linq;
 
 namespace RemsNG.Extensions
 {
@@ -26,5 +29,6 @@ namespace RemsNG.Extensions
                 context.Database.Migrate();
             }
         }
+
     }
 }

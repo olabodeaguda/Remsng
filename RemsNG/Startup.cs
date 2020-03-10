@@ -107,6 +107,7 @@ namespace RemsNG
             {
                 FileProvider = new PhysicalFileProvider(Configuration.GetValue<string>("QuarterlyReportPath"))
             });
+
             app.UseStaticFiles();
             app.UseSwagger();
             app.UseSwaggerUI(c =>

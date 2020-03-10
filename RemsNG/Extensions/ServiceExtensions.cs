@@ -127,8 +127,8 @@ namespace RemsNG.Extensions
                 });
                 //c.DescribeAllEnumsAsStrings();
                 // Configure Swagger to use the xml documentation file
-                var xmlFile = Path.ChangeExtension(typeof(Startup).Assembly.Location, ".xml");
-                c.IncludeXmlComments(xmlFile);
+                //var xmlFile = Path.ChangeExtension(typeof(Startup).Assembly.Location, ".xml");
+                //c.IncludeXmlComments(xmlFile);
 
                 c.AddSecurityDefinition("Bearer", new ApiKeyScheme
                 {

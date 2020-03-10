@@ -239,6 +239,7 @@ namespace RemsNG.Infrastructure.Managers
                 throw;
             }
         }
+
         public async Task<List<DemandNoticeTaxpayersModel>> GetDNTaxpayerByBatchNoAsync(string batchno)
         {
             return await dntDao.GetDNTaxpayerByBatchNoAsync(batchno);

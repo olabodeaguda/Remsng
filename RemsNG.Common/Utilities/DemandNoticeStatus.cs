@@ -15,6 +15,7 @@
         PAID,
         ERROR,
         CLOSED,
-        OVERPAYMENT
+        OVERPAYMENT,
+        APPROVED
     }
 }
