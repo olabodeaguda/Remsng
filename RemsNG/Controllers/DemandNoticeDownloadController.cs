@@ -212,8 +212,10 @@ namespace RemsNG.Controllers
         [HttpGet("sync")]
         public async Task<IActionResult> SyncPaymentStatus()
         {
-            var list = await _dbContext.Set<DemandNoticeTaxpayer>().Where(s => s.BillingYr == 2020 && s.DemandNoticeStatus == "PAID").ToListAsync();
-            var payment = await _dbContext.Set<DemandNoticePaymentHistory>().Where(x => list.Any(p => p.BillingNumber == x.BillingNumber)).ToListAsync();
+            string[] statuss = { "OVERPAYMENT", "PAID", "PART_PAYMENT", "None" };
+            var list = await _dbContext.Set<DemandNoticeTaxpayer>().Where(s => s.BillingYr == 2020 && statuss.Any(d => d == s.DemandNoticeStatus)).ToListAsync();
+            var payment = await _dbContext.Set<DemandNoticePaymentHistory>()
+                .Where(x => list.Any(p => p.BillingNumber == x.BillingNumber) && x.PaymentStatus == "APPROVED").ToListAsync();
 
             foreach (var tm in list)
             {
@@ -224,6 +226,9 @@ namespace RemsNG.Controllers
                     decimal finalTotal = dnrp.items.Sum(x => x.itemAmount) + dnrp.arrears + dnrp.penalty + dnrp.charges;
                     DemandNoticeStatus status = default(DemandNoticeStatus);
 
+                    if (amountPaid == 0)
+                        status = DemandNoticeStatus.PENDING;
+                    else
                     if (amountPaid > finalTotal)
                         status = DemandNoticeStatus.OVERPAYMENT;
                     else if (finalTotal == amountPaid)
