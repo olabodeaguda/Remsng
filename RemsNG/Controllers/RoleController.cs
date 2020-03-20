@@ -165,14 +165,14 @@ namespace RemsNG.Controllers
                 });
             }
 
-            if (role.DomainId == Guid.Empty)
-            {
-                return NotFound(new Response()
-                {
-                    code = MsgCode_Enum.WRONG_CREDENTIALS,
-                    description = "User Domain can not be found.. Please log in again"
-                });
-            }
+            //if (role.DomainId == Guid.Empty)
+            //{
+            //    return NotFound(new Response()
+            //    {
+            //        code = MsgCode_Enum.WRONG_CREDENTIALS,
+            //        description = "User Domain can not be found.. Please log in again"
+            //    });
+            //}
 
             if (role.Id == Guid.Empty)
             {
