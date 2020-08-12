@@ -64,11 +64,7 @@ const appRoutes: Routes = [
         SharedModule,
         RouterModule.forRoot(appRoutes, { useHash: true })
     ],
-    providers: [ToasterService, AppSettings, DataService, StorageService, {
-        provide: HTTP_INTERCEPTORS,
-        useClass: GlobalInterceptorService,
-        multi: true,
-    }],
+    providers: [ToasterService, AppSettings, DataService, StorageService],
     bootstrap: [AppComponent],
     exports: []
 })

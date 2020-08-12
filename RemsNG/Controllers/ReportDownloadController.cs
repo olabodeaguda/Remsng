@@ -41,8 +41,8 @@ namespace RemsNG.Controllers
         }
 
         [RemsRequirementAttribute("DOWNLOAD_REPORT")]
-        [HttpGet("revenue/{startDate}/{endDate}/{billingyr}")]
-        public async Task<IActionResult> Get(string startDate, string endDate, int billingyr)
+        [HttpGet("revenue/{startDate}/{endDate}")]
+        public async Task<IActionResult> Get(string startDate, string endDate, [FromQuery]int billingyr)
         {
             if (string.IsNullOrEmpty(startDate))
             {

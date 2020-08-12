@@ -1056,12 +1056,11 @@ AppComponent = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__demand_notice_demand_notice_module__ = __webpack_require__("../../../../../src/app/demand-notice/demand-notice.module.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_26__companyitems_companyitem_module__ = __webpack_require__("../../../../../src/app/companyitems/companyitem.module.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_27__angular_common_http__ = __webpack_require__("../../../common/@angular/common/http.es5.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_28__shared_services_global_interceptor_service__ = __webpack_require__("../../../../../src/app/shared/services/global-interceptor.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_29__media_files_media_files_module__ = __webpack_require__("../../../../../src/app/media-files/media-files.module.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_30__address_AddressGlobal_module__ = __webpack_require__("../../../../../src/app/address/AddressGlobal.module.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__Dashboard_components_dashboard_index_component__ = __webpack_require__("../../../../../src/app/Dashboard/components/dashboard-index.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__reciept_reciept_module__ = __webpack_require__("../../../../../src/app/reciept/reciept.module.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_33__report_report_module__ = __webpack_require__("../../../../../src/app/report/report.module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_28__media_files_media_files_module__ = __webpack_require__("../../../../../src/app/media-files/media-files.module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_29__address_AddressGlobal_module__ = __webpack_require__("../../../../../src/app/address/AddressGlobal.module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_30__Dashboard_components_dashboard_index_component__ = __webpack_require__("../../../../../src/app/Dashboard/components/dashboard-index.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__reciept_reciept_module__ = __webpack_require__("../../../../../src/app/reciept/reciept.module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__report_report_module__ = __webpack_require__("../../../../../src/app/report/report.module.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1101,10 +1100,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 
 
-
-
 var appRoutes = [
-    { path: '', component: __WEBPACK_IMPORTED_MODULE_31__Dashboard_components_dashboard_index_component__["a" /* DashboardIndexComponent */] }
+    { path: '', component: __WEBPACK_IMPORTED_MODULE_30__Dashboard_components_dashboard_index_component__["a" /* DashboardIndexComponent */] }
 ];
 var AppModule = (function () {
     function AppModule() {
@@ -1118,10 +1115,10 @@ AppModule = __decorate([
         ],
         imports: [
             __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__["a" /* BrowserModule */],
-            __WEBPACK_IMPORTED_MODULE_4__login_login_module__["a" /* LoginModule */], __WEBPACK_IMPORTED_MODULE_33__report_report_module__["a" /* ReportModule */],
-            __WEBPACK_IMPORTED_MODULE_5__Dashboard_dashboard_module__["a" /* DashBoardModule */], __WEBPACK_IMPORTED_MODULE_32__reciept_reciept_module__["a" /* RecieptModule */],
-            __WEBPACK_IMPORTED_MODULE_6__angular_forms__["a" /* FormsModule */], __WEBPACK_IMPORTED_MODULE_29__media_files_media_files_module__["a" /* MediaFilesModule */], __WEBPACK_IMPORTED_MODULE_30__address_AddressGlobal_module__["a" /* AddressGlobalModule */],
-            __WEBPACK_IMPORTED_MODULE_13__domain_domain_module__["a" /* DomainModule */], __WEBPACK_IMPORTED_MODULE_27__angular_common_http__["c" /* HttpClientModule */],
+            __WEBPACK_IMPORTED_MODULE_4__login_login_module__["a" /* LoginModule */], __WEBPACK_IMPORTED_MODULE_32__report_report_module__["a" /* ReportModule */],
+            __WEBPACK_IMPORTED_MODULE_5__Dashboard_dashboard_module__["a" /* DashBoardModule */], __WEBPACK_IMPORTED_MODULE_31__reciept_reciept_module__["a" /* RecieptModule */],
+            __WEBPACK_IMPORTED_MODULE_6__angular_forms__["a" /* FormsModule */], __WEBPACK_IMPORTED_MODULE_28__media_files_media_files_module__["a" /* MediaFilesModule */], __WEBPACK_IMPORTED_MODULE_29__address_AddressGlobal_module__["a" /* AddressGlobalModule */],
+            __WEBPACK_IMPORTED_MODULE_13__domain_domain_module__["a" /* DomainModule */], __WEBPACK_IMPORTED_MODULE_27__angular_common_http__["b" /* HttpClientModule */],
             __WEBPACK_IMPORTED_MODULE_16__ward_ward_module__["a" /* WardModule */], __WEBPACK_IMPORTED_MODULE_17__user_user_module__["a" /* UserModule */], __WEBPACK_IMPORTED_MODULE_19__street_street_module__["a" /* StreetModule */], __WEBPACK_IMPORTED_MODULE_21__Category_category_module__["a" /* CategoryModule */],
             __WEBPACK_IMPORTED_MODULE_9_angular2_toaster__["a" /* ToasterModule */], __WEBPACK_IMPORTED_MODULE_15__lcda_lcda_module__["a" /* LCDAModule */], __WEBPACK_IMPORTED_MODULE_18__role_role_module__["a" /* RoleModule */], __WEBPACK_IMPORTED_MODULE_22__item_penalty_itempenalty_module__["a" /* ItemPenaltyModule */], __WEBPACK_IMPORTED_MODULE_26__companyitems_companyitem_module__["a" /* CompanyItemModule */],
             __WEBPACK_IMPORTED_MODULE_14__angular_platform_browser_animations__["a" /* BrowserAnimationsModule */], __WEBPACK_IMPORTED_MODULE_20__items_item_module__["a" /* ItemModule */], __WEBPACK_IMPORTED_MODULE_23__taxpayers_taxpayer_module__["a" /* TaxPayersModule */], __WEBPACK_IMPORTED_MODULE_24__company_company_module__["a" /* CompanyModule */],
@@ -1136,11 +1133,7 @@ AppModule = __decorate([
             __WEBPACK_IMPORTED_MODULE_7__shared_shared_module__["a" /* SharedModule */],
             __WEBPACK_IMPORTED_MODULE_2__angular_router__["c" /* RouterModule */].forRoot(appRoutes, { useHash: true })
         ],
-        providers: [__WEBPACK_IMPORTED_MODULE_9_angular2_toaster__["b" /* ToasterService */], __WEBPACK_IMPORTED_MODULE_10__shared_models_app_settings__["a" /* AppSettings */], __WEBPACK_IMPORTED_MODULE_11__shared_services_data_service__["a" /* DataService */], __WEBPACK_IMPORTED_MODULE_12__shared_services_storage_service__["a" /* StorageService */], {
-                provide: __WEBPACK_IMPORTED_MODULE_27__angular_common_http__["a" /* HTTP_INTERCEPTORS */],
-                useClass: __WEBPACK_IMPORTED_MODULE_28__shared_services_global_interceptor_service__["a" /* GlobalInterceptorService */],
-                multi: true,
-            }],
+        providers: [__WEBPACK_IMPORTED_MODULE_9_angular2_toaster__["b" /* ToasterService */], __WEBPACK_IMPORTED_MODULE_10__shared_models_app_settings__["a" /* AppSettings */], __WEBPACK_IMPORTED_MODULE_11__shared_services_data_service__["a" /* DataService */], __WEBPACK_IMPORTED_MODULE_12__shared_services_storage_service__["a" /* StorageService */]],
         bootstrap: [__WEBPACK_IMPORTED_MODULE_3__app_component__["a" /* AppComponent */]],
         exports: []
     })
@@ -8946,19 +8939,19 @@ var DataService = (function () {
             'Content-Type': 'application/json'
         };
         return this.http.get(this.appConfig.BASE_URL + url, {
-            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["d" /* HttpHeaders */](headerObj)
+            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["c" /* HttpHeaders */](headerObj)
         });
     };
     DataService.prototype.get = function (url) {
         this.addBearer();
         return this.http.get(this.appConfig.BASE_URL + url, {
-            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["d" /* HttpHeaders */](this.getHeader())
+            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["c" /* HttpHeaders */](this.getHeader())
         });
     };
     DataService.prototype.getBlob = function (url) {
         var tk = this.storageService.get();
         var options = {
-            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["d" /* HttpHeaders */]({
+            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["c" /* HttpHeaders */]({
                 'Authorization': 'Bearer ' + tk.tk
             }),
             responseType: 'blob'
@@ -8968,7 +8961,7 @@ var DataService = (function () {
     DataService.prototype.getBlobYr = function (url, billingYr) {
         var tk = this.storageService.get();
         var options = {
-            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["d" /* HttpHeaders */]({
+            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["c" /* HttpHeaders */]({
                 'Authorization': 'Bearer ' + tk.tk,
                 'billingyr': billingYr
             }),
@@ -8979,7 +8972,7 @@ var DataService = (function () {
     DataService.prototype.getBlob2 = function (url, category) {
         var tk = this.storageService.get();
         var options = {
-            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["d" /* HttpHeaders */]({
+            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["c" /* HttpHeaders */]({
                 'Authorization': 'Bearer ' + tk.tk,
                 'category': category
             }),
@@ -8990,7 +8983,7 @@ var DataService = (function () {
     DataService.prototype.postBlob = function (url, payload) {
         var tk = this.storageService.get();
         var options = {
-            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["d" /* HttpHeaders */]({
+            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["c" /* HttpHeaders */]({
                 'Authorization': 'Bearer ' + tk.tk
             }),
             responseType: 'blob'
@@ -9000,29 +8993,29 @@ var DataService = (function () {
     DataService.prototype.post = function (url, body) {
         this.addBearer();
         return this.http.post(this.appConfig.BASE_URL + url, body, {
-            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["d" /* HttpHeaders */](this.getHeader())
+            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["c" /* HttpHeaders */](this.getHeader())
         });
     };
     DataService.prototype.postWithoutHeader = function (url, body) {
         return this.http.post(this.appConfig.BASE_URL + url, body, {
-            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["d" /* HttpHeaders */](this.getHeader())
+            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["c" /* HttpHeaders */](this.getHeader())
         });
     };
     DataService.prototype.postWithoutHeader1 = function (url, body, hd) {
         return this.http.post(this.appConfig.BASE_URL + url, body, {
-            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["d" /* HttpHeaders */](hd)
+            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["c" /* HttpHeaders */](hd)
         });
     };
     DataService.prototype.put = function (url, body) {
         this.addBearer();
         return this.http.put(this.appConfig.BASE_URL + url, body, {
-            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["d" /* HttpHeaders */](this.getHeader())
+            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["c" /* HttpHeaders */](this.getHeader())
         });
     };
     DataService.prototype.delete = function (url) {
         this.addBearer();
         return this.http.delete(this.appConfig.BASE_URL + url, {
-            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["d" /* HttpHeaders */](this.getHeader())
+            headers: new __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["c" /* HttpHeaders */](this.getHeader())
         });
     };
     DataService.prototype.translateResponse = function (result) {
@@ -9077,60 +9070,11 @@ var DataService = (function () {
 }());
 DataService = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["b" /* HttpClient */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["b" /* HttpClient */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__angular_router__["b" /* Router */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__angular_router__["b" /* Router */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_4__models_app_settings__["a" /* AppSettings */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__models_app_settings__["a" /* AppSettings */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_3_angular2_toaster__["b" /* ToasterService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3_angular2_toaster__["b" /* ToasterService */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_6__storage_service__["a" /* StorageService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_6__storage_service__["a" /* StorageService */]) === "function" && _e || Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["a" /* HttpClient */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_7__angular_common_http__["a" /* HttpClient */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__angular_router__["b" /* Router */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__angular_router__["b" /* Router */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_4__models_app_settings__["a" /* AppSettings */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__models_app_settings__["a" /* AppSettings */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_3_angular2_toaster__["b" /* ToasterService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3_angular2_toaster__["b" /* ToasterService */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_6__storage_service__["a" /* StorageService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_6__storage_service__["a" /* StorageService */]) === "function" && _e || Object])
 ], DataService);
 
 var _a, _b, _c, _d, _e;
 //# sourceMappingURL=data.service.js.map
-
-/***/ }),
-
-/***/ "../../../../../src/app/shared/services/global-interceptor.service.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return GlobalInterceptorService; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/@angular/core.es5.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common_http__ = __webpack_require__("../../../common/@angular/common/http.es5.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__storage_service__ = __webpack_require__("../../../../../src/app/shared/services/storage.service.ts");
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-
-
-
-var GlobalInterceptorService = (function () {
-    function GlobalInterceptorService(storageservice) {
-        this.storageservice = storageservice;
-    }
-    GlobalInterceptorService.prototype.intercept = function (req, next) {
-        var _this = this;
-        return next
-            .handle(req)
-            .do(function (event) {
-            if (event instanceof __WEBPACK_IMPORTED_MODULE_1__angular_common_http__["e" /* HttpResponse */]) {
-                if (event.headers.has('new-t')) {
-                    var token = event.headers.get('new-t');
-                    _this.storageservice.updateToken(token);
-                }
-            }
-        });
-    };
-    return GlobalInterceptorService;
-}());
-GlobalInterceptorService = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_2__storage_service__["a" /* StorageService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__storage_service__["a" /* StorageService */]) === "function" && _a || Object])
-], GlobalInterceptorService);
-
-var _a;
-//# sourceMappingURL=global-interceptor.service.js.map
 
 /***/ }),
 

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Models;
@@ -14,11 +13,14 @@ namespace RemsNG.Data.Repository
 {
     public class TaxpayerRepository : ITaxpayerRepository
     {
-        private readonly IHttpContextAccessor _httpAccessor;
+        //private readonly IHttpContextAccessor _httpAccessor;
         private readonly DbContext db;
-        public TaxpayerRepository(DbContext _db, IHttpContextAccessor httpContextAccessor)
+        public TaxpayerRepository(DbContext _db
+            //, 
+            //IHttpContextAccessor httpContextAccessor
+            )
         {
-            _httpAccessor = httpContextAccessor;
+           // _httpAccessor = httpContextAccessor;
             db = _db;
         }
 
@@ -715,7 +717,7 @@ namespace RemsNG.Data.Repository
             {
                 tm.StreetId = streetId;
                 tm.LastModifiedDate = DateTime.Now;
-                tm.Lastmodifiedby = _httpAccessor.HttpContext.User.Identity.Name;
+               // tm.Lastmodifiedby = _httpAccessor.HttpContext.User.Identity.Name;
             }
 
             await db.SaveChangesAsync();
