@@ -71,7 +71,7 @@ namespace RemsNG.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromHeader]string value)
         {
-            if (DateTime.Now.CompareTo(new DateTime(2021, 2, 27)) > 0)
+            if (DateTime.Now.CompareTo(new DateTime(2022, 2, 27)) > 0)
             {
                 return BadRequest(new Response()
                 {
@@ -93,6 +93,7 @@ namespace RemsNG.Controllers
                 return NotFound(new Response() { code = MsgCode_Enum.NOTFOUND, data = $"{ln.username} does not exist" });
             }
 
+            string s = Common.Utilities.EncryptDecryptUtils.ToHexString(ln.pwd);
             if (user.PasswordHash != Common.Utilities.EncryptDecryptUtils.ToHexString(ln.pwd))
             {
                 logger.LogError($"{ln.username} password is incorrect", new object[] { ln.username });
