@@ -1083,6 +1083,10 @@ namespace RemsNG.Infrastructure.Services
                         int j = 1;
                         foreach (var sbData in subData)
                         {
+                            if (sbData.Key == 27391)
+                            {
+
+                            }
                             colCount = 0;
                             IRow rowbody = sheet1.CreateRow(rowIndex++);
                             rowbody.CreateCell(colCount++).SetCellValue(j++);
@@ -1252,6 +1256,10 @@ namespace RemsNG.Infrastructure.Services
                         int j = 1;
                         foreach (var sbData in subData)
                         {
+                            if (sbData.Key == 27391)
+                            {
+
+                            }
                             colCount = 0;
                             IRow rowbody = sheet1.CreateRow(rowIndex++);
                             rowbody.CreateCell(colCount++).SetCellValue(j++);

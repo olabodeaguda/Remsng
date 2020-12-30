@@ -55,13 +55,16 @@ namespace RemsNG.Data.Repository
 
         public async Task<(long[] billNumbers, Guid[] taxpayerIds)> AllIdsByDate(DateTime startDate, DateTime endDate, int billingYr)
         {
-            string[] status = { "PAID", "PENDING", "PART_PAYMENT" };
+            string[] status = { "PAID", "PENDING", "PART_PAYMENT", "APPROVED" };
 
             // get pending notice created at that those date
 
+            string sDate = $"{ startDate.ToString("yyyy-MM-dd")} 00:00:00";
+            string eDate = $"{ endDate.AddDays(1).ToString("yyyy-MM-dd")} 00:00:00";
+
             string qry = $"select * from tbl_demandNoticeTaxpayers " +
-                $"where DemandNoticeStatus in ('PAID', 'PENDING', 'PART_PAYMENT')  and billingYr = {billingYr} " +
-                $"and (DateCreated >= CONVERT(varchar,'{startDate.ToString("yyyy-MM-dd")} 12:00:00',120) and DateCreated <= CONVERT(varchar,'{endDate.ToString("yyyy-MM-dd")} 11:59:00',120))";
+                $"where DemandNoticeStatus in ('PAID', 'PENDING', 'PART_PAYMENT', 'APPROVED')  and billingYr = {billingYr} " +
+                $"and (DateCreated >= '{sDate}' and DateCreated < '{eDate}')";
 
             var dnBtwDate = await db.Set<DemandNoticeTaxpayer>()
                 .FromSql(qry).ToArrayAsync();
@@ -92,7 +95,7 @@ namespace RemsNG.Data.Repository
         public async Task<List<ItemReportSummaryModel>> ByDate(DateTime startDate, DateTime endDate)
         {
             var identites = await AllIdsByDate(startDate, endDate);
-            string[] status = { "PAID", "PENDING", "PART_PAYMENT" };
+            string[] status = { "PAID", "PENDING", "PART_PAYMENT", "APPROVED" };
 
             long[] billNUmbers = identites.billNumbers;
             Guid[] txIds = identites.taxpayerIds;
@@ -253,7 +256,7 @@ namespace RemsNG.Data.Repository
         public async Task<List<ItemReportSummaryModel>> ByDate(DateTime startDate, DateTime endDate, int billingYr)
         {
             var identites = await AllIdsByDate(startDate, endDate, billingYr);
-            string[] status = { "PAID", "PENDING", "PART_PAYMENT" };
+            string[] status = { "PAID", "PENDING", "PART_PAYMENT", "APPROVED" };
 
             long[] billNUmbers = identites.billNumbers;
             Guid[] txIds = identites.taxpayerIds;
@@ -361,6 +364,10 @@ namespace RemsNG.Data.Repository
 
             foreach (var item in dats.GroupBy(x => x.billingNo))
             {
+                if(item.Key == 27391)
+                {
+
+                }
                 var re = allPayment.Where(x => x.BillingNumber == item.Key);
                 decimal paymentAmount = re.Sum(x => x.Amount);
                 var data = item.ToList();
@@ -394,13 +401,13 @@ namespace RemsNG.Data.Repository
                     }
                     decimal amt = lst.Sum(s => s.amountPaid);
 
-                    if (amt < totalAmount)
-                    {
-                        var u = lst.FirstOrDefault(x => x.amountPaid < x.itemAmount);
-                        lst.Remove(u);
-                        u.amountPaid = u.amountPaid + (totalAmount - amt);
-                        lst.Add(u);
-                    }
+                    //if (amt < totalAmount)
+                    //{
+                    //    var u = lst.FirstOrDefault(x => x.amountPaid < x.itemAmount);
+                    //    lst.Remove(u);
+                    //    u.amountPaid = u.amountPaid + (totalAmount - amt);
+                    //    lst.Add(u);
+                    //}
 
                     results.AddRange(lst);
                 }

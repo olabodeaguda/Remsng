@@ -111,6 +111,80 @@ namespace RemsNG.Controllers
             //return new ContentResult();
         }
 
+
+        [RemsRequirementAttribute("DOWNLOAD_REPORT")]
+        [HttpGet("revenue/{startDate}/{endDate}/{billingyr}")]
+        public async Task<IActionResult> Get2(string startDate, string endDate, int billingyr)
+        {
+            if (string.IsNullOrEmpty(startDate))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Start date is required"
+                });
+            }
+            else if (string.IsNullOrEmpty(endDate))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "End date is required"
+                });
+            }
+
+            if (billingyr <= default(int))
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.WRONG_CREDENTIALS,
+                    description = "Billing year is required"
+                });
+            }
+
+
+            Guid lcdaId = ClaimExtension.GetDomainId(User.Claims.ToArray());
+            LcdaModel lgda = await lcdaService.Get(lcdaId);
+            if (lgda == null)
+            {
+                return BadRequest(new Response()
+                {
+                    code = MsgCode_Enum.UNKNOWN,
+                    description = $"Log on user unknown"
+                });
+            }
+
+            DateTime sd = DateTime.ParseExact(startDate, "dd-MM-yyyy", null);
+            DateTime ed = DateTime.ParseExact(endDate, "dd-MM-yyyy", null);
+            ed = ed.AddHours(23);
+            ed = ed.AddMinutes(59);
+
+            List<ItemReportSummaryModel> current = await reportService.ByDate(sd, ed, billingyr);
+            //List<ItemReportSummaryModel> previous = await reportService.ByDate(
+            //    new DateTime(sd.Year, 1, 1, 0, 0, 0), sd);
+
+            if (current.Count < 1)
+            {
+                return NotFound(new Response()
+                {
+                    code = MsgCode_Enum.NOTFOUND,
+                    description = "Zero record(s) found"
+                });
+            }
+
+            DomainModel domain = await lcdaService.GetDomain(lgda.Id);
+
+            byte[] result = await excelService.WriteReportSummary(current,
+                (domain == null ? "Unknown" : domain.DomainName), lgda.LcdaName, sd, ed);
+
+            return new FileStreamResult(new MemoryStream(result), "application/octet-stream");
+            //HttpContext.Response.ContentType = "application/octet-stream";
+            //HttpContext.Response.Body.Write(result, 0, result.Length);
+            //return new ContentResult();
+        }
+
+
+
         [RemsRequirementAttribute("DOWNLOAD_REPORT")]
         [HttpGet("outstandingbybillno/{startDate}/{endDate}/{billingyr}")]
         public async Task<IActionResult> GetByBIllNumber(string startDate, string endDate, int billingyr)
