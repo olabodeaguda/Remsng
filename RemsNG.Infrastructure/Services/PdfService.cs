@@ -78,7 +78,7 @@ namespace RemsNG.Infrastructure.Services
             var document = new Document(PageSize.A4);
             PdfWriter.GetInstance(document, memoryStream);
             document.Open();
-            if (templateType == TemplateType.DemandNotice)
+            if (templateType == TemplateType.DemandNotice || templateType == TemplateType.Receipt)
             {
                 if (!string.IsNullOrEmpty(_template.LcdaLogo))
                 {

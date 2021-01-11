@@ -58,35 +58,44 @@ namespace RemsNG.Infrastructure.Managers
 
         public async Task<Response> AddDemandNoticeItem(DemandNoticeTaxpayersModel[] Dntaxpayers)
         {
-            var companyItems = await _companyItemDao.ByTaxpayer(Dntaxpayers.Select(x => x.TaxpayerId).ToArray());
-            if (companyItems.Count <= 0)
+            try
             {
-                return null;
+                var companyItems = await _companyItemDao.ByTaxpayer(Dntaxpayers.Select(x => x.TaxpayerId).ToArray());
+                if (companyItems.Count <= 0)
+                {
+                    return null;
+                }
+
+                var items = Dntaxpayers
+                     .Join(companyItems, dn => dn.TaxpayerId, itm => itm.TaxpayerId, (dn, itm) => new DemandNoticeItemModel
+                     {
+                         TaxpayerId = dn.TaxpayerId,
+                         AmountPaid = 0,
+                         BillingNo = dn.BillingNumber,
+                         CreatedBy = dn.CreatedBy,
+                         DateCreated = DateTime.Now,
+                         DnTaxpayersDetailsId = dn.DnId,
+                         Id = Guid.NewGuid(),
+                         ItemAmount = itm.Amount,
+                         ItemId = itm.ItemId,
+                         ItemName = itm.ItemName,
+                         ItemStatus = "PENDING",
+                         wardName = dn.WardName,
+                         DemandNoticeId = dn.DnId
+
+                     }).ToArray();
+                Response response = await dnDao.Add(items);
+                if (response.code != MsgCode_Enum.SUCCESS)
+                {
+                    logger.LogError($"An error occur while adding demand notice item {response.description}");
+                }
+                return response;
             }
-
-            var items = Dntaxpayers
-                 .Join(companyItems, dn => dn.TaxpayerId, itm => itm.TaxpayerId, (dn, itm) => new DemandNoticeItemModel
-                 {
-                     TaxpayerId = dn.TaxpayerId,
-                     AmountPaid = 0,
-                     BillingNo = dn.BillingNumber,
-                     CreatedBy = dn.CreatedBy,
-                     DateCreated = DateTime.Now,
-                     DnTaxpayersDetailsId = dn.Id,
-                     Id = Guid.NewGuid(),
-                     ItemAmount = itm.Amount,
-                     ItemId = itm.ItemId,
-                     ItemName = itm.ItemName,
-                     ItemStatus = "PENDING",
-                     wardName = dn.WardName,
-
-                 }).ToArray();
-            Response response = await dnDao.Add(items);
-            if (response.code != MsgCode_Enum.SUCCESS)
+            catch (Exception ex)
             {
-                logger.LogError($"An error occur while adding demand notice item {response.description}");
+
+                throw;
             }
-            return response;
         }
     }
 }

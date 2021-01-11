@@ -349,8 +349,8 @@ namespace RemsNG.Data.Repository
                 LastModifiedDate = result.LastModifiedDate,
                 LcdaId = result.LcdaId,
                 Query = result.Query,
-                StreetId = result.StreetId.Value,
-                WardId = result.WardId.Value
+                StreetId = result.StreetId == null ? Guid.Empty : result.StreetId.Value,
+                WardId = result.WardId == null ? Guid.Empty : result.WardId.Value
             };
         }
 

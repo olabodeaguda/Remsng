@@ -61,9 +61,11 @@ namespace RemsNG.Extensions
                         Exception except = context.Exception;
 
                         var (responseModel, statusCode) = GlobalExceptionFilter.GetStatusCode<object>(except);
-                        context.Response.StatusCode = (int)statusCode;
-                        context.Response.ContentType = "application/json";
-
+                        if (!context.Response.HasStarted)
+                        {
+                            context.Response.StatusCode = (int)statusCode;
+                            context.Response.ContentType = "application/json";
+                        }
                         var responseJson = JsonConvert.SerializeObject(responseModel, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore });
                         context.Fail(responseJson);
                         return Task.FromException(except);// CompletedTask;

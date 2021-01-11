@@ -25,6 +25,6 @@ namespace RemsNG.Common.Models
 
     public enum TemplateType
     {
-        DemandNotice, Reminder
+        DemandNotice, Reminder, Receipt
     }
 }

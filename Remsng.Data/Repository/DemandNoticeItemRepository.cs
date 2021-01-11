@@ -20,31 +20,38 @@ namespace RemsNG.Data.Repository
 
         public async Task<Response> Add(DemandNoticeItemModel[] items)
         {
-            DemandNoticeItem[] dnItems = items.Select(x => new DemandNoticeItem()
+            try
             {
-                AmountPaid = x.AmountPaid,
-                BillingNo = x.BillingNo,
-                CreatedBy = x.CreatedBy,
-                DateCreated = DateTime.Now,
-                Id = x.Id,
-                ItemAmount = x.ItemAmount,
-                ItemId = x.ItemId,
-                ItemName = x.ItemName,
-                ItemStatus = x.ItemStatus,
-                Lastmodifiedby = x.Lastmodifiedby,
-                LastModifiedDate = x.LastModifiedDate,
-                DemandNoticeId = x.DemandNoticeId,
-                dn_taxpayersDetailsId = x.DnTaxpayersDetailsId,
-                TaxpayerId = x.TaxpayerId
-            }).ToArray();
+                DemandNoticeItem[] dnItems = items.Select(x => new DemandNoticeItem()
+                {
+                    AmountPaid = x.AmountPaid,
+                    BillingNo = x.BillingNo,
+                    CreatedBy = x.CreatedBy,
+                    DateCreated = DateTime.Now,
+                    Id = Guid.NewGuid(),
+                    ItemAmount = x.ItemAmount,
+                    ItemId = x.ItemId,
+                    ItemName = x.ItemName,
+                    ItemStatus = x.ItemStatus,
+                    Lastmodifiedby = x.Lastmodifiedby,
+                    LastModifiedDate = x.LastModifiedDate,
+                    DemandNoticeId = x.DemandNoticeId,
+                    dn_taxpayersDetailsId = x.DnTaxpayersDetailsId,
+                    TaxpayerId = x.TaxpayerId
+                }).ToArray();
 
-            db.AddRange(dnItems);
-            await db.SaveChangesAsync();
-            return new Response()
+                db.AddRange(dnItems);
+                await db.SaveChangesAsync();
+                return new Response()
+                {
+                    code = MsgCode_Enum.SUCCESS,
+                    description = "Item has been added successfully"
+                };
+            }
+            catch (Exception ex)
             {
-                code = MsgCode_Enum.SUCCESS,
-                description = "Item has been added successfully"
-            };
+                throw;
+            }
         }
 
         public async Task<List<DemandNoticeItemModel>> ByBillingNumber(long billingno)
