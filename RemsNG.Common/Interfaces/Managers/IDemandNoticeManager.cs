@@ -6,6 +6,8 @@ namespace RemsNG.Common.Interfaces.Managers
 {
     public interface IDemandNoticeManager
     {
+        Task<bool> AddDemanNotice2(DemandNoticeRequestModel model);
+        Task<TaxPayerModel[]> ValidTaxpayers(DemandNoticeRequestModel model);
         Task<object> ByLcdaId(Guid lcdaId, PageModel pageModel);
         Task<Response> Delete(Guid Id);
         Task<Response> UpdateBillingYr(DemandNoticeModel demandNotice);

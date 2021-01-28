@@ -837,6 +837,68 @@ namespace RemsNG.Data.Repository
             return result;
         }
 
+
+        public async Task<DemandNoticeTaxpayersModel[]> SearchTaxpayers2(DemandNoticeRequestModel rhModel)
+        {
+            string[] statuss = { "CANCEL", "CLOSED", "DELETED" };
+            var query = db.Set<DemandNoticeTaxpayer>()
+                .Include(p => p.DemandNotice)
+                .ThenInclude(d => d.Street)
+                .Where(x => x.BillingYr == rhModel.dateYear && !statuss.Any(p => p == x.DemandNoticeStatus) && x.Period == rhModel.Period);
+
+            if (rhModel.streetId != default(Guid))
+            {
+                query = query.Where(x => x.DemandNotice.StreetId == rhModel.streetId);
+            }
+            else if (rhModel.wardId != default(Guid))
+            {
+                query = query.Where(x => x.DemandNotice.WardId == rhModel.wardId);
+            }
+
+            if (!string.IsNullOrEmpty(rhModel.searchByName))
+            {
+                query = query.Where(x => EF.Functions.Like(x.TaxpayersName, $"%{rhModel.searchByName}%"));
+            }
+
+            if (rhModel.TaxpayerIds.Length > 0)
+            {
+                query = query.Where(x => rhModel.TaxpayerIds.Any(p => p == x.TaxpayerId));
+            }
+
+            var result = await query.Select(x => new DemandNoticeTaxpayersModel()
+            {
+                AddressName = x.AddressName,
+                BillingNumber = x.BillingNumber,
+                BillingYr = x.BillingYr,
+                CouncilTreasurerMobile = x.CouncilTreasurerMobile,
+                CouncilTreasurerSigFilen = x.CouncilTreasurerSigFilen,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                DemandNoticeStatus = x.DemandNoticeStatus,
+                DnId = x.DnId,
+                DomainName = x.DomainName,
+                Id = x.Id,
+                IsUnbilled = x.IsUnbilled,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                LcdaAddress = x.LcdaAddress,
+                LcdaLogoFileName = x.LcdaLogoFileName,
+                LcdaName = x.LcdaName,
+                LcdaState = x.LcdaState,
+                RevCoodinatorSigFilen = x.RevCoodinatorSigFilen,
+                TaxpayerId = x.TaxpayerId,
+                TaxpayersName = x.TaxpayersName,
+                WardName = x.WardName,
+                StreetName = x.DemandNotice.Street.StreetName,
+                IsRunArrears = x.IsRunArrears,
+                IsRunPenalty = x.IsRunPenalty
+            }).OrderByDescending(x => x.DateCreated).ToArrayAsync();
+
+            return result;
+        }
+
+
+
         public async Task<DemandNoticeTaxpayersModel[]> ConstructByTaxpayerIds(DemandNoticeRequestModel model,
             Dictionary<string, ImagesModel> images)
         {
@@ -1123,8 +1185,6 @@ namespace RemsNG.Data.Repository
             return true;
         }
 
-
-
         public async Task<bool> UpdateWardStreet(Guid[] taxpayerIds, string wardName, string street,
             List<TaxPayerModel> lst)
         {
@@ -1155,5 +1215,44 @@ namespace RemsNG.Data.Repository
             return true;
         }
 
+        public async Task<DemandNoticeTaxpayersModel[]> GetById(Guid[] ids)
+        {
+            string[] statuss = { "CANCEL", "CLOSED", "DELETED" };
+            var query = db.Set<DemandNoticeTaxpayer>()
+                .Include(p => p.DemandNotice)
+                .ThenInclude(d => d.Street)
+                .Where(x => ids.Any(s => s == x.TaxpayerId) && !statuss.Any(p => p == x.DemandNoticeStatus));
+
+            var result = await query.Select(x => new DemandNoticeTaxpayersModel()
+            {
+                AddressName = x.AddressName,
+                BillingNumber = x.BillingNumber,
+                BillingYr = x.BillingYr,
+                CouncilTreasurerMobile = x.CouncilTreasurerMobile,
+                CouncilTreasurerSigFilen = x.CouncilTreasurerSigFilen,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                DemandNoticeStatus = x.DemandNoticeStatus,
+                DnId = x.DnId,
+                DomainName = x.DomainName,
+                Id = x.Id,
+                IsUnbilled = x.IsUnbilled,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                LcdaAddress = x.LcdaAddress,
+                LcdaLogoFileName = x.LcdaLogoFileName,
+                LcdaName = x.LcdaName,
+                LcdaState = x.LcdaState,
+                RevCoodinatorSigFilen = x.RevCoodinatorSigFilen,
+                TaxpayerId = x.TaxpayerId,
+                TaxpayersName = x.TaxpayersName,
+                WardName = x.WardName,
+                StreetName = x.DemandNotice.Street.StreetName,
+                IsRunArrears = x.IsRunArrears,
+                IsRunPenalty = x.IsRunPenalty
+            }).OrderByDescending(x => x.DateCreated).ToArrayAsync();
+
+            return result;
+        }
     }
 }

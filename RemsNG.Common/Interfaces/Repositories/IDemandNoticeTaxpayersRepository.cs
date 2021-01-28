@@ -9,6 +9,7 @@ namespace RemsNG.Common.Interfaces.Repositories
 {
     public interface IDemandNoticeTaxpayersRepository
     {
+        Task<DemandNoticeTaxpayersModel[]> SearchTaxpayers2(DemandNoticeRequestModel rhModel);
         Task<List<DemandNoticeTaxpayersModel>> getTaxpayerByIds(string[] ids, int billingYr);
         Task<bool> UpdateSatus(Guid id, string status);
         Task<bool> UpdateSatus(Guid[] ids, string status);
@@ -46,5 +47,6 @@ namespace RemsNG.Common.Interfaces.Repositories
         Task<bool> UpdateWardStreet(Guid[] taxpayerIds, string wardName, string street,
             List<TaxPayerModel> lst);
         Task<bool> UpdatePenaltyStatus(Guid[] dntaxpayers, bool isRunPenalty);
+        Task<DemandNoticeTaxpayersModel[]> GetById(Guid[] ids);
     }
 }

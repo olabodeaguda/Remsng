@@ -55,7 +55,7 @@ export class DemandNoticeService {
             RunPenalty: searchModel.runPenalty,
             RunArrearsCategory: searchModel.runArrearsCategory,
             useSingleBill: searchModel.useSingleBill,
-            Period: searchModel.period,
+            Period: +searchModel.period,
             taxpayerIds: searchModel.taxpayerIds
         };
 
@@ -167,7 +167,8 @@ export class DemandNoticeService {
             searchByName: searchModel.searchByName,
             dateYear: searchModel.dateYear,
             lcdaId: null,
-            runArrears: searchModel.runArrears
+            runArrears: searchModel.runArrears,
+            period: +searchModel.period
         };
         return this.datataservice
         .post('demandnotice/validtaxpayers/', s)

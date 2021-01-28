@@ -41,6 +41,11 @@ export class DemandNoticeViewComponent implements OnInit {
     }
 
     getValidTaxpayers() {
+        if(this.searchModel.period <= 0){
+            this.toasterService.pop('warning','Error','Please select period');
+            return;
+        }
+
         this.isLoading = true;
         this.demandnoticeService.validTaxpayer(this.searchModel)
             .subscribe(response => {

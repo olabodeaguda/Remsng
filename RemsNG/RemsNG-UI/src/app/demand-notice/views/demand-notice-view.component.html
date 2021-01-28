@@ -62,7 +62,7 @@
                             <div class="form-check col-sm-12">
                                 <label class="form-check-label" for="period">Select Period</label>
                                 <select name="period" class="form-control" [(ngModel)]="searchModel.period">
-                                    <option selected="selected" value="-1">Select Demand Notice Period</option>
+                                    <option [selected]="searchModel.period === -1" value="-1">Select Demand Notice Period</option>
                                     <option value="1">1st Quarter</option>
                                     <option value="2">2nd Quarter</option>
                                     <option value="3">3rd Quarter</option>

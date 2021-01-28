@@ -12,5 +12,6 @@ namespace RemsNG.Common.Models
         public string StreetId { get; set; }
         public string WardId { get; set; }
         public bool runArrears { get; set; }
+        public int Period { get; set; }
     }
 }

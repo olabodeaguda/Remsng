@@ -107,7 +107,6 @@ namespace RemsNG.Infrastructure.Managers
             return true;
         }
 
-
         public async Task<bool> RemovePenalty(Guid[] dnTaxpayerIds)
         {
             if (dnTaxpayerIds.Length <= 0)
@@ -161,7 +160,5 @@ namespace RemsNG.Infrastructure.Managers
             }
             return result;
         }
-
-
     }
 }

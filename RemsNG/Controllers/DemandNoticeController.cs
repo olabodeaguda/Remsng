@@ -214,7 +214,7 @@ namespace RemsNG.Controllers
             demandNoticeRequest.lcdaId = lcdaId;
 
 
-            bool result = await demandService.AddDemanNotice(demandNoticeRequest);
+            bool result = await demandService.AddDemanNotice2(demandNoticeRequest);
             if (!result)
             {
                 return BadRequest(new Response()
@@ -432,8 +432,10 @@ namespace RemsNG.Controllers
             modl.streetId = string.IsNullOrEmpty(model.StreetId) ? default(Guid) : Guid.Parse(model.StreetId);
             modl.wardId = string.IsNullOrEmpty(model.WardId) ? default(Guid) : Guid.Parse(model.WardId);
             modl.RunArrears = model.runArrears;
+            modl.Period = model.Period;
 
-            TaxPayerModel[] taxpayers = await demandService.ValidTaxpayers(modl, false);
+            TaxPayerModel[] taxpayers = await demandService.ValidTaxpayers(modl);
+
             return Ok(new Response
             {
                 code = MsgCode_Enum.SUCCESS,

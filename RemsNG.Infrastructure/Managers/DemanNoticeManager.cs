@@ -193,32 +193,52 @@ namespace RemsNG.Infrastructure.Managers
             return taxPayers;
         }
 
+        public async Task<TaxPayerModel[]> ValidTaxpayers(DemandNoticeRequestModel model)
+        {
+            string[] status = { "PART_PAYMENT", "PENDING" };
+
+            DemandNoticeTaxpayersModel[] dntModel = await _dnTaxpayerRepo.SearchTaxpayers2(model);
+
+            Guid[] excludedTaxpayerids = dntModel
+                .Where(s => !s.IsRunArrears && status.Any(d => d == s.DemandNoticeStatus))
+                .Select(x => x.TaxpayerId)
+                .ToArray();
+
+            TaxPayerModel[] taxPayers = (await _taxpayerRepository.SearchByDNRequest(model, excludedTaxpayerids))
+                .Select(d =>
+                {
+                    var r = d;
+                    r.Firstname = r.Firstname ?? string.Empty;
+                    r.Surname = r.Surname ?? string.Empty;
+                    r.Lastname = r.Lastname ?? string.Empty;
+                    var t = dntModel.FirstOrDefault(x => x.TaxpayerId == r.Id);
+                    r.DemandNoticeStatus = t == null ? "New" : t.DemandNoticeStatus;
+                    return r;
+                }).Where(x => x.DemandNoticeStatus == "New").ToArray();
+
+
+            return taxPayers;
+        }
+
         public async Task<bool> AddDemanNotice(DemandNoticeRequestModel model)
         {
             if (model.lcdaId == default(Guid))
-            {
                 throw new InvalidCredentialsException("Request is invalid");
-            }
             if (model.Period < 0)
-            {
                 throw new InvalidCredentialsException("Period is required");
-            }
 
             if (model.TaxpayerIds.Length <= 0)
-            {
                 throw new InvalidCredentialsException("Please select Taxpayer");
-            }
-
-            //run arrears
-            //get valid demandnotice Id
 
             TaxPayerModel[] dntModel = await ValidTaxpayers(model, true);
             var unknownId = model.TaxpayerIds.Where(x => !dntModel.Any(p => p.Id == x)).ToArray();
 
             if (unknownId.Length > 0)
-            {
                 throw new InvalidCredentialsException("Please refresh your page and try again");
-            }
+
+            var demandNoticeTaxpayer = await _dnTaxpayerRepo.getTaxpayerByIds(dntModel.Select(a => a.Id.ToString()).ToArray(), model.dateYear);
+
+
 
             Dictionary<string, ImagesModel> images = (await _imagesRepository.ByOwnerId(model.lcdaId)).ToDictionary(x => x.ImgFilename);
             var lcdaAdd = (await _addressRepository.ByOwnersId(model.lcdaId)).FirstOrDefault();
@@ -254,7 +274,7 @@ namespace RemsNG.Infrastructure.Managers
 
             model.DemandNoticeId = demandNotice.Id;
             DemandNoticeTaxpayersModel[] dnTaxpayer = await _dnTaxpayerRepo.ConstructByTaxpayerIds(model, images);
-            //demandNotice.TaxpayerModel = dnTaxpayer.ToList();
+
 
             Response response = await demandNoticeDao.Add(demandNotice);
             if (response.code == MsgCode_Enum.SUCCESS)
@@ -267,6 +287,82 @@ namespace RemsNG.Infrastructure.Managers
             await demandNoticeDao.UpdateStatus(demandNotice);
             return true;
         }
+
+        public async Task<bool> AddDemanNotice2(DemandNoticeRequestModel model)
+        {
+            #region Validate models
+            if (model.lcdaId == default(Guid))
+                throw new InvalidCredentialsException("Request is invalid");
+            if (model.Period < 0)
+                throw new InvalidCredentialsException("Period is required");
+
+            if (model.TaxpayerIds.Length <= 0)
+                throw new InvalidCredentialsException("Please select Taxpayer");
+            #endregion
+
+            TaxPayerModel[] dntModel = await ValidTaxpayers(model);
+            dntModel = dntModel.Where(a => a.ItemCount > 0).ToArray();
+            var unknownId = model.TaxpayerIds.Where(x => !dntModel.Any(p => p.Id == x)).ToArray();
+
+            if (unknownId.Length > 0)
+                throw new InvalidCredentialsException("Please refresh your page and try again");
+
+            // get current demoand notice
+            DemandNoticeTaxpayersModel[] arrearsDemandNotice = await _dnTaxpayerRepo.GetById(model.TaxpayerIds);
+
+            #region Compute other fields
+            Dictionary<string, ImagesModel> images = (await _imagesRepository.ByOwnerId(model.lcdaId)).ToDictionary(x => x.ImgFilename);
+            var lcdaAdd = (await _addressRepository.ByOwnersId(model.lcdaId)).FirstOrDefault();
+            model.LcdaAddress = lcdaAdd == null ? string.Empty : $"{lcdaAdd.Addressnumber}, {lcdaAdd.StreetName}";
+            var lcdastate = await _stateRepository.ByLcda(model.lcdaId);
+            model.LcdaState = lcdastate == null ? string.Empty : lcdastate.StateName;
+            var treasurerMobile = (await _lcdaPropertyRepo.ByLcda(model.lcdaId)).Select(x => x.PropertyValue).ToArray();
+            model.TreasurerMobile = treasurerMobile.Length > 0 ? string.Join(';', treasurerMobile) : string.Empty;
+            long batchNo = 0;
+            model.InitialBillingNumber = await _dnTaxpayerRepo.NewBillingNumber();
+            var lastDN = await demandNoticeDao.GetLastEntry();
+            if (lastDN != null)
+            {
+                string serial = lastDN.BatchNo.Substring(0, 7);
+                batchNo = long.Parse(serial);
+            }
+            #endregion
+
+            DemandNoticeModel demandNotice = new DemandNoticeModel()
+            {
+                BillingYear = model.dateYear,
+                CreatedBy = model.createdBy,
+                DateCreated = DateTime.Now,
+                Id = Guid.NewGuid(),
+                DemandNoticeStatus = "SUBMITTED",
+                PlainTextQuery = JsonConvert.SerializeObject(model),
+                IsUnbilled = model.isUnbilled,
+                LcdaId = model.lcdaId,
+                StreetId = model.streetId,
+                WardId = model.wardId,
+                Query = Common.Utilities.EncryptDecryptUtils.ToHexString(JsonConvert.SerializeObject(model)),
+                BatchNo = lastDN == null ? $"1{CommonList.GetBatchNo()}" : $"{batchNo + 1}{CommonList.GetBatchNo()}"
+            };
+
+            model.DemandNoticeId = demandNotice.Id;
+            DemandNoticeTaxpayersModel[] dnTaxpayer = await _dnTaxpayerRepo.ConstructByTaxpayerIds(model, images);
+
+            Response response = await demandNoticeDao.Add(demandNotice);
+            if (response.code == MsgCode_Enum.SUCCESS)
+            {
+                if (arrearsDemandNotice.Length > 0)
+                    await _arrearsManager.RunTaxpayerArrears(arrearsDemandNotice, model);
+
+                await _dnTaxpayerRepo.Add(dnTaxpayer);
+                await _dnItemManger.AddDemandNoticeItem(dnTaxpayer);
+            }
+
+            demandNotice.DemandNoticeStatus = DemandNoticeStatus.COMPLETED.ToString();
+            await demandNoticeDao.UpdateStatus(demandNotice);
+            return true;
+        }
+
+
 
         public async Task<DemandNoticeTaxpayersModel[]> SearchDemandNotice(DemandNoticeRequestModel rhModel)
         {

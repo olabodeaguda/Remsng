@@ -81,6 +81,33 @@ namespace RemsNG.Data.Repository
             return result;
         }
 
+        public async Task<List<DemandNoticeItemModel>> ByBillingNumber(long[] billingno)
+        {
+            var result = await db.Set<DemandNoticeItem>()
+                .Include(s => s.Item)
+                .Where(x => x.ItemStatus != "CANCEL" && billingno.Any(q => q == x.BillingNo))
+                .Select(x => new DemandNoticeItemModel()
+                {
+                    AmountPaid = x.AmountPaid,
+                    BillingNo = x.BillingNo,
+                    CreatedBy = x.CreatedBy,
+                    DateCreated = x.DateCreated,
+                    DemandNoticeId = x.DemandNoticeId,
+                    DnTaxpayersDetailsId = x.dn_taxpayersDetailsId,
+                    Id = x.Id,
+                    ItemAmount = x.ItemAmount,
+                    ItemStatus = x.ItemStatus,
+                    ItemId = x.ItemId,
+                    ItemName = x.ItemName,
+                    Lastmodifiedby = x.Lastmodifiedby,
+                    LastModifiedDate = x.LastModifiedDate,
+                    TaxpayerId = x.TaxpayerId,
+                    ItemCode = x.Item.ItemCode
+                }).ToListAsync();
+
+            return result;
+        }
+
         public async Task<List<DemandNoticeItemModel>> UnpaidBillsByTaxpayerId(Guid taxpayerId,
             long billNumber, int billingYr)
         {
@@ -107,7 +134,7 @@ namespace RemsNG.Data.Repository
 
             return r;
         }
-
+        
         public async Task<List<DemandNoticeItemModel>> ReportByCategory(DateTime fromDate, DateTime toDate)
         {
             DateTime startDate = new DateTime(fromDate.Year, fromDate.Month, fromDate.Day, 0, 0, 0);
