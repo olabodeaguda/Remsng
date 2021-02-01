@@ -32,7 +32,7 @@ namespace RemsNG.Controllers
                 throw new InvalidCredentialsException("Billing number is required");
             }
 
-            return await amountDueMgtService.ByBillingNo(billingno);
+            return await amountDueMgtService.ByBillingNo(new long[] { billingno });
         }
 
         [RemsRequirementAttribute("AMOUNT_DUE")]

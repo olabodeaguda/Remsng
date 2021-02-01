@@ -74,7 +74,7 @@ namespace RemsNG.Infrastructure.Managers
                          BillingNo = dn.BillingNumber,
                          CreatedBy = dn.CreatedBy,
                          DateCreated = DateTime.Now,
-                         DnTaxpayersDetailsId = dn.DnId,
+                         DnTaxpayersDetailsId = dn.Id,
                          Id = Guid.NewGuid(),
                          ItemAmount = itm.Amount,
                          ItemId = itm.ItemId,

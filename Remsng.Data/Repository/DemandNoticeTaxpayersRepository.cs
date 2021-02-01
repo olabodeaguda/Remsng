@@ -61,6 +61,42 @@ namespace RemsNG.Data.Repository
             return result;
         }
 
+
+        public async Task<List<DemandNoticeTaxpayersModel>> getPendingDemandNoticeByTaxpayerByIds(Guid id)
+        {
+            string[] status = { "CLOSED", "CANCEL", "PAID","DELETED" };
+
+            var result = await db.Set<DemandNoticeTaxpayer>().Where(x => x.TaxpayerId == id && !status.Any(q => q == x.DemandNoticeStatus))
+                .Select(x => new DemandNoticeTaxpayersModel()
+                {
+                    AddressName = x.AddressName,
+                    BillingNumber = x.BillingNumber,
+                    BillingYr = x.BillingYr,
+                    CouncilTreasurerMobile = x.CouncilTreasurerMobile,
+                    CouncilTreasurerSigFilen = x.CouncilTreasurerSigFilen,
+                    CreatedBy = x.CreatedBy,
+                    DateCreated = x.DateCreated,
+                    DemandNoticeStatus = x.DemandNoticeStatus,
+                    DnId = x.DnId,
+                    DomainName = x.DomainName,
+                    Id = x.Id,
+                    IsUnbilled = x.IsUnbilled,
+                    Lastmodifiedby = x.Lastmodifiedby,
+                    LastModifiedDate = x.LastModifiedDate,
+                    LcdaAddress = x.LcdaAddress,
+                    LcdaLogoFileName = x.LcdaLogoFileName,
+                    LcdaName = x.LcdaName,
+                    LcdaState = x.LcdaState,
+                    RevCoodinatorSigFilen = x.RevCoodinatorSigFilen,
+                    TaxpayerId = x.TaxpayerId,
+                    TaxpayersName = x.TaxpayersName,
+                    WardName = x.WardName
+
+                }).ToListAsync();
+            return result;
+        }
+
+
         public async Task<bool> UpdateSatus(Guid id, string status)
         {
             var entity = await db.Set<DemandNoticeTaxpayer>().FindAsync(id);

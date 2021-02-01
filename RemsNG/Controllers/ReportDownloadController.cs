@@ -106,9 +106,6 @@ namespace RemsNG.Controllers
                 (domain == null ? "Unknown" : domain.DomainName), lgda.LcdaName, sd, ed);
 
             return new FileStreamResult(new MemoryStream(result), "application/octet-stream");
-            //HttpContext.Response.ContentType = "application/octet-stream";
-            //HttpContext.Response.Body.Write(result, 0, result.Length);
-            //return new ContentResult();
         }
 
 

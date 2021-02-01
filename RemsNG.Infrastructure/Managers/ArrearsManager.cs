@@ -199,7 +199,7 @@ namespace RemsNG.Infrastructure.Managers
 
             return true;
         }
-        public async Task<bool> RunTaxpayerArrears(Guid[] demandNoticeIds)
+        public async Task<bool> RunTaxpayerArrears2(Guid[] demandNoticeIds)
         {
             string[] payableStatus = { "PENDING", "PART_PAYMENT" };
             var demandNoticeTaxpayer = await _dNTaxpayersRep.ById(demandNoticeIds);
@@ -330,6 +330,62 @@ namespace RemsNG.Infrastructure.Managers
             return true;
         }
 
+        public async Task<bool> RunTaxpayerArrears(Guid[] demandNoticeIds)
+        {
+            string[] payableStatus = { "PENDING", "PART_PAYMENT" };
+            var demandNoticeTaxpayer = await _dNTaxpayersRep.ById(demandNoticeIds);
+            if (demandNoticeTaxpayer.Length <= 0) return false;
+
+            foreach (var tm in demandNoticeTaxpayer)
+            {
+                List<DemandNoticeArrearsModel> newArrears = new List<DemandNoticeArrearsModel>();
+                var demandNotice = await _dNTaxpayersRep.getPendingDemandNoticeByTaxpayerByIds(tm.TaxpayerId);
+
+                var items = await _demandNoticeRepository.ByBillingNumber(demandNotice.Select(a => a.BillingNumber).ToArray());
+                DemandNoticeArrearsModel[] previousArrears = await _arrearsRepo.ByTaxpayer(demandNotice.Select(x => x.TaxpayerId).ToArray());
+                // get amount paid
+                var payments = await _paymentRepository.ByBillingNumbers(demandNotice.Select(x => x.BillingNumber).ToArray());
+
+                var itemAmount = items.Where(a => a.BillingNo == tm.BillingNumber);//.Sum(s => s.ItemAmount);
+                var arrears = previousArrears.Where(a => a.TaxpayerId == tm.TaxpayerId);//.Sum(a => a.TotalAmount);
+                var amountPaid = payments.Where(a => a.BillingNumber == tm.BillingNumber);//.Sum(q => q.Amount);
+
+                decimal amount = (itemAmount.Sum(s => s.ItemAmount) + arrears.Sum(a => a.TotalAmount))
+                    - amountPaid.Sum(q => q.Amount);
+                if (amount > 0)
+                {
+                    newArrears.Add(new DemandNoticeArrearsModel()
+                    {
+                        AmountPaid = 0,
+                        ArrearsStatus = "PENDING",
+                        BillingNo = tm.BillingNumber,
+                        BillingYear = DateTime.Now.Year,
+                        CreatedBy = _httpAccessor.HttpContext.User.Identity.Name,
+                        DateCreated = DateTime.Now,
+                        Id = Guid.NewGuid(),
+                        OriginatedYear = tm.BillingYr,
+                        TaxpayerId = tm.TaxpayerId,
+                        WardName = tm.WardName,
+                        TotalAmount = amount,
+                        CurrentAmount = 0
+                    });
+                }
+
+
+                var e = demandNotice.Where(a => a.Id != tm.Id).ToList();
+                bool result = await _arrearsRepo.AddArrears(newArrears.ToArray());
+                if (result)
+                {
+                    await _arrearsRepo.UpdateArrearsStatus(previousArrears, "CLOSED");
+                    await _dNTaxpayersRep.UpdateArrearsStatus(demandNotice.ToArray(), true);
+                    if (e.Count > 0)
+                        await _dNTaxpayersRep.UpdateDemandNoticeStatus(e.Select(x => x.Id).ToArray(), Common.Utilities.DemandNoticeStatus.CLOSED);
+                }
+            }
+
+            return true;
+        }
+
         public async Task<bool> RunTaxpayerArrears(DemandNoticeTaxpayersModel[] model, DemandNoticeRequestModel req)
         {
             string[] payableStatus = { "PENDING", "PART_PAYMENT" };
@@ -351,7 +407,6 @@ namespace RemsNG.Infrastructure.Managers
             List<DemandNoticePenaltyModel> newPenalty = new List<DemandNoticePenaltyModel>();
             foreach (var tm in model)
             {
-
                 var itemAmount = items.Where(a => a.BillingNo == tm.BillingNumber);//.Sum(s => s.ItemAmount);
                 var arrears = previousArrears.Where(a => a.TaxpayerId == tm.TaxpayerId);//.Sum(a => a.TotalAmount);
                 var penalty = previousPenalty.Where(a => a.TaxpayerId == tm.TaxpayerId);//.Sum(s => s.TotalAmount);
@@ -390,7 +445,7 @@ namespace RemsNG.Infrastructure.Managers
                             Id = Guid.NewGuid(),
                             OriginatedYear = DateTime.Now.Year,
                             TaxpayerId = tm.TaxpayerId,
-                            TotalAmount = amount * (10 / 100),
+                            TotalAmount = amount * (decimal)0.1,
                             CurrentAmount = 0
                         });
                 }

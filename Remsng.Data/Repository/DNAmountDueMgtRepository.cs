@@ -92,9 +92,16 @@ namespace RemsNG.Data.Repository
         {
             string[] status = { "PART_PAYMENT", "PENDING" };
 
+            DemandNoticeTaxpayer[] dnTaxpayer = await db.Set<DemandNoticeTaxpayer>().Where(x => bills.Any(p => p == x.BillingNumber)).ToArrayAsync();
+
+            if (dnTaxpayer.Length <= 0)
+            {
+                throw new NotFoundException("Demand notice does not exist");
+            }
+
             List<DNAmountDueModel> results = new List<DNAmountDueModel>();
             var arrears = await db.Set<DemandNoticeArrear>()
-                .Where(p => bills.Any(x => x == p.BillingNo) && status.Any(x => x == p.ArrearsStatus))
+                .Where(p => dnTaxpayer.Any(x=>x.TaxpayerId == p.TaxpayerId) && status.Any(x => x == p.ArrearsStatus))
                 .Select(x => new DNAmountDueModel()
                 {
                     id = x.Id,
@@ -107,14 +114,10 @@ namespace RemsNG.Data.Repository
                     itemStatus = x.ArrearsStatus
                 }).ToListAsync();
             results.AddRange(arrears);
-            DemandNoticeTaxpayer[] dnTaxpayer = await db.Set<DemandNoticeTaxpayer>().Where(x => bills.Any(p => p == x.BillingNumber)).ToArrayAsync();
-            if (dnTaxpayer.Length <= 0)
-            {
-                throw new NotFoundException("Demand notice does not exist");
-            }
+            
 
             var penalty = await db.Set<DemandNoticePenalty>()
-                 .Where(p => bills.Any(x => x == p.BillingNo) && status.Any(x => x == p.ItemPenaltyStatus))
+                 .Where(p => dnTaxpayer.Any(x => x.TaxpayerId == p.TaxpayerId) && status.Any(x => x == p.ItemPenaltyStatus))
                 .Select(x => new DNAmountDueModel
                 {
                     id = x.Id,
@@ -135,14 +138,13 @@ namespace RemsNG.Data.Repository
                      itemAmount = x.ItemAmount,
                      amountPaid = x.AmountPaid,
                      billingNo = x.BillingNo,
-                     category = "PENALTY",
-                     itemDescription = "Penalty",
+                     category = "ITEMS",
+                     itemDescription = $"{x.Item.ItemDescription}({x.Item.ItemCode})",
                      itemId = x.ItemId,
                      itemStatus = x.ItemStatus
                  }).ToListAsync();
             results.AddRange(items);
             return results;
-
         }
 
         public async Task<Response> UpdateAmount(DNAmountDueModel dnamount)

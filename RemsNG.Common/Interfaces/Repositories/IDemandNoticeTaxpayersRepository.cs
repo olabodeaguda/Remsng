@@ -9,6 +9,7 @@ namespace RemsNG.Common.Interfaces.Repositories
 {
     public interface IDemandNoticeTaxpayersRepository
     {
+        Task<List<DemandNoticeTaxpayersModel>> getPendingDemandNoticeByTaxpayerByIds(Guid id);
         Task<DemandNoticeTaxpayersModel[]> SearchTaxpayers2(DemandNoticeRequestModel rhModel);
         Task<List<DemandNoticeTaxpayersModel>> getTaxpayerByIds(string[] ids, int billingYr);
         Task<bool> UpdateSatus(Guid id, string status);

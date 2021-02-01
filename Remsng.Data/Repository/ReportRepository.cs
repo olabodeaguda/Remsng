@@ -74,8 +74,7 @@ namespace RemsNG.Data.Repository
 
             // get all payment made during those period
             var payBtwDate = await db.Set<DemandNoticePaymentHistory>()
-                .Where(x => x.LastModifiedDate >= startDate && x.LastModifiedDate <= endDate
-                && x.PaymentStatus == "APPROVED" && d.Any(s => s == x.BillingNumber))
+                .Where(x => x.PaymentStatus == "APPROVED" && d.Any(s => s == x.BillingNumber))
                 .ToListAsync();
 
             // merge the bill numbers
@@ -364,10 +363,6 @@ namespace RemsNG.Data.Repository
 
             foreach (var item in dats.GroupBy(x => x.billingNo))
             {
-                if(item.Key == 27391)
-                {
-
-                }
                 var re = allPayment.Where(x => x.BillingNumber == item.Key);
                 decimal paymentAmount = re.Sum(x => x.Amount);
                 var data = item.ToList();
