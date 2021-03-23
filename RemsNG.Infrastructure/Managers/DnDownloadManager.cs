@@ -85,7 +85,7 @@ namespace RemsNG.Infrastructure.Managers
             htmlContent = htmlContent.Replace("BILL_NO", $"{(sector != null ? sector.Prefix : "")}{dnrp.BillingNumber}");
             htmlContent = htmlContent.Replace("PAYER_NAME", string.IsNullOrEmpty(dnph.OtherNames) ? dnrp.TaxpayersName : dnph.OtherNames);
             htmlContent = htmlContent.Replace("PAYER_ADDRESS", dnrp.AddressName);
-            htmlContent = htmlContent.Replace("CURRENT_DATE", DateTime.Now.ToString("dd-MM-yyyy"));
+            htmlContent = htmlContent.Replace("CURRENT_DATE", DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"));
             htmlContent = htmlContent.Replace("BILLING_YEAR", dnrp.BillingYr.ToString());//
             htmlContent = htmlContent.Replace("WARD_NAME", dnrp.WardName);
             htmlContent = htmlContent.Replace("BANK_NAME", dnph.BankName);
@@ -362,6 +362,7 @@ namespace RemsNG.Infrastructure.Managers
             decimal prepayment = (prepayment1.closed > 0 ? prepayment1.closed : prepayment1.active);
             if (prepayment > 0)
             {
+                prepayment = 
                 finalTotal = finalTotal - prepayment;
             }
             if (finalTotal < 0)
@@ -511,7 +512,6 @@ namespace RemsNG.Infrastructure.Managers
                     val = await LoadTemplateDemandNoticeSpecial(htmlContent, tm, createdBy, TemplateType.DemandNotice, dnrp);
                 else
                     val = await LoadTemplateDemandNotice(htmlContent, tm, createdBy, TemplateType.DemandNotice, dnrp);
-
 
                 lst.Add(val);
             }

@@ -128,10 +128,12 @@ namespace RemsNG.Data.Repository
                     itemDescription = "Penalty",
                     itemStatus = x.ItemPenaltyStatus
                 }).ToListAsync();
+
             results.AddRange(penalty);
 
             var items = await db.Set<DemandNoticeItem>().Include(s => s.Item)
-                  .Where(p => dnTaxpayer.Any(x => x.BillingNumber == p.BillingNo && x.TaxpayerId == p.TaxpayerId) && status.Any(x => x == p.ItemStatus))
+                  .Where(p => dnTaxpayer.Any(x => x.BillingNumber == p.BillingNo && x.TaxpayerId == p.TaxpayerId) 
+                  && status.Any(x => x == p.ItemStatus))
                  .Select(x => new DNAmountDueModel
                  {
                      id = x.Id,

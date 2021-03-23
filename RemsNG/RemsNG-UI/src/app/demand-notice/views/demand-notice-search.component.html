@@ -438,7 +438,7 @@
                                     <tr *ngFor="let data of taxpayersLst; let i=index">
                                         <td>{{i+1}}</td>
                                         <td>
-                                            <div class="btn-group" *ngIf="data.demandNoticeStatus !== 'CANCEL'">
+                                            <div class="btn-group" *ngIf="data.demandNoticeStatus !== 'CANCEL' && data.demandNoticeStatus !== 'DELETED'">
                                                 <button type="button" class="btn btn-default dropdown-toggle"
                                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     Action

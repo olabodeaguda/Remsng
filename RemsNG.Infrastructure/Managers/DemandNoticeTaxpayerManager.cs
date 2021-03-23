@@ -199,7 +199,7 @@ namespace RemsNG.Infrastructure.Managers
                     itemAmount = x.ItemAmount
                 }).ToList();
 
-                string[] status = { "PENDING", "PART_PAYMENT" };
+                string[] status = { "PENDING", "PART_PAYMENT", "PAID" };
 
                 dnrm.banks = await lcdaBankService.Get(lgda.Id);
 

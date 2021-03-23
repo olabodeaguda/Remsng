@@ -19,7 +19,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<DemandNoticeArrearsModel>> ByBillingNumber(long billingno)
         {
-            string[] statuss = { "PENDING", "PART_PAYMENT" };
+            string[] statuss = { "PENDING", "PART_PAYMENT", "PAID" };
 
             List<DemandNoticeArrear> lst = await db.Set<DemandNoticeArrear>()
                 .Where(x => x.BillingNo == billingno && statuss.Any(p => p == x.ArrearsStatus)).ToListAsync();
@@ -44,7 +44,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<DemandNoticeArrearsModel>> ByBillingNumber(Guid taxpayerId)
         {
-            string[] statuss = { "PENDING", "PART_PAYMENT" };
+            string[] statuss = { "PENDING", "PART_PAYMENT", "PAID" };
 
             List<DemandNoticeArrear> lst = await db.Set<DemandNoticeArrear>()
                 .Where(x => x.TaxpayerId == taxpayerId && statuss.Any(p => p == x.ArrearsStatus)).ToListAsync();
@@ -69,7 +69,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<DemandNoticeArrearsModel>> ByTaxpayer(Guid taxpayerId)
         {
-            string[] statuss = { "PENDING", "PART_PAYMENT" };
+            string[] statuss = { "PENDING", "PART_PAYMENT", "PAID" };
             List<DemandNoticeArrear> lst = await db.Set<DemandNoticeArrear>()
                 .Where(x => x.TaxpayerId == taxpayerId && statuss.Any(p => p == x.ArrearsStatus)).ToListAsync();
 
@@ -93,7 +93,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<DemandNoticeArrearsModel[]> ByTaxpayer(Guid[] taxpayerIds)
         {
-            string[] statuss = { "PENDING", "PART_PAYMENT" };
+            string[] statuss = { "PENDING", "PART_PAYMENT", "PAID" };
             DemandNoticeArrearsModel[] lst = await db.Set<DemandNoticeArrear>()
                 .Where(x => taxpayerIds.Any(p => p == x.TaxpayerId) && statuss.Any(p => p == x.ArrearsStatus))
                 .Select(x => new DemandNoticeArrearsModel()
