@@ -84,7 +84,7 @@ namespace RemsNG.Infrastructure.Managers
                 Issuer = _jOptions.Issuer,
                 Audience = _jOptions.Audience,
                 Subject = new ClaimsIdentity(claimLst),
-                Expires = DateTime.UtcNow.AddMinutes(logTime),
+                Expires = DateTime.UtcNow.AddMinutes(300),
                 NotBefore = DateTime.UtcNow,
                 SigningCredentials = _jOptions.SigningCredentials,
                 IssuedAt = DateTime.UtcNow,
