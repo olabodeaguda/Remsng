@@ -61,6 +61,8 @@ namespace RemsNG.Data.Repository
 
             string sDate = $"{ startDate.ToString("yyyy-MM-dd")} 00:00:00";
             string eDate = $"{ endDate.AddDays(1).ToString("yyyy-MM-dd")} 00:00:00";
+            endDate = new DateTime(endDate.Year, endDate.Month, endDate.Day, 0, 0, 0);
+            endDate = endDate.AddDays(1);
 
             string qry = $"select * from tbl_demandNoticeTaxpayers " +
                 $"where DemandNoticeStatus in ('PAID', 'PENDING', 'PART_PAYMENT', 'APPROVED')  and billingYr = {billingYr} " +
@@ -74,7 +76,8 @@ namespace RemsNG.Data.Repository
 
             // get all payment made during those period
             var payBtwDate = await db.Set<DemandNoticePaymentHistory>()
-                .Where(x => x.PaymentStatus == "APPROVED" && d.Any(s => s == x.BillingNumber))
+                .Where(x => x.PaymentStatus == "APPROVED" &&
+                ((x.DateCreated >= startDate && x.DateCreated < endDate) || (x.LastModifiedDate >= startDate && x.LastModifiedDate < endDate)))
                 .ToListAsync();
 
             // merge the bill numbers
