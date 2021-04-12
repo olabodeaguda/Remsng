@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using RemsNG.Common.Exceptions;
+using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Services;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
+using RemsNG.Filters;
 using System.Linq;
 using System.Security.Claims;
 
@@ -10,9 +13,10 @@ namespace RemsNG.Security
     public class RemsRequirementFilter : IAuthorizationFilter
     {
         readonly Claim _claim;
-
-        public RemsRequirementFilter(Claim claim)
+        readonly IRoleManager _roleManager;
+        public RemsRequirementFilter(Claim claim, IRoleManager roleManager)
         {
+            _roleManager = roleManager;
             _claim = claim;
         }
 
@@ -28,7 +32,18 @@ namespace RemsNG.Security
             }
             else
             {
-                var hasClaim = context.HttpContext.User.Claims.Any(c => c.Type == _claim.Type && c.Value == _claim.Value);
+                var userId = context.HttpContext.User.Claims.FirstOrDefault(a => a.Type == "identity");
+
+                if (userId == null)
+                    context.Result = new HttpMessageResult(new Response()
+                    {
+                        code = MsgCode_Enum.FORBIDDEN,
+                        description = "Please re-login. access have expired"
+                    }, 403);
+
+                bool hasClaim = _roleManager.IsPermited(userId.Value, _claim.Value).Result;
+
+                //var hasClaim = context.HttpContext.User.Claims.Any(c => c.Type == _claim.Type && c.Value == _claim.Value);
 
                 if (!hasClaim)
                 {
@@ -36,7 +51,11 @@ namespace RemsNG.Security
                 }
                 if (!hasClaim)
                 {
-                    throw new ForbidException("You have no access to this request");
+                    context.Result = new HttpMessageResult(new Response()
+                    {
+                        code = MsgCode_Enum.FORBIDDEN,
+                        description = "You have no access to this request"
+                    }, 403);
                 }
             }
         }

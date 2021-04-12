@@ -8,6 +8,7 @@ namespace RemsNG.Common.Interfaces.Repositories
 {
     public interface IPermissionRepository
     {
+        Task<List<PermissionModel>> byRoleId(Guid[] roleId);
         Task<List<PermissionModel>> byRoleId(Guid roleId);
         Task<int> PermissionCountByRoleId(Guid id);
         Task<List<PermissionModel>> byRoleId(Guid roleId, PageModel pageModel);
@@ -15,5 +16,6 @@ namespace RemsNG.Common.Interfaces.Repositories
         Task<List<PermissionModel>> All();
         Task<RolePermissionModel> ByPermissionAndRoleId(RolePermissionModel rolePermission);
         Task<bool> RemovePermission(RolePermissionModel rolePermission);
+        Task<bool> ByUserIdAndPermissionName(string userId, string permissionName);
     }
 }

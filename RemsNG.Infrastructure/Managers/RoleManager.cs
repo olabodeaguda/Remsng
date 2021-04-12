@@ -13,9 +13,11 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class RoleManager : IRoleManager
     {
+        private readonly IPermissionRepository _permissionRepository;
         private readonly IRoleRepository roleDao;
-        public RoleManager(IRoleRepository roleRepository)
+        public RoleManager(IRoleRepository roleRepository, IPermissionRepository permissionRepository)
         {
+            _permissionRepository = permissionRepository;
             roleDao = roleRepository;
         }
 
@@ -102,6 +104,11 @@ namespace RemsNG.Infrastructure.Managers
         public async Task<object> Paginated(PageModel pageModel, Guid domainId)
         {
             return await roleDao.Paginated(pageModel, domainId);
+        }
+
+        public async Task<bool> IsPermited(string userId, string permissionName)
+        {
+            return await _permissionRepository.ByUserIdAndPermissionName(userId, permissionName);
         }
     }
 }

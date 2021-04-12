@@ -8,6 +8,7 @@ namespace RemsNG.Common.Interfaces.Repositories
 {
     public interface IRoleRepository
     {
+        Task<RoleModel[]> GetUserDomainRoleByUsernameList(string username, Guid domainId);
         Task<RoleModel> GetUserDomainRoleByUsername(string username, Guid domainId);
         Task<object> Paginated(PageModel pageModel);
         Task<object> Paginated(PageModel pageModel, Guid domainId);
@@ -25,5 +26,6 @@ namespace RemsNG.Common.Interfaces.Repositories
         Task<bool> AssignRoleToUserAsync(UserRoleModel userRole);
         Task<UserRoleModel> GetUserRoleAsync(Guid userId, Guid roleId);
         Task<bool> Remove(UserRoleModel userRole);
+
     }
 }

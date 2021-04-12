@@ -26,7 +26,7 @@ namespace RemsNG.Infrastructure.Managers
         private readonly ILcdaRepository lcdaDao;
         private readonly IUserRepository userDao;
         private readonly IPermissionRepository permissionDao;
-        public UserManager(ILoggerFactory loggerFactory, 
+        public UserManager(ILoggerFactory loggerFactory,
             IOptions<JwtIssuerOptions> jOptions, ILoginRepository loginRepository,
             IDomainRepository domainRepository,
             IRoleRepository roleRepository, ILcdaRepository lcdaRepository,
@@ -54,11 +54,12 @@ namespace RemsNG.Infrastructure.Managers
                 if (ld != null)
                 {
                     domainName = ld.LcdaName;
-                    role = await roleDao.GetUserDomainRoleByUsername(user.Username, lcdaId);
+                    var e = await roleDao.GetUserDomainRoleByUsernameList(user.Username, lcdaId);
                     if (role != null)
                     {
-                        List<PermissionModel> permissionlst = await permissionDao.byRoleId(role.Id);
-                        claimLst.AddRange(permissionlst.Select(x => new Claim(ClaimTypes.Role, x.PermissionName)));
+                        List<PermissionModel> permissionlst = await permissionDao.byRoleId(e.Select(s => s.Id).ToArray());
+                        string[] perm = permissionlst.Select(x => x.PermissionName).ToArray();
+                        claimLst.AddRange(perm.Select(x => new Claim(ClaimTypes.Role, x)));
                     }
                 }
             }
@@ -76,7 +77,7 @@ namespace RemsNG.Infrastructure.Managers
                      new Claim(ClaimTypes.NameIdentifier, user.Username),
                             new Claim(ClaimTypes.Name, $"{user.Surname} {user.Firstname} {user.Lastname}"),
                             new Claim("Domain",lcdaId.ToString()),
-                            new Claim("identity", Common.Utilities.EncryptDecryptUtils.ToHexString(user.Id.ToString()))
+                            new Claim("identity", user.Id.ToString())
                 });
 
             var jwt = new SecurityTokenDescriptor

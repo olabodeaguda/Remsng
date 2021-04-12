@@ -30,6 +30,22 @@ namespace RemsNG.Data.Repository
             }).ToList();
         }
 
+        public async Task<List<PermissionModel>> byRoleId(Guid[] roleId)
+        {
+            var result = await db.Set<RolePermission>()
+                .Include(a => a.Permission)
+                .Where(a => roleId.Any(s => s == a.RoleId))
+                .Select(s => s.Permission).ToArrayAsync();
+
+            return result.Select(x => new PermissionModel()
+            {
+                Id = x.Id,
+                PermissionDescription = x.PermissionDescription,
+                PermissionName = x.PermissionName
+            }).ToList();
+        }
+
+
         public async Task<int> PermissionCountByRoleId(Guid id)
         {
             return await db.Set<RolePermission>()
@@ -115,6 +131,21 @@ namespace RemsNG.Data.Repository
             {
                 return true;
             }
+
+            return false;
+        }
+
+        public async Task<bool> ByUserIdAndPermissionName(string userId, string permissionName)
+        {
+            Guid dd = Guid.Parse(userId);
+            var result = await db.Set<UserRole>()
+                .Include(a => a.Role)
+                .ThenInclude(s => s.RolePermissions)
+                .ThenInclude(s => s.Permission)
+                .FirstOrDefaultAsync(a => a.UserId == dd && a.Role.RolePermissions.Any(d => d.Permission.PermissionName == permissionName));
+
+            if (result != null)
+                return true;
 
             return false;
         }

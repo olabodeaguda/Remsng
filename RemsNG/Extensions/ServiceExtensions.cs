@@ -70,6 +70,7 @@ namespace RemsNG.Extensions
             #region Services
             services.AddScoped<IPdfService, PdfService>();
             services.AddScoped<IExcelService, ExcelService>();
+            services.AddScoped<IHttpAccessService, HttpAccessService>();
             #endregion
 
             //Repository

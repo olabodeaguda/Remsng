@@ -7,6 +7,7 @@ namespace RemsNG.Common.Interfaces.Managers
 {
     public interface IRoleManager
     {
+        Task<bool> IsPermited(string userId, string permissionName);
         Task<bool> UpdateStatus(RoleModel role);
         Task<bool> Update(RoleModel role);
         Task<RoleModel> GetById(Guid id);
