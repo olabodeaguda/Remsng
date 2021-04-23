@@ -104,10 +104,13 @@ namespace RemsNG.Data.Repository
 
             string nNums = string.Join(',', billNUmbers);
 
+            endDate = new DateTime(endDate.Year, endDate.Month, endDate.Day, 0, 0, 0);
+            endDate = endDate.AddDays(1);
+
             var allPayment = await db.Set<DemandNoticePaymentHistory>()
                 .Include(d => d.Bank)
                 .Where(x => billNUmbers.Any(p => p == x.BillingNumber)
-                && x.LastModifiedDate <= endDate && x.PaymentStatus == "APPROVED")
+                && x.LastModifiedDate < endDate && x.PaymentStatus == "APPROVED")
                 .Select(e => new DemandNoticePaymentHistoryModel
                 {
                     Amount = e.Amount,
@@ -265,9 +268,13 @@ namespace RemsNG.Data.Repository
 
             string nNums = string.Join(',', billNUmbers);
 
+            endDate = new DateTime(endDate.Year, endDate.Month, endDate.Day, 0, 0, 0);
+            endDate = endDate.AddDays(1);
+
             var allPayment = await db.Set<DemandNoticePaymentHistory>()
                 .Include(d => d.Bank)
-                .Where(x => billNUmbers.Any(p => p == x.BillingNumber) && x.PaymentStatus == "APPROVED")
+                .Where(x => billNUmbers.Any(p => p == x.BillingNumber) && x.PaymentStatus == "APPROVED" &&
+                x.DateCreated >= startDate && x.DateCreated < endDate)
                 .Select(e => new DemandNoticePaymentHistoryModel
                 {
                     Amount = e.Amount,
