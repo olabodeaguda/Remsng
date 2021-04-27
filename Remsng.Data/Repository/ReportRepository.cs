@@ -30,12 +30,14 @@ namespace RemsNG.Data.Repository
             var dnBtwDate = await db.Set<DemandNoticeTaxpayer>()
                 .FromSql(qry).ToArrayAsync();
 
+            endDate = new DateTime(endDate.Year, endDate.Month, endDate.Day, 0, 0, 0);
+            endDate = endDate.AddDays(1);
 
             long[] d = dnBtwDate.Select(s => s.BillingNumber).ToArray();
 
             // get all payment made during those period
             var payBtwDate = await db.Set<DemandNoticePaymentHistory>()
-                .Where(x => x.LastModifiedDate >= startDate && x.LastModifiedDate <= endDate
+                .Where(x => x.DateCreated >= startDate && x.DateCreated < endDate
                 && x.PaymentStatus == "APPROVED" && d.Any(s => s == x.BillingNumber))
                 .ToListAsync();
 
@@ -77,7 +79,7 @@ namespace RemsNG.Data.Repository
             // get all payment made during those period
             var payBtwDate = await db.Set<DemandNoticePaymentHistory>()
                 .Where(x => x.PaymentStatus == "APPROVED" &&
-                ((x.DateCreated >= startDate && x.DateCreated < endDate) || (x.LastModifiedDate >= startDate && x.LastModifiedDate < endDate)))
+                (x.DateCreated >= startDate && x.DateCreated < endDate))
                 .ToListAsync();
 
             // merge the bill numbers
@@ -110,7 +112,7 @@ namespace RemsNG.Data.Repository
             var allPayment = await db.Set<DemandNoticePaymentHistory>()
                 .Include(d => d.Bank)
                 .Where(x => billNUmbers.Any(p => p == x.BillingNumber)
-                && x.LastModifiedDate < endDate && x.PaymentStatus == "APPROVED")
+                && x.DateCreated >= startDate && x.DateCreated < endDate && x.PaymentStatus == "APPROVED")
                 .Select(e => new DemandNoticePaymentHistoryModel
                 {
                     Amount = e.Amount,
@@ -121,7 +123,7 @@ namespace RemsNG.Data.Repository
                     DateCreated = e.DateCreated,
                     Id = e.Id,
                     Lastmodifiedby = e.Lastmodifiedby,
-                    LastModifiedDate = e.LastModifiedDate,
+                    LastModifiedDate = e.DateCreated,
                     OtherNames = e.OtherNames,
                     PaymentMode = e.PaymentMode,
                     OwnerId = e.OwnerId,
@@ -149,7 +151,7 @@ namespace RemsNG.Data.Repository
                     taxpayersName = s.DemandNoticeTaxpayer.TaxpayersName,
                     itemCode = s.Item.ItemCode,
                     itemDescription = s.Item.ItemDescription,
-                    lastModifiedDate = s.LastModifiedDate ?? s.DateCreated,
+                    lastModifiedDate = s.DateCreated,
                     addressName = s.DemandNoticeTaxpayer.AddressName,
                     BillingDate = s.DateCreated.Value
                 })
@@ -174,7 +176,7 @@ namespace RemsNG.Data.Repository
                      wardId = s.dnt.DemandNotice.WardId.Value,
                      wardName = s.dnt.WardName,
                      taxpayersName = s.dnt.TaxpayersName,
-                     lastModifiedDate = s.itm.LastModifiedDate ?? s.itm.DateCreated,
+                     lastModifiedDate = s.itm.DateCreated,
                      addressName = s.dnt.AddressName,
                      BillingDate = s.itm.DateCreated.Value
                  }).ToListAsync();
@@ -198,7 +200,7 @@ namespace RemsNG.Data.Repository
                      wardId = s.dnt.DemandNotice.WardId.Value,
                      wardName = s.dnt.WardName,
                      taxpayersName = s.dnt.TaxpayersName,
-                     lastModifiedDate = s.itm.LastModifiedDate ?? s.itm.DateCreated,
+                     lastModifiedDate = s.itm.DateCreated,
                      addressName = s.dnt.AddressName,
                      BillingDate = s.itm.DateCreated.Value
                  }).ToListAsync();
@@ -236,8 +238,9 @@ namespace RemsNG.Data.Repository
                             tm.amountPaid = Math.Round(tm.amountPaid, 2);
                         }
                         tm.BankName = re.FirstOrDefault().BankName;
-                        tm.PaymentDate = re.FirstOrDefault().LastModifiedDate;
+                        tm.PaymentDate = re.FirstOrDefault().DateCreated;
                         tm.Reference = re.FirstOrDefault().ReferenceNumber;
+                        tm.lastModifiedDate = tm.PaymentDate;
                         lst.Add(tm);
                     }
                     decimal amt = lst.Sum(s => s.amountPaid);
@@ -253,7 +256,6 @@ namespace RemsNG.Data.Repository
                     results.AddRange(lst);
                 }
             }
-
 
             return results;
         }
@@ -285,7 +287,7 @@ namespace RemsNG.Data.Repository
                     DateCreated = e.DateCreated,
                     Id = e.Id,
                     Lastmodifiedby = e.Lastmodifiedby,
-                    LastModifiedDate = e.LastModifiedDate,
+                    LastModifiedDate = e.DateCreated,
                     OtherNames = e.OtherNames,
                     PaymentMode = e.PaymentMode,
                     OwnerId = e.OwnerId,
@@ -313,7 +315,7 @@ namespace RemsNG.Data.Repository
                     taxpayersName = s.DemandNoticeTaxpayer.TaxpayersName,
                     itemCode = s.Item.ItemCode,
                     itemDescription = s.Item.ItemDescription,
-                    lastModifiedDate = s.LastModifiedDate ?? s.DateCreated,
+                    lastModifiedDate = s.DateCreated,
                     addressName = s.DemandNoticeTaxpayer.AddressName,
                     BillingDate = s.DateCreated.Value
                 })
@@ -338,7 +340,7 @@ namespace RemsNG.Data.Repository
                      wardId = s.dnt.DemandNotice.WardId.Value,
                      wardName = s.dnt.WardName,
                      taxpayersName = s.dnt.TaxpayersName,
-                     lastModifiedDate = s.itm.LastModifiedDate ?? s.itm.DateCreated,
+                     lastModifiedDate = s.itm.DateCreated,
                      addressName = s.dnt.AddressName,
                      BillingDate = s.itm.DateCreated.Value
                  }).ToListAsync();
@@ -362,7 +364,7 @@ namespace RemsNG.Data.Repository
                      wardId = s.dnt.DemandNotice.WardId.Value,
                      wardName = s.dnt.WardName,
                      taxpayersName = s.dnt.TaxpayersName,
-                     lastModifiedDate = s.itm.LastModifiedDate ?? s.itm.DateCreated,
+                     lastModifiedDate = s.itm.DateCreated,
                      addressName = s.dnt.AddressName,
                      BillingDate = s.itm.DateCreated.Value
                  }).ToListAsync();
@@ -400,7 +402,7 @@ namespace RemsNG.Data.Repository
                             tm.amountPaid = Math.Round(tm.amountPaid, 2);
                         }
                         tm.BankName = re.FirstOrDefault().BankName;
-                        tm.PaymentDate = re.FirstOrDefault().LastModifiedDate;
+                        tm.PaymentDate = re.FirstOrDefault().DateCreated;
                         tm.Reference = re.FirstOrDefault().ReferenceNumber;
                         lst.Add(tm);
                     }

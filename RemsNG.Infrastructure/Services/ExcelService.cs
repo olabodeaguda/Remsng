@@ -420,8 +420,11 @@ namespace RemsNG.Infrastructure.Services
 
 
                         outstandingAmount = outstandingAmount + outstanding;
-                        rowbody.CreateCell(colCount++).SetCellValue((firstTaxpayer.lastModifiedDate != null && amountPaid > 0) ?
-                            firstTaxpayer.lastModifiedDate.Value.ToShortDateString() : "");
+                        rowbody.CreateCell(colCount++)
+                        .SetCellValue(firstTaxpayer.PaymentDate != null ? firstTaxpayer.PaymentDate.Value.ToString("dd-MM-yyyy") : "");
+
+                        //rowbody.CreateCell(colCount++).SetCellValue((firstTaxpayer.lastModifiedDate != null && amountPaid > 0) ?
+                        //    firstTaxpayer.lastModifiedDate.Value.ToShortDateString() : "");
 
                         var res = dnph.Where(x => x.BillingNumber == firstTaxpayer.billingNo);
                         if (res.Count() > 0)
