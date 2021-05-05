@@ -64,7 +64,7 @@ namespace RemsNG.Data.Repository
 
         public async Task<List<DemandNoticeTaxpayersModel>> getPendingDemandNoticeByTaxpayerByIds(Guid id)
         {
-            string[] status = { "CLOSED", "CANCEL", "PAID","DELETED" };
+            string[] status = { "CLOSED", "CANCEL", "PAID", "DELETED" };
 
             var result = await db.Set<DemandNoticeTaxpayer>().Where(x => x.TaxpayerId == id && !status.Any(q => q == x.DemandNoticeStatus))
                 .Select(x => new DemandNoticeTaxpayersModel()
@@ -1224,7 +1224,7 @@ namespace RemsNG.Data.Repository
         public async Task<bool> UpdateWardStreet(Guid[] taxpayerIds, string wardName, string street,
             List<TaxPayerModel> lst)
         {
-            string[] status = new string[] { "PENDING", "PART_PAYMENT", "PAID" };
+            string[] status = new string[] { "PENDING", "PART_PAYMENT", "PAID", "APPROVED" };
             var entities = await db.Set<DemandNoticeTaxpayer>()
                 .Where(x => taxpayerIds.Any(s => s == x.TaxpayerId) && status.Any(p => p == x.DemandNoticeStatus))
                 .ToArrayAsync();
