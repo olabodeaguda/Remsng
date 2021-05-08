@@ -28,20 +28,20 @@ namespace RemsNG.Controllers
         [HttpGet]
         public async Task<object> All()
         {
-            if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
-            {
-                var wards = await wardService.all();
-                return wards.OrderBy(x => x.WardName);
-            }
-            else
-            {
+            //if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
+                //{
+                //    var wards = await wardService.all();
+                //    return wards.OrderBy(x => x.WardName);
+                //}
+                //else
+                //{
                 var domainId = ClaimExtension.GetDomainId(User.Claims.ToArray());// User.Claims.FirstOrDefault(x => x.Type == "Domain");
                 if (domainId != Guid.Empty)
                 {
                     var wards = await wardService.GetWardByLGDAId(domainId);
                     return wards.OrderBy(x => x.WardName);
                 }
-            }
+            //}
 
             return new object[] { };
         }

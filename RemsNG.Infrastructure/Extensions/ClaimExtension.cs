@@ -10,17 +10,17 @@ namespace RemsNG.Infrastructure.Extensions
     {
         public static bool IsMosAdmin(Claim[] claims)
         {
-            //var nameIdemtify = claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
-            //if (string.IsNullOrEmpty(nameIdemtify.Value))
-            //{
-            //    throw For
-            //}
-            var hasClaim = claims.Any(x => x.Type == ClaimTypes.NameIdentifier && x.Value.ToLower() == "mos-admin");
+            ////var nameIdemtify = claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+            ////if (string.IsNullOrEmpty(nameIdemtify.Value))
+            ////{
+            ////    throw For
+            ////}
+            //var hasClaim = claims.Any(x => x.Type == ClaimTypes.NameIdentifier && x.Value.ToLower() == "mos-admin");
 
-            if (hasClaim)
-            {
-                return true;
-            }
+            //if (hasClaim)
+            //{
+            //    return true;
+            //}
             return false;
         }
 
@@ -95,9 +95,9 @@ namespace RemsNG.Infrastructure.Extensions
             Claim userIdEncrypt = claims.FirstOrDefault(x => x.Type == "identity");
             if (userIdEncrypt != null)
             {
-                string userId = EncryptDecryptUtils.FromHexString(userIdEncrypt.Value);
+                //string userId = EncryptDecryptUtils.FromHexString(userIdEncrypt.Value);
                 Guid dId = Guid.Empty;
-                bool v = Guid.TryParse(userId, out dId);
+                bool v = Guid.TryParse(userIdEncrypt.Value, out dId);
                 if (v)
                 {
                     return dId;

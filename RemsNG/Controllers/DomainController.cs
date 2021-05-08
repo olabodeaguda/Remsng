@@ -66,23 +66,23 @@ namespace RemsNG.Controllers
         [HttpGet("activeDomain")]
         public async Task<object> Get()
         {
-            if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
+            //if (ClaimExtension.IsMosAdmin(User.Claims.ToArray()))
+            //{
+            //    return await domainService.ActiveDomains();
+            //}
+            //else
+            //{
+            Guid userid = ClaimExtension.UserId(User.Claims.ToArray());
+            if (userid == Guid.Empty)
             {
-                return await domainService.ActiveDomains();
-            }
-            else
-            {
-                Guid userid = ClaimExtension.UserId(User.Claims.ToArray());
-                if (userid == Guid.Empty)
+                return BadRequest(new Response()
                 {
-                    return BadRequest(new Response()
-                    {
-                        code = MsgCode_Enum.INTERNAL_ERROR,
-                        description = "Please logout and login again else contact your administrator"
-                    });
-                }
-                return await domainService.GetUserDomainByUsernameId(userid);
+                    code = MsgCode_Enum.INTERNAL_ERROR,
+                    description = "Please logout and login again else contact your administrator"
+                });
             }
+            return await domainService.GetUserDomainByUsernameId(userid);
+            //}
         }
 
         [HttpGet("all")]

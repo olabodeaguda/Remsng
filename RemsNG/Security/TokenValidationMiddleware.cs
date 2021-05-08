@@ -55,7 +55,6 @@ namespace RemsNG.Security
                         context.User = handler.ValidateToken(token,
                             ServicesCollection.tokenValidationParameters(),
                             out SecurityToken validatedToken);
-                        await next(context);
                     }
                 }
             }

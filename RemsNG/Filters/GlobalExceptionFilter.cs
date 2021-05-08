@@ -19,8 +19,11 @@ namespace RemsNG.Filters
         {
             var content = GetStatusCode<object>(context.Exception);
             HttpResponse response = context.HttpContext.Response;
-            response.StatusCode = (int)content.Item2;
-            response.ContentType = "application/json";
+            if (!response.HasStarted)
+            {
+                response.StatusCode = (int)content.Item2;
+                response.ContentType = "application/json";
+            }
 
             context.Result = new JsonResult(content.Item1);
         }

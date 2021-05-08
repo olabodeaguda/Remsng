@@ -50,6 +50,7 @@ namespace RemsNG
                 options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
                 options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
         }
 
@@ -62,11 +63,12 @@ namespace RemsNG
             loggerFactory.AddConsole();
             loggerFactory.AddFile("Logs/remsng-logs-{Date}.txt");
             app.UseCors("CorsPolicy");
-            app.UseHangfireDashboard();
 
-            var ops = new BackgroundJobServerOptions { WorkerCount = 20 };
+            //app.UseHangfireDashboard();
 
-            app.UseHangfireServer(ops);
+            //var ops = new BackgroundJobServerOptions { WorkerCount = 20 };
+
+            //app.UseHangfireServer(ops);
 
             app.Use(async (context, next) =>
            {
@@ -99,7 +101,7 @@ namespace RemsNG
                     });
             });
 
-            app.UseMiddleware(typeof(HangfireMiddleware));
+            // app.UseMiddleware(typeof(HangfireMiddleware));
 
             app.UseDefaultFiles();
 
