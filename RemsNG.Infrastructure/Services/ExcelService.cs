@@ -919,15 +919,23 @@ namespace RemsNG.Infrastructure.Services
                     valu = valu.Replace("-", "");
                     valu = valu.Replace(".", "");
                     valu = valu.Replace("'", "");
+                    valu = valu.Replace("*", "");
                     ISheet sheet1;
                     var r = workbook.GetSheet(valu);
-                    if (r != null)
+                    try
                     {
-                        sheet1 = workbook.CreateSheet(valu + Guid.NewGuid().ToString().Substring(0, 6));
+                        if (r != null)
+                        {
+                            sheet1 = workbook.CreateSheet(valu + Guid.NewGuid().ToString().Substring(0, 6));
+                        }
+                        else
+                        {
+                            sheet1 = workbook.CreateSheet(valu);
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        sheet1 = workbook.CreateSheet(valu);
+                        sheet1 = workbook.CreateSheet(Guid.NewGuid().ToString().Replace("-", string.Empty));
                     }
 
                     #region sub heading
