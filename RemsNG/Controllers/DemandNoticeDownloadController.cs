@@ -85,9 +85,11 @@ namespace RemsNG.Controllers
 
             var result = await dnd.GenerateDemandNotice(billingNo, User.Identity.Name);
 
-            HttpContext.Response.ContentType = "application/pdf";
-            HttpContext.Response.Body.Write(result, 0, result.Length);
-            return new ContentResult();
+            //HttpContext.Response.ContentType = "application/pdf";
+            //HttpContext.Response.Body.Write(result, 0, result.Length);
+            //return new ContentResult();
+
+            return File(result, "application/pdf");
         }
 
         [RemsRequirementAttribute("BULK_DOWNLOAD")]
@@ -110,9 +112,12 @@ namespace RemsNG.Controllers
                 });
             }
 
-            HttpContext.Response.ContentType = "application/zip";
-            HttpContext.Response.Body.Write(result, 0, result.Length);
-            return new ContentResult();
+            //HttpContext.Response.ContentType = "application/zip";
+            //HttpContext.Response.Body.Write(result, 0, result.Length);
+
+
+            //return new ContentResult();
+            return File(result, "application/pdf");
         }
 
         [HttpGet("{batchno}")]
@@ -177,9 +182,11 @@ namespace RemsNG.Controllers
 
             var result = await dnd.GenerateReceipt(User.Identity.Name, dnph);
 
-            HttpContext.Response.ContentType = "application/pdf";
-            HttpContext.Response.Body.Write(result, 0, result.Length);
-            return new ContentResult();
+            //HttpContext.Response.ContentType = "application/pdf";
+            //HttpContext.Response.Body.Write(result, 0, result.Length);
+            //return new ContentResult();
+
+            return File(result, "application/pdf");
         }
 
         [HttpPost("downloadbytx")]
@@ -203,9 +210,12 @@ namespace RemsNG.Controllers
 
             var result = await dnd.GenerateReminder(billingNo, User.Identity.Name);
 
-            HttpContext.Response.ContentType = "application/pdf";
-            HttpContext.Response.Body.Write(result, 0, result.Length);
-            return new ContentResult();
+            //HttpContext.Response.ContentType = "application/pdf";
+            //HttpContext.Response.Body.Write(result, 0, result.Length);
+            //return new ContentResult();
+
+
+            return File(result, "application/pdf");
         }
 
         [AllowAnonymous]

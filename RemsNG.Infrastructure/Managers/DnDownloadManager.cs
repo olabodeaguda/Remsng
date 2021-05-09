@@ -296,7 +296,8 @@ namespace RemsNG.Infrastructure.Managers
             htmlContent = htmlContent.Replace("ITEMLIST", DemandNoticeComponents.HtmlBuildItems(dnrp));
 
             var taxCategory = await _taxService.GetTaxpayerCategory(dnrp.TaxpayerId);
-            htmlContent = htmlContent.Replace("TAXPAYERCATEGORY", taxCategory.TaxpayerCategoryName);
+            if (taxCategory != null)
+                htmlContent = htmlContent.Replace("TAXPAYERCATEGORY", taxCategory.TaxpayerCategoryName);
 
             //htmlContent = htmlContent.Replace("BANKLIST", DemandNoticeComponents.HtmlBuildBanks(dnrp));//, _bankCategory, taxCategory));
             htmlContent = htmlContent.Replace("BANKLIST", DemandNoticeComponents.HtmlBuildBanks(dnrp, _bankCategory, taxCategory));
@@ -362,7 +363,7 @@ namespace RemsNG.Infrastructure.Managers
             decimal prepayment = (prepayment1.closed > 0 ? prepayment1.closed : prepayment1.active);
             if (prepayment > 0)
             {
-                prepayment = 
+                prepayment =
                 finalTotal = finalTotal - prepayment;
             }
             if (finalTotal < 0)
