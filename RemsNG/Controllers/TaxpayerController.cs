@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -175,7 +176,7 @@ namespace RemsNG.Controllers
         }
 
         [HttpPost]
-        public async Task<object> Post([FromBody]TaxPayerModel value, [FromHeader] string confirmcompany)
+        public async Task<object> Post([FromBody] TaxPayerModel value, [FromHeader] string confirmcompany)
         {
             if (value.StreetId == default(Guid))
             {
@@ -281,7 +282,7 @@ namespace RemsNG.Controllers
         }
 
         [HttpPut]
-        public async Task<object> Put([FromBody]TaxPayerModel taxpayerExtension)
+        public async Task<object> Put([FromBody] TaxPayerModel taxpayerExtension)
         {
             if (taxpayerExtension.Id == default(Guid) || taxpayerExtension.AddressId == default(Guid)
                 || taxpayerExtension.CompanyId == default(Guid))
@@ -468,6 +469,16 @@ namespace RemsNG.Controllers
                 description = "Taxpayers has been updated successfully",
                 code = MsgCode_Enum.SUCCESS
             });
+        }
+
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadTaskPayer(IFormFile file)
+        {
+            var fileModel = new FileModel("uploadtxpayer", file.FileName, file.OpenReadStream());
+
+
+
+            return Ok();
         }
 
     }

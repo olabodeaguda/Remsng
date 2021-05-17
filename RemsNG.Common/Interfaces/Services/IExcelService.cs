@@ -1,6 +1,7 @@
 ﻿using RemsNG.Common.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace RemsNG.Common.Interfaces.Services
@@ -27,5 +28,7 @@ namespace RemsNG.Common.Interfaces.Services
 
         Task<byte[]> WriteReportSummaryConsolidatedSeperateV2(List<ItemReportSummaryModel> rptLst,
           string domainName, string lcdaName, DateTime startDate, DateTime endDate, List<DemandNoticePaymentHistoryModel> dnph);
+
+        T[] Read<T>(Stream stream);
     }
 }

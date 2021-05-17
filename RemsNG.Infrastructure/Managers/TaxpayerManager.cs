@@ -4,6 +4,7 @@ using Remsng.Data;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Interfaces.Repositories;
+using RemsNG.Common.Interfaces.Services;
 using RemsNG.Common.Models;
 using RemsNG.Data.Repository;
 using System;
@@ -20,13 +21,14 @@ namespace RemsNG.Infrastructure.Managers
         private IDNAmountDueMgtManager amountDueMgtService;
         private ITaxpayerRepository taxpayerDao;
         private readonly IStreetRepository _streetRepository;
+        private readonly IExcelService _excelService;
         public TaxpayerManager(IDemandNoticeTaxpayersRepository demandNoticeTaxpayersRepository,
             ILoggerFactory loggerFactory,
             IDNAmountDueMgtManager _amountDueMgtService,
             ITaxpayerRepository taxpayerRepository, IWardRepository wardRepository,
-            IStreetRepository streetRepository)
+            IStreetRepository streetRepository, IExcelService excelService)
         {
-
+            _excelService = excelService;
             _streetRepository = streetRepository;
             _wardRepository = wardRepository;
             _dnRepo = demandNoticeTaxpayersRepository;
@@ -147,6 +149,11 @@ namespace RemsNG.Infrastructure.Managers
             var result = await _dnRepo.UpdateWardStreet(taxpayers, ward.WardName, street.StreetName, tpayers);
 
             return true;
+        }
+
+        public async Task<bool> UPloadTaxpayer()
+        {
+
         }
     }
 }

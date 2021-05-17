@@ -1,13 +1,18 @@
 ﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
+using OfficeOpenXml;
 using RemsNG.Common.Interfaces.Services;
 using RemsNG.Common.Models;
+using RemsNG.Common.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -1331,6 +1336,58 @@ namespace RemsNG.Infrastructure.Services
                 logger.LogError(x.Message);
                 return null;
             }
+        }
+
+        public T[] Read<T>(Stream stream)
+        {
+            ExcelPackage excelPackage = new ExcelPackage(stream);
+            if (excelPackage.Workbook.Worksheets.Count <= 0)
+                throw new Exception("Excel file has not sheet");
+
+            ExcelWorksheet ws = excelPackage.Workbook.Worksheets.FirstOrDefault();
+            int rows = ws.Dimension.Rows;
+            int columns = ws.Dimension.Columns;
+            if (rows > 2500)
+                throw new Exception("You can only upload 2500 records at once");
+            if (rows <= 0)
+                return Array.Empty<T>();
+
+            string[] ObjFields = typeof(T).GetMembers().Where(x => x.MemberType == MemberTypes.Property)
+                .Select(x => x.Name).ToArray();
+            string[] excelHeader = ws.Cells[1, 1, 1, ws.Dimension.End.Column]
+                .Where(x => x.Text.Trim().Length > 0)
+                .Select(x => x.Text).ToArray();
+            Dictionary<string, int> header = Enumerable.Range(0, excelHeader.Length)
+                .ToDictionary(x => excelHeader[x], x => x);
+
+            var diff = ObjFields.Except(excelHeader, new StringEqualityComparer());
+            if (diff.Count() > 0)
+                throw new Exception($"{string.Join(", ", diff)} can not be map");
+
+            DataTable dataTable = new DataTable();
+
+            foreach (var tm in ObjFields)
+            {
+                dataTable.Columns.Add(tm);
+            }
+
+            for (int i = 2; i <= rows; i++)
+            {
+                DataRow dataRow = dataTable.NewRow();
+
+                foreach (var rw in ObjFields)
+                {
+                    dataRow[rw] = ws.Cells[i, header[rw] + 1].Text;
+                }
+
+                dataTable.Rows.Add(dataRow);
+            }
+
+            excelPackage.Dispose();
+            string jsonRep = JsonConvert.SerializeObject(dataTable);
+            var generatedType = JsonConvert.DeserializeObject<T[]>(jsonRep);
+
+            return generatedType; //(T)Convert.ChangeType(generatedType, typeof(T));
         }
     }
 }
