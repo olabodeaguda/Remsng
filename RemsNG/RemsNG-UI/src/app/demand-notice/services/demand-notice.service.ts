@@ -240,8 +240,17 @@ export class DemandNoticeService {
         return this.datataservice.postBlob('dndownload/bulk/',payload)
             .catch(error => this.datataservice.handleError(error));
     }
-    downloadReminderBulk(payload) {
-        return this.datataservice.postBlob('dndownload/reminder/', payload)
+
+    downloadReminderBulk(searchModel: DemandNoticeSearch) {
+        let s: any = {
+            wardId: searchModel.wardId,
+            streetId: searchModel.streetId,
+            searchByName: searchModel.searchByName,
+            dateYear: searchModel.dateYear,
+            lcdaId: null
+        };
+
+        return this.datataservice.postBlob('dndownload/reminder/', s)
             .catch(error => this.datataservice.handleError(error));
     }
 }

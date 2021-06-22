@@ -32,6 +32,8 @@ namespace RemsNG.Controllers
         private IDNPaymentHistoryManager paymentHistoryService;
         private readonly TemplateDetail _templateDetails;
         private IDemandNoticeTaxpayerManager _dnTxpayer;
+        private readonly IStreetManager streetService;
+        private readonly IWardManager wardService;
         public DemandNoticeDownloadController(IHostingEnvironment _hostingEnvironment,
              IDnDownloadManager _dnd,
             IBatchDwnRequestManager _batchRequestService,
@@ -65,9 +67,11 @@ namespace RemsNG.Controllers
 
             var result = await dnd.GenerateDemandNotice(new long[] { billingno }, User.Identity.Name);
 
-            HttpContext.Response.ContentType = "application/pdf";
-            HttpContext.Response.Body.Write(result, 0, result.Length);
-            return new ContentResult();
+            //HttpContext.Response.ContentType = "application/pdf";
+            //HttpContext.Response.Body.Write(result, 0, result.Length);
+            //return new ContentResult();
+
+            return File(result, "application/pdf");
         }
 
         [RemsRequirementAttribute("BULK_DOWNLOAD")]
@@ -197,18 +201,54 @@ namespace RemsNG.Controllers
 
         [RemsRequirementAttribute("BULK_DOWNLOAD")]
         [HttpPost("reminder")]
-        public async Task<IActionResult> Reminder([FromBody] long[] billingNo)
+        public async Task<IActionResult> Reminder([FromBody] DemandNoticeRequestModel demandNoticeRequest) //[FromBody] long[] billingNo)
         {
-            if (billingNo.Length <= 0)
+            //if (billingNo.Length <= 0)
+            //{
+            //    return BadRequest(new Response
+            //    {
+            //        code = MsgCode_Enum.FAIL,
+            //        description = "Please select demand notice to download"
+            //    });
+            //}
+
+            if (demandNoticeRequest.streetId != null && demandNoticeRequest.streetId != default(Guid))
             {
-                return BadRequest(new Response
+                StreetModel street = await streetService.ById(demandNoticeRequest.streetId);
+                if (street == null)
+                {
+                    return BadRequest(new Response()
+                    {
+                        code = MsgCode_Enum.NOTFOUND,
+                        description = "Street not found"
+                    });
+                }
+
+            }
+            else if (demandNoticeRequest.wardId != null && demandNoticeRequest.wardId != default(Guid))
+            {
+                Guid s = demandNoticeRequest.wardId;
+                WardModel ward = await wardService.GetWard(demandNoticeRequest.wardId);
+                if (ward == null)
+                {
+                    return BadRequest(new Response()
+                    {
+                        code = MsgCode_Enum.NOTFOUND,
+                        description = "Ward not found"
+                    });
+                }
+            }
+            else if (demandNoticeRequest.dateYear == 0)
+            {
+                return BadRequest(new Response()
                 {
                     code = MsgCode_Enum.FAIL,
-                    description = "Please select demand notice to download"
+                    description = "Billing year is required"
                 });
             }
 
-            var result = await dnd.GenerateReminder(billingNo, User.Identity.Name);
+
+            var result = await dnd.GenerateReminder(demandNoticeRequest);
 
             //HttpContext.Response.ContentType = "application/pdf";
             //HttpContext.Response.Body.Write(result, 0, result.Length);

@@ -377,13 +377,13 @@ export class DemandNoticeComponent implements OnInit {
 
 
     downloadReminderByTaxpayer() {
-        let lt = this.demandNoticeLst.filter(b => b.isChecked == true).map(x => x.billingNumber);
-        if (lt.length <= 0) {
-            this.toasterService.pop('error', 'Error', 'Please select demenad notice');
-            return;
-        }
+       // let lt = this.demandNoticeLst.filter(b => b.isChecked == true).map(x => x.billingNumber);
+        // if (lt.length <= 0) {
+        //     this.toasterService.pop('error', 'Error', 'Please select demenad notice');
+        //     return;
+        // }
         this.isLoadingMini = true;
-        this.demandnoticeservice.downloadReminderBulk(lt)
+        this.demandnoticeservice.downloadReminderBulk(this.searchModel)
             .subscribe(response => {
                 this.isLoadingMini = false;
                 jQuery(this.promptRequest.nativeElement).modal('hide');

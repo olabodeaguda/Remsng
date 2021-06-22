@@ -151,9 +151,5 @@ namespace RemsNG.Infrastructure.Managers
             return true;
         }
 
-        public async Task<bool> UPloadTaxpayer()
-        {
-
-        }
     }
 }

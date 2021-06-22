@@ -543,6 +543,30 @@ namespace RemsNG.Infrastructure.Managers
             return result;
         }
 
+        public async Task<byte[]> GenerateReminder(DemandNoticeRequestModel demandNoticeRequest)
+        {
+            // search for demand notice request
+
+            List<string> lst = new List<string>();
+            string htmlContent = await File.ReadAllTextAsync(_templateDetails.ReminderUrl);
+            foreach (var tm in billingno)
+            {
+                DemandNoticeReportModel dnrp = await dnts.ByBillingNo(tm);
+
+                string val = string.Empty;
+                if (dnrp.StreetId.ToLower() == _templateDetails.SpecialTaxpayer.ToLower())
+                    val = await LoadTemplateDemandNoticeSpecial(htmlContent, tm, createdBy, TemplateType.DemandNotice, dnrp);
+                else
+                    val = await LoadTemplateDemandNotice(htmlContent, tm, createdBy, TemplateType.DemandNotice, dnrp);
+                lst.Add(val);
+            }
+
+            byte[] result = _pdfService.GetBytes(lst.ToArray(), TemplateType.Reminder);
+
+            return result;
+        }
+
+
         public async Task<byte[]> GenerateReceipt(string createdBy, DemandNoticePaymentHistoryModel dnph)
         {
             string htmlTemplate = string.Empty;
