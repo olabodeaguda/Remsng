@@ -1290,5 +1290,52 @@ namespace RemsNG.Data.Repository
 
             return result;
         }
+
+
+        public async Task<DemandNoticeTaxpayersModel[]> SearchTaxpayerForReminders(DemandNoticeRequestModel rhModel)
+        {
+            string[] statuss = { "PENDING", "PART_PAYMENT" };
+
+            var query = db.Set<DemandNoticeTaxpayer>()
+               .Include(p => p.DemandNotice)
+               .ThenInclude(d => d.Street)
+               .Where(x => x.BillingYr == rhModel.dateYear 
+               && x.DemandNotice.WardId == rhModel.wardId 
+               && statuss.Any(p => p == x.DemandNoticeStatus));
+
+            if (rhModel.streetId != Guid.Empty)
+                query = query.Where(s => s.DemandNotice.StreetId == rhModel.streetId);
+
+            var result = await query.Select(x => new DemandNoticeTaxpayersModel()
+            {
+                AddressName = x.AddressName,
+                BillingNumber = x.BillingNumber,
+                BillingYr = x.BillingYr,
+                CouncilTreasurerMobile = x.CouncilTreasurerMobile,
+                CouncilTreasurerSigFilen = x.CouncilTreasurerSigFilen,
+                CreatedBy = x.CreatedBy,
+                DateCreated = x.DateCreated,
+                DemandNoticeStatus = x.DemandNoticeStatus,
+                DnId = x.DnId,
+                DomainName = x.DomainName,
+                Id = x.Id,
+                IsUnbilled = x.IsUnbilled,
+                Lastmodifiedby = x.Lastmodifiedby,
+                LastModifiedDate = x.LastModifiedDate,
+                LcdaAddress = x.LcdaAddress,
+                LcdaLogoFileName = x.LcdaLogoFileName,
+                LcdaName = x.LcdaName,
+                LcdaState = x.LcdaState,
+                RevCoodinatorSigFilen = x.RevCoodinatorSigFilen,
+                TaxpayerId = x.TaxpayerId,
+                TaxpayersName = x.TaxpayersName,
+                WardName = x.WardName,
+                StreetName = x.DemandNotice.Street.StreetName,
+                IsRunArrears = x.IsRunArrears,
+                IsRunPenalty = x.IsRunPenalty
+            }).OrderByDescending(x => x.DateCreated).ToArrayAsync();
+
+            return result;
+        }
     }
 }

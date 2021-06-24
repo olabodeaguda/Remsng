@@ -39,8 +39,11 @@ namespace RemsNG.Controllers
             IBatchDwnRequestManager _batchRequestService,
             IDNPaymentHistoryManager _paymentHistoryService,
             ILoggerFactory loggerFactory, IPdfService pdfService,
-            TemplateDetail templateDetail, DbContext dbContext, IDemandNoticeTaxpayerManager demandNoticeTaxpayerManager)
+            TemplateDetail templateDetail, DbContext dbContext, 
+            IDemandNoticeTaxpayerManager demandNoticeTaxpayerManager, IStreetManager streetManager, IWardManager wardManager)
         {
+            streetService = streetManager;
+            wardService = wardManager;
             _dnTxpayer = demandNoticeTaxpayerManager;
             _dbContext = dbContext;
             _templateDetails = templateDetail;

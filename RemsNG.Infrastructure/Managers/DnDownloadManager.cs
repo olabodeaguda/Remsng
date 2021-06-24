@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Managers;
+using RemsNG.Common.Interfaces.Repositories;
 using RemsNG.Common.Interfaces.Services;
 using RemsNG.Common.Models;
 using RemsNG.Common.Utilities;
@@ -27,6 +28,7 @@ namespace RemsNG.Infrastructure.Managers
         private readonly IPdfService _pdfService;
         private readonly TemplateDetail _templateDetails;
         private readonly ITaxpayerManager _taxpayerManager;
+        private readonly IDemandNoticeTaxpayersRepository _demandNoticeTaxpayersRepository;
 
         public DnDownloadManager(IDemandNoticeTaxpayerManager _dnts,
             IDemandNoticeChargesManager _chargesService,
@@ -37,8 +39,9 @@ namespace RemsNG.Infrastructure.Managers
             IDNPaymentHistoryManager _dNPaymentHistoryService,
             BankCategory bankCategory, ITaxpayerCategoryManager taxService,
             IPdfService pdfService, TemplateDetail templateOptions,
-            ITaxpayerManager taxpayer)
+            ITaxpayerManager taxpayer, IDemandNoticeTaxpayersRepository demandNoticeTaxpayersRepository)
         {
+            _demandNoticeTaxpayersRepository = demandNoticeTaxpayersRepository;
             _taxpayerManager = taxpayer;
             _templateDetails = templateOptions;
             dnts = _dnts;
@@ -546,6 +549,10 @@ namespace RemsNG.Infrastructure.Managers
         public async Task<byte[]> GenerateReminder(DemandNoticeRequestModel demandNoticeRequest)
         {
             // search for demand notice request
+            var data = await _demandNoticeTaxpayersRepository.SearchTaxpayerForReminders(demandNoticeRequest);
+            if (data.Length <= 0)
+                throw new Exception("No records found");
+            long[] billingno = data.Select(a => a.BillingNumber).ToArray();
 
             List<string> lst = new List<string>();
             string htmlContent = await File.ReadAllTextAsync(_templateDetails.ReminderUrl);
@@ -555,9 +562,9 @@ namespace RemsNG.Infrastructure.Managers
 
                 string val = string.Empty;
                 if (dnrp.StreetId.ToLower() == _templateDetails.SpecialTaxpayer.ToLower())
-                    val = await LoadTemplateDemandNoticeSpecial(htmlContent, tm, createdBy, TemplateType.DemandNotice, dnrp);
+                    val = await LoadTemplateDemandNoticeSpecial(htmlContent, tm, string.Empty, TemplateType.DemandNotice, dnrp);
                 else
-                    val = await LoadTemplateDemandNotice(htmlContent, tm, createdBy, TemplateType.DemandNotice, dnrp);
+                    val = await LoadTemplateDemandNotice(htmlContent, tm, string.Empty, TemplateType.DemandNotice, dnrp);
                 lst.Add(val);
             }
 

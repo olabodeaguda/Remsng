@@ -3503,13 +3503,12 @@ var DemandNoticeComponent = (function () {
     };
     DemandNoticeComponent.prototype.downloadReminderByTaxpayer = function () {
         var _this = this;
-        var lt = this.demandNoticeLst.filter(function (b) { return b.isChecked == true; }).map(function (x) { return x.billingNumber; });
-        if (lt.length <= 0) {
-            this.toasterService.pop('error', 'Error', 'Please select demenad notice');
+        if (this.searchModel.streetId.length <= 0) {
+            this.toasterService.pop('error', 'Error', 'Please select street');
             return;
         }
         this.isLoadingMini = true;
-        this.demandnoticeservice.downloadReminderBulk(lt)
+        this.demandnoticeservice.downloadReminderBulk(this.searchModel)
             .subscribe(function (response) {
             _this.isLoadingMini = false;
             jQuery(_this.promptRequest.nativeElement).modal('hide');
@@ -4284,9 +4283,16 @@ var DemandNoticeService = (function () {
         return this.datataservice.postBlob('dndownload/bulk/', payload)
             .catch(function (error) { return _this.datataservice.handleError(error); });
     };
-    DemandNoticeService.prototype.downloadReminderBulk = function (payload) {
+    DemandNoticeService.prototype.downloadReminderBulk = function (searchModel) {
         var _this = this;
-        return this.datataservice.postBlob('dndownload/reminder/', payload)
+        var s = {
+            wardId: searchModel.wardId,
+            streetId: searchModel.streetId,
+            searchByName: searchModel.searchByName,
+            dateYear: searchModel.dateYear,
+            lcdaId: null
+        };
+        return this.datataservice.postBlob('dndownload/reminder/', s)
             .catch(function (error) { return _this.datataservice.handleError(error); });
     };
     return DemandNoticeService;
