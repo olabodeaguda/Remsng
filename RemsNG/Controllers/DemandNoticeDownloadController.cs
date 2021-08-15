@@ -206,15 +206,6 @@ namespace RemsNG.Controllers
         [HttpPost("reminder")]
         public async Task<IActionResult> Reminder([FromBody] DemandNoticeRequestModel demandNoticeRequest) //[FromBody] long[] billingNo)
         {
-            //if (billingNo.Length <= 0)
-            //{
-            //    return BadRequest(new Response
-            //    {
-            //        code = MsgCode_Enum.FAIL,
-            //        description = "Please select demand notice to download"
-            //    });
-            //}
-
             if (demandNoticeRequest.streetId != null && demandNoticeRequest.streetId != default(Guid))
             {
                 StreetModel street = await streetService.ById(demandNoticeRequest.streetId);

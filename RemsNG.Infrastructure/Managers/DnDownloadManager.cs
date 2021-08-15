@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using RemsNG.Common.Exceptions;
 using RemsNG.Common.Interfaces.Managers;
 using RemsNG.Common.Interfaces.Repositories;
@@ -15,6 +16,7 @@ namespace RemsNG.Infrastructure.Managers
 {
     public class DnDownloadManager : IDnDownloadManager
     {
+        ILogger logger;
         private readonly IDNPaymentHistoryManager dNPaymentHistoryService;
         private readonly IDemandNoticeTaxpayerManager dnts;
         private readonly IDemandNoticeChargesManager chargesService;
@@ -39,8 +41,11 @@ namespace RemsNG.Infrastructure.Managers
             IDNPaymentHistoryManager _dNPaymentHistoryService,
             BankCategory bankCategory, ITaxpayerCategoryManager taxService,
             IPdfService pdfService, TemplateDetail templateOptions,
-            ITaxpayerManager taxpayer, IDemandNoticeTaxpayersRepository demandNoticeTaxpayersRepository)
+            ITaxpayerManager taxpayer, IDemandNoticeTaxpayersRepository demandNoticeTaxpayersRepository,
+            ILoggerFactory loggerFactory)
         {
+
+            logger = loggerFactory.CreateLogger("DnDownloadManager");
             _demandNoticeTaxpayersRepository = demandNoticeTaxpayersRepository;
             _taxpayerManager = taxpayer;
             _templateDetails = templateOptions;
@@ -548,29 +553,36 @@ namespace RemsNG.Infrastructure.Managers
 
         public async Task<byte[]> GenerateReminder(DemandNoticeRequestModel demandNoticeRequest)
         {
-            // search for demand notice request
-            var data = await _demandNoticeTaxpayersRepository.SearchTaxpayerForReminders(demandNoticeRequest);
-            if (data.Length <= 0)
-                throw new Exception("No records found");
-            long[] billingno = data.Select(a => a.BillingNumber).ToArray();
-
-            List<string> lst = new List<string>();
-            string htmlContent = await File.ReadAllTextAsync(_templateDetails.ReminderUrl);
-            foreach (var tm in billingno)
+            try
             {
-                DemandNoticeReportModel dnrp = await dnts.ByBillingNo(tm);
+                var data = await _demandNoticeTaxpayersRepository.SearchTaxpayerForReminders(demandNoticeRequest);
+                if (data.Length <= 0)
+                    throw new Exception("No records found");
+                long[] billingno = data.Select(a => a.BillingNumber).ToArray();
 
-                string val = string.Empty;
-                if (dnrp.StreetId.ToLower() == _templateDetails.SpecialTaxpayer.ToLower())
-                    val = await LoadTemplateDemandNoticeSpecial(htmlContent, tm, string.Empty, TemplateType.DemandNotice, dnrp);
-                else
-                    val = await LoadTemplateDemandNotice(htmlContent, tm, string.Empty, TemplateType.DemandNotice, dnrp);
-                lst.Add(val);
+                List<string> lst = new List<string>();
+                string htmlContent = await File.ReadAllTextAsync(_templateDetails.ReminderUrl);
+                foreach (var tm in billingno)
+                {
+                    DemandNoticeReportModel dnrp = await dnts.ByBillingNo(tm);
+
+                    string val = string.Empty;
+                    if (dnrp.StreetId.ToLower() == _templateDetails.SpecialTaxpayer.ToLower())
+                        val = await LoadTemplateDemandNoticeSpecial(htmlContent, tm, string.Empty, TemplateType.DemandNotice, dnrp);
+                    else
+                        val = await LoadTemplateDemandNotice(htmlContent, tm, string.Empty, TemplateType.DemandNotice, dnrp);
+                    lst.Add(val);
+                }
+
+                byte[] result = _pdfService.GetBytes(lst.ToArray(), TemplateType.Reminder);
+
+                return result;
             }
-
-            byte[] result = _pdfService.GetBytes(lst.ToArray(), TemplateType.Reminder);
-
-            return result;
+            catch(Exception ex)
+            {
+                logger.LogError($"{ex.Message} {ex.StackTrace} {ex.InnerException}");
+                throw;
+            }
         }
 
 

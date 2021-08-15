@@ -168,16 +168,6 @@ namespace RemsNG.Infrastructure.Services
                         PdfImportedPage importedPage = copy.GetImportedPage(reader, currentPageIndex);
                         PdfCopy.PageStamp pageStamp = copy.CreatePageStamp(importedPage);
 
-                        //// Write header
-                        //ColumnText.ShowTextAligned(pageStamp.GetOverContent(), Element.ALIGN_CENTER,
-                        //    new Phrase("PDF Merger by Helvetic Solutions"), importedPage.Width / 2, importedPage.Height - 30,
-                        //    importedPage.Width < importedPage.Height ? 0 : 1);
-
-                        // Write footer
-                        //ColumnText.ShowTextAligned(pageStamp.GetOverContent(), Element.ALIGN_CENTER,
-                        //    new Phrase(String.Format("Page {0}", documentPageCounter)), importedPage.Width / 2, 30,
-                        //    importedPage.Width < importedPage.Height ? 0 : 1);
-
                         pageStamp.AlterContents();
 
                         copy.AddPage(importedPage);
